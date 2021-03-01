@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fetch API</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+    output {
+      display: block;
+      margin: 10px 0px 0px 10px;
+      font-size: 30px;
+    }
+    button {
+      background-color: black;
+      padding: 15px;
+      font-size: 25px;
+      color: white;
+    }
+    button:hover {
+      background-color: gray;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="fetchText()">Personagem Aleatório Star Wars</button>
+  <output></output>
+  <script type="text/javascript">
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min); 
+    }
+    async function fetchText() {
+      let response = await fetch('https://swapi.dev/api/people/');
+      let data = await response.text();
+      obj = JSON.parse(data);
+      output = document.querySelector('output');
+      rnd = getRandomInt(0,10);
+      output.innerHTML = obj['results'][rnd]['name'];
+    }
+  </script>
+</body>
+</html>

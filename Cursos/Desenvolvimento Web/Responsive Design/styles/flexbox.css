@@ -1,0 +1,45 @@
+.flex-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.flex-container > div {
+	background-color: black;
+	border: 1.8px solid #cccccc;
+	width: 470px;
+	height: 380px;
+	margin: 30px;
+	text-align: center;
+	line-height: 75px;
+	font-size: 30px;
+	opacity: 0.95;
+	box-shadow: 6px 6px 6px 6px;
+}
+
+h1 {
+	text-align: center;
+  	background-color: black;
+  	border: 1.8px solid #cccccc;
+  	width: 44%;
+  	padding: 17px 27px 17px 27px;
+  	margin: 0 auto;
+  	margin-top: 27px;
+  	color: white;
+  	font-size: 2.66em;
+}
+
+img {
+	margin-top: 47px;
+	width: 280px;
+	height: 280px;
+	border: 1.8px solid #cccccc;
+}
+
+img:hover {
+	opacity: 0.88;
+}
+
+body {
+	background-image: url("https://i.ibb.co/jrv9gwf/bg.jpg");
+}

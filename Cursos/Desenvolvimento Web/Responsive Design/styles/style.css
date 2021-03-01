@@ -1,0 +1,99 @@
+body {
+  /*background-color: #aec2fc; */
+  background-image: linear-gradient(to left,#aec2fc,#d4b8f5,#9ccaf7,#a1edab,#ede89f,#ff975e,#f78d86)
+}
+
+h1, li {
+  text-align: right;
+  font-size: 2.3rem;
+  color: purple;
+  margin: 25px 25px 8.2px 19px;
+  padding: 7px;
+  font-family: 'Jura', sans-serif;
+}
+
+h1 {
+  font-size: 3.1rem;
+}
+
+a {
+  display: block;
+  text-decoration: none;
+  color: blue;
+}
+
+a:hover {
+  color: purple;
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+hr {
+  border-top: 6px solid purple;
+  border-radius: 10px;
+}
+
+.purple {
+  background-color: #b893f5;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid black;
+}
+
+.blue {
+  background-color: #93a0f5;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid black;
+}
+
+.light-blue {
+  background-color: #a8e3e3;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid black;
+}
+
+.green {
+  background-color: #aee8b1;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid black;
+}
+
+.yellow {
+  background-color: #e3e2a1;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid black;
+}
+
+.orange {
+  background-color: #ebc298;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid black;
+}
+
+.red {
+  background-color: #ed948c;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid black;
+}
+
+.icons{
+  display: inline;
+  text-align: center;
+}
+
+.icons > a {
+  margin-bottom: 22px;
+}
+
+i {
+  color: purple;
+}
+
+@media screen and (max-width: 570px) {
+  h1 {
+    margin-left: 0;
+    text-align: left;
+  }
+  li {
+    font-size: 1.8rem;
+  }
+}

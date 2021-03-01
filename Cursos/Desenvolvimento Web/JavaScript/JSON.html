@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hello World JS</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <p id="demo"></p>
+  <span id="output"></span>
+  
+  <script type="text/javascript">
+  	// JSON Parsing
+  	var text = '{ "pokemons" : [' +
+		'{ "nome":"Pikachu" , "tipo":"Elétrico" },' +
+		'{ "nome":"Charizard" , "tipo":"Fogo" },' +
+		'{ "nome":"Squirtle" , "tipo":"Água" } ]}';
+	var obj = JSON.parse(text);
+	var demo = document.getElementById('demo');
+	demo.innerHTML = `${obj.pokemons[0].nome} ${obj.pokemons[0].tipo}`;
+
+	// JSON Dumping
+	var pokemon = {"nome":"Articuno", "Tipo":"Gelo", "Habilidade":"Pressão"};
+	var myJSON = JSON.stringify(pokemon, null, 4);
+	document.getElementById("output").innerHTML = myJSON;
+	console.log(myJSON);
+  </script>
+</body>
+</html>

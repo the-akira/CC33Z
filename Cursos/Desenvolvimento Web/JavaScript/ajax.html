@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>AJAX</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      font-family: Arial, Helvetica, sans-serif;
+      text-shadow: 1.5px 1.5px #e89d5a;
+    }
+    body {
+      background-color: #634a31;
+    }
+    button {
+      display: block;
+      margin: 0 auto;
+      margin-bottom: 30px;
+      margin-top: 20px;
+      background-color: #e89d5a;
+      border: 2px solid black;
+      padding: 10px 20px 10px 20px;
+      font-size: 1.7rem;
+      cursor: pointer;
+      border-radius: 10px;
+      outline: none;
+    }
+    img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      border: 3px solid black;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerador de Cães</h1>
+  <button>Gerar Cão Aleatório</button>
+  <img id="outputimg" src="https://i.ibb.co/gZ1hD27/dogs.jpg">
+  <script type="text/javascript">
+    btn = document.querySelector('button');
+    btn.onclick = function() {
+      let xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+          obj = JSON.parse(this.responseText);
+          document.querySelector("#outputimg").src = obj["message"];
+        } 
+      };
+      xhttp.open("GET","https://dog.ceo/api/breeds/image/random",true);
+      xhttp.send();
+    }
+  </script>
+</body>
+</html>

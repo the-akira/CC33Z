@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Picture Tag</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+    body {
+      background-color: #3b1b69; 
+    }
+    img {
+      display: block;
+      max-width: 100%;
+      margin: 0 auto;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      height: auto;
+      border: 2.5px solid #77ff00;
+    }
+  </style>
+</head>
+
+<body>
+<picture>
+  <source media="(min-width:1050px)" srcset="imagens/mathart1.jpg">
+  <source media="(min-width:700px)" srcset="imagens/mathart2.jpg">
+  <img src="imagens/allah.jpeg" alt="Allah" style="width:auto;">
+</picture>
+</body>
+</html>

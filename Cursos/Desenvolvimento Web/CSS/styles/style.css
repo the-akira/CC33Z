@@ -1,0 +1,38 @@
+h1 {
+	color: red;
+}
+
+p {
+	color: blue;
+	width: 300px;
+	border: 1px solid black;
+}
+
+h2, h3 {
+	color: purple;
+}
+
+#my-id {
+	font-size: 30px;
+}
+
+.my-class {
+	color: green;
+	font-weight: bold;
+}
+
+img[src] {
+	width: 380px;
+	height: 540px;
+	border: 3px solid red;
+}
+
+a {
+	display: block;
+	font-size: 25px;
+	text-decoration: none;
+}
+
+a:hover {
+	color: green;
+}
