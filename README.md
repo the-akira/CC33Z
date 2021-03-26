@@ -12,3 +12,4 @@ Ministrado por **[Gabriel Felippe](https://akiradev.netlify.app/sobre/)**
 - [Análise e Manipulação de Dados (Python)](https://github.com/the-akira/CC33Z/raw/master/Cursos/An%C3%A1lise%20e%20Manipula%C3%A7%C3%A3o%20de%20Dados/An%C3%A1liseManipula%C3%A7%C3%A3oDados.pdf)
 - [Computação Simbólica (SymPy)](https://github.com/the-akira/CC33Z/raw/master/Cursos/Computa%C3%A7%C3%A3o%20Simb%C3%B3lica/CompSimb%C3%B3lica.pdf)
 - [Computação Numérica (NumPy)](https://github.com/the-akira/CC33Z/raw/master/Cursos/Computa%C3%A7%C3%A3o%20Num%C3%A9rica/CompNum%C3%A9rica.pdf)
+- [Filosofia da Computação](https://github.com/the-akira/CC33Z/raw/master/Cursos/Filosofia%20da%20Computa%C3%A7%C3%A3o/FilosofiaComputa%C3%A7%C3%A3o.pdf)
