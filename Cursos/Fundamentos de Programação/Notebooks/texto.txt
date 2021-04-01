@@ -1,0 +1,2 @@
+Escrevendo em um Arquivo com Python
+Escrevendo novamente em um Arquivo com Python
