@@ -17,3 +17,4 @@ Ministrado por **[Gabriel Felippe](https://akiradev.netlify.app/sobre/)**
 - [Redes de Computadores](https://github.com/the-akira/CC33Z/blob/master/Cursos/Redes%20de%20Computadores/Conte%C3%BAdo.md)
 - [Comandos Linux](https://github.com/the-akira/CC33Z/blob/master/Cursos/Comandos%20Linux/Conte%C3%BAdo.md)
 - [Django 101](https://github.com/the-akira/CC33Z/blob/master/Cursos/Django%20101/Conte%C3%BAdo.md)
+- [Machine Learning](https://github.com/the-akira/CC33Z/blob/master/Cursos/Machine%20Learning/Conte%C3%BAdo.md)
