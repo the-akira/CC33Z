@@ -5,13 +5,13 @@ Dentro do diretório principal do FlaskAppDB:
 Crie um ambiente virtual:
 
 ```
-$ python3 -m venv venv
+python3 -m venv venv
 ```
 
 Ative-o:
 
 ```
-$ source venv/bin/activate
+source venv/bin/activate
 ```
 
 ou no Windows:
