@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tutoriais Python</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+	<h1>Tutoriais Python</h1>
+	<form action="/adicionar" method="post">
+		<div>
+			<label>Título</label>
+			<input type="text" name="titulo" placeholder="Informe o título">
+			<label>Autor</label>
+			<input type="text" name="autor" placeholder="Informe o autor">
+			<label>URL</label>
+			<input type="text" name="url" placeholder="Informe a URL">
+		</div>
+		<button type="submit">Adicionar</button>
+	</form>
+	{% for tutorial in tutoriais %}
+	<div class="tutoriais-div">
+		<h2>{{ tutorial.id }}: {{ tutorial.titulo }}</h2>
+		<p>Autor: <b>{{ tutorial.autor }}</b></p>
+		<a class="url" href="{{ tutorial.url }}" target="_blank">Acessar Artigo</a>
+		<a class="delete" href="/deletar/{{ tutorial.id }}">Remover</a>
+	</div>
+	{% endfor %}
+</body>
+</html>
