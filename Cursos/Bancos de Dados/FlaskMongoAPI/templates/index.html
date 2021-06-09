@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask MongoDB API</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Flask MongoDB API</h1>
+    <h4>Uma simples API de Filmes: desenvolvida com Flask e MongoDB</h4>
+    <img src="{{ url_for('static', filename='hal.gif') }}">
+    <div class="container">
+        <h2>GET Request</h2>
+        <p>curl -X GET http://localhost:5000/api</p>
+        <p>curl -X GET http://localhost:5000/filmes</p>
+        <p>curl -X GET http://localhost:5000/filmes/id</p>
+        <h2>POST Request</h2>
+        <p>curl -d '{"titulo":"Akira","generos":["Dystopian"],"ano_lancamento":1984}' -H "Content-Type: application/json" -X POST http://localhost:5000/filmes</p>
+        <h2>PUT Request</h2>
+        <p>curl -d '{"titulo":"Akira","generos":["Dystopian","Anime"],"ano_lancamento":1988}' -H "Content-Type: application/json" -X PUT http://localhost:5000/filmes/id</p>
+        <h2>DELETE Request</h2>
+        <p>curl -H "Content-Type: application/json" -X DELETE http://localhost:5000/filmes/id</p>
+    </div>
+</body>
+</html>
