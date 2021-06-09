@@ -19,3 +19,4 @@ Ministrado por **[Gabriel Felippe](https://akiradev.netlify.app/sobre/)**
 - [Django 101](https://github.com/the-akira/CC33Z/blob/master/Cursos/Django%20101/Conte%C3%BAdo.md)
 - [Machine Learning](https://github.com/the-akira/CC33Z/blob/master/Cursos/Machine%20Learning/Conte%C3%BAdo.md)
 - [Visão Computacional](https://github.com/the-akira/CC33Z/blob/master/Cursos/Vis%C3%A3o%20Computacional/Conte%C3%BAdo.md)
+- [Bancos de Dados](https://github.com/the-akira/CC33Z/blob/master/Cursos/Bancos%20de%20Dados/Conte%C3%BAdo.md)
