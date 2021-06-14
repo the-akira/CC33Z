@@ -7,5 +7,5 @@ addresses = [
 ]
 
 for addr in addresses:
-	ip = socket.gethostbyname(addr)
-	print(f"{addr} -> {ip}")
+    ip = socket.gethostbyname(addr)
+    print(f"{addr} -> {ip}")
