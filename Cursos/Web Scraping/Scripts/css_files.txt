@@ -1,0 +1,2 @@
+https://bootswatch.com/4/darkly/bootstrap.css
+https://videogamesapi.herokuapp.com/static/style.css

@@ -1,0 +1,4 @@
+https://kit.fontawesome.com/abb211c046.js
+https://unpkg.com/typewriter-effect@latest/dist/core.js
+https://videogamesapi.herokuapp.com/static/particles.js
+https://videogamesapi.herokuapp.com/static/load-particles.js
