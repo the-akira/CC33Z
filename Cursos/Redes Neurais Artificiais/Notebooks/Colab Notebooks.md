@@ -4,76 +4,76 @@ Notebooks de experimentos em Deep Learning.
 
 ## PyTorch Tutorial
 
-[https://colab.research.google.com/drive/19TRUgcSeM3hzgQtwfwmUGlCva4wlL05L](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/19TRUgcSeM3hzgQtwfwmUGlCva4wlL05L)
 
 ## Classificação Binária
 
-[https://colab.research.google.com/drive/14oBJAtRVoI5Py4cvzwL9e7TuD3_humBm](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/14oBJAtRVoI5Py4cvzwL9e7TuD3_humBm)
 
 ## Regressão Linear (Dados Sintéticos)
 
-[https://colab.research.google.com/drive/19PiJgT89hof-o4x8PfP6TMGmXPjZozhB](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/19PiJgT89hof-o4x8PfP6TMGmXPjZozhB)
 
 ## Regressão Linear (Lei de Moore)
 
-[https://colab.research.google.com/drive/1uOpceZFLJVwAlg-5jxiVVd8iPwEKl1l0](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1uOpceZFLJVwAlg-5jxiVVd8iPwEKl1l0)
 
 ## Regressão com Rede Neural Artificial
 
-[https://colab.research.google.com/drive/1OihbQwpEvdtZ_WKLDsWJRxENIQm2eErz](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1OihbQwpEvdtZ_WKLDsWJRxENIQm2eErz)
 
 ## Rede Neural Dígitos MNIST
 
-[https://colab.research.google.com/drive/12VXeuzbQvYM6WmuGW8YedSTW-sLBom0G](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/12VXeuzbQvYM6WmuGW8YedSTW-sLBom0G)
 
 ## CNN Fashion MNIST
 
-[https://colab.research.google.com/drive/1wrXfGQPupsC_tuEhKWLrLQPuaSp9kVUd](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1wrXfGQPupsC_tuEhKWLrLQPuaSp9kVUd)
 
 ## CNN CIFAR-10
 
-[https://colab.research.google.com/drive/1FHT4ursy2teGMdoxNEvqfg2LS8dK_u8X](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1FHT4ursy2teGMdoxNEvqfg2LS8dK_u8X)
 
 ## Text Preprocessing
 
-[https://colab.research.google.com/drive/1aVe4xnhLe9-a33weu2Z3pmepO8Kw5hG1](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1aVe4xnhLe9-a33weu2Z3pmepO8Kw5hG1)
 
 ## Text Classification RNN
 
-[https://colab.research.google.com/drive/1QezwTz9ZE9eynSFbhh9AzCj1QdC9P9Sw](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1QezwTz9ZE9eynSFbhh9AzCj1QdC9P9Sw)
 
 ## Text Classification CNN
 
-[https://colab.research.google.com/drive/14Ovlj1Fx8U707sf0AKtF4J4PZFvc0R2k](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/14Ovlj1Fx8U707sf0AKtF4J4PZFvc0R2k)
 
 ## Recommender System
 
-[https://colab.research.google.com/drive/1G0_uqXs00zVlsBtNBtlV07ZFdU8JqHXa](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1G0_uqXs00zVlsBtNBtlV07ZFdU8JqHXa)
 
 ## Generative Adversarial Network
 
-[https://colab.research.google.com/drive/1le_rQKlouSyGxpizqKAgJIKkU1OoS2N6](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1le_rQKlouSyGxpizqKAgJIKkU1OoS2N6)
 
 ## Uncertainty Estimation
 
-[https://colab.research.google.com/drive/19MjX35PmC8Y3d26UPmFZXJAasqb_NSw_](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/19MjX35PmC8Y3d26UPmFZXJAasqb_NSw_)
 
 ## Auto Regressive Linear Model
 
-[https://colab.research.google.com/drive/1P5fufX1ep7RsHwsC4bRY5cFOraJgGtS5](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1P5fufX1ep7RsHwsC4bRY5cFOraJgGtS5)
 
 ## Recurrent Neural Network Time Series
 
-[https://colab.research.google.com/drive/1csJB5Zuzx4lwprWhbcmoc9rzc_RBdclh](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1csJB5Zuzx4lwprWhbcmoc9rzc_RBdclh)
 
 ## RNN's Shape
 
-[https://colab.research.google.com/drive/1hX2lOF8llqTADFdcJGw196riDsQMKzs1](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1hX2lOF8llqTADFdcJGw196riDsQMKzs1)
 
 ## LSTM Time Series
 
-[https://colab.research.google.com/drive/12MW4TmrdoDYLXdsU8YfOqslRJsWKHKUJ](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/12MW4TmrdoDYLXdsU8YfOqslRJsWKHKUJ)
 
 ## Image Classification RNN
 
-[https://colab.research.google.com/drive/1CB0YFYeNWZIMvSMiP8LVT99AK69uSde1](Acessar Material)
+[Acessar Material](https://colab.research.google.com/drive/1CB0YFYeNWZIMvSMiP8LVT99AK69uSde1)
