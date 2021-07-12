@@ -9,10 +9,10 @@ console.log(li);
 
 btn = document.querySelector('button');
 btn.addEventListener('click', function(){
-	alert('Alerta!');
+    alert('Alerta!');
 });
 
 function bgChange() {
-	const rndCol = 'rgb(' + Math.random()*256 + ',' + Math.random()*256 + ',' + Math.random()*256 + ')';
-	document.body.style.backgroundColor = rndCol;
+    const rndCol = 'rgb(' + Math.random()*256 + ',' + Math.random()*256 + ',' + Math.random()*256 + ')';
+    document.body.style.backgroundColor = rndCol;
 }

@@ -8,7 +8,7 @@ form.onsubmit = function(e) {
   if (nome.value === '' || sobrenome.value === '') {
     para.textContent = 'Ambos os nomes devem ser preenchidos!';
   } else {
-  	para.textContent = `${nome.value} ${sobrenome.value}`
+    para.textContent = `${nome.value} ${sobrenome.value}`
   }
 }
 
