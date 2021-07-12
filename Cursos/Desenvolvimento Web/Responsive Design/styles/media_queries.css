@@ -1,44 +1,44 @@
 h1 {
-	font-size: 3.4rem;
-	font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 3.4rem;
+  font-family: "Lucida Console", "Courier New", monospace;
 }
 a {
-	color: green;
-	font-weight: bold;
+  color: green;
+  font-weight: bold;
 }
 p {
-	font-size: 1.12rem;
-	background-color: #f2efbf;
-	padding: 10.5px;
-	border: 3.5px solid green;
-	opacity: 0.88;
-	margin-bottom: 31px;
+  font-size: 1.12rem;
+  background-color: #f2efbf;
+  padding: 10.5px;
+  border: 3.5px solid green;
+  opacity: 0.88;
+  margin-bottom: 31px;
 }
 img {
-	width: 615px;
-	height: 615px;
-	border: 2px solid black;
-	border-radius: 100%;
+  width: 615px;
+  height: 615px;
+  border: 2px solid black;
+  border-radius: 100%;
 }
 #box {
-	margin: 0 auto;
-	text-align: center;
-	width: 90%;
+  margin: 0 auto;
+  text-align: center;
+  width: 90%;
 }
 @media screen and (min-width: 1000px) {
-    body {
-        background-color: #9ded9f;
-    }
+  body {
+    background-color: #9ded9f;
+  }
 }
 @media screen and (max-width: 800px) {
-    body {
-        background-color: #b0e4e8;
-    }
-    p {
-    	font-size: 20px;
-    }
-    img {
-    	width: 80%;
-    	height: auto;
-    }
+  body {
+    background-color: #b0e4e8;
+  }
+  p {
+    font-size: 20px;
+  }
+  img {
+    width: 80%;
+    height: auto;
+  }
 }

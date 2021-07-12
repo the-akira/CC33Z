@@ -3,57 +3,56 @@ body {
 }
 
 p {
-	margin-bottom: 21px;
+  margin-bottom: 21px;
 }
 
 a:hover {
-	color: white;
+  color: white;
 }
 
 footer > p {
-	margin-top: 10px;
-	text-align: center;
-	font-size: 1.22rem;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 1.22rem;
 }
 
 img {
-	display: block;
-	width: 200px;
-	height: 200px;
-	border-radius: 12%;
-	border: 2.5px solid white;
-	margin-left: 15px;
-	margin-bottom: 8.5px;
+  display: block;
+  width: 200px;
+  height: 200px;
+  border-radius: 12%;
+  border: 2.5px solid white;
+  margin-left: 15px;
+  margin-bottom: 8.5px;
 }
 
 .bg-nav {
-	background-color: #21016b !important;
+  background-color: #21016b !important;
 }
 
 .nav-link {
-	color: white !important;
+  color: white !important;
 }
 
 .jumbotron {
-	background-color: #ceaffa !important;
-	border-bottom: 3px solid #21016b;
-	margin-bottom: 12px !important;
+  background-color: #ceaffa !important;
+  border-bottom: 3px solid #21016b;
+  margin-bottom: 12px !important;
 }
-
 
 
 .button {
-	color: white;
-	padding: 15px;
-	background-color: #21016b !important;
-	border: 1.3px solid white;
+  color: white;
+  padding: 15px;
+  background-color: #21016b !important;
+  border: 1.3px solid white;
 }
 
 .row {
-	border-bottom: 3px solid #21016b;
-	padding: 10px;
+  border-bottom: 3px solid #21016b;
+  padding: 10px;
 }
 
 .col-md-4 > p {
-	text-align: justify;
+  text-align: justify;
 }
