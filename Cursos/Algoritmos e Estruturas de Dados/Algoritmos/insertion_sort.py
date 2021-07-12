@@ -10,6 +10,6 @@ def insertion_sort(array):
         array[i] = key
 
 if __name__ == '__main__':
-	array = [5, 2, 4, 6, 1, 3]
-	insertion_sort(array)
-	print(f'Array ordenado: {array}')
+    array = [5, 2, 4, 6, 1, 3]
+    insertion_sort(array)
+    print(f'Array ordenado: {array}')

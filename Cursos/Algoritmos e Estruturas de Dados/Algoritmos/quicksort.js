@@ -3,8 +3,8 @@ function partition(arr, p, r){
     let i = p; 
     for (let j = p; j < r; j++) {
         if (arr[j] < pivot) {
-        [arr[j], arr[i]] = [arr[i], arr[j]];
-        i++;
+            [arr[j], arr[i]] = [arr[i], arr[j]];
+            i++;
         }
     }
     [arr[i], arr[r]] = [arr[r], arr[i]] 
