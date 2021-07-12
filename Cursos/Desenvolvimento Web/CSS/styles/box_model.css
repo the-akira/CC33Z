@@ -1,11 +1,11 @@
 #box {
-	padding: 20px 30px 20px 30px;
-	border: 3px solid purple;
-	width: 500px;
-	margin: 0 auto;
-	margin-top: 35px;
+  padding: 20px 30px 20px 30px;
+  border: 3px solid purple;
+  width: 500px;
+  margin: 0 auto;
+  margin-top: 35px;
 }
 
 .title {
-	text-align: center;
+  text-align: center;
 }
