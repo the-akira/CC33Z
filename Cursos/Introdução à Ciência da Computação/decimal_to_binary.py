@@ -6,18 +6,18 @@ decimal para binário usando uma Stack
 """
 
 def decimal_to_binary(num):
-	stack = []
-	binary_string = ''
+    stack = []
+    binary_string = ''
 
-	while num > 0:
-		rem = math.floor(num%2)
-		stack.append(rem)
-		num = math.floor(num/2)
+    while num > 0:
+        rem = math.floor(num%2)
+        stack.append(rem)
+        num = math.floor(num/2)
 
-	while len(stack) != 0:
-		binary_string += str(stack.pop())
+    while len(stack) != 0:
+        binary_string += str(stack.pop())
 
-	return int(binary_string)
+    return int(binary_string)
 
 print(f'41 = {decimal_to_binary(41)}')
 print(f'2 = {decimal_to_binary(2)}')
