@@ -5,14 +5,14 @@ a = arr.array('i',[1,2,3])
 
 # Imprimindo elementos do array a
 for i in range(len(a)):
-	print(a[i])
+    print(a[i])
 
 # Criando um array de floats
 b = arr.array('d',[1.7,2.55,3.345])
 
 # Imprimindo elementos do array b
 for i in range(len(b)):
-	print(b[i])
+    print(b[i])
 
 # Adicionando o elemento 4 na posição 1 do array a
 a.insert(1,4)
