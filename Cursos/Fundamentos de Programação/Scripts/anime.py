@@ -1,5 +1,5 @@
 anime = {
-	"nome": "Akira",
-	"ano": 1988,
-	"autor": "Katsuhiro Otomo"
+    "nome": "Akira",
+    "ano": 1988,
+    "autor": "Katsuhiro Otomo"
 }

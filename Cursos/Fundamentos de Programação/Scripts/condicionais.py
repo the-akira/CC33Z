@@ -1,8 +1,8 @@
 dia = "Segunda-feira"
 
 if dia == "Domingo":
-	print("Descansar")
+    print("Descansar")
 elif dia == "Sábado":
-	print("Estudar")
+    print("Estudar")
 else:
-	print("Trabalhar")
+    print("Trabalhar")
