@@ -24,3 +24,4 @@ Ministrado por **[Gabriel Felippe](https://akiradev.netlify.app/sobre/)**
 - [Web Scraping](https://github.com/the-akira/CC33Z/blob/master/Cursos/Web%20Scraping/Conte%C3%BAdo.md)
 - [Redes Neurais Artificiais](https://github.com/the-akira/CC33Z/blob/master/Cursos/Redes%20Neurais%20Artificiais/Conte%C3%BAdo.md)
 - [Desenvolvimento de Games 2D](https://github.com/the-akira/CC33Z/blob/master/Cursos/Desenvolvimento%20de%20Games%202D/Conte%C3%BAdo.md)
+- [Fundamentos de Física](https://github.com/the-akira/CC33Z/blob/master/Cursos/Fundamentos%20de%20F%C3%ADsica/Conte%C3%BAdo.md)
