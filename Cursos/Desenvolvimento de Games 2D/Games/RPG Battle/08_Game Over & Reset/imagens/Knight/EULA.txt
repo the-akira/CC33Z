@@ -1,0 +1,38 @@
+End-User License Agreement (EULA) of Sven Thole Pixel Art Assets
+This End-User License Agreement ("EULA") is a legal agreement between you and Sven Thole
+
+This EULA agreement governs your acquisition and use of Pixel Art Assets directly from Sven Thole or indirectly through a authorized reseller or distributor (a "Reseller").
+
+Please read this EULA agreement carefully before implementing and using the Pixel Art Assets. It provides a license to use the Pixel Art Assets and contains warranty information and liability disclaimers.
+
+If you are entering into this EULA agreement on behalf of a company or other legal entity, you represent that you have the authority to bind such entity and its affiliates to these terms and conditions. 
+If you do not have such authority or if you do not agree with the terms and conditions of this EULA agreement you may not implement or use the Assets for any purpose.
+
+This EULA agreement shall apply only to the Assets supplied by Sven Thole. The terms also apply to any updates and support services supplied by Sven Thole, unless other terms accompany those items on delivery. If so, those terms apply.
+
+License Grant
+Sven Thole hereby grants you a personal, non-transferable, non-exclusive licence to use the Pixel Art Assets in accordance with the terms of this EULA agreement.
+
+You are permitted to:
+- Edit, alter, modify, and adapt upon the material for any game development related purpose.
+- Use the Assets for the development of both non-commercial and commercial game projects.
+- Give appropriate credit to Sven Thole.
+
+You are NOT permitted to:
+- Reproduce, copy, distribute or resell the Assets on online asset stores, file sharing websites or similar websites.
+- Use the Assets in any way which breaches any applicable local, national or international law
+- Use the Assets for any purpose that Sven Thole considers is a breach of this EULA agreement
+
+Termination
+This EULA agreement is effective from the date you first download the Assets and shall continue until terminated. You may terminate it at any time by written agreement with Sven Thole.
+It will also terminate immediately if you fail to comply with any term of this EULA agreement. Upon such termination, the licenses granted by this EULA agreement will immediately terminate and you agree to stop all access and use of the Assets. 
+
+Governing Law
+This EULA agreement, and any dispute arising out of or in connection with this EULA agreement, shall be governed by and construed in accordance with the laws of Sweden.
+
+
+------------------------------------------------------------
+
+SUMMARY: You may use this asset in any game development project you want, commercial or not, but you are not allowed to resell it as just an asset (as I'm doing on itch.io)
+
+CONTACT: sven_thole@hotmail.com
