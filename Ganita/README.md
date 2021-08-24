@@ -1,4 +1,4 @@
-<h1 align="center">Ganita - गणित</h1>
+<h1 align="center">Ganita (गणित)</h1>
 
 <h1 align="center">
     <img alt="Yantra" title="Yantra" src="https://raw.githubusercontent.com/the-akira/CC33Z/master/Ganita/Yantra.png"> </br>
