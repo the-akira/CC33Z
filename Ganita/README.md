@@ -29,5 +29,5 @@
 - [Portas Lógicas](https://raw.githubusercontent.com/the-akira/CC33Z/master/Ganita/Imagens/LogicGates.png)
 - [Programação](https://raw.githubusercontent.com/the-akira/CC33Z/master/Ganita/Imagens/Programming.png)
 - [Recursão](https://raw.githubusercontent.com/the-akira/CC33Z/master/Ganita/Imagens/Recursion.png)
-- [Sistema de Coordenadas Cartesiano](https://raw.githubusercontent.com/the-akira/CC33Z/master/Ganita/Imagens/DS.png)
+- [Sistema de Coordenadas Cartesiano](https://raw.githubusercontent.com/the-akira/CC33Z/master/Ganita/Imagens/Descartes.png)
 - [Teoria da Informação](https://raw.githubusercontent.com/the-akira/CC33Z/master/Ganita/Imagens/Information.png)
