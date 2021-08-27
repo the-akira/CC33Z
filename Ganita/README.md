@@ -21,6 +21,7 @@
 - [Estruturas de Dados](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/DS.pdf)
 - [Funções](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Function.pdf)
 - [Hexadecimal](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Hexadecimal.pdf)
+- [Hierarquia de Memória](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/MemoryHierarchy.pdf)
 - [Imagens Digitais](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Images.pdf)
 - [Inteligência Artificial](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/AI.pdf)
 - [Linux](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Linux.pdf)
