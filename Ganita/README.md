@@ -19,6 +19,7 @@
 - [Dimensão](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Dimension.pdf)
 - [Espaço Tridimensional](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/3D.pdf)
 - [Estruturas de Dados](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/DS.pdf)
+- [Expressões Regulares](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/RegExp.pdf)
 - [Funções](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Function.pdf)
 - [Hardware](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Hardware.pdf)
 - [Hexadecimal](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Hexadecimal.pdf)
