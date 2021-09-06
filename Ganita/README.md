@@ -15,6 +15,7 @@
 - [Computação Paralela](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/ParallelComputing.pdf)
 - [Computador](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Computer.pdf)
 - [Cores](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Colors.pdf)
+- [Criptografia](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Cryptography.pdf)
 - [Deep Learning](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/DeepLearning.pdf)
 - [Dimensão](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Dimension.pdf)
 - [Espaço Tridimensional](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/3D.pdf)
