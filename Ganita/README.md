@@ -11,6 +11,7 @@
 - [Bancos de Dados Relacionais](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/DB.pdf)
 - [Bit](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Bit.pdf)
 - [Ciência da Computação](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/ComputerScience.pdf)
+- [Combinações](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Combinations.pdf)
 - [Compilador](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Compiler.pdf)
 - [Computação Paralela](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/ParallelComputing.pdf)
 - [Computador](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Computer.pdf)
