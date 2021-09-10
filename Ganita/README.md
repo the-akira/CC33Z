@@ -51,3 +51,4 @@
 - [Teorema de Pitágoras](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/PythagoreanTheorem.pdf)
 - [Teoria da Informação](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Information.pdf)
 - [Teoria dos Conjuntos](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/SetTheory.pdf)
+- [Trigonometria](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Trigonometry.pdf)
