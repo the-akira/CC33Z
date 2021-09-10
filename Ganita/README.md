@@ -34,6 +34,7 @@
 - [Máquinas de Estado Finito](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/FSM.pdf)
 - [Neurônio Artificial](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/ArtificialNeuron.pdf)
 - [Notação Big O](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/BigO.pdf)
+- [Notação Científica](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/ScientificNotation.pdf)
 - [Números Binários](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Binary.pdf)
 - [Números de Fibonacci](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Fibonacci.pdf)
 - [Números Complexos](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/ComplexNumbers.pdf)
