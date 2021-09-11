@@ -41,6 +41,7 @@
 - [Números Primos](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/PrimeNumbers.pdf)
 - [Permutações](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Permutations.pdf)
 - [Portas Lógicas](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/LogicGates.pdf)
+- [Princípio da Casa dos Pombos](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/PigeonholePrinciple.pdf)
 - [Probabilidade](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Probability.pdf)
 - [Programação](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Programming.pdf)
 - [Programação Clássica vs Machine Learning](https://github.com/the-akira/CC33Z/blob/master/Ganita/Documentos/Programming-vs-ML.pdf)
