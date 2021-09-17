@@ -1,5 +1,5 @@
 # Frames por segundo
-fps = 60
+fps = 32
 
 # Dimensões do Game
 WIDTH = 1000
