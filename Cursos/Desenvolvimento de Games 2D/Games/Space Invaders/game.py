@@ -42,7 +42,7 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 
 # Carregar imagens
-bg = pygame.image.load('img/background.png')
+bg = pygame.image.load('img/background.png').convert_alpha()
 
 # Função que desenha o fundo (background)
 def draw_bg():
@@ -57,7 +57,7 @@ def draw_text(text, font, text_color, x, y):
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, x, y, health):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('img/spaceship.png')
+        self.image = pygame.image.load('img/spaceship.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.health_start = health
@@ -101,7 +101,7 @@ class Spaceship(pygame.sprite.Sprite):
 class Bullets(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('img/bullet.png')
+        self.image = pygame.image.load('img/bullet.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
 
@@ -120,7 +120,7 @@ class Bullets(pygame.sprite.Sprite):
 class Aliens(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(f'img/alien{randint(1,5)}.png')
+        self.image = pygame.image.load(f'img/alien{randint(1,5)}.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.move_counter = 0
@@ -137,7 +137,7 @@ class Aliens(pygame.sprite.Sprite):
 class AlienBullets(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('img/alien_bullet.png')
+        self.image = pygame.image.load('img/alien_bullet.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
 
@@ -160,7 +160,7 @@ class Explosion(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.images = []
         for num in range(1,6):
-            img = pygame.image.load(f'img/exp{num}.png')
+            img = pygame.image.load(f'img/exp{num}.png').convert_alpha()
             if size == 1:
                 img = pygame.transform.scale(img, (20, 20))
             if size == 2:
