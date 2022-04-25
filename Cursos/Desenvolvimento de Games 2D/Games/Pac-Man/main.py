@@ -11,7 +11,7 @@ clock = pygame.time.Clock()
 FPS = 40
 
 def load_image(file_name):
-	image = pygame.image.load(f'images/{file_name}').convert_alpha()
+    image = pygame.image.load(f'images/{file_name}').convert_alpha()
 	return image
 
 def get_neighbours(cord, ignore_four):
