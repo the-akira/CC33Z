@@ -237,7 +237,7 @@ class Entity(pygame.sprite.Sprite):
 
 class SmallPill(pygame.sprite.Sprite):
     def __init__(self):
-        self.image = load_image('dot.png').subsurface(0, 0, 30, 30)
+        self.image = load_image('pill.png').subsurface(0, 0, 30, 30)
         self.rect = self.image.get_rect()
         self.rect.center = (45, 45)
 
@@ -247,7 +247,7 @@ class SmallPill(pygame.sprite.Sprite):
 
 class BigPill(pygame.sprite.Sprite):
     def __init__(self):
-        self.image = load_image('dot.png').subsurface(30, 0, 40, 30)
+        self.image = load_image('pill.png').subsurface(30, 0, 40, 30)
         self.rect = self.image.get_rect()
         self.rect.center = (45, 45)
         self.frames_per_image = 30
@@ -308,8 +308,8 @@ for enemy_name in enemies_names:
     enemies[enemy_name].set_images('alive')
     enemies[enemy_name].set_rect(10, 11)
 
-small_dot = SmallPill()
-big_dot = BigPill()
+small_pill = SmallPill()
+big_pill = BigPill()
 game_start = time.time()
 ghosts_released = 0
 release_time = 5
@@ -350,20 +350,20 @@ while True:
         pac_man.move()
     pac_man.draw(display)
 
-    dots_left = False
+    pills_left = False
     for y, row in enumerate(tiles):
         for x, val in enumerate(row):
             if val == 1:
-                dots_left = True
+                pills_left = True
                 cord = x * TILE_WIDTH + 20, y * TILE_HEIGHT + 20
-                small_dot.draw(display, cord)
-                if pac_man.does_collide(small_dot):
+                small_pill.draw(display, cord)
+                if pac_man.does_collide(small_pill):
                     tiles[y][x] = 0
             if val == 2:
-                dots_left = True
+                pills_left = True
                 cord = x * TILE_WIDTH + 15, y * TILE_HEIGHT + 20
-                big_dot.draw(display, cord)
-                if pac_man.does_collide(big_dot):
+                big_pill.draw(display, cord)
+                if pac_man.does_collide(big_pill):
                     if 28 <= pac_man.rect.y <= 120 and 28 <= pac_man.rect.x <= 46:
                         tiles[2][1] = 0
                     if 700 <= pac_man.rect.x <= 760 and 600 <= pac_man.rect.y <= 680:
@@ -395,6 +395,6 @@ while True:
                 enemy.rect.x -= (enemy.rect.x + 4) % TILE_WIDTH
                 enemy.rect.y -= (enemy.rect.y + 4) % TILE_HEIGHT
 
-    if dots_left and (not pac_man.dead or not pac_man.rendered_first_cycle):
+    if pills_left and (not pac_man.dead or not pac_man.rendered_first_cycle):
         pygame.display.update()
         clock.tick(FPS)
