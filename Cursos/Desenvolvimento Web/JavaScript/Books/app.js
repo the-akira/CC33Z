@@ -60,7 +60,9 @@ function renderBooks(books = myLibrary, pageIndex = 0, pageSize = 3) {
     deleteButton.classList.add("delete-button");
 
     deleteButton.addEventListener("click", () => {
-      deleteBook(book.id, pageIndex, pageSize);
+      if (confirm("Are you sure you want to remove the book?") == true) {
+        deleteBook(book.id, pageIndex, pageSize);
+      }
     });
     bookDiv.appendChild(deleteButton);
 
