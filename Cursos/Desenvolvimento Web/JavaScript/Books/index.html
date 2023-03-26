@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Gabriel Felippe">
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="Book Registration">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bibliotheca Lucis</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <h1 id="main-title">Bibliotheca Lucis</h1>
+  <img id="avatar" src="avatar.png">
+
+  <div class="export-div">
+    <h2>Export</h2>
+    <button id="export-button">CSV</button>
+    <button id="export-button-json" onclick="exportBooksAsJSON()">JSON</button>
+    <button id="export-button-json" onclick="exportBooksAsYAML()">YAML</button>
+  </div>
+
+  <form id="book-form">
+    <h2>Register Book</h2>
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required>
+    
+    <label for="author">Author Name:</label>
+    <input type="text" id="author" name="author" required>
+    
+    <label for="cover">Cover URL:</label>
+    <input type="text" id="cover" name="cover" required>
+    
+    <button type="submit" id="register-button">Save</button>
+  </form>
+
+  <h1 id="main-title">Search</h1>
+  <input type="text" id="search-input" placeholder="Search for book or author...">
+
+  <div id="edit-form"></div>
+
+  <h1 id="main-title" class="main-title-books"></h1>  
+  
+  <div id="book-list"></div>
+  <div id="pagination"></div>
+  
+  <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</body>
+</html>

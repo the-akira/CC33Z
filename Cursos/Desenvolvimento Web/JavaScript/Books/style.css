@@ -1,0 +1,261 @@
+body {
+  background-image: linear-gradient(#bdcff2, #d7f0fa, #bdcff2);
+}
+
+h2 {
+  font-size: 1.8rem;
+  margin-top: 17px;
+}
+
+.book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.book img {
+  max-width: 200px;
+}
+
+#book-form {
+  text-align: center;
+  border: 2px solid black;
+  width: 500px;
+  margin: 0 auto;
+  background: #b8d3d9;
+}
+
+.book {
+  border: 2px solid black;
+  width: 500px;
+  margin: 0 auto;
+  background: #b8d3d9;
+  margin-top: 20px; 
+}
+
+.book > h2 {
+  margin-bottom: 0px;
+}
+
+.book > img { 
+  margin-bottom: 13px;
+  border: 2px solid white;
+}
+
+.book > button:nth-of-type(1) { 
+  margin-bottom: 10px;
+}
+
+.book > button:nth-of-type(2) { 
+  margin-bottom: 18px;
+}
+
+#book-form > label {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+#book-form > button {
+  display: block;
+  margin: 0 auto;
+  margin-top: 12px;
+  margin-bottom: 22px;
+}
+
+#book-form > input {
+  width: 350px;
+  font-size: 1.3rem;
+}
+
+#pagination {
+  text-align: center;
+  margin-top: 35px;
+  margin-bottom: 35px;
+}
+
+#pagination > a {
+  border: 1.5px solid black;
+  padding: 20px;
+  margin-right: 10px;
+  background: #b8d3d9;
+  font-size: 1.2rem;
+}
+
+#pagination > a:hover {
+  cursor: pointer;
+}
+
+.active {
+  background: #cfcfcf !important;
+}
+
+.export-div {
+  background: #b8d3d9;
+  text-align: center;
+  border: 2px solid black;
+  width: 500px;
+  margin: 0 auto;  
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+
+#search-input {
+  padding: 12px 20px;
+  display: block;
+  margin: 0 auto; 
+  margin-top: 20px;
+  margin-bottom: 20px; 
+  font-size: 1.2rem;
+}
+
+#main-title {
+  text-align: center;
+  font-size: 3rem;
+  margin-top: 14px;
+  margin-bottom: 18px;
+}
+
+#export-button,
+#export-button-json,
+#register-button,
+.edit-button,
+.delete-button,
+.save-button,
+.cancel-button {
+  font-size: 1.17rem;
+  border: 1px solid black;
+}
+
+#export-button,
+#export-button-json,
+#register-button,
+.edit-button,
+.delete-button,
+.save-button,
+.cancel-button:hover {
+  cursor: pointer;
+}
+
+.save-button {
+  margin-right: 8px;
+  background: #a1ffb7;
+}
+
+.save-button,
+.cancel-button {
+  padding: 9px;
+  margin-top: 4px;
+  margin-bottom: 15px;
+}
+
+.cancel-button {
+  background: #f7d49c;
+}
+
+#export-button {
+  padding: 9px;
+  margin-right: 8px;
+}
+
+#export-button-json {
+  padding: 9px;
+  margin-right: 8px;
+}
+
+#register-button {
+  padding: 9px;
+  background: #a1ffb7;
+}
+
+.edit-button, .delete-button {
+  padding: 9px;
+  width: 75px;
+}
+
+.edit-button {
+  background: #c992fc;
+}
+
+.delete-button {
+  background: #fc9f92;
+}
+
+.overlay {
+  text-align: center;
+  border: 2px solid black;
+  width: 500px;
+  margin: 0 auto;
+  margin-top: 20px;
+  background: #b8d3d9;  
+}
+
+.overlay > div > form > input {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 8px;
+  width: 350px;
+  font-size: 1.3rem;
+}
+
+.overlay > div > form > label {
+  margin-bottom: 5px;
+  display: block;
+}
+
+#avatar {
+  display: block;
+  margin: 0 auto;
+  width: 350px;
+  margin-bottom: 20px;
+  border: 2.8px solid black;
+}
+
+@media screen and (max-width: 535px) {
+  .export-div {
+    width: 90%;
+  }
+  #book-form {
+    width: 90%;
+  }
+  .book {
+    width: 90%;
+  }
+  .book > img {
+    width: 80%;
+  }
+  #pagination > a {
+    padding: 8px;
+    margin-right: 10px;
+    font-size: 1.05rem;
+  }
+  #book-form > input {
+      width: 80%;
+      font-size: 1.1rem;
+  }
+  #export-button, #export-button-json {
+    margin-right: 0px;
+    margin-bottom: 5px;
+    width: 80%;
+  }
+  #search-input {
+    width: 75%;
+    font-size: 1.05rem;
+  }
+  #main-title {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  .overlay {
+    width: 90%;
+  }
+  .overlay > div > form > input {
+    width: 80%;
+  }
+  #avatar {
+    width: 75%;
+  }
+}

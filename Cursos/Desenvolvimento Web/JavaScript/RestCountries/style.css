@@ -1,0 +1,55 @@
+body {
+  background: #9ae6ae;
+}
+
+ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-left: 0px;
+}
+
+li {
+  background: #ebfaef;
+  list-style: none;
+  width: 360px;
+  padding: 20px 0px 20px 35px;
+  margin: 15px;
+  border: 1.5px solid black;
+}
+
+#pagination {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+#search-div, h1 {
+  text-align: center;
+}
+
+#search {
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  font-size: 1.2rem;
+}
+
+h2 {
+  margin-top: 0px;
+}
+
+button {
+  background: white;
+  padding: 10px;
+  margin-right: 5px;
+  border: 1px solid black;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+img {
+  width: 90%;
+}
