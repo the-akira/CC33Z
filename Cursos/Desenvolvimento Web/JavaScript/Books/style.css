@@ -135,14 +135,15 @@ h2 {
   border: 1px solid black;
 }
 
-#export-button,
-#export-button-json,
-#register-button,
-.edit-button,
-.delete-button,
-.save-button,
+#export-button:hover,
+#export-button-json:hover,
+#register-button:hover,
+.edit-button:hover,
+.delete-button:hover,
+.save-button:hover,
 .cancel-button:hover {
   cursor: pointer;
+  opacity: 0.8;
 }
 
 .save-button {
