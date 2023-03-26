@@ -67,6 +67,7 @@ h2 {
 #book-form > input {
   width: 350px;
   font-size: 1.3rem;
+  background: white;
 }
 
 #pagination {
@@ -108,6 +109,7 @@ h2 {
   margin-top: 20px;
   margin-bottom: 20px; 
   font-size: 1.2rem;
+  background: white;
 }
 
 #main-title {
@@ -197,6 +199,7 @@ h2 {
   margin-bottom: 8px;
   width: 350px;
   font-size: 1.3rem;
+  background: white;
 }
 
 .overlay > div > form > label {
