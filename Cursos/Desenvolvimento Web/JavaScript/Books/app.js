@@ -195,6 +195,22 @@ function exportBooksAsJSON() {
   linkElement.click();
 }
 
+function exportBooksAsXML() {
+  let xmlStr = '<?xml version="1.0" encoding="UTF-8"?><library>';
+  myLibrary.forEach(book => {
+    xmlStr += `<book><title>${book.title}</title><author>${book.author}</author><cover>${book.cover}</cover></book>`;
+  });
+  xmlStr += '</library>';
+
+  let dataUri = 'data:text/xml;charset=utf-8,'+ encodeURIComponent(xmlStr);
+  let exportFileDefaultName = 'books.xml';
+
+  let linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+}
+
 function exportBooksAsYAML() {
   let dataStr = jsyaml.dump(myLibrary);
   let dataUri = 'data:application/yaml;charset=utf-8,' + encodeURIComponent(dataStr);
