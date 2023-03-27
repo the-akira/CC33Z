@@ -1,0 +1,19 @@
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 18px;
+}
+
+canvas {
+  border: 2.5px solid black;
+}
+
+body {
+  background: #dbd672;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2.4rem;
+}
