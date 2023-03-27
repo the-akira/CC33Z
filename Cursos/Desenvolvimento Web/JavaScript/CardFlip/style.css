@@ -21,9 +21,6 @@ body {
   transform: rotateY(180deg);
 }
 
-h2 {
-}
-
 .front,
 .back {
   position: absolute;
