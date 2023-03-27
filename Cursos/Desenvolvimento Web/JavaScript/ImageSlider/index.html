@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Website</title>
+  <style>
+    body {
+      background: rgb(15,15,15);
+    }
+    .slider {
+      width: 800px;
+      height: 600px;
+      position: relative;
+      overflow: hidden;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 50px;
+      border: 2.5px solid white;
+    }
+    .slider img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.5s ease;
+    }
+    .slider img:not(:first-child) {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="slider">
+    <img src="image1.jpg">
+    <img src="image2.jpg">
+    <img src="image3.jpg">
+  </div>
+
+  <script>
+    var images = document.querySelectorAll('.slider img');
+    var index = 0;
+
+    setInterval(function() {
+      images[index].style.opacity = 0;
+      index = (index + 1) % images.length;
+      images[index].style.opacity = 1;
+    }, 1000);
+  </script>
+</body>
+</html>

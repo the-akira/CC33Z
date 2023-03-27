@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Draggable Div</title>
+    <style>
+      #draggable {
+        width: 150px;
+        height: 150px;
+        background-color: blue;
+        position: absolute;
+        cursor: move;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="draggable"></div>
+    <script>
+      const draggable = document.getElementById("draggable");
+
+      let pos1 = 0,
+        pos2 = 0,
+        pos3 = 0,
+        pos4 = 0;
+
+      draggable.onmousedown = (event) => {
+        event.preventDefault();
+        pos3 = event.clientX;
+        pos4 = event.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      };
+
+      const elementDrag = (event) => {
+        event.preventDefault();
+        pos1 = pos3 - event.clientX;
+        pos2 = pos4 - event.clientY;
+        pos3 = event.clientX;
+        pos4 = event.clientY;
+        draggable.style.top = draggable.offsetTop - pos2 + "px";
+        draggable.style.left = draggable.offsetLeft - pos1 + "px";
+      };
+
+      const closeDragElement = () => {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      };
+    </script>
+  </body>
+</html>

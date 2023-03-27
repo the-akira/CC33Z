@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pedra, Papel e Tesoura</title>
+    <style>
+      #choices, #score, #result, #winner {
+        text-align: center;
+      }
+    #choices button {
+      margin: 10px;
+      padding: 0;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+    }
+
+    #result {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    #winner {
+      font-size: 3rem;
+    }
+    #score {
+      font-size: 2rem;
+      margin-top: 20px;
+    }
+    img {
+      width: 185px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    body {
+      background-color: #d4fcf3;
+    }
+    </style>
+  </head>
+  <body>
+  <div id="game">
+    <h1>Pedra, Papel e Tesoura</h1>
+    <div id="choices">
+      <button onclick="play('pedra')"><img src="pedra.png"></button>
+      <button onclick="play('papel')"><img src="papel.png"></button>
+      <button onclick="play('tesoura')"><img src="tesoura.png"></button>
+    </div>
+    <div id="winner"></div>
+    <div id="result"></div>
+    <div id="score"><b>Jogador:</b> 0 | <b>Máquina:</b> 0</div>
+  </div>
+
+    <script type="text/javascript">
+    var playerScore = 0;
+    var computerScore = 0;
+
+    function play(playerChoice) {
+      var choices = ['pedra', 'papel', 'tesoura'];
+      var computerChoice = choices[Math.floor(Math.random() * 3)];
+      var resultEl = document.getElementById('result');
+      var scoreEl = document.getElementById('score');
+      var winnerEl = document.getElementById('winner')
+
+      var playerImg = "<img src='" + playerChoice + ".png'>";
+      var computerImg = "<img src='" + computerChoice + ".png'>";
+
+      if (playerChoice === computerChoice) {
+        resultEl.innerHTML = playerImg + "vs" + computerImg;
+        winner.innerHTML = `É um empate!`
+      } else if (
+        (playerChoice === 'pedra' && computerChoice === 'tesoura') ||
+        (playerChoice === 'papel' && computerChoice === 'pedra') ||
+        (playerChoice === 'tesoura' && computerChoice === 'papel')
+      ) {
+        playerScore++;
+        winner.innerHTML = `Jogador vence com (<b>${playerChoice}</b>)`
+        resultEl.innerHTML = `${playerImg} vs ${computerImg}`
+      } else {
+        computerScore++;
+        winner.innerHTML = `Máquina vence com (<b>${computerChoice}</b>)`
+        resultEl.innerHTML = `${computerImg} vs ${playerImg}`;
+      }
+
+      scoreEl.innerHTML = "<b>Jogador:</b> " + playerScore + " | <b>Máquina:</b> " + computerScore;
+    }
+    </script>
+  </body>
+</html>
