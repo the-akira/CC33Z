@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Single Page App</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="#" onclick="showPage('home')">Home</a></li>
+        <li><a href="#" onclick="showPage('about')">About</a></li>
+        <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+      </ul>
+    </nav>
+    <main>
+      <div id="home" class="page">
+        <h1>Welcome to my Single Page App</h1>
+        <p>This is the home page.</p>
+      </div>
+      <div id="about" class="page">
+        <h1>About</h1>
+        <p>This is the about page.</p>
+      </div>
+      <div id="contact" class="page">
+        <h1>Contact</h1>
+        <p>This is the contact page.</p>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
