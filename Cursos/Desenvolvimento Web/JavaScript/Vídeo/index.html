@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Video Player</title>
+  </head>
+  <body>
+    <h1>Video Player</h1>
+    <video id="my-video" width="640" height="360" controls>
+      <source src="game.mp4" type="video/mp4">
+    </video>
+    <br>
+    <button onclick="play()">Play</button>
+    <button onclick="pause()">Pause</button>
+    <button onclick="skip()">Skip 5 seconds</button>
+    <script>
+      var video = document.getElementById("my-video");
+
+      function play() {
+        video.play();
+      }
+
+      function pause() {
+        video.pause();
+      }
+
+      function skip() {
+        video.currentTime += 5;
+      }
+    </script>
+  </body>
+</html>
