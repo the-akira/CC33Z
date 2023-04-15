@@ -1,0 +1,52 @@
+body {
+  transition: background-color 0.3s ease;
+}
+
+body.light-mode {
+  background-color: #fff;
+  color: #333;
+}
+
+body.dark-mode {
+  background-color: #333;
+  color: #fff;
+}
+
+h1, p, h4 {
+  margin: 0;
+  text-align: center;
+}
+
+p {
+  font-size: 1.2rem;
+}
+
+.mode-toggle {
+  display: block;
+  margin: 0 auto;
+  background-color: #ddd;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border: none;
+}
+
+.mode-toggle:hover {
+  background-color: #ccc;
+}
+
+.lamp {
+  margin-right: 5px;
+}
+
+.light {
+  color: #f7d02c;
+}
+
+.dark {
+  color: #777;
+}
