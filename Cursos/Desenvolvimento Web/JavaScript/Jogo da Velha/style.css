@@ -1,0 +1,35 @@
+h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-top: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 20px auto;
+}
+
+td {
+  border: 1px solid black;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  font-size: 72px;
+  background: #dee3ff;
+}
+
+button {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 25px;
+  padding: 7px;
+  border: 2px solid black;
+  background: #a6d2ff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #baddff;
+}
