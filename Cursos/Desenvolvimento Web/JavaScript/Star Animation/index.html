@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Star Animation</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000000;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const center = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+      };
+
+      let size = 200;
+      let angle = 0;
+      let speed = 0.013;
+      let hue = 0;
+
+      function drawStar(size, angle) {
+        ctx.beginPath();
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.lineWidth = 5;
+
+        let angleStep = (Math.PI * 2) / 10;
+        let pointX, pointY, outerRadius = size, innerRadius = size / 2;
+
+        for (let i = 0; i < 10; i++) {
+          pointX = center.x + Math.sin(angle + i * angleStep) * outerRadius;
+          pointY = center.y + Math.cos(angle + i * angleStep) * outerRadius;
+          ctx.lineTo(pointX, pointY);
+          pointX = center.x + Math.sin(angle + i * angleStep + angleStep / 2) * innerRadius;
+          pointY = center.y + Math.cos(angle + i * angleStep + angleStep / 2) * innerRadius;
+          ctx.lineTo(pointX, pointY);
+        }
+
+        ctx.closePath();
+        ctx.stroke();
+
+        if (size > 20) {
+          for (let i = 0; i < 6; i++) {
+            let angleStep = (Math.PI * 2) / 6;
+            let x = center.x + Math.sin(angle + i * angleStep) * size / 2;
+            let y = center.y + Math.cos(angle + i * angleStep) * size / 2;
+            drawStar(size / 3, angle + i * angleStep);
+          }
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawStar(size, angle);
+
+        size += Math.sin(angle) * 2;
+        angle += speed;
+        hue++;
+
+        if (hue > 360) {
+          hue = 0;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        center.x = canvas.width / 2;
+        center.y = canvas.height / 2;
+      });
+    </script>
+  </body>
+</html>

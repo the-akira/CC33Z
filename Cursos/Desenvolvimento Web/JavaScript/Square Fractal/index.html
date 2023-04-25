@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Square Fractal</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000000;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let angle = 0;
+      let speed = 0.01;
+      let hue = 0;
+      let maxDepth = 6;
+      let frameCount = 0;
+
+      function drawFractal(centerX, centerY, size, depth) {
+        if (depth > maxDepth) {
+          return;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(centerX + size / 2, centerY + size / 2);
+        ctx.lineTo(centerX + size / 2, centerY - size / 2);
+        ctx.lineTo(centerX - size / 2, centerY - size / 2);
+        ctx.lineTo(centerX - size / 2, centerY + size / 2);
+        ctx.closePath();
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.stroke();
+
+        hue += 10;
+
+        const subSize = size / 2;
+        const subDepth = depth + 1;
+        const subHue = hue;
+
+        drawFractal(centerX + subSize / 2, centerY + subSize / 2, subSize, subDepth);
+        drawFractal(centerX + subSize / 2, centerY - subSize / 2, subSize, subDepth);
+        drawFractal(centerX - subSize / 2, centerY - subSize / 2, subSize, subDepth);
+        drawFractal(centerX - subSize / 2, centerY + subSize / 2, subSize, subDepth);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawFractal(canvas.width / 2, canvas.height / 2, 900, 1);
+
+        angle += speed;
+
+        if (hue > 360) {
+          hue = 0;
+        }
+
+        // Add animation effects
+        frameCount++;
+        if (frameCount % 50 === 0) {
+          speed = Math.random() * 0.1;
+          maxDepth = Math.floor(Math.random() * 7) + 3;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    </script>
+  </body>
+</html>
