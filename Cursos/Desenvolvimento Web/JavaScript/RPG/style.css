@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch&display=swap');
+
+body {
+    background: #858585;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.7rem;
+    font-family: 'Chakra Petch', sans-serif;
+}
+
+#game-container {
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    margin-top: 25px;
+    position: relative;
+}
+
+.tile {
+    width: 50px;
+    height: 50px;
+    border: 3px solid black;
+    display: inline-block;
+    position: absolute;
+}
+
+.map-tile-0 {
+    background-image: url('assets/tile0.png');
+    background-size: cover;
+}
+
+.map-tile-1 {
+    background-image: url('assets/tile1.png');
+    background-size: cover;
+}
+
+.door {
+    background-image: url('assets/door.png');
+    background-size: cover;
+}
+
+#player {
+    width: 50px;
+    height: 50px;
+    background-image: url('assets/hero.png');
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
