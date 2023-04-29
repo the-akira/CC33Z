@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eye Animation</title>
+  <style>
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let width, height;
+    let angle = 0;
+    let hue = 0;
+
+    function setup() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      centerX = width / 2;
+      centerY = height / 2;
+      radius = Math.min(width, height) / 3;
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    function draw() {
+      const x = width * 0.5 + Math.cos(angle) * 175;
+      const y = height * 0.5 + Math.sin(angle) * 175;
+      const size = Math.abs(Math.sin(angle) * 55);
+
+      hue++;
+      if (hue > 360) hue = 0;
+
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.strokeStyle = `hsl(${hue}, 50%, 50%)`;
+      ctx.lineWidth = 7;
+      ctx.stroke();
+
+      const blink = Math.random() > 0.65; // blink every 10 frames
+      ctx.fillStyle = blink ? "white" : "black";
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius / 9, 0, 25 * Math.PI);
+      ctx.fill();
+
+      angle += 0.05;
+      requestAnimationFrame(draw);
+    }
+
+    setup();
+    draw();
+  </script>
+</body>
+</html>

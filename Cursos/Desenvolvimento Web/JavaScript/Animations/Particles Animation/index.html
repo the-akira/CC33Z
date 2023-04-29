@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Particles Animation</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: black;
+      }
+      #canvas {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const numPixels = 1500;
+      const pixels = [];
+      for (let i = 0; i < numPixels; i++) {
+        const pixel = {
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: Math.random() * 10 - 5,
+          vy: Math.random() * 10 - 5,
+          radius: Math.random() * 15 + 1,
+          color: `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
+            Math.random() * 256
+          )}, ${Math.floor(Math.random() * 256)}, ${Math.random()})`,
+        };
+        pixels.push(pixel);
+      }
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pixels.forEach((pixel) => {
+          pixel.x += pixel.vx;
+          pixel.y += pixel.vy;
+          if (pixel.x < 0 || pixel.x > canvas.width) {
+            pixel.vx *= -1;
+          }
+          if (pixel.y < 0 || pixel.y > canvas.height) {
+            pixel.vy *= -1;
+          }
+          ctx.fillStyle = pixel.color;
+          ctx.beginPath();
+          ctx.arc(pixel.x, pixel.y, pixel.radius, 0, 2 * Math.PI);
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    </script>
+  </body>
+</html>
