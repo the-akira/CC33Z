@@ -5,6 +5,6 @@ document.querySelector("form").addEventListener("submit", function(event) {
     event.preventDefault();
     alert("Please enter a valid email address.");
   } else {
-    alert("Valid email!")
+    alert("Valid email!");
   }
 });
