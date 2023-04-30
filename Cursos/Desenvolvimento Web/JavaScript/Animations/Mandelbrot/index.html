@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mandelbrot Animation</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let hue = 0;
+        let zoom = 1;
+        let zoomIncrement = 0.0025;
+
+        // Set animation loop
+        function animate() {
+            // Calculate new image data
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            for (let x = 0; x < canvas.width; x++) {
+                for (let y = 0; y < canvas.height; y++) {
+                    // Calculate Mandelbrot set value
+                    let real = (x - canvas.width/2) * 4 / (canvas.width * zoom);
+                    let imag = (y - canvas.height/2) * 4 / (canvas.width * zoom);
+                    let zReal = 0;
+                    let zImag = 0;
+                    let i;
+                    for (i = 0; i < 30; i++) {
+                        let zRealNew = zReal * zReal - zImag * zImag + real;
+                        let zImagNew = 2 * zReal * zImag + imag;
+                        zReal = zRealNew;
+                        zImag = zImagNew;
+                        if (zReal * zReal + zImag * zImag > 4) break;
+                    }
+                    // Set pixel color based on iteration count
+                    let pixelIndex = (y * canvas.width + x) * 4;
+                    if (i === 30) {
+                        imageData.data[pixelIndex + 0] = 0;
+                        imageData.data[pixelIndex + 1] = 0;
+                        imageData.data[pixelIndex + 2] = 0;
+                        imageData.data[pixelIndex + 3] = 255;
+                    } else {
+                        let color = hue + i * 5;
+                        imageData.data[pixelIndex + 0] = color % 255;
+                        imageData.data[pixelIndex + 1] = (color + 100) % 255;
+                        imageData.data[pixelIndex + 2] = (color + 200) % 255;
+                        imageData.data[pixelIndex + 3] = 255;
+                    }
+                }
+            }
+            // Draw image data to canvas
+            ctx.putImageData(imageData, 0, 0);
+
+            // Update variables
+            hue += 0.5;
+            zoom += zoomIncrement;
+            if (zoom < 1 || zoom > 4) zoomIncrement *= -1;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

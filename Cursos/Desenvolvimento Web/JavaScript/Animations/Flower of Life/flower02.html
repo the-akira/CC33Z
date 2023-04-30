@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flower of Life Animation</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let angle = 0;
+        let angleIncrement = 0.01;
+        let hue = 0;
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+
+        // Create initial circle objects
+        const circles = createCircles(60, 150);
+        const small_circles = createCircles(30, 200);
+        const middle_circles = createCircles(90, 245);
+        const medium_circles = createCircles(40, 300);
+        const great_circles = createCircles(200, 350);
+
+        function createCircles(radius, distanceFromCenter) {
+          const circleArray = [];
+          let angle = 0;
+          for (let i = 0; i < 13; i++) {
+            let x = centerX + Math.cos(angle) * distanceFromCenter;
+            let y = centerY + Math.sin(angle) * distanceFromCenter;
+            circleArray.push({x, y, radius});
+            angle += Math.PI / 6;
+          }
+          return circleArray;
+        }
+
+        function updateCircles(circleArray, distanceFromCenter, angle) {
+          for (let i = 0; i < circleArray.length; i++) {
+            circleArray[i].x = centerX + Math.cos(angle) * distanceFromCenter;
+            circleArray[i].y = centerY + Math.sin(angle) * distanceFromCenter;
+            angle += Math.PI / 6;
+          }
+          return angle;
+        }
+
+        function drawCircles(circleArray) {
+            for (let i = 0; i < circleArray.length; i++) {
+                ctx.beginPath();
+                ctx.arc(circleArray[i].x, circleArray[i].y, circleArray[i].radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.stroke();
+            }
+        }
+
+        // Set animation loop
+        function animate() {
+            // Set background color
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawCircles(circles);
+            drawCircles(small_circles);
+            drawCircles(medium_circles)
+            drawCircles(middle_circles)
+            drawCircles(great_circles)
+
+            // Update circle positions
+            angle = updateCircles(circles, 150, angle);
+            angle = updateCircles(medium_circles, 80, angle);
+            angle = updateCircles(middle_circles, 245, angle);
+            angle = updateCircles(small_circles, 30, angle);
+            angle = updateCircles(great_circles, 200, angle);
+
+            // Update angle
+            angle += angleIncrement;
+            hue += 10;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

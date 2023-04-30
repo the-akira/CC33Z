@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flower of Life</title>
+    <style>
+      body {
+        background: black;
+      }
+      canvas {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set canvas dimensions
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Set variables
+      const numCircles = 14; // Change this to add more circles
+      let radius = canvas.width / (numCircles * 5);
+      const center = { x: canvas.width / 2, y: canvas.height / 2 };
+      let growth = true; // Indicates if the circles are growing or shrinking
+      let hue = 0;
+
+      function draw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update radius
+        if (radius > canvas.width / 8) {
+          growth = false;
+        } else if (radius < canvas.width / (numCircles * 5)) {
+          growth = true;
+        }
+        radius = growth ? radius + 1 : radius - 1;
+
+        // Draw circles
+        for (let i = 0; i < numCircles; i++) {
+          const angle = (Math.PI * 2) / numCircles * i;
+          const x = center.x + Math.cos(angle) * radius;
+          const y = center.y + Math.sin(angle) * radius;
+          drawCircle(x, y, radius);
+        }
+        
+        hue += 2;
+        const color = `hsl(${hue}, 100%, 50%)`;
+        // Draw lines
+        for (let i = 0; i < numCircles; i++) {
+          for (let j = i + 1; j < numCircles; j++) {
+            const angleI = (Math.PI * 2) / numCircles * i;
+            const angleJ = (Math.PI * 2) / numCircles * j;
+            const x1 = center.x + Math.cos(angleI) * radius;
+            const y1 = center.y + Math.sin(angleI) * radius;
+            const x2 = center.x + Math.cos(angleJ) * radius;
+            const y2 = center.y + Math.sin(angleJ) * radius;
+            drawLine(x1, y1, x2, y2, color);
+          }
+        }
+
+        // Request next animation frame
+        requestAnimationFrame(draw);
+      }
+
+      // Start animation
+      draw();
+
+      // Draw a circle at a given position
+      function drawCircle(x, y, r) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+
+      // Draw a line between two points
+      function drawLine(x1, y1, x2, y2, color) {
+        ctx.beginPath();
+        ctx.lineWidth = Math.floor(Math.random() * 3) + 1;
+        ctx.strokeStyle = color;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+    </script>
+  </body>
+</html>

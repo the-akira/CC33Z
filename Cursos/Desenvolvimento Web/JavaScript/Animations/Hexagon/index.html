@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hexagon Animation</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let hue = 0;
+        let angle = 0;
+        let angleIncrement = 0.01;
+        let scale1 = 1;
+        let scale2 = 2
+        let scale3 = 3
+        let scaleIncrement1 = 0.5;
+        let scaleIncrement2 = 0.75;
+        let scaleIncrement3 = 1;
+
+        function drawHexagon(ctx, scale) {
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+            // Draw fractal pattern
+            for (let i = 0; i < 6; i++) {
+                let x = canvas.width / 2 + Math.cos(angle + i * Math.PI / 3) * scale;
+                let y = canvas.height / 2 + Math.sin(angle + i * Math.PI / 3) * scale;
+                ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.stroke();        	
+        }
+
+        // Set animation loop
+        function animate() {
+            // Set background color
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawHexagon(ctx, scale1);
+            drawHexagon(ctx, scale2);
+            drawHexagon(ctx, scale3);
+
+            // Update variables
+            hue += 8;
+            angle += angleIncrement;
+            scale1 += scaleIncrement1;
+            scale2 += scaleIncrement2;
+            scale3 += scaleIncrement3;
+
+            // Reverse direction of angle and scale increment when scale reaches certain value
+            if (scale1 > 400 || scale1 < 1) {
+                angleIncrement *= -1;
+                scaleIncrement1 *= -1;
+            }
+
+            if (scale2 > 400 || scale2 < 1) {
+                angleIncrement *= -1;
+                scaleIncrement2 *= -1;
+            }
+
+            if (scale3 > 400 || scale3 < 1) {
+                angleIncrement *= -1;
+                scaleIncrement3 *= -1;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

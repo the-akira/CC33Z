@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Waves</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let hue = 0;
+        let waveIncrement = 0.02;
+        let waveXIncrement = 0.05;
+        let waveYIncrement = 0.07;
+        let waveWidth = 0.01;
+        let waveX = 0;
+        let waveY = 0;
+
+        // Set animation loop
+        function animate() {
+            // Set background color
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw multiple sine waves
+            for (let j = 0; j < 4; j++) {
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = `hsl(${hue + j * 100}, 100%, 50%)`;
+
+                for (let i = 0; i < canvas.width; i++) {
+                    let y = canvas.height / 2 + Math.cos(i * waveWidth * (j + 1) + waveX * Math.PI) * Math.sin(waveY + j * Math.PI / i) * 100 * (j + 1);
+                    ctx.lineTo(i, y);
+                }
+                ctx.stroke();
+            }
+
+            // Update variables
+            hue += 8;
+            waveX += waveXIncrement;
+            waveY += waveYIncrement;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

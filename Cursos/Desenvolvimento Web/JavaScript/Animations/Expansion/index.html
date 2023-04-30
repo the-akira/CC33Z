@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expansion Animation</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let hue = 0;
+        let angle = 0;
+        let increment = 0.01;
+        let radius = 0;
+
+        // Set animation loop
+        function animate() {
+            // Set background color
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Set line properties
+            ctx.beginPath();   
+            ctx.lineCap = "round";
+            ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+            // Draw lines
+            for (let i = 0; i < 50; i += 2.5) {
+                a = Math.floor(Math.random() * 20) + 1 
+                b = Math.floor(Math.random() * a) + 1
+                c = Math.floor(Math.random() * a) + 1
+                let x = canvas.width/2 + Math.cos(angle * i) * (i * increment * a);
+                let y = canvas.height/2 + Math.sin(angle * i) * (i * increment * b);
+                ctx.lineWidth = b / c;
+                ctx.moveTo(x + radius, y + radius);
+                ctx.strokeRect(x, y, radius * i, radius * -i);
+                ctx.strokeRect(x, y, radius * i, radius * i);
+                ctx.strokeRect(x, y, radius * -i, radius * -i);
+                ctx.strokeRect(x, y, radius * -i, radius * i);
+            }
+            ctx.stroke();
+
+            // Update variables
+            hue += 15;
+            angle += 0.01;
+            radius += 0.01;
+
+            if (radius > 20) {
+                radius = 0
+            }
+
+            if (angle > 10) {
+                angle = 0
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

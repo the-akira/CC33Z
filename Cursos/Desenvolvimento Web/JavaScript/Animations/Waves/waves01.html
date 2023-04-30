@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Waves</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let hue = 0;
+        let waveIncrement = 0.02;
+        let waveXIncrement = 0.05;
+        let waveYIncrement = 0.07;
+        let waveWidth = 0.01;
+        let waveX = 0;
+        let waveY = 0;
+
+        function createWaves(increment, ctx) { 
+            for (let i = 0; i < canvas.width; i += increment) {
+                let y = canvas.height / 2 + Math.sin(i * waveWidth + waveX) * Math.sin(waveY) * i;
+                ctx.lineTo(i, y);
+            }
+        }
+
+        // Set animation loop
+        function animate() {
+            // Set background color
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Set line properties
+            ctx.beginPath();
+            ctx.lineWidth = 6;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+            createWaves(1, ctx)
+            createWaves(10, ctx)
+            createWaves(20, ctx)
+            createWaves(30, ctx)
+            createWaves(40, ctx)
+            createWaves(50, ctx)
+            createWaves(60, ctx)
+            createWaves(70, ctx)
+            ctx.stroke();
+
+            // Update variables
+            hue += 25;
+            waveX += waveXIncrement;
+            waveY += waveYIncrement;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

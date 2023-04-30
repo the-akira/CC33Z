@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sierpinski Carpet Animation</title>
+    <style>
+      canvas {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set canvas dimensions
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Set initial variables
+      let size = Math.min(canvas.width, canvas.height) / 2;
+      let centerX = canvas.width / 2;
+      let centerY = canvas.height / 2;
+      let iterations = 5;
+      let direction = 1;
+      let hue = 0;
+
+      // Define function to draw Sierpinski carpet
+      function drawCarpet(size, centerX, centerY, iterations) {
+        if (iterations == 0) {
+          // Draw a square
+          ctx.fillRect(centerX - size / 2, centerY - size / 2, size, size);
+        } else {
+          // Draw 8 smaller carpets around the center square
+          size /= 3;
+          for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+              if (i == 1 && j == 1) {
+                // Skip the center square
+                continue;
+              }
+              let x = centerX - size + i * size;
+              let y = centerY - size + j * size;
+              drawCarpet(size, x, y, iterations - 1);
+            }
+          }
+        }
+      }
+
+      // Set animation loop
+      function animate() {
+        // Set background color
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Set color for Sierpinski carpet
+        ctx.fillStyle = `hsl(${hue}, 90%, 40%)`;
+
+        // Draw Sierpinski carpet
+        drawCarpet(size, centerX, centerY, iterations);
+
+        // Update variables
+        size += direction * 3;
+        hue += 20;
+        if (size > Math.min(canvas.width, canvas.height) / 2 || size < 1) {
+          direction *= -1
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

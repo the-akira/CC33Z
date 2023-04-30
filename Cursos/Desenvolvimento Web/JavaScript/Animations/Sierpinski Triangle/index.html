@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sierpinski Fractal Animation</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let hue = 0;
+        let size = 0;
+
+        function drawTriangle(x, y, size, hue) {
+            // Set triangle color
+            ctx.fillStyle = `hsl(${hue}, 90%, 40%)`;
+
+            // Draw triangle
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + size, y);
+            ctx.lineTo(x + size / 2, y - size * Math.sqrt(3) / 2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Recursively draw smaller triangles
+            if (size > 15) {
+                drawTriangle(x, y, size / 2, (hue + 30) % 360);
+                drawTriangle(x + size / 2, y, size / 2, (hue + 90) % 360);
+                drawTriangle(x + size / 4, y - size * Math.sqrt(3) / 4, size / 2, (hue + 150) % 360);
+            }
+        }
+
+        // Set animation loop
+        function animate() {
+            // Set background color
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw fractal pattern
+            drawTriangle(canvas.width / 2 - size / 2, canvas.height / 2 + size * Math.sqrt(3) / 4, size, hue);
+
+            // Update variables
+            hue = (hue + 10) % 360;
+            size = 800 + 200 * Math.cos(Date.now() / 2000);
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
