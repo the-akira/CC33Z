@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Star of David Animation</title>
+    <style>
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set variables
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+        let angle = 0;
+        let angleIncrement = 0.015;
+        let radius = 365;
+        let red = 0;
+        let green = 0;
+        let blue = 0;
+
+        // Create initial triangles
+        const triangles = createTriangles(12, radius, centerX, centerY);
+
+        function createTriangles(num, radius, centerX, centerY) {
+            const triangleArray = [];
+            const angleIncrement = Math.PI * 4 / num;
+
+            for (let i = 0; i < num; i++) {
+                let angle = i * angleIncrement;
+                let x = centerX + Math.cos(angle) * radius;
+                let y = centerY + Math.sin(angle) * radius;
+                let triangle = {
+                    x: x,
+                    y: y,
+                    radius: radius,
+                    angle: angle
+                };
+                triangleArray.push(triangle);
+            }
+
+            return triangleArray;
+        }
+
+        function drawTriangles(triangleArray) {
+            for (let i = 0; i < triangleArray.length; i++) {
+                let triangle = triangleArray[i];
+                ctx.beginPath();
+                ctx.moveTo(triangle.x, triangle.y);
+                for (let j = 0; j < 2; j++) {
+                    let nextTriangle = triangleArray[(i + j + 1) % triangleArray.length];
+                    ctx.lineTo(nextTriangle.x, nextTriangle.y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = `rgb(${red}, ${green}, ${blue})`;
+                ctx.stroke();
+            }
+        }
+
+        // Set animation loop
+        function animate() {
+            // Set background color
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawTriangles(triangles);
+
+            // Update triangle positions
+            for (let i = 0; i < triangles.length; i++) {
+                let triangle = triangles[i];
+                triangle.x = centerX + Math.cos(triangle.angle + angle) * radius;
+                triangle.y = centerY + Math.sin(triangle.angle + angle) * radius;
+            }
+
+            // Update angle and hue
+            angle += angleIncrement;
+            red += 3
+            green += 9
+            blue += 6
+
+            if (red > 30) {
+                red = 0;
+            }
+
+            if (green > 255) {
+                green = 0;
+            }
+
+            if (blue > 60) {
+                blue = 0;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

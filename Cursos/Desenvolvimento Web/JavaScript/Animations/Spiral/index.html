@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spiral Animation</title>
+  <style>
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Set variables
+    let centerX = canvas.width / 2;
+    let centerY = canvas.height / 2;
+    let angle = 0;
+    let angleIncrement = 0.013;
+    let hue = 0;
+    let maxRadius = Math.min(centerX, centerY) - 50;
+
+    // Create initial spiral
+    const spiral = createSpiral(120, maxRadius, centerX, centerY);
+
+    function createSpiral(num, maxRadius, centerX, centerY) {
+      const spiralArray = [];
+      const key = (1 + Math.sqrt(2)) / 3;
+      let radius = 0;
+      let angleIncrement = 2 * Math.PI / key;
+
+      for (let i = 0; i < num; i++) {
+        let angle = i * angleIncrement;
+        radius = i * (maxRadius / num);
+        let x = centerX + Math.cos(angle) * radius;
+        let y = centerY + Math.sin(angle) * radius;
+        let spiralPoint = {
+          x: x,
+          y: y,
+          radius: radius,
+          angle: angle
+        };
+        spiralArray.push(spiralPoint);
+      }
+
+      return spiralArray;
+    }
+
+    function drawSpiral(spiralArray) {
+      for (let i = 0; i < spiralArray.length - 1; i++) {
+        let spiralPoint = spiralArray[i];
+        let nextSpiralPoint = spiralArray[i + 1];
+        ctx.beginPath();
+        ctx.moveTo(spiralPoint.x, spiralPoint.y);
+        ctx.lineTo(nextSpiralPoint.x, nextSpiralPoint.y);
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.stroke();
+      }
+    }
+
+    // Set animation loop
+    function animate() {
+      // Set background color
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawSpiral(spiral);
+
+      // Update spiral positions
+      for (let i = 0; i < spiral.length; i++) {
+        let spiralPoint = spiral[i];
+        spiralPoint.x = centerX + Math.cos(spiralPoint.angle + angle) * spiralPoint.radius;
+        spiralPoint.y = centerY + Math.sin(spiralPoint.angle + angle) * spiralPoint.radius;
+      }
+
+      // Update angle and hue
+      angle += angleIncrement;
+      hue += 0.75;
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

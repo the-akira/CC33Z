@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fourier Transform Animation</title>
+  <style>
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Set variables
+    const radius = 250;
+    const numCircles = 350;
+    const speed = 0.01;
+    let time = 0;
+
+    // Set the x and y positions of the center of the screen
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    // Set the initial position of the wave
+    let x = 0;
+    let y = 0;
+
+    // Create an array of circles
+    const circles = [];
+    for (let i = 1; i <= numCircles; i++) {
+      const n = 2 * i - 1;
+      const radius = 100 * (7 / (n * Math.PI));
+      const circle = {
+        radius: radius,
+        angle: n * time,
+        centerX: centerX + x,
+        centerY: centerY + y,
+      };
+      x += radius * Math.cos(n * time);
+      y += radius * Math.sin(n * time);
+      circles.push(circle);
+    }
+
+    // Set animation loop
+    function animate() {
+      // Set background color
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the circles
+      for (let i = 0; i < circles.length; i++) {
+        const circle = circles[i];
+        ctx.beginPath();
+        ctx.arc(circle.centerX, circle.centerY, circle.radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = "#00ff40";
+        ctx.stroke();
+      }
+
+      // Draw the line connecting the circles
+      ctx.beginPath();
+      ctx.moveTo(circles[0].centerX, circles[0].centerY);
+      for (let i = 1; i < circles.length; i++) {
+        const circle = circles[i];
+        ctx.lineTo(circle.centerX, circle.centerY);
+      }
+      ctx.strokeStyle = "#00ff40";
+      ctx.stroke();
+
+      // Update the position of the wave
+      x = 0;
+      y = 0;
+      for (let i = 0; i < circles.length; i++) {
+        const circle = circles[i];
+        circle.angle += (17 * i - 1) * speed;
+        circle.centerX = centerX + x;
+        circle.centerY = centerY + y;
+        x += circle.radius * Math.cos(circle.angle);
+        y += circle.radius * Math.sin(circle.angle);
+      }
+
+      // Increment the time variable
+      time += speed;
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

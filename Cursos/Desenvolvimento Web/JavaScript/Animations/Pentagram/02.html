@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pentagram Fractal Animation</title>
+  <style>
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Set variables
+    let centerX = canvas.width / 2;
+    let centerY = canvas.height / 2;
+    let angle = 0;
+    let angleIncrement = 0.015;
+    let radius = 430;
+    let hue = 0;
+
+    // Create initial triangles
+    const outerTriangles = createTriangles(5, radius, centerX, centerY);
+    const innerTriangles = createTriangles(5, radius / 3, centerX, centerY);
+    const innerInnerTriangles = createTriangles(5, radius / 9, centerX, centerY);
+    const innerInnerInnerTriangles = createTriangles(5, radius / 27, centerX, centerY);
+
+    function createTriangles(num, radius, centerX, centerY) {
+      const triangleArray = [];
+      const angleIncrement = Math.PI * 2 / num;
+
+      for (let i = 0; i < num; i++) {
+        let angle = i * angleIncrement - Math.PI/2;
+        let x = centerX + Math.cos(angle) * radius;
+        let y = centerY + Math.sin(angle) * radius;
+        let triangle = {
+          x: x,
+          y: y,
+          radius: radius,
+          angle: angle
+        };
+        triangleArray.push(triangle);
+      }
+
+      return triangleArray;
+    }
+
+    function drawTriangles(triangleArray) {
+      for (let i = 0; i < triangleArray.length; i++) {
+        let triangle = triangleArray[i];
+        ctx.beginPath();
+        ctx.moveTo(triangle.x, triangle.y);
+        for (let j = 0; j < 2; j++) {
+          let nextTriangle = triangleArray[(i + j + 1) % triangleArray.length];
+          ctx.lineTo(nextTriangle.x, nextTriangle.y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.stroke();
+      }
+    }
+
+    // Set animation loop
+    function animate() {
+      // Set background color
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawTriangles(outerTriangles);
+      drawTriangles(innerTriangles);
+      drawTriangles(innerInnerTriangles);
+      drawTriangles(innerInnerInnerTriangles);
+
+      // Update triangle positions
+      for (let i = 0; i < outerTriangles.length; i++) {
+        let outerTriangle = outerTriangles[i];
+        let innerTriangle = innerTriangles[i];
+        let innerInnerTriangle = innerInnerTriangles[i];
+        let innerInnerInnerTriangle = innerInnerInnerTriangles[i];
+        outerTriangle.x = centerX + Math.cos(outerTriangle.angle + angle) * outerTriangle.radius;
+        outerTriangle.y = centerY + Math.sin(outerTriangle.angle + angle) * outerTriangle.radius;
+        innerTriangle.x = centerX + Math.cos(innerTriangle.angle + angle + Math.PI / 5) * innerTriangle.radius;
+        innerTriangle.y = centerY + Math.sin(innerTriangle.angle + angle + Math.PI / 5) * innerTriangle.radius;
+        innerInnerTriangle.x = centerX + Math.cos(innerInnerTriangle.angle + angle) * innerInnerTriangle.radius;
+        innerInnerTriangle.y = centerY + Math.sin(innerInnerTriangle.angle + angle) * innerInnerTriangle.radius;
+        innerInnerInnerTriangle.x = centerX + Math.cos(innerInnerInnerTriangle.angle + angle + Math.PI / 5) * innerInnerInnerTriangle.radius;
+        innerInnerInnerTriangle.y = centerY + Math.sin(innerInnerInnerTriangle.angle + angle + Math.PI / 5) * innerInnerInnerTriangle.radius;
+      }
+
+      // Update angle and hue
+      angle += angleIncrement;
+      hue += 0.9
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
