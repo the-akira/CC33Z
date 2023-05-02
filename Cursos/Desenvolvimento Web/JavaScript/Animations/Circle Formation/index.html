@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Increasing Sides Polygon</title>
+  <meta charset="utf-8">
+  <style type="text/css">
+    body {
+      background: black;
+    }
+    #sides {
+      font-weight: bold;
+      text-align: center;
+      margin-top: 75px;
+      font-size: 4rem;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      margin-top: 35px;
+    }
+  </style>
+</head>
+<body>
+  <p id="sides"></p>
+  <canvas id="myCanvas" width="600" height="600"></canvas>
+  <script>
+    var canvas = document.getElementById("myCanvas");
+    var pSides = document.getElementById("sides");
+    var ctx = canvas.getContext("2d");
+    var centerX = canvas.width / 2;
+    var centerY = canvas.height / 2;
+    var radius = 280;
+    var sides = 3;
+    var angle = (2 * Math.PI) / sides;
+    var hue = 0;
+
+    function drawPolygon() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.moveTo(centerX + radius, centerY);
+      for (var i = 1; i <= sides; i++) {
+        var x = centerX + radius * Math.cos(i * angle);
+        var y = centerY + radius * Math.sin(i * angle);
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+      ctx.lineWidth = 10;
+      ctx.closePath();
+      ctx.stroke();
+
+      // increase sides
+      sides++;
+      angle = (2 * Math.PI) / sides;
+
+      // change color
+      hue += 20;
+
+      pSides.innerHTML = `Sides: ${sides-1}`;
+      pSides.style.color = `hsl(${hue-20}, 100%, 50%)`;
+
+      // repeat until circle
+      if (sides <= 360) {
+        setTimeout(drawPolygon, 900);
+      }
+    }
+
+    drawPolygon();
+  </script>
+</body>
+</html>
