@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sacred Geometrical Animation</title>
+  <style>
+  	body {
+  	  background: black;
+  	}
+    canvas {
+      display: block;
+      margin: auto;
+      margin-top: 30px;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas width="1000" height="900" id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 200;
+    const angleStep = Math.PI / 3;
+    let angle = 0;
+    let hue = 0;
+
+    function draw() {
+      // Clear the canvas
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the circles
+      for (let i = 0; i < 6; i++) {
+        const angle1 = i * angleStep + angle;
+        const x1 = centerX + radius * Math.cos(angle1);
+        const y1 = centerY + radius * Math.sin(angle1);
+        ctx.beginPath();
+        ctx.arc(x1, y1, radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.lineWidth = 3.5;
+        ctx.stroke();
+
+        // Draw the triangles
+        for (let j = 0; j < 6; j++) {
+          if (i !== j) {
+            const angle2 = j * angleStep + angle;
+            const x2 = centerX + radius * Math.cos(angle2);
+            const y2 = centerY + radius * Math.sin(angle2);
+            const deltaX = x2 - x1;
+            const deltaY = y2 - y1;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle3 = Math.atan2(deltaY, deltaX) + Math.PI / 2 + angle;
+            const x3 = x1 + distance / 2 * Math.cos(angle3);
+            const y3 = y1 + distance / 2 * Math.sin(angle3);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x3, y3);
+            ctx.closePath();
+            ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+            ctx.lineWidth = 3.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Increment the angle and request the next animation frame
+      angle += 0.01;
+      hue += 1;
+      requestAnimationFrame(draw);
+    }
+
+    // Start the animation loop
+    draw();
+  </script>
+</body>
+</html>
