@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sacred Geometry</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      
+      // Set canvas dimensions
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      // Set background color
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Set geometry parameters
+      const circleCount = 21;
+      const radius = Math.min(canvas.width, canvas.height) / 3;
+      const lineWidth = 2;
+      const angleStep = (2 * Math.PI) / circleCount;
+      const center = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+      };
+      
+      // Set color gradient
+      const gradient = ctx.createRadialGradient(
+        center.x,
+        center.y,
+        0,
+        center.x,
+        center.y,
+        radius
+      );
+      gradient.addColorStop(0, "#fff");
+      gradient.addColorStop(1, "#7400d9");
+      
+      // Draw geometry
+      function draw() {
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < circleCount; i++) {
+          const angle1 = angleStep * i;
+          const angle2 = angleStep * (i + 1);
+          const x1 = center.x + radius * Math.cos(angle1);
+          const y1 = center.y + radius * Math.sin(angle1);
+          const x2 = center.x + radius * Math.cos(angle2);
+          const y2 = center.y + radius * Math.sin(angle2);
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.lineWidth = lineWidth;
+          ctx.strokeStyle = gradient;
+          ctx.stroke();
+          for (let j = i + 1; j < circleCount; j++) {
+            const angle3 = angleStep * j;
+            const x3 = center.x + radius * Math.cos(angle3);
+            const y3 = center.y + radius * Math.sin(angle3);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x3, y3);
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = gradient;
+            ctx.stroke();
+          }
+        }
+      }
+      
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(Math.PI / 720);
+        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+        draw();
+      }
+      
+      // Start animation
+      animate();
+    </script>
+  </body>
+</html>
