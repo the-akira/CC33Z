@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Symmetrical Pattern</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Define the center of the pattern
+      const centerX = width / 2;
+      const centerY = height / 2;
+      
+      // Define the number of elements and repetitions
+      const numElements = 8;
+      const repetitions = 20;
+      
+      // Define the angle between each element
+      const angle = (Math.E * Math.PI) / numElements;
+      
+      // Define the radius of the pattern
+      const radius = Math.min(width, height) / Math.E;
+      
+      // Define the colors to use
+      const colors = ['#26ff00', '#e9ff6b'];
+      
+      // Define the animation loop
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        
+        // Draw each repetition of the pattern
+        for (let r = 0; r < repetitions; r++) {
+          const rotation = (r * angle * 2) + (angle / 2);
+          
+          ctx.save();
+          ctx.rotate(rotation);
+          
+          // Draw each element of the pattern
+          for (let i = 0; i < numElements; i++) {
+            const x = radius * Math.cos(i * angle);
+            const y = radius * Math.sin(i * angle);
+            
+            // Connect the circles with lines
+            for (let j = 0; j < numElements; j++) {
+              const x2 = radius * Math.cos(j * angle);
+              const y2 = radius * Math.sin(j * angle);
+              
+              ctx.beginPath();
+              ctx.moveTo(x, y);
+              ctx.lineTo(x2, y2);
+              ctx.strokeStyle = colors[j % colors.length];
+              ctx.lineWidth = 1.5;
+              ctx.stroke();
+            }
+          }
+          
+          ctx.restore();
+        }
+        
+        ctx.restore();
+        
+        // Rotate the pattern
+        ctx.translate(centerX, centerY);
+        ctx.rotate(angle / 100);
+        ctx.translate(-centerX, -centerY);
+        
+        // Request the next frame of the animation
+        requestAnimationFrame(animate);
+      }
+      
+      // Start the animation
+      animate();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geometric Optical Illusion</title>
+    <style>
+        body { 
+            background: #728fb5;
+        }
+        canvas {
+            background-image: radial-gradient(#fcffa1, white, #422875);
+            border: 1px solid black;
+            display: block;
+            margin: auto;
+            margin-top: 70px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Define the parameters
+        const center = { x: canvas.width / 2, y: canvas.height / 2 };
+        const radius = 560;
+        const lineCount = 30;
+        const lineWidth = 3;
+        const rotationSpeed = 0.003;
+
+        // Animation loop
+        function animate() {
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate the rotation angle
+            const rotationAngle = performance.now() * rotationSpeed;
+
+            // Draw the lines
+            for (let i = 0; i < lineCount; i++) {
+                const angle = (2 * Math.PI * i) / lineCount;
+                const startX = center.x + Math.cos(angle) * radius;
+                const startY = center.y + Math.sin(angle) * radius;
+                const endX = center.x + Math.cos(angle + rotationAngle) * radius;
+                const endY = center.y + Math.sin(angle + rotationAngle) * radius;
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = lineWidth;
+                ctx.stroke();
+            }
+
+            // Request the next frame
+            requestAnimationFrame(animate);
+        }
+
+        // Start the animation
+        animate();
+    </script>
+</body>
+</html>

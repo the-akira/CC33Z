@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ultra-Symmetric Visual Patterns</title>
+  <style>
+    body {
+      background: black;
+    }
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin: auto;
+      margin-top: 70px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+
+  <script>
+    // Get the canvas element
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set the canvas size
+    canvas.width = 800;
+    canvas.height = 800;
+
+    // Generate a random color
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Draw a symmetric shape with varying colors and gradients
+    function drawSymmetricShape(x, y, radius, sides) {
+      const angle = (2 * Math.PI) / sides;
+
+      // Create a new gradient object
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.5, x, y, radius * 1.5);
+      gradient.addColorStop(0, getRandomColor());
+      gradient.addColorStop(0.5, getRandomColor());
+      gradient.addColorStop(1, getRandomColor());
+
+      // Begin drawing the shape
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+
+      for (let i = 1; i < sides; i++) {
+        const xPos = x + radius * Math.cos(angle * i);
+        const yPos = y + radius * Math.sin(angle * i);
+        ctx.lineTo(xPos, yPos);
+      }
+
+      ctx.closePath();
+
+      // Set the fill style to the gradient
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Draw a border around the shape
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = getRandomColor();
+      ctx.stroke();
+    }
+
+    // Draw the ultra-symmetric pattern with varying numbers of sides and shapes
+    function drawPattern() {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const maxRadius = Math.min(centerX, centerY);
+      const numShapes = Math.floor(Math.random() * 7) + 10;
+      const sides = Math.floor(Math.random() * 4) + 5;
+
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the pattern
+      for (let i = numShapes; i > 0; i--) {
+        const radius = (maxRadius / numShapes) * i;
+        drawSymmetricShape(centerX, centerY, radius, sides);
+      }
+    }
+
+    // Call the drawPattern function to generate the initial pattern
+    drawPattern();
+
+    // Attach a click event listener to the canvas to regenerate the pattern on click
+    canvas.addEventListener('click', drawPattern);
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spinning Concentric Circles</title>
+    <style>
+        body {
+            background: #69538a;
+        }
+        canvas {
+            background: radial-gradient(closest-side, white, #8b9cf0);
+            border: 3px solid black;
+            display: block;
+            margin: auto;
+            margin-top: 70px;
+            border-radius: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="700" height="700"></canvas>
+
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Define the parameters
+        const center = { x: canvas.width / 2, y: canvas.height / 2 };
+        const circleCount = 21;
+        const initialRadius = 400;
+        const lineWidth = 3;
+        const rotationSpeed = 0.01;
+
+        // Animation loop
+        function animate() {
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate the rotation angle
+            const rotationAngle = performance.now() * rotationSpeed;
+
+            // Draw the circles
+            for (let i = 0; i < circleCount; i++) {
+                const angle = (2 * Math.PI * i) / circleCount;
+                const radius = initialRadius - i * 10;
+
+                const x = center.x + Math.cos(angle + rotationAngle) * radius;
+                const y = center.y + Math.sin(angle + rotationAngle) * radius;
+
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = lineWidth;
+                ctx.stroke();
+            }
+
+            // Request the next frame
+            requestAnimationFrame(animate);
+        }
+
+        // Start the animation
+        animate();
+    </script>
+</body>
+</html>
