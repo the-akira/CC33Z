@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complex Geometric Pattern</title>
+    <style>
+        canvas {
+            border: 2px solid black;
+            display: block;
+            margin: auto;
+            margin-top: 70px;
+            background: white;
+        }
+        body {
+            background: linear-gradient(to right, red, green, blue);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Define the parameters
+        const center = { x: canvas.width / 2, y: canvas.height / 2 };
+        const circleCount = 13;
+        const maxRadius = Math.min(canvas.width, canvas.height) / 2;
+        const scaleSpeed = 0.005;
+        const lineWidth = 2;
+        const rotationSpeed = 0.001;
+
+        let scale = 0.01;
+        let increasing = true;
+
+        // Animation loop
+        function animate() {
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate the rotation angle
+            const rotationAngle = performance.now() * rotationSpeed;
+
+            // Update the scale factor
+            if (increasing) {
+                scale += scaleSpeed;
+                if (scale >= 1.5) {
+                    increasing = false;
+                }
+            } else {
+                scale -= scaleSpeed;
+                if (scale <= 0.01) {
+                    increasing = true;
+                }
+            }
+
+            // Draw the circles
+            for (let i = 0; i < circleCount; i++) {
+                const angle = (2 * Math.PI * i) / circleCount;
+                const radius = maxRadius * scale;
+                const x = center.x + Math.cos(angle + rotationAngle) * radius;
+                const y = center.y + Math.sin(angle + rotationAngle) * radius;
+
+                // Draw a circle at the calculated position
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                ctx.fillStyle = "black";
+                ctx.fill();
+
+                // Draw lines connecting the circles
+                for (let j = i + 1; j < circleCount; j++) {
+                    const lineAngle = (2 * Math.PI * j) / circleCount;
+                    const lineRadius = maxRadius * scale;
+                    const lineX = center.x + Math.cos(lineAngle + rotationAngle) * lineRadius;
+                    const lineY = center.y + Math.sin(lineAngle + rotationAngle) * lineRadius;
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(lineX, lineY);
+                    ctx.strokeStyle = "black";
+                    ctx.lineWidth = lineWidth;
+                    ctx.stroke();
+                }
+            }
+
+            // Request the next frame
+            requestAnimationFrame(animate);
+        }
+
+        // Start the animation
+        animate();
+        setInterval(() => {
+            const gradient = `linear-gradient(to right, rgb(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}), rgb(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}), rgb(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}))`;
+            document.body.style.background = gradient;
+        }, 1000)
+    </script>
+</body>
+</html>
