@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Animated Sacred Geometry</title>
+    <style>
+        body {
+            background: black;
+        }
+        canvas {
+            display: block;
+            margin: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="900" height="900"></canvas>
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set background color
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Set geometry parameters
+        const circleCount = 21;
+        const radius = 170;
+        const lineWidth = 2;
+
+        // Animation variables
+        let angle = 0;
+        let colorOffset = 0;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Clear canvas
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update angle
+            angle += 0.01;
+
+            // Draw geometry
+            for (let i = 0; i < circleCount; i++) {
+                const circleAngle = (2 * Math.PI * i) / circleCount + angle;
+                const x = canvas.width / 2 + radius * Math.cos(circleAngle);
+                const y = canvas.height / 2 + radius * Math.sin(circleAngle);
+
+                // Set color
+                const color = `hsl(${colorOffset + (i * 360) / circleCount}, 100%, 50%)`;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = color;
+                ctx.stroke();
+            }
+
+            // Update color offset
+            colorOffset += 3;
+        }
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
