@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Psychedelic Vortex Animation</title>
+  <meta charset="utf-8">
+  <style type="text/css">
+    body {
+      background: black;
+    }
+    canvas {
+      background: #d9f9ff;
+      display: block;
+      margin: auto;
+      margin-top: 70px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas dimensions
+    canvas.width = 800;
+    canvas.height = 800;
+
+    // Set background color
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Set geometry parameters
+    const numLayers = 100;
+    const numPoints = 33;
+    const radius = canvas.width / 2.1;
+    const lineWidth = 1;
+
+    // Set color gradient
+    const gradient = ctx.createRadialGradient(
+      canvas.width / 2,
+      canvas.height / 2,
+      0,
+      canvas.width / 2,
+      canvas.height / 2,
+      radius
+    );
+    gradient.addColorStop(0, "#FF00FF");
+    gradient.addColorStop(1, "#00FFFF");
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Clear canvas
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Rotate canvas
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(Math.PI / 180);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+      // Draw geometry
+      for (let i = 0; i < numLayers; i++) {
+        const angleIncrement = (2 * Math.PI) / numPoints;
+        const radiusIncrement = radius / numLayers;
+        const hue = (i / numLayers) * 360;
+
+        for (let j = 0; j < numPoints; j++) {
+          const angle = j * angleIncrement;
+          const currentRadius = i * radiusIncrement;
+          const x = canvas.width / 2 + currentRadius * Math.cos(angle);
+          const y = canvas.height / 2 + currentRadius * Math.sin(angle);
+
+          ctx.beginPath();
+          ctx.arc(x, y, lineWidth, 0, 2 * Math.PI);
+          ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+          ctx.fill();
+        }
+      }
+    }
+
+    // Start animation
+    animate();
+  </script>
+</body>
+</html>
