@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rotating Star</title>
+    <style>
+      canvas {
+        background: white;
+        display: block;
+        margin: auto;
+        margin-top: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script>
+      // Get the canvas element
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+
+      // Center coordinates
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      // Animation properties
+      let angle = 0;
+      const rotationSpeed = 0.01;
+
+      function draw() {
+        // Clear canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Set styles for the patterns
+        context.strokeStyle = "black";
+        context.lineWidth = 2;
+
+        // Draw the pattern
+        for (let i = 0; i < 24; i++) {
+          const radius = 250;
+          const x = centerX + radius * Math.cos(angle + (i * Math.PI) / 12);
+          const y = centerY + radius * Math.sin(angle + (i * Math.PI) / 12);
+
+          context.beginPath();
+          context.moveTo(x, y);
+          for (let j = 0; j < 12; j++) {
+            const nextX =
+              centerX +
+              (radius / 3) * Math.cos(angle + (j * Math.PI) / 6 + (i * Math.PI) / 12);
+            const nextY =
+              centerY +
+              (radius / 3) * Math.sin(angle + (j * Math.PI) / 6 + (i * Math.PI) / 12);
+            context.lineTo(nextX, nextY);
+          }
+          context.closePath();
+          context.stroke();
+
+          // Add concentric circles
+          for (let k = 0; k < 3; k++) {
+            context.beginPath();
+            context.arc(centerX, centerY, radius * (k + 1) / 4, 0, 2 * Math.PI);
+            context.stroke();
+          }
+        }
+
+        // Update angle for rotation
+        angle += rotationSpeed;
+
+        // Request animation frame
+        requestAnimationFrame(draw);
+      }
+
+      // Start the animation
+      draw();
+    </script>
+  </body>
+</html>
