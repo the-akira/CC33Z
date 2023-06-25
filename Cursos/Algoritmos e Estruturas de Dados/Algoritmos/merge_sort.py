@@ -1,46 +1,33 @@
-def merge(A,p,q,r):
-    n1 = q - p + 1
-    n2 = r - q
-    L = [0] * (n1)
-    R = [0] * (n2)
-  
-    for i in range(0, n1):
-        L[i] = A[p + i]
-  
-    for j in range(0, n2):
-        R[j] = A[q + 1 + j]
-  
-    i = 0     
-    j = 0    
-    k = p    
-  
-    while i < n1 and j < n2:
-        if L[i] <= R[j]:
-            A[k] = L[i]
-            i += 1
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left_half = arr[:mid]
+    right_half = arr[mid:]
+    
+    left_half = merge_sort(left_half)
+    right_half = merge_sort(right_half)
+    
+    return merge(left_half, right_half)
+
+def merge(left, right):
+    merged = []
+    left_index, right_index = 0, 0
+    
+    while left_index < len(left) and right_index < len(right):
+        if left[left_index] <= right[right_index]:
+            merged.append(left[left_index])
+            left_index += 1
         else:
-            A[k] = R[j]
-            j += 1
-        k += 1
-
-    while i < n1:
-        A[k] = L[i]
-        i += 1
-        k += 1
-
-    while j < n2:
-        A[k] = R[j]
-        j += 1
-        k += 1
-
-def merge_sort(A,p,r):
-    if p < r:
-        q = (p+(r-1))//2
-        merge_sort(A, p, q)
-        merge_sort(A, q+1, r)
-        merge(A, p, q, r)
+            merged.append(right[right_index])
+            right_index += 1
+    
+    merged.extend(left[left_index:])
+    merged.extend(right[right_index:])
+    
+    return merged
 
 if __name__ == '__main__':
-    array = [5, 2, 4, 7, 1, 3, 2, 6]
-    merge_sort(array,0,len(array)-1)
-    print(array)
+    array = [5, 2, 4, 7, 1, 3, 2, 6]    
+    print(merge_sort(array))
