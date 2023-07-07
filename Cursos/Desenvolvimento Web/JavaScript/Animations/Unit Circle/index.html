@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unit Circle</title>
+    <style>
+        body {
+          background: #cbcacc;
+        }
+        h1 {
+          text-align: center;
+          font-size: 2.3rem;
+          margin-top: 15px;
+          margin-bottom: 15px;
+        }
+        canvas {
+          border: 2.5px solid black;
+          display: block;
+          margin: auto;
+          margin-bottom: 15px;
+          background: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Unit Circle</h1>
+    <canvas id="unitCircleCanvas" width="400" height="400"></canvas>
+    <canvas id="sinWaveCanvas" width="400" height="200"></canvas>
+    <canvas id="cosWaveCanvas" width="400" height="200"></canvas>
+    <script>
+        // Get the canvas elements
+        const unitCircleCanvas = document.getElementById('unitCircleCanvas');
+        const sinWaveCanvas = document.getElementById('sinWaveCanvas');
+        const cosWaveCanvas = document.getElementById('cosWaveCanvas');
+
+        const unitCircleContext = unitCircleCanvas.getContext('2d');
+        const sinWaveContext = sinWaveCanvas.getContext('2d');
+        const cosWaveContext = cosWaveCanvas.getContext('2d');
+
+        // Define the center coordinates of the canvas
+        const centerX = unitCircleCanvas.width / 2;
+        const centerY = unitCircleCanvas.height / 2;
+
+        // Clear the canvas and draw the unit circle
+        function drawUnitCircle() {
+            unitCircleContext.clearRect(0, 0, unitCircleCanvas.width, unitCircleCanvas.height);
+
+            // Draw the circle
+            unitCircleContext.beginPath();
+            unitCircleContext.arc(centerX, centerY, 150, 0, 2 * Math.PI);
+            unitCircleContext.stroke();
+            unitCircleContext.fillStyle = '#e6e6e8';
+            unitCircleContext.fill()
+
+            // Draw the quadrant lines
+            unitCircleContext.moveTo(centerX, centerY - 150);
+            unitCircleContext.lineTo(centerX, centerY + 150);
+            unitCircleContext.moveTo(centerX - 150, centerY);
+            unitCircleContext.lineTo(centerX + 150, centerY);
+            unitCircleContext.stroke();
+
+            // Draw the angles
+            const angle = Math.PI / 6; // 30 degrees
+            for (let i = 0; i < 12; i++) {
+              const x = centerX + 150 * Math.cos(i * angle);
+              const y = centerY - 150 * Math.sin(i * angle);
+              unitCircleContext.moveTo(centerX, centerY);
+              unitCircleContext.lineTo(x, y);
+              unitCircleContext.stroke();
+
+              // Label the angles
+              const degrees = i * 30;
+              unitCircleContext.font = 'bold 15px Arial';
+              unitCircleContext.fillStyle = 'purple'; 
+              unitCircleContext.fillText(`${degrees.toString()}°`, x, y);
+            }
+        }
+
+        // Animate sin and cos around the unit circle
+        let angle = 0;
+        function animateSinCos() {
+            const x = centerX + 150 * Math.cos(angle);
+            const y = centerY - 150 * Math.sin(angle);
+
+            // Clear the previous triangle
+            unitCircleContext.clearRect(0, 0, unitCircleCanvas.width, unitCircleCanvas.height);
+
+            // Redraw the unit circle
+            drawUnitCircle();
+
+            // Draw the triangle
+            unitCircleContext.beginPath();
+            unitCircleContext.moveTo(centerX, centerY);
+            unitCircleContext.lineTo(x, centerY);
+            unitCircleContext.lineTo(x, y);
+            unitCircleContext.closePath();
+            unitCircleContext.fillStyle = 'rgba(0, 255, 0, 0.3)';
+            unitCircleContext.fill();
+
+            // Draw the rotating lines
+            unitCircleContext.moveTo(x, y);
+            unitCircleContext.lineTo(centerX, y);
+            unitCircleContext.moveTo(x, y);
+            unitCircleContext.lineTo(x, centerY);
+            unitCircleContext.stroke();
+
+            // Calculate sin and cos values
+            const sinValue = Math.sin(angle).toFixed(2);
+            const cosValue = Math.cos(angle).toFixed(2);
+
+            // Draw sin and cos labels
+            unitCircleContext.fillStyle = 'black';
+            unitCircleContext.font = '20px Arial';
+            unitCircleContext.fillText(`sin: ${sinValue}`, 10, 25);
+            unitCircleContext.fillText(`cos: ${cosValue}`, 10, 45);
+
+            // Update the angle for the next frame
+            angle += 0.01;
+
+            // Clear the previous wave frames
+            sinWaveContext.clearRect(0, 0, sinWaveCanvas.width, sinWaveCanvas.height);
+            unitCircleContext.fillStyle = 'black';
+            cosWaveContext.clearRect(0, 0, cosWaveCanvas.width, cosWaveCanvas.height);
+
+            // Draw the sine wave
+            drawWave(sinWaveContext, sinWaveCanvas.width, sinWaveCanvas.height, sinValue, 'red', 'sin');
+            // Draw the cosine wave
+            drawWave(cosWaveContext, cosWaveCanvas.width, cosWaveCanvas.height, cosValue, 'blue', 'cos');
+
+            requestAnimationFrame(animateSinCos);
+        }
+
+        // Draw the wave
+        function drawWave(context, canvasWidth, canvasHeight, amplitude, color, type) {
+            context.beginPath();
+            context.moveTo(0, canvasHeight / 2);
+            context.font = '20px Arial';
+            context.fillText(`${type}`, 10, 25);
+
+            for (let x = 0; x < canvasWidth; x++) {
+              const angle = (x / canvasWidth) * (2 * Math.PI);
+              const y = (canvasHeight / 2) + (amplitude * (canvasHeight / 2) * Math.sin(angle));
+              context.lineWidth = 2;
+              context.lineTo(x, y);
+            }
+
+            context.strokeStyle = color;
+            context.stroke();
+        }
+
+        // Start the animation
+        drawUnitCircle();
+        animateSinCos();
+    </script>
+</body>
+</html>
