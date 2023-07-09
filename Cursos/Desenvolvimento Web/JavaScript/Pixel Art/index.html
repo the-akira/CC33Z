@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pixel Art</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="drawing-area">
+        <h1>Pixel Art</h1>
+        <canvas id="canvas"></canvas>  
+        <div id="tools">
+            <button id="pencil-tool" class="active" data-tool="pencil">Pencil</button>
+            <p>Pencil Size</p><input type="number" id="pencil-size" min="1" max="10" value="1" step="2">
+            <input type="color" id="color-picker">
+            <button id="bucket-tool" data-tool="bucket">Bucket</button>
+            <button id="line-tool" data-tool="line">Line</button>
+            <button id="square-tool" data-tool="square">Square</button>
+            <button id="clear-button">Clear Canvas</button>
+            <button id="export-button">Export Image</button>     
+        </div>
+    </div>
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>
