@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cyberpunk Eye</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="artCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('artCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Number of lines and their length
+    const numLines = 125;
+    const lineLength = 420;
+
+    // Animation parameters
+    const movementSpeed = 1;
+    const colorChangeSpeed = 0.2;
+    let time = 0;
+
+    // Function to draw a line
+    function drawLine(x1, y1, x2, y2, color) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Generate random color in neon scheme
+    function getRandomColor() {
+      const hue = (time * 100) % 360;
+      const saturation = '100%';
+      const lightness = '50%';
+      return `hsl(${hue}, ${saturation}, ${lightness})`;
+    }
+
+    // Generate moving lines
+    function generateArt() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      for (let i = 0; i < numLines; i++) {
+        const angle = (i / numLines) * Math.PI * 2;
+        const x1 = centerX + Math.cos(angle + time) * lineLength;
+        const y1 = centerY + Math.sin(angle + time) * lineLength;
+        const x2 = centerX + Math.cos(angle - time) * lineLength;
+        const y2 = centerY + Math.sin(angle - time) * lineLength;
+        const color = getRandomColor();
+
+        drawLine(x1, y1, x2, y2, color);
+      }
+
+      time += movementSpeed;
+      requestAnimationFrame(generateArt);
+    }
+
+    generateArt();
+  </script>
+</body>
+</html>

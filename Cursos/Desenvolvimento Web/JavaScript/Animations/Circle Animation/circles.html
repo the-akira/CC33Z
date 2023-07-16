@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Animated Circles</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="artCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('artCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Number of circles and their size
+    const numCircles = 100;
+    const circleSize = 200;
+
+    // Animation parameters
+    const pulsationSpeed = 0.02;
+    let time = 0;
+
+    // Function to draw a circle
+    function drawCircle(x, y, size, color) {
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Generate random color
+    function getRandomColor() {
+      const hue = Math.random() * 360;
+      const saturation = '100%';
+      const lightness = '50%';
+      return `hsl(${hue}, ${saturation}, ${lightness})`;
+    }
+
+    // Generate symmetrical circles
+    function generateArt() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      for (let i = 0; i < numCircles; i++) {
+        const angle = (i / numCircles) * Math.PI * 2;
+        const x = centerX + Math.cos(angle + time) * circleSize;
+        const y = centerY + Math.sin(angle + time) * circleSize;
+        const color = getRandomColor();
+
+        drawCircle(x, y, circleSize, color);
+        drawCircle(centerX * 2 - x, y, circleSize, color); // Reflect horizontally
+      }
+
+      time += pulsationSpeed;
+      requestAnimationFrame(generateArt);
+    }
+
+    generateArt();
+  </script>
+</body>
+</html>
