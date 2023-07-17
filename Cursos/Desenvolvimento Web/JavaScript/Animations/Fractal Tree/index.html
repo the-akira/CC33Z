@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Animated Fractal Tree</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fractalCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('fractalCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Animation parameters
+    let maxDepth = 8;
+    let angleChange = 0.5;
+    let lengthScale = 0.80;
+    const colorChangeSpeed = 0.015;
+    let glowStrength = 10;
+    let hueOffset = 0;
+
+    // Function to draw a glowing line
+    function drawGlowingLine(x1, y1, x2, y2, color, glowStrength) {
+      const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+      gradient.addColorStop(0, color);
+      gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = glowStrength;
+      ctx.stroke();
+    }
+
+    // Recursive function to draw the fractal tree
+    function drawFractalTree(x1, y1, length, angle, depth) {
+      if (depth <= 0) return;
+
+      const x2 = x1 + Math.cos(angle) * length;
+      const y2 = y1 + Math.sin(angle) * length;
+
+      const red = Math.floor(Math.sin(hueOffset) * 127 + 128);
+      const green = Math.floor(Math.sin(hueOffset + 2) * 127 + 128);
+      const blue = Math.floor(Math.sin(hueOffset + 4) * 127 + 128);
+      const color = `rgb(${red}, ${green}, ${blue})`;
+
+      drawGlowingLine(x1, y1, x2, y2, color, glowStrength);
+
+      drawFractalTree(x2, y2, length * lengthScale, angle + angleChange, depth - 1);
+      drawFractalTree(x2, y2, length * lengthScale, angle - angleChange, depth - 1);
+    }
+
+    // Animate the fractal tree
+    function animateFractalTree() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const centerX = canvas.width / 2;
+      const bottomY = canvas.height * 0.935;
+      const initialLength = canvas.height * 0.2;
+
+      hueOffset += colorChangeSpeed;
+
+      // Animation: Change the depth, angle, and glow strength over time
+      maxDepth = 8 + Math.sin(hueOffset) * 2;
+      angleChange = 0.5 + Math.sin(hueOffset + 1) * 0.2;
+      lengthScale = 0.75 + Math.sin(hueOffset + 2) * 0.1;
+      glowStrength = 12 + Math.sin(hueOffset + 3) * 3;
+
+      drawFractalTree(centerX, bottomY, initialLength, -Math.PI / 2, maxDepth);
+
+      // Continue the animation loop
+      requestAnimationFrame(animateFractalTree);
+    }
+
+    animateFractalTree();
+  </script>
+</body>
+</html>

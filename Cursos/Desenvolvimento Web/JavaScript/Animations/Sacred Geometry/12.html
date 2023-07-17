@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Connected Triangles</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="sacredCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('sacredCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Animation parameters
+    const center = { x: canvas.width / 2, y: canvas.height / 2 };
+    const numTriangles = 12;
+    const triangleRadius = 175;
+    const rotationSpeed = 0.003;
+
+    // Function to draw an equilateral triangle
+    function drawTriangle(x, y, radius, color) {
+      ctx.beginPath();
+      ctx.moveTo(x, y - radius);
+      ctx.lineTo(x - (Math.sqrt(3) / 2) * radius, y + (radius / 2));
+      ctx.lineTo(x + (Math.sqrt(3) / 2) * radius, y + (radius / 2));
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Animate the sacred geometric pattern
+    function animateSacredGeometry() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const hueOffset = Date.now() * 0.1; // Change color based on time
+      const angleIncrement = (2 * Math.PI) / numTriangles;
+
+      for (let i = 0; i < numTriangles; i++) {
+        const angle = i * angleIncrement;
+        const color = `hsl(${(hueOffset + i * 30) % 360}, 80%, 60%)`;
+        const x = center.x + Math.cos(angle) * triangleRadius;
+        const y = center.y + Math.sin(angle) * triangleRadius;
+
+        drawTriangle(x, y, triangleRadius, color);
+        drawLine(center.x, center.y, x, y, color);
+      }
+
+      // Rotate the canvas
+      ctx.translate(center.x, center.y);
+      ctx.rotate(rotationSpeed);
+      ctx.translate(-center.x, -center.y);
+
+      // Continue the animation loop
+      requestAnimationFrame(animateSacredGeometry);
+    }
+
+    // Function to draw a line connecting two points
+    function drawLine(x1, y1, x2, y2, color) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    animateSacredGeometry();
+  </script>
+</body>
+</html>
