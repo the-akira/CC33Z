@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Circles</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const shapes = [];
+        const colors = ['#f06', '#0cf', '#f0c', '#c0f', '#fc0'];
+
+        class Shape {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 50 + 20;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.growing = true;
+                this.maxSize = Math.random() * 150 + 50;
+                this.shrinkSpeed = Math.random() * 2 + 1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 20;
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            update() {
+                if (this.growing) {
+                    this.size += 1;
+                    if (this.size >= this.maxSize) {
+                        this.growing = false;
+                    }
+                } else {
+                    this.size -= this.shrinkSpeed;
+                    if (this.size <= 0) {
+                        this.size = 0;
+                        this.growing = true;
+                        this.x = Math.random() * canvas.width;
+                        this.y = Math.random() * canvas.height;
+                    }
+                }
+            }
+        }
+
+        function createShapes(count) {
+            for (let i = 0; i < count; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                shapes.push(new Shape(x, y));
+            }
+        }
+
+        function drawShapes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const shape of shapes) {
+                shape.draw();
+            }
+        }
+
+        function updateShapes() {
+            for (const shape of shapes) {
+                shape.update();
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updateShapes();
+            drawShapes();
+        }
+
+        createShapes(75);
+        animate();
+
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
