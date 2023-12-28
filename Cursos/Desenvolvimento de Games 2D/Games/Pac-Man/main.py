@@ -237,7 +237,7 @@ class Entity(pygame.sprite.Sprite):
 
 class SmallPill(pygame.sprite.Sprite):
     def __init__(self):
-        self.image = load_image('pill.png').subsurface(0, 0, 30, 30)
+        self.image = load_image('pill.png').subsurface(0, 0, 25, 25)
         self.rect = self.image.get_rect()
         self.rect.center = (45, 45)
 
