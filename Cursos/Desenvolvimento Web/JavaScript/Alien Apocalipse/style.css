@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Honk&family=VT323&display=swap');
+
+body {
+    background-image: linear-gradient(#251e54, black);
+    min-height: 100vh;
+}
+
+h1, h2 {
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 3.5rem;
+    text-shadow: 3px 3px 3px #8408d1;
+    font-family: "VT323", monospace;
+}
+
+h2 {
+    font-size: 2.6rem;
+    font-weight: normal;  
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    width: 240px;
+    height: auto;
+    border: 2.5px solid white;
+    cursor: pointer;
+}
+
+img:hover {
+    opacity: 0.85;
+}
+
+canvas {
+    border: 2.5px solid white;
+    display: block;
+    margin: 0 auto;
+    background-image: url("sprites/space.png");
+    margin-bottom: 35px;
+}
+
+.history {
+    padding-right: 30px;
+    padding-left: 30px;
+    text-align: center;
+    font-size: 1.4rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.modal-content {
+    background: radial-gradient(black, #010424);
+    color: white;
+    text-shadow: 3px 3px 3px #8408d1;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid white;
+    width: 60%;
+}
+
+.close {
+    color: pink;
+    float: right;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    background: #010424;
+    font-size: 1.22rem;
+}
+
+table, th, td {
+    border: 1px solid white;
+    border-collapse: collapse;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
