@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Indie+Flower&family=Protest+Revolution&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+body {
+    background: radial-gradient(#1e1e21, black);
+}
+
+canvas {
+    border: 2.5px solid white;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 35px;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    font-family: "Cinzel", serif;
+    font-size: 3.4rem;
+    text-shadow: 2.5px 2.5px 2.5px #7FD884;
+}
+
+p {
+    background: #1C052E;
+    text-align: center;
+    color: white;
+    font-family: "Arial", serif;
+    font-size: 1.5rem;
+    padding: 40px;
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-bottom: 30px;
+    text-shadow: 1.6px 1.6px 1.6px #3bffa7; 
+    border: 2.5px solid white; 
+}
+
+#hero {
+    background: #1C052E;
+    text-align: center;
+    color: white;
+    font-size: 1.5rem;
+    padding: 20px;
+    margin-left: 100px;
+    margin-right: 100px;
+    text-shadow: 1.6px 1.6px 1.6px #3bffa7; 
+    border: 2.5px solid white;     
+}
+
+#heroName, 
+#randomHP,
+#randomMeteor, 
+#randomShield, 
+#randomOrbe,
+#attributes {
+    font-weight: bold;
+    font-family: "Cinzel", serif;
+    font-size: 4rem;
+    margin-bottom: 0px;
+    margin-top: 21px;
+}
+
+#attributes {
+    margin-top: 13px;
+    font-size: 2.75rem;
+}
+
+#randomHP,
+#randomMeteor, 
+#randomShield, 
+#randomOrbe {
+    font-size: 1.7rem;
+}
+
+p:hover {
+    background: black;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    width: 240px;
+    height: auto;
+    border: 2.5px solid white;
+}
+
+img:hover {
+    opacity: 0.85;
+}
+
+
+table, th, td {
+    border: 2.5px solid;
+    color: white;
+    text-shadow: 1.6px 1.6px 1.6px #3bffa7; 
+    font-size: 1.4rem;
+    border-collapse: collapse;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+tr {
+    background: #1C052E;
+}
+
+tr > td:first-child {
+    font-size: 3rem;
+}
+
+tr:hover {
+    background: black;
+}
+
+#highScoreTable {
+    margin-bottom: 30px;
+}
+
+input {
+    width: 80%;
+    padding: 12px 20px;
+    margin: 0px;
+    margin-top: 20px;
+    font-size: 1.6rem;
+    color: white;
+    background: #45195D;
+    border: 2px solid white;
+    resize: none;
+    height: 30px;  
+}
+
+input:focus {
+    background: black;
+}
+
+button {
+    margin-right: auto;
+    margin-left: auto;
+    padding: 10px;
+    color: white;
+    font-size: 1.8rem;
+    display: block;
+    width: 350px;
+    background: #213F75;
+    border: 2px solid white;
+    margin-top: 25px;    
+}
+
+button:hover {
+    cursor: pointer;
+    opacity: 0.79;
+}

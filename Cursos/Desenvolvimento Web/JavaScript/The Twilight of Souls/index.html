@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Twilight of Souls</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <h1>The Twilight of Souls</h1>
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="music/GoetiaPeterGundry.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <img src="sprites/background/avatar.jpeg">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <h1>Background</h1>
+    <p>
+        <img src="sprites/background/avatar3.png">
+        Segundo a lenda do historiador Ziyaad al-Qadir, o poderoso herói Koumori Shi 
+        foi o escolhido para proteger o santuário sagrado contra o ataque das terríveis 
+        criaturas abissais. Elas estão obstinadas em aprisionar o querido
+        guerreiro na tumba ancestral do Rei Bruxo V'yxhar e subjugar o mundo todo perante 
+        a vontade das trevas. Através do Supremo Poder do Magnífico Artesão Benevolente,
+        o Herói será capaz de usar do conhecimento mágico ancestral para ser capaz de enfrentar estas
+        criaturas sinistras e também contará com relíquias extraordinárias para restaurar seu poder e
+        assegurar a vitória que lhe foi prometida nos tempos passados e assim reconstituir a ordem do Universo.
+    </p>
+    <h1>Herói</h1>
+    <div id="hero">
+        <img style="margin-bottom: 15px; margin-top: 20px;" src="sprites/background/avatar2.png">
+        <input type="text" id="inputName" placeholder="Digite seu nome">
+        <button onclick="updateHeading()">Registrar</button>
+        <h2 id="heroName">Anonymous</h2>
+        <h2 id="attributes">Atributos Aleatórios</h2>
+        <img style="border: none; width: 130px; margin-top: 18px; margin-bottom: 15px;" src="sprites/icons/dice.png">
+        <img style="width: 24px; margin-bottom: 2.5px; border: none; margin-top: 12px;" src="sprites/icons/skull.png">
+        <h2 style="margin-top: 5px;" id="randomHP"></h2>
+        <img style="width: 24px; margin-bottom: 2.5px; border: none; margin-top: 6px;" src="sprites/icons/coffin.png">
+        <h2 style="margin-top: 5px;" id="randomOrbe"></h2>
+        <img style="width: 24px; margin-bottom: 2.5px; border: none; margin-top: 6px;" src="sprites/icons/shield.png">
+        <h2 style="margin-top: 5px;" id="randomShield"></h2>
+        <img style="width: 28px; margin-bottom: 2.5px; border: none; margin-top: 6px;" src="sprites/icons/fire.png">
+        <h2 style="margin-bottom: 20px; margin-top: 5px;" id="randomMeteor"></h2>
+    </div>
+    <h1>Controles</h1>
+    <table>
+        <tr>
+            <th>Key</th>
+            <th>Habilidade</th>
+            <th>Efeito</th>
+        </tr>
+        <tr>
+            <td>f</td>
+            <td>Orbe Lunar</td>
+            <td>Lança Orbes nas 4 direções cardeais que aniquilam os inimigos.</td>
+        </tr>
+        <tr>
+            <td>u</td>
+            <td>Ultimatum</td>
+            <td>Uma chuva de meteoros que dizima todos os inimigos.</td>
+        </tr>
+        <tr>
+            <td>s</td>
+            <td>Selo Mágico</td>
+            <td>Escudo protetor que defende o herói.</td>
+        </tr>
+        <tr>
+            <td>&#8592;</td>
+            <td>Mover Oeste</td>
+            <td>O personagem se desloca para a esquerda.</td>
+        </tr>
+        <tr>
+            <td>&#8593;</td>
+            <td>Mover Norte</td>
+            <td>O personagem se desloca para cima.</td>
+        </tr>
+        <tr>
+            <td>&#8594;</td>
+            <td>Mover Leste</td>
+            <td>O personagem se desloca para a direita.</td>
+        </tr>
+        <tr>
+            <td>&#8595;</td>
+            <td>Mover Sul</td>
+            <td>O personagem se desloca para baixo.</td>
+        </tr>
+    </table>
+    <h1>Relíquias</h1>
+    <table>
+        <tr>
+            <th>Retrato</th>
+            <th>Nome</th>
+            <th>Poder</th>
+        </tr>
+        <tr>
+            <td><img style="width: 30px; height: 30px; margin-bottom: 0px;" src="sprites/itens/flower.png"></td>
+            <td>Flor da Vida</td>
+            <td>Restaura a Energia Vital do Herói.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 30px; height: 30px; margin-bottom: 0px;" src="sprites/itens/crystal.png"></td>
+            <td>Cristal Arcano</td>
+            <td>Restaura o Mana do Herói.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 30px; height: 30px; margin-bottom: 0px;" src="sprites/itens/eye.png"></td>
+            <td>Olho de G'Null</td>
+            <td>Renova a Esperança do Herói.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 30px; height: 30px; margin-bottom: 0px;" src="sprites/itens/sword.png"></td>
+            <td>Espada Flamejante</td>
+            <td>A Luz Inspira o Herói a Lutar.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 30px; height: 30px; margin-bottom: 0px;" src="sprites/itens/talisman.png"></td>
+            <td>Talismã Sagrado</td>
+            <td>Destrói os Inimigos.</td>
+        </tr>
+    </table>
+    <h1>Criaturas</h1>
+    <table style="margin-bottom: 30px;">
+        <tr>
+            <th>Visão</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+        </tr>
+        <tr>
+            <td><img style="width: 50px; height: 50px; margin-bottom: 0px;" src="sprites/bat/bat.png"></td>
+            <td>Koumori Shi</td>
+            <td>Grão-Mestre na arte da magia cosmológica, defensor do Universo.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 50px; height: 50px; margin-bottom: 0px; background: #0E111A;" src="sprites/imp/imp4.png"></td>
+            <td>Imp Insano</td>
+            <td>Surgiram do Inferno para atormentar o corajoso herói.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 50px; height: 50px; margin-bottom: 0px; background: #0E111A;" src="sprites/death/death1.png"></td>
+            <td>La Muerte</td>
+            <td>O ceifador se corrompeu diante das forças malignas.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 50px; height: 50px; margin-bottom: 0px; background: #0E111A;" src="sprites/pumpkin/pumpkin2.png"></td>
+            <td>Giuzeppius</td>
+            <td>O espírito perdido de Jack ataca o personagem.</td>
+        </tr>
+        <tr>
+            <td><img style="width: 50px; height: 50px; margin-bottom: 0px;" src="sprites/crow/crow.png"></td>
+            <td>Corvo Rebelde</td>
+            <td>Voltaram-se contra a sua própria natureza.</td>
+        </tr>
+    </table>
+    <h1>Nobres Aventureiros</h1>
+    <div id="highScoreTable"></div>
+    <script src="game.js" type="text/javascript"></script>
+    <script src="script.js" type="text/javascript"></script>
+</body>
+</html>
