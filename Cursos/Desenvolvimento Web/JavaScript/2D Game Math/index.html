@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matemática dos Games 2D</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Matemática dos Games 2D</h1>
+        <div id="avatar-container">
+            <img id="avatar" src="images/avatar.png">
+            <img id="avatar2" src="images/mandala.gif">
+        </div>
+        <p>Projeto educativo que busca trazer uma visão matemática e intuitiva sobre os Games 2D.</p>
+        <img id="control" src="images/control.png">
+    </header>
+
+    <div id="buttons">
+        <button id="moveButton">Posição Aleatória</button>
+        <button id="deactivateSquare">Quadrados</button>
+        <button id="deactivateCircle">Círculo</button>
+        <button id="deactivateTriangle">Triângulo</button>
+        <button id="deactivateCoordinates">Coordenadas</button>
+        <button id="deactivateGrid">Grid</button>
+        <button id="deactivateGravity">Gravidade</button>
+        <button id="deactivateUnityCircle">Unity Circle</button>
+        <button id="deactivateLines">Linhas</button>
+        <button id="deactivateGame">Game</button>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1 style="margin-top: 8px">Controles</h1>
+            <table>
+              <tr>
+                <th>Tecla</th>
+                <th>Efeito</th>
+              </tr>
+              <tr>
+                <td>Enter</td>
+                <td>Inicia o Game.</td>
+              </tr>
+              <tr>
+                <td>Esc</td>
+                <td>Pausa o Game.</td>
+              </tr>
+              <tr>
+                <td>p</td>
+                <td>Move o jogador para um lugar aleatório.</td>
+              </tr>
+              <tr>
+                <td>s</td>
+                <td>Habilita os quadrados na tela.</td>
+              </tr>
+              <tr>
+                <td>c</td>
+                <td>Habilita o círculo saltitante.</td>
+              </tr>
+              <tr>
+                <td>t</td>
+                <td>Habilita o triângulo que gira.</td>
+              </tr>
+              <tr>
+                <td>x</td>
+                <td>Habilita as coordenadas.</td>
+              </tr>
+              <tr>
+                <td>g</td>
+                <td>Habilita a grid.</td>
+              </tr>
+              <tr>
+                <td>r</td>
+                <td>Habilita a gravidade.</td>
+              </tr>
+              <tr>
+                <td>barra de espaço</td>
+                <td>Se a gravidade estiver habilidade: pula.</td>
+              </tr>
+              <tr>
+                <td>u</td>
+                <td>Habilita o círculo de unidade.</td>
+              </tr>
+              <tr>
+                <td>u</td>
+                <td>Habilita as linhas das coordenadas.</td>
+              </tr>
+              <tr>
+                <td>v</td>
+                <td>Entra no modo vídeo-game.</td>
+              </tr>
+              <tr>
+                <td>q</td>
+                <td>Ataque laser.</td>
+              </tr>
+              <tr>
+                <td>b</td>
+                <td>Explosão Super Nova.</td>
+              </tr>
+              <tr>
+                <td>h</td>
+                <td>Exército de ajudantes.</td>
+              </tr>
+            </table>
+        </div>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script src="game.js" type="text/javascript"></script>
+    <script src="modal.js" type="text/javascript"></script>
+</body>
+</html>
