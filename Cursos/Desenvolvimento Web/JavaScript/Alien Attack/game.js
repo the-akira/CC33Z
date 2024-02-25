@@ -63,7 +63,7 @@ function Enemy(x, y) {
     this.color = "red";
 
     this.update = function() {
-        this.y += 3;
+        this.y += 2;
     };
 
     this.draw = function() {
@@ -140,6 +140,7 @@ function update() {
                     player.invincibility = false;
                 }, 1000);
                 
+                enemies.splice(i, 1); // remove the enemy
                 player.health -= 10; // decrease health by 10
                 if (player.health <= 0) {
                     console.log("Game Over");

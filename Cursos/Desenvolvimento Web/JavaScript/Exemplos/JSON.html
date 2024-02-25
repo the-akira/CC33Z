@@ -15,15 +15,15 @@
     '{ "nome":"Pikachu" , "tipo":"Elétrico" },' +
     '{ "nome":"Charizard" , "tipo":"Fogo" },' +
     '{ "nome":"Squirtle" , "tipo":"Água" } ]}';
-  var obj = JSON.parse(text);
-  var demo = document.getElementById('demo');
-  demo.innerHTML = `${obj.pokemons[0].nome} ${obj.pokemons[0].tipo}`;
+    var obj = JSON.parse(text);
+    var demo = document.getElementById('demo');
+    demo.innerHTML = `${obj.pokemons[0].nome} ${obj.pokemons[0].tipo}`;
 
-  // JSON Dumping
-  var pokemon = {"nome":"Articuno", "Tipo":"Gelo", "Habilidade":"Pressão"};
-  var myJSON = JSON.stringify(pokemon, null, 4);
-  document.getElementById("output").innerHTML = myJSON;
-  console.log(myJSON);
+    // JSON Dumping
+    var pokemon = {"nome":"Articuno", "Tipo":"Gelo", "Habilidade":"Pressão"};
+    var myJSON = JSON.stringify(pokemon, null, 4);
+    document.getElementById("output").innerHTML = myJSON;
+    console.log(myJSON);
   </script>
 </body>
 </html>
