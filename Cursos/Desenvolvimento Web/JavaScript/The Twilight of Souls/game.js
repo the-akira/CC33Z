@@ -640,106 +640,108 @@ document.addEventListener('DOMContentLoaded', function() {
         if (meteoros.length > 0) {
             for (let i = 0; i < meteoros.length; i++) {
                 const meteor = meteoros[i];
-                // Coordenadas dos vértices do retângulo envolvendo o meteoro
-                const meteorLeft = meteor.x;
-                const meteorRight = meteor.x + meteor.largura;
-                const meteorTop = meteor.y;
-                const meteorBottom = meteor.y + meteor.altura;
+                if (meteor) {
+                    // Coordenadas dos vértices do retângulo envolvendo o meteoro
+                    const meteorLeft = meteor.x;
+                    const meteorRight = meteor.x + meteor.largura;
+                    const meteorTop = meteor.y;
+                    const meteorBottom = meteor.y + meteor.altura;
 
-                // Verificar colisões com os inimigos
-                for (let j = 0; j < enemies.length; j++) {
-                    const enemy = enemies[j];
-                    // Coordenadas dos vértices do retângulo envolvendo o inimigo
-                    const enemyLeft = enemy.x;
-                    const enemyRight = enemy.x + enemy.width;
-                    const enemyTop = enemy.y;
-                    const enemyBottom = enemy.y + enemy.height;
+                    // Verificar colisões com os inimigos
+                    for (let j = 0; j < enemies.length; j++) {
+                        const enemy = enemies[j];
+                        // Coordenadas dos vértices do retângulo envolvendo o inimigo
+                        const enemyLeft = enemy.x;
+                        const enemyRight = enemy.x + enemy.width;
+                        const enemyTop = enemy.y;
+                        const enemyBottom = enemy.y + enemy.height;
 
-                    // Verificar colisão entre o meteoro e o inimigo
-                    if (
-                        meteorRight > enemyLeft &&
-                        meteorLeft < enemyRight &&
-                        meteorBottom > enemyTop &&
-                        meteorTop < enemyBottom
-                    ) {
-                        // Remover o inimigo e o meteoro
-                        enemies.splice(j, 1);
-                        j--; // Atualiza o índice após remover o inimigo
-                        bat.score++; // Incrementa a pontuação do jogador
-                        meteoros.splice(i, 1); // Remove o meteoro
-                        i--; // Atualiza o índice após remover o meteoro
+                        // Verificar colisão entre o meteoro e o inimigo
+                        if (
+                            meteorRight > enemyLeft &&
+                            meteorLeft < enemyRight &&
+                            meteorBottom > enemyTop &&
+                            meteorTop < enemyBottom
+                        ) {
+                            // Remover o inimigo e o meteoro
+                            enemies.splice(j, 1);
+                            j--; // Atualiza o índice após remover o inimigo
+                            bat.score++; // Incrementa a pontuação do jogador
+                            meteoros.splice(i, 1); // Remove o meteoro
+                            i--; // Atualiza o índice após remover o meteoro
+                        }
                     }
-                }
 
-                for (let j = 0; j < pumpkins.length; j++) {
-                    const pumpkin = pumpkins[j];
-                    // Coordenadas dos vértices do retângulo envolvendo o inimigo
-                    const pumpkinLeft = pumpkin.x;
-                    const pumpkinRight = pumpkin.x + pumpkin.width;
-                    const pumpkinTop = pumpkin.y;
-                    const pumpkinBottom = pumpkin.y + pumpkin.height;
+                    for (let j = 0; j < pumpkins.length; j++) {
+                        const pumpkin = pumpkins[j];
+                        // Coordenadas dos vértices do retângulo envolvendo o inimigo
+                        const pumpkinLeft = pumpkin.x;
+                        const pumpkinRight = pumpkin.x + pumpkin.width;
+                        const pumpkinTop = pumpkin.y;
+                        const pumpkinBottom = pumpkin.y + pumpkin.height;
 
-                    // Verificar colisão entre o meteoro e o inimigo
-                    if (
-                        meteorRight > pumpkinLeft &&
-                        meteorLeft < pumpkinRight &&
-                        meteorBottom > pumpkinTop &&
-                        meteorTop < pumpkinBottom
-                    ) {
-                        // Remover o inimigo e o meteoro
-                        pumpkins.splice(j, 1);
-                        j--; // Atualiza o índice após remover o inimigo
-                        bat.score++; // Incrementa a pontuação do jogador
-                        meteoros.splice(i, 1); // Remove o meteoro
-                        i--; // Atualiza o índice após remover o meteoro
+                        // Verificar colisão entre o meteoro e o inimigo
+                        if (
+                            meteorRight > pumpkinLeft &&
+                            meteorLeft < pumpkinRight &&
+                            meteorBottom > pumpkinTop &&
+                            meteorTop < pumpkinBottom
+                        ) {
+                            // Remover o inimigo e o meteoro
+                            pumpkins.splice(j, 1);
+                            j--; // Atualiza o índice após remover o inimigo
+                            bat.score++; // Incrementa a pontuação do jogador
+                            meteoros.splice(i, 1); // Remove o meteoro
+                            i--; // Atualiza o índice após remover o meteoro
+                        }
                     }
-                }
 
-                for (let j = 0; j < crows.length; j++) {
-                    const crow = crows[j];
-                    // Coordenadas dos vértices do retângulo envolvendo o inimigo
-                    const crowLeft = crow.x;
-                    const crowRight = crow.x + crow.width;
-                    const crowTop = crow.y;
-                    const crowBottom = crow.y + crow.height;
+                    for (let j = 0; j < crows.length; j++) {
+                        const crow = crows[j];
+                        // Coordenadas dos vértices do retângulo envolvendo o inimigo
+                        const crowLeft = crow.x;
+                        const crowRight = crow.x + crow.width;
+                        const crowTop = crow.y;
+                        const crowBottom = crow.y + crow.height;
 
-                    // Verificar colisão entre o meteoro e o inimigo
-                    if (
-                        meteorRight > crowLeft &&
-                        meteorLeft < crowRight &&
-                        meteorBottom > crowTop &&
-                        meteorTop < crowBottom
-                    ) {
-                        // Remover o inimigo e o meteoro
-                        crows.splice(j, 1);
-                        j--; // Atualiza o índice após remover o inimigo
-                        bat.score++; // Incrementa a pontuação do jogador
-                        meteoros.splice(i, 1); // Remove o meteoro
-                        i--; // Atualiza o índice após remover o meteoro
+                        // Verificar colisão entre o meteoro e o inimigo
+                        if (
+                            meteorRight > crowLeft &&
+                            meteorLeft < crowRight &&
+                            meteorBottom > crowTop &&
+                            meteorTop < crowBottom
+                        ) {
+                            // Remover o inimigo e o meteoro
+                            crows.splice(j, 1);
+                            j--; // Atualiza o índice após remover o inimigo
+                            bat.score++; // Incrementa a pontuação do jogador
+                            meteoros.splice(i, 1); // Remove o meteoro
+                            i--; // Atualiza o índice após remover o meteoro
+                        }
                     }
-                }
 
-                for (let j = 0; j < deaths.length; j++) {
-                    const death = deaths[j];
-                    // Coordenadas dos vértices do retângulo envolvendo o inimigo
-                    const deathLeft = death.x;
-                    const deathRight = death.x + death.width;
-                    const deathTop = death.y;
-                    const deathBottom = death.y + death.height;
+                    for (let j = 0; j < deaths.length; j++) {
+                        const death = deaths[j];
+                        // Coordenadas dos vértices do retângulo envolvendo o inimigo
+                        const deathLeft = death.x;
+                        const deathRight = death.x + death.width;
+                        const deathTop = death.y;
+                        const deathBottom = death.y + death.height;
 
-                    // Verificar colisão entre o meteoro e o inimigo
-                    if (
-                        meteorRight > deathLeft &&
-                        meteorLeft < deathRight &&
-                        meteorBottom > deathTop &&
-                        meteorTop < deathBottom
-                    ) {
-                        // Remover o inimigo e o meteoro
-                        deaths.splice(j, 1);
-                        j--; // Atualiza o índice após remover o inimigo
-                        bat.score++; // Incrementa a pontuação do jogador
-                        meteoros.splice(i, 1); // Remove o meteoro
-                        i--; // Atualiza o índice após remover o meteoro
+                        // Verificar colisão entre o meteoro e o inimigo
+                        if (
+                            meteorRight > deathLeft &&
+                            meteorLeft < deathRight &&
+                            meteorBottom > deathTop &&
+                            meteorTop < deathBottom
+                        ) {
+                            // Remover o inimigo e o meteoro
+                            deaths.splice(j, 1);
+                            j--; // Atualiza o índice após remover o inimigo
+                            bat.score++; // Incrementa a pontuação do jogador
+                            meteoros.splice(i, 1); // Remove o meteoro
+                            i--; // Atualiza o índice após remover o meteoro
+                        }
                     }
                 }
             }
