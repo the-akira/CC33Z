@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
         draw() {
             this.ctx.drawImage(this.images[this.currentImageIndex], this.x, this.y, this.width, this.height);
             if (this.shieldActive) {
-                this.ctx.drawImage(this.shieldImage, this.x + 38, this.y + 15, 45, 45);
+                this.ctx.drawImage(this.shieldImage, this.x + 46, this.y + 25, 45, 45);
             }
         }
 
