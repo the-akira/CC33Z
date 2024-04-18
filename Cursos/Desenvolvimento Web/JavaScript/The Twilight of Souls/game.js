@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
         constructor(canvas, ctx) {
             this.canvas = canvas;
             this.ctx = ctx;
-            this.width = 120;
-            this.height = 62;
+            this.width = 140;
+            this.height = 91;
             this.x = (canvas.width - this.width) / 2;
             this.y = (canvas.height - this.height) / 2;
             this.speedX = 3;
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.canvas = canvas;
             this.ctx = ctx;
             this.width = 66;
-            this.height = 50;
+            this.height = 83;
             this.x = Math.random() * (canvas.width - this.width); // Posição aleatória no eixo x
             this.y = -this.height; // Começa acima do topo do canvas
             this.speedY = 2; // Velocidade de descida do Imp
@@ -342,14 +342,14 @@ document.addEventListener('DOMContentLoaded', function() {
             this.canvas = canvas;
             this.ctx = ctx;
             this.width = 60;
-            this.height = 45;
+            this.height = 60;
             this.x = canvas.width; // Começa fora do canvas à direita
             this.y = Math.random() * (canvas.height - this.height);
             this.speedX = -2; // Velocidade horizontal do Crow (da direita para a esquerda)
             this.amplitude = 3; // Amplitude do movimento cossenoidal
             this.frequency = 0.03; // Frequência do movimento cossenoidal
             this.images = []; // Array para armazenar as imagens do Crow
-            for (let i = 1; i <= 7; i++) {
+            for (let i = 1; i <= 8; i++) {
                 const img = new Image();
                 img.src = 'sprites/crow/crow' + i + '.png';
                 this.images.push(img);
