@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap');
+
+body {
+    background: #edf3fa;
+    font-family: "M PLUS Rounded 1c", sans-serif;
+}
+
+canvas {
+    border: 2px solid blue;
+    display: block;
+    margin: 0 auto;
+    background: white;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.4rem;
+}
+
+.controls, .info, .definition, .background {
+    text-align: center;
+    width: 800px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    border: 2px solid blue;
+    background: white;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+.info {
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 10px;
+    margin-bottom: 18px;
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-size: 1.08rem;
+    color: black;
+    cursor: pointer;
+    background: #B2B2FF;
+    border: 2px solid blue;
+    padding: 5px 10px;
+}
+
+button:disabled {
+    background: #e1e3e6;
+}
+
+#playPauseBtn, #stepBtn {
+    margin-top: 0px;
+}
+
+#speedLabel {
+    display: block;
+}
+
+.backgroundText {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#avatar {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    border: 2px solid blue;
+}
+
+ul {
+    text-align: left;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-bottom: 25px;
+    list-style-type: square;
+    padding-right: 25px;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+input[type="text"], input[type="range"] {
+    display: block;
+    margin: 0 auto;
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+textarea {
+    height: 200px;
+    display: block;
+    margin: 0 auto;
+    resize: none;
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+input[type="text"], input[type="range"], textarea {
+    font-size: 1.1rem;
+    width: 80%;
+    border: 2px solid blue;
+    border-radius: 5px;
+    padding-left: 5px;
+    background: #e1e3e6;
+}
+
+::-webkit-scrollbar {
+    width: 18px;
+}
+
+::-webkit-scrollbar-track {
+    background: white;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #B2B2FF;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7c7cf2;
+}
+
+@media screen and (max-width: 830px) {
+    .controls, .info, .definition, .background {
+        width: 90%;
+    }
+}

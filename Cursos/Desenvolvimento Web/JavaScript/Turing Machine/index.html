@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turing Machine Simulation</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <h1>Turing Machine Simulation</h1>
+
+    <img id="avatar" src="avatar.png">
+
+    <canvas id="canvas" width="800" height="160"></canvas>
+
+    <div class="controls">
+        <h2>Controls</h2>
+        <button id="playPauseBtn" onclick="toggleAnimation()">Play</button>
+        <button id="stepBtn" onclick="stepOnce()">Step</button>
+        <label id="speedLabel" for="speed">Speed:</label>
+        <input type="range" id="speed" min="100" max="2000" step="100" value="1500" oninput="updateSpeed(this.value)">
+        <label for="tapeInput">Tape:</label>
+        <input type="text" id="tapeInput" placeholder="Enter initial tape (e.g., B1010B)" value="B1011001010101010101001B">
+        <button onclick="initializeTape()">Set Tape</button>
+        <button onclick="resetMachine()">Reset</button>
+        <button id="scrollLeftEnd" onclick="scrollTapeToEnd(-1)"><<</button>
+        <button id="scrollLeft" onclick="scrollTape(-1)">Scroll Left</button>
+        <button id="scrollRight" onclick="scrollTape(1)">Scroll Right</button>
+        <button id="scrollRightEnd" onclick="scrollTapeToEnd(1)">>></button>
+    </div>
+
+    <div class="info">
+        <h2>Information</h2>
+        <p><b>Current State:</b> <span id="currentState">q0</span></p>
+        <p><b>Head Position:</b> <span id="headPosition">0</span></p>
+    </div>
+
+    <div class="definition">
+        <h2>Define Computations</h2>
+        <label for="statesInput">States:</label>
+        <input type="text" id="statesInput" placeholder="Enter states (e.g., q0,q1,q2,q3)">
+        <label for="alphabetInput">Alphabet:</label>
+        <input type="text" id="alphabetInput" placeholder="Enter tape alphabet (e.g., 0,1,B)">
+        <label for="transitionsInput">Transitions:</label>
+        <textarea id="transitionsInput" placeholder="Enter transitions (e.g., q0,0,q1,1,R)"></textarea>
+        <button onclick="initializeMachine()">Set Machine</button>
+    </div>
+
+    <div class="background">
+        <h2>A Máquina de Turing</h2>
+        <p class="backgroundText">Uma <b>máquina de Turing</b> é um modelo matemático de computação que descreve uma máquina abstrata que manipula símbolos em uma fita de acordo com uma tabela de regras. Apesar da simplicidade do modelo, ela é capaz de implementar qualquer algoritmo de computador.</p> 
+        <p class="backgroundText">A máquina opera em uma <b>fita de memória infinita</b> dividida em <b>células discretas</b>, cada uma das quais pode conter um único <b>símbolo</b> retirado de um conjunto finito de símbolos chamado de <b>alfabeto</b> da máquina.</p> 
+        <p class="backgroundText">Ela tem uma <b>"head"</b> que, em qualquer ponto da operação da máquina, está posicionada sobre uma dessas células, e um <b>"estado"</b> selecionado de um conjunto finito de estados. Em cada etapa de sua operação, a head lê o símbolo em sua célula. Em seguida, com base no símbolo e no estado presente da máquina, a máquina escreve um símbolo na mesma célula e move a head um passo para a esquerda ou para a direita, ou pára a computação.</p> 
+        <p class="backgroundText" style="margin-bottom: 25px;">A escolha do símbolo de substituição a ser escrito, a direção para mover a head e se vai parar é baseada em uma tabela finita que especifica o que fazer para cada combinação do estado atual e do símbolo lido. Como um programa de computador real, é possível para uma máquina de Turing entrar em um loop infinito que nunca irá parar.</p> 
+    </div>
+
+    <div class="background">
+        <h2>A Invenção</h2>
+        <p class="backgroundText">A máquina de Turing foi inventada em 1936 por <b>Alan Turing</b>, que a chamou de "máquina a" (máquina automática). Foi o orientador de doutorado de Turing, <b>Alonzo Church</b>, quem mais tarde cunhou o termo "máquina de Turing" em uma revisão. Com esse modelo, Turing foi capaz de responder a duas perguntas negativamente:</p> 
+        <p class="backgroundText"><b>1.</b> Existe uma máquina que possa determinar se qualquer máquina arbitrária em sua fita é "circular" (por exemplo, congela ou falha em continuar sua tarefa computacional)?</p> <p class="backgroundText"><b>2.</b> Existe uma máquina que possa determinar se qualquer máquina arbitrária em sua fita imprime um dado símbolo?</p> 
+        <p class="backgroundText" style="margin-bottom: 25px;">Assim, fornecendo uma descrição matemática de um dispositivo muito simples capaz de computações arbitrárias, ele foi capaz de provar propriedades da computação em geral - e em particular, a incomputabilidade do Entscheidungsproblem ('problema de decisão').</p>
+    </div>
+
+    <div class="background" style="margin-bottom: 30px;">
+        <h2>Definição Formal</h2>
+        <p class="backgroundText">A máquina de Turing pode ser formalmente definida como uma 7-tupla M = (Q, Γ, b, Σ, δ, q0, F):</p>
+        <ul>
+            <li>Q é um conjunto finito e não vazio de estados;</li>
+            <li>Γ é um conjunto finito e não vazio de símbolos do alfabeto de fita;</li>
+            <li>b é o símbolo branco (o único símbolo permitido para ocorrer na fita infinitamente muitas vezes em qualquer etapa durante a computação);</li>
+            <li>Σ é o conjunto de símbolos de entrada, ou seja, o conjunto de símbolos permitidos para aparecer no conteúdo inicial da fita, e é um subconjunto de Γ excluindo o símbolo branco b;</li>
+            <li>δ é uma função parcial chamada função de transição, que mapeia um estado atual (exceto os estados finais) e um símbolo da fita para um novo estado, um símbolo da fita e uma direção de movimento da head (esquerda ou direita). Se δ não for definida para o estado atual e o símbolo da fita atual, então a máquina para; intuitivamente, a função de transição especifica o próximo estado transitado do estado atual, qual símbolo substituir o símbolo atual apontado pela head e o próximo movimento da head;</li>
+            <li>q0 é o estado inicial;</li>
+            <li>F é o conjunto de estados finais ou estados de aceitação. O conteúdo inicial da fita é dito ser aceito por M se eventualmente parar em um estado de F;</li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="machine.js"></script>
+</body>
+</html>
