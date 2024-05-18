@@ -50,10 +50,14 @@ async function step() {
             currentState = nextState; // Muda para o próximo estado
             if (move === 'L' && headPosition === 0) {
                 console.log("A cabeça já está na extremidade esquerda da fita.");
+                playPausebtn.innerHTML = "Play";
+                drawTape();
                 return false;
             }
             if (move === 'R' && headPosition === tape.length - 1) {
                 console.log("A cabeça já está na extremidade direita da fita.");
+                playPausebtn.innerHTML = "Play";
+                drawTape();
                 return false;
             }
             if (move === 'L') {
@@ -156,6 +160,7 @@ function toggleAnimation() {
         playPausebtn.innerHTML = "Play";
     } else {
         startAnimation();
+        centerHeadOnTape();
         playPausebtn.innerHTML = "Pause";
     }
 }
@@ -163,7 +168,6 @@ function toggleAnimation() {
 // Função para iniciar a animação
 function startAnimation() {
     if (!isAnimating) {
-        tapeOffset = 0; 
         isAnimating = true;
         setScrollButtonsEnabled(false);
         animationInterval = setInterval(async () => {
@@ -324,6 +328,25 @@ function populateInputs() {
         }
     }
     document.getElementById('transitionsInput').value = transitionsLines.join('\n');
+}
+
+function centerHeadOnTape() {
+    const canvas = document.getElementById('canvas');
+    const cellsVisible = Math.floor(canvas.width / 80);
+    const halfVisibleCells = Math.floor(cellsVisible / 2);
+
+    // Verifica se a cabeça de leitura está fora das extremidades
+    if (headPosition > halfVisibleCells && headPosition < tape.length - halfVisibleCells) {
+        tapeOffset = Math.max(0, headPosition - halfVisibleCells);
+    } else if (headPosition <= halfVisibleCells) {
+        // Se a cabeça de leitura estiver perto da extremidade esquerda
+        tapeOffset = 0;
+    } else if (headPosition >= tape.length - halfVisibleCells) {
+        // Se a cabeça de leitura estiver perto da extremidade direita
+        tapeOffset = Math.max(0, tape.length - cellsVisible);
+    }
+
+    drawTape();
 }
 
 // Chamada para preencher os inputs com os valores atuais da configuração da máquina de Turing
