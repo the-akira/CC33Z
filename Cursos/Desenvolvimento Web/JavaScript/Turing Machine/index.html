@@ -17,6 +17,7 @@
         <h2>Controls</h2>
         <button id="playPauseBtn" onclick="toggleAnimation()">Play</button>
         <button id="stepBtn" onclick="stepOnce()">Step</button>
+        <button id="stepBackBtn" onclick="stepBack()">Step Back</button>
         <label id="speedLabel" for="speed">Speed:</label>
         <input type="range" id="speed" min="100" max="2000" step="100" value="1500" oninput="updateSpeed(this.value)">
         <label for="tapeInput">Tape:</label>
@@ -33,6 +34,9 @@
         <h2>Information</h2>
         <p><b>Current State:</b> <span id="currentState">q0</span></p>
         <p><b>Head Position:</b> <span id="headPosition">0</span></p>
+        <p><b>Step Count:</b> <span id="stepCount">0</span></p>
+        <p><b>Execution Time:</b> <span id="executionTimeValue">0</span> ms</p>
+        <p><b>Status:</b> <span id="machineStatusText">Paused</span></p>
     </div>
 
     <div class="definition">

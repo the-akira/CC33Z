@@ -21,6 +21,34 @@ let isAnimating = false; // Flag para controlar a animação
 let animationInterval; // Intervalo de animação
 let animationSpeed = 500; // Velocidade da animação em milissegundos
 let tapeOffset = 0; // Deslocamento para o scroll da fita
+let history = [];
+let stepCount = 0;
+let startTime;
+let elapsedTime = 0;
+let timerInterval;
+
+function startTimer() {
+    startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(updateTimer, 100); // Atualiza a cada 100ms
+}
+
+function pauseTimer() {
+    clearInterval(timerInterval);
+    elapsedTime = Date.now() - startTime;
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    elapsedTime = 0;
+    startTime = Date.now(); // Reinicia o startTime
+    document.getElementById('executionTimeValue').innerText = elapsedTime; // Atualiza a exibição do tempo para 0 ms
+}
+
+function updateTimer() {
+    const currentTime = Date.now();
+    const timeDiff = currentTime - startTime;
+    document.getElementById('executionTimeValue').innerText = timeDiff;
+}
 
 // Função para executar uma etapa da Máquina de Turing
 async function step() {
@@ -42,6 +70,16 @@ async function step() {
     let transitionFound = false;
     
     console.log(`Estado atual: ${currentState}, Símbolo atual: ${currentSymbol}, Posição da cabeça: ${headPosition}`);
+
+    // Salvar o estado atual no histórico antes de fazer a transição
+    history.push({
+        currentState,
+        headPosition,
+        currentSymbol,
+        tape: [...tape] // Faz uma cópia da fita
+    });
+
+    stepCount++;
     
     // Procura a transição atual
     for (const [symbol, nextState, writeSymbol, move] of transitions[currentState]) {
@@ -95,6 +133,31 @@ async function step() {
     // Redesenha a fita
     drawTape();
     return true; // Indica que a máquina deve continuar
+}
+
+async function stepBack() {
+    if (history.length === 0) {
+        console.log("Não há passos anteriores para voltar.");
+        return;
+    }
+
+    // Recupera o último estado do histórico
+    const lastState = history.pop();
+
+    // Reverte a máquina para o estado anterior
+    currentState = lastState.currentState;
+    headPosition = lastState.headPosition;
+    tape = lastState.tape;
+
+    stepCount--;
+
+    // Atualiza a interface do usuário
+    updateUI();
+
+    adjustTapeOffset();
+
+    // Redesenha a fita
+    drawTape();
 }
 
 // Função para desenhar a fita no canvas
@@ -170,6 +233,7 @@ function startAnimation() {
     if (!isAnimating) {
         isAnimating = true;
         setScrollButtonsEnabled(false);
+        startTimer();
         animationInterval = setInterval(async () => {
             if (!await step()) {
                 pauseAnimation();
@@ -183,6 +247,8 @@ function pauseAnimation() {
     setScrollButtonsEnabled(true);
     clearInterval(animationInterval);
     isAnimating = false;
+    updateUI();
+    pauseTimer();
 }
 
 // Função para atualizar a velocidade da animação
@@ -201,7 +267,11 @@ function initializeTape() {
     headPosition = 0;
     currentState = initialState;
     tapeOffset = 0; // Resetar o deslocamento da fita
+    stepCount = 0;
+    history = [];
     pauseAnimation();
+    resetTimer(); 
+    updateUI(); // Atualiza a interface do usuário
     drawTape();
     playPausebtn.innerHTML = "Play";
 }
@@ -217,6 +287,8 @@ async function stepOnce() {
 function updateUI() {
     document.getElementById('currentState').innerText = currentState;
     document.getElementById('headPosition').innerText = headPosition;
+    document.getElementById('stepCount').innerText = stepCount;
+    document.getElementById('machineStatusText').innerText = isAnimating ? 'Running' : 'Paused';
 }
 
 // Função para resetar a máquina
@@ -225,7 +297,10 @@ function resetMachine() {
     headPosition = 0;
     currentState = initialState;
     tapeOffset = 0; // Resetar o deslococamento da fita
+    stepCount = 0;
+    history = [];
     pauseAnimation(); // Para qualquer animação em andamento
+    resetTimer();
     updateUI(); // Atualiza a interface do usuário
     drawTape(); // Redesenha a fita
     playPausebtn.innerHTML = "Play";
@@ -273,6 +348,7 @@ function setScrollButtonsEnabled(enabled) {
     document.getElementById('scrollRight').disabled = !enabled;
     document.getElementById('scrollLeftEnd').disabled = !enabled;
     document.getElementById('scrollRightEnd').disabled = !enabled;
+    document.getElementById('stepBackBtn').disabled = !enabled;
     document.getElementById('stepBtn').disabled = !enabled;
 }
 
@@ -347,6 +423,21 @@ function centerHeadOnTape() {
     }
 
     drawTape();
+}
+
+// Função para ajustar o deslocamento da fita
+function adjustTapeOffset() {
+    const canvas = document.getElementById('canvas');
+    const cellsVisible = Math.floor(canvas.width / 80);
+    const halfVisibleCells = Math.floor(cellsVisible / 2);
+
+    if (headPosition > halfVisibleCells && headPosition < tape.length - halfVisibleCells) {
+        tapeOffset = Math.max(0, headPosition - halfVisibleCells);
+    } else if (headPosition <= halfVisibleCells) {
+        tapeOffset = 0;
+    } else if (headPosition >= tape.length - halfVisibleCells) {
+        tapeOffset = Math.max(0, tape.length - cellsVisible);
+    }
 }
 
 // Chamada para preencher os inputs com os valores atuais da configuração da máquina de Turing
