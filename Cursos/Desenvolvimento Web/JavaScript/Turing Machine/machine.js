@@ -26,6 +26,70 @@ let stepCount = 0;
 let startTime;
 let elapsedTime = 0;
 let timerInterval;
+let currentTransitionElement = null;
+
+function populateTransitionsTable() {
+    const tableBody = document.getElementById('transitionsTable').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = ''; // Limpar tabela existente
+
+    for (const [state, transitionsList] of Object.entries(transitions)) {
+        for (const [readSymbol, nextState, writeSymbol, move] of transitionsList) {
+            const row = tableBody.insertRow();
+            row.insertCell(0).innerText = safeValue(state);
+            row.insertCell(1).innerText = safeValue(readSymbol);
+            row.insertCell(2).innerText = safeValue(nextState);
+            row.insertCell(3).innerText = safeValue(writeSymbol);
+            row.insertCell(4).innerText = safeValue(move);
+        }
+    }
+}
+
+function safeValue(value) {
+    return value !== undefined ? value : '';
+}
+
+function highLightRow() {
+    // Destacar a linha correspondente na tabela de transições
+    if (currentTransitionElement) {
+        currentTransitionElement.classList.remove('highlighted'); // Remove o destaque da transição anterior
+    }
+
+    const tableBody = document.getElementById('transitionsTable').getElementsByTagName('tbody')[0];
+    const rows = Array.from(tableBody.rows);
+    const finalState = findFinalState(transitions);
+
+    // Encontrar a linha correspondente à transição atual
+    const currentRow = rows.find(row =>
+        row.cells[0].innerText.trim() === currentState.trim() &&
+        row.cells[1].innerText.trim() === tape[headPosition].trim() ||
+        row.cells[0].innerText.trim() === finalState.trim()
+    );
+
+    if (currentRow) {
+        currentTransitionElement = currentRow;
+        currentRow.classList.add('highlighted');
+    }
+}
+
+function findFinalState(transitions) {
+    for (const state in transitions) {
+        if (transitions[state].length === 0 || transitions[state].some(transition => transition.includes(undefined))) {
+            return state;
+        }
+    }
+    return null; // Se nenhum estado com lista vazia ou elementos undefined for encontrado
+}
+
+function isMachineFinished() {
+    // Verifica se o estado atual não tem transições definidas
+    const currentStateTransitions = transitions[currentState];
+    if (currentStateTransitions.length === 0) {
+        return true; // Se não houver transições definidas, a máquina está terminada
+    }
+
+    // Verifica se todas as transições têm elementos undefined
+    return currentStateTransitions.every(transition => transition.every(element => element === undefined));
+}
 
 function startTimer() {
     startTime = Date.now() - elapsedTime;
@@ -68,21 +132,23 @@ async function step() {
 
     const currentSymbol = tape[headPosition];
     let transitionFound = false;
-    
+
     console.log(`Estado atual: ${currentState}, Símbolo atual: ${currentSymbol}, Posição da cabeça: ${headPosition}`);
 
     // Salvar o estado atual no histórico antes de fazer a transição
-    history.push({
-        currentState,
-        headPosition,
-        currentSymbol,
-        tape: [...tape] // Faz uma cópia da fita
-    });
+    if (!isMachineFinished()) {
+        history.push({
+            currentState,
+            headPosition,
+            currentSymbol,
+            tape: [...tape] // Faz uma cópia da fita
+        });
 
-    stepCount++;
-    
+        stepCount++;
+    }
+
     // Procura a transição atual
-    for (const [symbol, nextState, writeSymbol, move] of transitions[currentState]) {
+    for (const [index, [symbol, nextState, writeSymbol, move]] of transitions[currentState].entries()) {
         if (symbol === currentSymbol) {
             tape[headPosition] = writeSymbol; // Escreve o símbolo
             currentState = nextState; // Muda para o próximo estado
@@ -111,10 +177,11 @@ async function step() {
             }
             transitionFound = true;
             console.log(`Transição encontrada: Estado: ${currentState}, Símbolo Escrito: ${writeSymbol}, Movimento: ${move}`);
+
             break;
         }
     }
-    
+
     // Se não houver transição, a máquina para
     if (!transitionFound) {
         console.log(`Nenhuma transição encontrada para o estado ${currentState} com o símbolo ${currentSymbol}`);
@@ -125,10 +192,11 @@ async function step() {
 
     console.log(`Máquina parou no estado final: ${currentState}`);
     console.log(`Fita final: ${tape}`);
-    console.log(`Posição da cabeça atual: ${headPosition}`)
+    console.log(`Posição da cabeça atual: ${headPosition}`);
 
     // Atualiza a interface do usuário
     updateUI();
+    highLightRow();
 
     // Redesenha a fita
     drawTape();
@@ -158,6 +226,31 @@ async function stepBack() {
 
     // Redesenha a fita
     drawTape();
+
+    // Destacar a linha correspondente na tabela de transições
+    if (currentTransitionElement) {
+        currentTransitionElement.classList.remove('highlighted'); // Remove o destaque da transição anterior
+    }
+
+    const currentSymbol = tape[headPosition];
+    const tableBody = document.getElementById('transitionsTable').getElementsByTagName('tbody')[0];
+    const rows = Array.from(tableBody.rows);
+
+    // Encontrar a linha correspondente à transição atual
+    const currentRow = rows.find(row =>
+        row.cells[0].innerText === currentState &&
+        row.cells[1].innerText === currentSymbol
+    );
+
+    console.log("Elemento encontrado:", currentRow); // Log para verificar o elemento
+
+    if (currentRow) {
+        currentTransitionElement = currentRow;
+        currentRow.classList.add('highlighted');
+        console.log("Classe 'highlighted' adicionada ao elemento:", currentRow); // Log para verificar a adição da classe
+    } else {
+        console.log("Elemento correspondente não encontrado");
+    }
 }
 
 // Função para desenhar a fita no canvas
@@ -274,6 +367,8 @@ function initializeTape() {
     updateUI(); // Atualiza a interface do usuário
     drawTape();
     playPausebtn.innerHTML = "Play";
+    populateTransitionsTable();
+    highLightRow();
 }
 
 // Função para executar uma etapa manualmente
@@ -304,6 +399,8 @@ function resetMachine() {
     updateUI(); // Atualiza a interface do usuário
     drawTape(); // Redesenha a fita
     playPausebtn.innerHTML = "Play";
+    populateTransitionsTable();
+    highLightRow();
 }
 
 // Função para executar a simulação até o fim
@@ -387,6 +484,8 @@ function initializeMachine() {
     console.log('Estados:', states);
     console.log('Alfabeto:', tapeAlphabet);
     console.log('Transições:', transitions);
+
+    populateTransitionsTable();
 }
 
 function populateInputs() {
@@ -442,6 +541,6 @@ function adjustTapeOffset() {
 
 // Chamada para preencher os inputs com os valores atuais da configuração da máquina de Turing
 populateInputs();
-
-// Inicializa a fita e desenha a fita inicialmente
+initializeMachine();
+highLightRow();
 drawTape();

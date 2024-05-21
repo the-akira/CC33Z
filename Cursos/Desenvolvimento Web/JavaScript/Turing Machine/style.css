@@ -17,7 +17,11 @@ h1 {
     font-size: 2.4rem;
 }
 
-.controls, .info, .definition, .background {
+.controls,
+.info,
+.definition,
+.background,
+#transitionsTableContainer {
     text-align: center;
     width: 800px;
     display: block;
@@ -25,6 +29,20 @@ h1 {
     margin-bottom: 20px;
     border: 2px solid blue;
     background: white;
+}
+
+#transitionsTable {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    background: #E1E3E6;
+    margin-bottom: 20px;
+}
+
+#transitionsTable, th, td {
+    border: 1px solid;
+    padding: 5px 10px;
+    font-size: 1.05rem;
 }
 
 .controls {
@@ -109,6 +127,10 @@ input[type="text"], input[type="range"], textarea {
     border-radius: 5px;
     padding-left: 5px;
     background: #e1e3e6;
+}
+
+.highlighted {
+    background-color: #B2B2FF;
 }
 
 ::-webkit-scrollbar {
