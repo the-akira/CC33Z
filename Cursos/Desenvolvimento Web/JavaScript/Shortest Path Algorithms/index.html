@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortest Path Algorithms Visualization</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <h1 style="text-align: center;">Shortest Path Algorithms Visualization</h1>
+        <canvas id="grid" width="600" height="600"></canvas>
+        <div id="controls">
+            <p id="nodeInfo">Define your starting point by clicking somewhere on the grid.</p>
+            <label for="algorithmSelect">Select Algorithm:</label>
+            <select id="algorithmSelect">
+                <option value="bellman-ford">Bellman-Ford</option>
+                <option value="a-star">A*</option>
+                <option value="dijkstra">Dijkstra</option>
+            </select>
+            <label for="speedRange">Animation Speed:</label>
+            <input type="range" min="1" max="40" value="20" id="speedRange">
+            <button id="startButton">Start Algorithm</button>
+            <button id="resetButton">Reset</button>
+            <button id="toggleWallButton">Toggle Wall Drawing</button>
+            <button id="generateMazeButton">Generate Maze</button>
+        </div>
+    </div>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html>

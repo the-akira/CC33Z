@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+body {
+    background: #d9d9d9;
+    font-family: "Quicksand", sans-serif;
+}
+
+canvas {
+    border: 1px solid black;
+    display: block;
+    margin: 0 auto;
+}
+
+#controls {
+    margin-top: 10px;
+    text-align: center;
+}
+
+#controls {
+    background: white;
+    border: 1.5px solid black;
+    width: 560px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+button {
+    padding: 5px;
+    font-size: 1.02rem;
+    font-family: "Quicksand", sans-serif;
+    background: #c7c7c7;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid black;
+    margin-right: 8px;
+}
+
+#nodeInfo {
+    margin-top: 0px;
+    font-size: 1.03rem;
+}
+
+#generateMazeButton {
+    margin-right: 0px;
+}
+
+label {
+    font-weight: bold;
+}
+
+select {
+    margin-bottom: 20px;
+    margin-right: 15px;
+    font-family: "Quicksand", sans-serif;
+    padding: 3px;
+    font-size: 1.01rem;
+}
