@@ -78,7 +78,7 @@ h1 {
   }
 
   .flex-container > div {
-    width: calc(100% - 30px); /* Ajuste adicional para telas muito pequenas */
+    width: calc(100% - 30px);
     margin: 10px;
   }
 }
