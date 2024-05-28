@@ -1,20 +1,5 @@
-.flex-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.flex-container > div {
-  background-color: black;
-  border: 1.8px solid #cccccc;
-  width: 470px;
-  height: 380px;
-  margin: 30px;
-  text-align: center;
-  line-height: 75px;
-  font-size: 30px;
-  opacity: 0.95;
-  box-shadow: 6px 6px 6px 6px;
+body {
+  background-image: url("../imagens/bg.jpg");
 }
 
 h1 {
@@ -29,17 +14,77 @@ h1 {
   font-size: 2.66em;
 }
 
-img {
-  margin-top: 47px;
-  width: 280px;
-  height: 280px;
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px;
+}
+
+.flex-container > div {
+  background-color: black;
+  border: 1.8px solid #cccccc;
+  width: calc(33% - 45px); 
+  height: auto;
+  margin: 15px; 
+  text-align: center;
+  line-height: 75px;
+  font-size: 30px;
+  opacity: 0.95;
+  box-shadow: 6px 6px 6px 6px rgba(0, 0, 0, 0.5); 
+}
+
+.flex-container > div img {
+  width: 280px; 
+  height: auto;
+  margin-top: 30px;
   border: 1.8px solid #cccccc;
 }
 
-img:hover {
+.flex-container > div img:hover {
   opacity: 0.88;
 }
 
-body {
-  background-image: url("https://i.ibb.co/jrv9gwf/bg.jpg");
+@media (max-width: 1200px) {
+  .flex-container > div {
+    width: calc(45% - 40px); 
+  }
+}
+
+@media (max-width: 890px) {
+  .flex-container > div img {
+    width: 230px; 
+  }
+}
+
+@media (max-width: 768px) {
+  .flex-container > div {
+    width: calc(100% - 40px); 
+  }
+  .flex-container > div img {
+    width: 80%; 
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+
+  .flex-container {
+    padding: 5px;
+  }
+
+  .flex-container > div {
+    width: calc(100% - 30px); /* Ajuste adicional para telas muito pequenas */
+    margin: 10px;
+  }
+}
+
+@media (max-width: 330px) {
+  h1 {
+    font-size: 1.35rem !important;
+  }
 }
