@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Thoth App</title>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Thoth App</h1>
+        <div id="timer" style="display: none;">00:00:00</div>
+        <div id="start-container">
+            <h2>Teste o seu conhecimento em <span id="selected-theme"></span>!</h2>
+            <img id="theme-image" src="" alt="Theme Image" />
+            <h3>Selecione um tema:</h3>
+            <select id="theme-select">
+                <option value="general">Geral</option>
+                <option value="science">Ciências</option>
+                <option value="history">História</option>
+            </select>
+            <button id="start-button">Iniciar</button>
+        </div>
+        <div id="question-container" style="display: none;"></div>
+        <div id="progress-container" style="display: none;">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="feedback" style="display: none;"></div>
+        <button id="confirm-button" style="display: none;" disabled>Confirmar Resposta</button>
+        <button id="next-button" style="display: none;" disabled>Next</button>
+        <button id="restart-button" style="display: none;" disabled>Reiniciar</button>
+        <div id="score-container" style="display: none;"></div>
+        <div id="score-bar"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
