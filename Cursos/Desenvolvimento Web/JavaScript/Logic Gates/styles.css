@@ -1,0 +1,61 @@
+body {
+    background: #fffaba;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    border: 2.5px solid black;
+    background: white;
+}
+
+h1 {
+    text-align: center;
+}
+
+#controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    background: #878686;
+    color: white;
+    padding: 10px;
+    font-size: 1.2rem;
+    border: 2.5px solid black;
+    cursor: pointer;          
+}
+
+#toggleBase1 {
+    margin-right: 10px;
+}
+
+select {
+   font-size: 1.2rem;
+   margin-right: 10px;
+   padding: 10px;
+   border: 2.5px solid black;
+   background: white;
+}
+
+#base1Indicator {
+    margin-top: 15px;
+}
+
+#base1Indicator, 
+#base2Indicator,
+#outputIndicator {
+    padding: 10px;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+#bases {
+    margin-top: 20px;
+    border: 2.5px solid black;
+    margin-right: 50px;
+    margin-left: 50px;
+    margin-bottom: 25px;
+    background: white;
+}
