@@ -152,3 +152,41 @@ button:hover {
     cursor: pointer;
     opacity: 0.79;
 }
+
+@media screen and (max-width: 700px) {
+    p {
+        margin-left: 30px;
+        margin-right: 30px;
+    }
+
+    #hero {
+        margin-left: 30px;
+        margin-right: 30px;        
+    }
+}
+
+@media screen and (max-width: 565px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    p {
+        margin-left: 20px;
+        margin-right: 20px;
+        font-size: 1.2rem;
+    }
+
+    #hero {
+        margin-left: 20px;
+        margin-right: 20px;        
+    }
+
+    #heroName {
+        font-size: 1.6rem;
+    }
+    
+    button {
+        width: 200px;
+        font-size: 1.15rem;
+    }
+}
