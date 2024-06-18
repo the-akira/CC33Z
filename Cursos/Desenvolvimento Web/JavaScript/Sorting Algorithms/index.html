@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Algoritmos de Ordenação</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="controls">
+        <h1>Visualizador de Algoritmos de Ordenação</h1>
+
+        <div id="initial-definitions">
+            <label for="algorithm">Selecione o Algoritmo:</label>
+            <select id="algorithm">
+                <option value="bubble">Bubble Sort</option>
+                <option value="selection">Selection Sort</option>
+                <option value="quick">Quick Sort</option>
+                <option value="merge">Merge Sort</option>
+                <option value="insertion">Insertion Sort</option>
+                <option value="heap">Heap Sort</option>
+            </select>
+
+            <label for="num-bars">Número de Elementos:</label>
+            <input type="number" id="num-bars" min="1" max="100" value="15">
+        </div>
+
+        <label id="manual-input-label" for="manual-input">Definir Array Manualmente:</label>
+        <input type="text" id="manual-input" placeholder="Digite os valores separados por vírgula">
+        <button id="submit-manual-array">Build</button>
+
+        <div id="speed-control">
+            <label for="speed">Velocidade:</label>
+            <input type="range" id="speed" min="20" max="400" value="200">
+        </div>
+
+        <div id="button-group">
+            <button id="start">Play</button>
+            <button id="pause">Pause</button>
+            <button id="step">Step</button>
+            <button id="step-back">Step Back</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+
+    <div id="bars"></div>
+    <div id="array-container">
+        <label>Array:</label>
+        <div id="array"></div>
+    </div>
+    <div id="explanation">Explicação</div>
+    <div id="progress-bar">
+        <div id="progress"></div>
+    </div>
+    <div id="time-container">
+        <label>Tempo:</label>
+        <span id="time">0.00</span> segundos
+    </div>
+
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html>
