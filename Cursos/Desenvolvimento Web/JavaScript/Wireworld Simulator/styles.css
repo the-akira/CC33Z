@@ -1,0 +1,90 @@
+body {
+    margin: 0px;
+    background-color: #333;
+}
+
+canvas {
+    border: 1px solid #fff;
+    cursor: crosshair;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+#controls {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#controls button, #controls input {
+    margin: 0 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button {
+    background-color: #b3b3b3;
+    border: 2px solid black;
+}
+
+#speed-control {
+    width: 150px;
+    padding: 0px !important;
+}
+
+.speed-control-label {
+    margin: 0px 10px 0px 10px;
+    color: white;
+}
+
+h1 {
+    color: white;
+    text-align: center;
+}
+
+.active {
+    background-color: black;
+    color: white;
+    border: 2px solid white;
+}
+
+.background {
+    text-align: center;
+    width: 600px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    border: 1px solid white;
+    background: black;
+    color: white;
+}
+
+.backgroundText {
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 1.06rem;
+}
+
+b {
+    color: yellow;
+}
+
+.head {
+    background-color: #0080FF;
+}
+
+.tail {
+    background-color: #F00;
+}
+
+.conductor {
+    background-color: #FFD700;
+    color: black;
+}
+
+@media screen and (max-width: 830px) {
+    .background {
+        width: 90%;
+    }
+}

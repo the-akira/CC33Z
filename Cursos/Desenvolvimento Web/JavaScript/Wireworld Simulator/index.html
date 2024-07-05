@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireworld Simulator</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <h1>Wireworld Simulator</h1>
+    <div id="controls">
+        <button class="active" id="conductor-btn" data-type="CONDUCTOR">Conductor</button>
+        <button id="head-btn" data-type="HEAD">Electron</button>
+        <button id="empty-btn" data-type="EMPTY">Empty</button>
+        <button id="clear-grid">Clear Grid</button>
+        <button id="start-simulation">Start Simulation</button>
+        <label class="speed-control-label" for="speed-control">Speed:</label>
+        <input type="range" id="speed-control" min="50" max="600" value="100">
+    </div>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <div class="background">
+        <h2>Princípio</h2>
+        <p class="backgroundText" style="margin-bottom: 20px;">Wireworld é um <b>autômato celular</b>. Os Electrons são propagados ao longo dos fios em cada ciclo. Apesar de sua simplicidade, permite simular computadores avançados e é <b>Turing completo.</b></p> 
+    </div>
+    <div class="background" style="text-align: left;">
+        <h2 style="text-align: center">Manual de Uso</h2>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; Clique com o <b>botão esquerdo</b> para colocar um fio condutor. (por padrão).</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; Clique com o <b>botão direito</b> para colocar um electron.</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; Clique com o <b>botão do meio</b> para apagar um item.</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; Segurar <b>CTRL</b> e passar o mouse por cima de um item irá apagá-lo.</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; Use as <b>setas do teclado</b> para mover a câmera.</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; Os botões <b>Empty</b>, <b>Conductor</b> e <b>Head</b> alteram o comportamento padrão do botão esquerdo.</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; O botão <b>Clear Grid</b> limpa a grid por completo.</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 20px;">&#9632; O botão <b>Start Simulation</b> iniciará a animação. Pressione ele novamente para pausar.</p>
+    </div>
+    <div class="background" style="text-align: left;">
+        <h2 style="text-align: center">Regras</h2>
+        <p class="backgroundText">Uma célula Wireworld pode estar em um dos quatro estados diferentes: <span class="empty">Empty</span>, <span class="head">Electron Head</span>, <span class="tail">Electron Tail</span> e <span class="conductor">Conductor</span>.</p>
+        <p class="backgroundText">Como em todos os autômatos celulares, o tempo avança em etapas discretas chamadas gerações. As células se comportam da seguinte forma:</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; Empty → Empty</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; <span class="head">Electron Head</span> → <span class="tail">Electron Tail</span></p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; <span class="tail">Electron Tail</span> → <span class="conductor" style="margin-top: 5px; margin-bottom: 5px">Conductor</span></p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&#9632; <span class="conductor">Conductor</span>:</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&nbsp;&nbsp; &#9679; <span class="head">Electron Head</span> se <b>uma</b> ou <b>duas</b> das células vizinhas são electron head.</p>
+        <p class="backgroundText" style="margin-top: 5px; margin-bottom: 5px">&nbsp;&nbsp; &#9679; Caso contrário, permance <span class="conductor">Conductor</span>.</p>
+        <p class="backgroundText" style="margin-bottom: 20px;">Nas regras acima, vizinho significa uma célula de distância em qualquer direção, tanto ortogonal quanto diagonal.</p>
+    </div>
+    <div class="background">
+        <h2>Portas Lógicas</h2>
+        <p class="backgroundText">Com este conhecimento podemos construir <b>portas lógicas</b>, recebendo sinais de entrada e realizando uma operação lógica.</b></p>
+        <p class="backgroundText">Computações básicas: Funções "<b>OR</b>", "<b>XOR</b>" e "<b>AND</b>".</p>
+        <img src="examples/logic-doors.gif">
+        <p class="backgroundText"><b>Diodos:</b> se o electron vier do lado dos três blocos ele passa, caso contrário é interrompido.</p>
+        <img style="margin-bottom: 20px;" src="examples/two-diodes.gif">
+    </div>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html>
