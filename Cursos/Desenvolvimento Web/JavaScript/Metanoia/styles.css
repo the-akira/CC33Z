@@ -1,0 +1,135 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #0b0b0d;
+    opacity: 0;
+    transition: opacity 2s ease-in;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.timeline-item {
+    background: black;
+    padding: 25px;
+    margin: 15px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: #a6a6a6;
+    border: 1.5px solid #a6a6a6;
+}
+
+.timeline-item img {
+    width: 400px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    border: 0.5px solid #a6a6a6;
+}
+
+.timeline-item p {
+    margin-bottom: 25px;
+    margin-top: 5px;
+    text-align: center;
+    font-size: 1.1rem;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+button#loadMore, 
+button#exportJson {
+    display: none;
+    width: 100%;
+    background-color: #161717;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 3.5rem;
+    border: 1.5px solid #a6a6a6;
+}
+
+button#loadMore:hover,
+button#exportJson:hover {
+    opacity: 0.75;
+}
+
+.spinner {
+    display: none;
+    margin: 20px auto;
+    width: 80px;
+    height: 50px;
+}
+
+.spinner > img {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+.main-title {
+    text-align: center;
+    font-size: 3.3rem;
+    color: #a6a6a6;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    text-shadow: 1px 1px 1px white;
+}
+
+.post-title {
+    text-align: center;
+    font-size: 1.75rem;
+    margin-top: 5px;
+}
+
+small {
+    display: block;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.avatar {
+    border-radius: 100%;
+    display: block;
+    margin: 0 auto;
+    margin-top: 30px;
+    border: 1.5px solid white;
+    width: 220px;
+    transition: transform 1s ease-in-out;
+}
+
+.avatar:hover {
+    transform: rotate(360deg); 
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background: black; 
+}
+ 
+::-webkit-scrollbar-thumb {
+    background: #161717; 
+    border: 1px solid #a6a6a6;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2e2e2e;
+}
+
+@media screen and (max-width: 510px) {
+    .timeline-item img {
+        width: 88%;
+    }
+}   
