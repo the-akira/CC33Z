@@ -1,0 +1,46 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    background-color: #0d0204;
+}
+
+#bookCanvas {
+    border: 1px solid white;
+    background-color: #04010d;
+}
+
+.controls {
+    margin-bottom: 16px;
+}
+
+.page-buttons {
+    margin-top: 16px;
+}
+
+button {
+    margin: 0 5px;
+    background-color: #04010D;
+    padding: 6.5px 11px;
+    font-size: 1.35rem;
+    color: white;
+    border: 1px solid white;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+button:disabled,
+button[disabled]{
+    background-color: #321b75;
+    opacity: 0.75;
+}
+
+@media screen and (max-width: 850px) {
+    #bookCanvas {
+        width: 90%;
+    }
+}
