@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ray Casting Simulation with Collision</title>
+    <style>
+        body {
+            background-color: #111;
+        }
+        #main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        canvas {
+            margin: 15px;
+            background-color: #111;
+            border: 1px solid white;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ray Casting</h1>
+    <div id="main">
+        <canvas id="mapView" width="400" height="400"></canvas>
+        <canvas id="view3D" width="800" height="400"></canvas>
+    </div>
+
+    <script>
+        const mapCanvas = document.getElementById('mapView');
+        const ctxMap = mapCanvas.getContext('2d');
+        const viewCanvas = document.getElementById('view3D');
+        const ctxView = viewCanvas.getContext('2d');
+
+        const map = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ];
+        const mapSize = map.length;
+        const tileSize = mapCanvas.width / mapSize;
+
+        let player = {
+            x: 2,
+            y: 2,
+            angle: 0,
+            speed: 0.05,
+            turnSpeed: 0.03,
+            moveDirection: 0,
+            turnDirection: 0
+        };
+
+        let lightOn = true;
+
+        function drawMap() {
+            for (let y = 0; y < mapSize; y++) {
+                for (let x = 0; x < mapSize; x++) {
+                    ctxMap.fillStyle = map[y][x] === 1 ? '#888' : '#000';
+                    ctxMap.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                }
+            }
+        }
+
+        function drawPlayer() {
+            ctxMap.fillStyle = 'red';
+            ctxMap.beginPath();
+            ctxMap.arc(player.x * tileSize, player.y * tileSize, tileSize / 4, 0, Math.PI * 2);
+            ctxMap.fill();
+        }
+
+        function drawFieldOfVision() {
+            const numRays = viewCanvas.width;
+            const fov = Math.PI / 3;
+            const rayStep = fov / numRays;
+
+            ctxMap.fillStyle = 'rgba(0, 255, 0, 0.5)'; // Cor semitransparente para o campo de visão
+            ctxMap.beginPath();
+            ctxMap.moveTo(player.x * tileSize, player.y * tileSize);
+
+            for (let i = 0; i < numRays; i++) {
+                const rayAngle = player.angle - (fov / 2) + (rayStep * i);
+                let rayX = player.x;
+                let rayY = player.y;
+                let hitWall = false;
+
+                // Incrementos no raycasting (DDA)
+                const deltaDistX = Math.abs(1 / Math.cos(rayAngle));
+                const deltaDistY = Math.abs(1 / Math.sin(rayAngle));
+
+                let stepX, stepY;
+                let sideHit;
+
+                // Cálculo da direção do passo (DDA)
+                if (Math.cos(rayAngle) < 0) {
+                    stepX = -1;
+                    rayX = (player.x - Math.floor(player.x)) * deltaDistX;
+                } else {
+                    stepX = 1;
+                    rayX = (Math.floor(player.x + 1.0) - player.x) * deltaDistX;
+                }
+                if (Math.sin(rayAngle) < 0) {
+                    stepY = -1;
+                    rayY = (player.y - Math.floor(player.y)) * deltaDistY;
+                } else {
+                    stepY = 1;
+                    rayY = (Math.floor(player.y + 1.0) - player.y) * deltaDistY;
+                }
+
+                let mapX = Math.floor(player.x);
+                let mapY = Math.floor(player.y);
+
+                // Desempenho do DDA
+                let side;
+                while (!hitWall) {
+                    if (rayX < rayY) {
+                        rayX += deltaDistX;
+                        mapX += stepX;
+                        side = 0; // Impacto vertical
+                    } else {
+                        rayY += deltaDistY;
+                        mapY += stepY;
+                        side = 1; // Impacto horizontal
+                    }
+
+                    if (map[mapY][mapX] === 1) {
+                        hitWall = true;
+
+                        let perpWallDist;
+                        if (side === 0) {
+                            perpWallDist = (mapX - player.x + (1 - stepX) / 2) / Math.cos(rayAngle);
+                        } else {
+                            perpWallDist = (mapY - player.y + (1 - stepY) / 2) / Math.sin(rayAngle);
+                        }
+
+                        // Atualizar o ponto final do campo de visão
+                        const endX = player.x + Math.cos(rayAngle) * perpWallDist;
+                        const endY = player.y + Math.sin(rayAngle) * perpWallDist;
+                        ctxMap.lineTo(endX * tileSize, endY * tileSize);
+
+                        break;
+                    }
+                }
+            }
+
+            ctxMap.lineTo(player.x * tileSize, player.y * tileSize);
+            ctxMap.closePath();
+            ctxMap.fill();
+        }
+
+        const texture = new Image();
+        texture.src = 'texture.png';
+
+        function castRays() {
+            const numRays = viewCanvas.width;
+            const fov = Math.PI / 3;
+            const rayStep = fov / numRays;
+
+            for (let i = 0; i < numRays; i++) {
+                const rayAngle = player.angle - (fov / 2) + (rayStep * i);
+                let mapX = Math.floor(player.x);
+                let mapY = Math.floor(player.y);
+                let side;
+
+                // Incrementos no raycasting (DDA)
+                const deltaDistX = Math.abs(1 / Math.cos(rayAngle));
+                const deltaDistY = Math.abs(1 / Math.sin(rayAngle));
+                let sideDistX, sideDistY;
+
+                let stepX = Math.cos(rayAngle) < 0 ? -1 : 1;
+                let stepY = Math.sin(rayAngle) < 0 ? -1 : 1;
+
+                if (stepX < 0) {
+                    sideDistX = (player.x - mapX) * deltaDistX;
+                } else {
+                    sideDistX = (mapX + 1.0 - player.x) * deltaDistX;
+                }
+                if (stepY < 0) {
+                    sideDistY = (player.y - mapY) * deltaDistY;
+                } else {
+                    sideDistY = (mapY + 1.0 - player.y) * deltaDistY;
+                }
+
+                let hitWall = false;
+                while (!hitWall) {
+                    if (sideDistX < sideDistY) {
+                        sideDistX += deltaDistX;
+                        mapX += stepX;
+                        side = 0;
+                    } else {
+                        sideDistY += deltaDistY;
+                        mapY += stepY;
+                        side = 1;
+                    }
+
+                    if (map[mapY][mapX] === 1) {
+                        hitWall = true;
+                    }
+                }
+
+                let perpWallDist;
+                if (side === 0) {
+                    perpWallDist = (mapX - player.x + (1 - stepX) / 2) / Math.cos(rayAngle);
+                } else {
+                    perpWallDist = (mapY - player.y + (1 - stepY) / 2) / Math.sin(rayAngle);
+                }
+
+                const wallHeight = Math.floor(viewCanvas.height / perpWallDist);
+                const ceiling = Math.floor((viewCanvas.height - wallHeight) / 2);
+                const floor = viewCanvas.height - ceiling;
+
+                let textureX;
+                if (side === 0) {
+                    textureX = player.y + perpWallDist * Math.sin(rayAngle);
+                } else {
+                    textureX = player.x + perpWallDist * Math.cos(rayAngle);
+                }
+                textureX -= Math.floor(textureX);
+                textureX = Math.floor(textureX * texture.width);
+
+                const wallColorFactor = Math.min(1, 1 / perpWallDist);
+                if (lightOn) {
+                    ctxView.globalAlpha = wallColorFactor;
+                }
+                ctxView.drawImage(
+                    texture,
+                    textureX, 0, 1, texture.height,
+                    i, ceiling, 1, wallHeight
+                );
+                if (lightOn) {
+                    ctxView.globalAlpha = 1;
+                }
+
+                const floorColor = '#222';
+                ctxView.fillStyle = floorColor;
+                ctxView.fillRect(i, ceiling + wallHeight, 1, viewCanvas.height - ceiling - wallHeight);
+            }
+        }
+
+        function updatePlayerPosition() {
+            const moveStep = player.moveDirection * player.speed;
+            const newX = player.x + Math.cos(player.angle) * moveStep;
+            const newY = player.y + Math.sin(player.angle) * moveStep;
+
+            if (map[Math.floor(newY)][Math.floor(newX)] === 0) {
+                player.x = newX;
+                player.y = newY;
+            }
+
+            player.angle += player.turnDirection * player.turnSpeed;
+        }
+
+        function update() {
+            ctxMap.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+            drawMap();
+            drawPlayer();
+            drawFieldOfVision(); // Adiciona o campo de visão
+
+            ctxView.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
+            castRays();
+
+            updatePlayerPosition();
+
+            requestAnimationFrame(update);
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'ArrowUp') {
+                player.moveDirection = 1;
+            }
+            if (e.key === 'ArrowDown') {
+                player.moveDirection = -1;
+            }
+            if (e.key === 'ArrowLeft') {
+                player.turnDirection = -1;
+            }
+            if (e.key === 'ArrowRight') {
+                player.turnDirection = 1;
+            } 
+            if (event.key === 'l') {
+                lightOn = !lightOn; // Toggle da luz
+            }
+        }
+
+        function handleKeyUp(e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                player.moveDirection = 0;
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                player.turnDirection = 0;
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
+        texture.onload = function() {
+            update(); // Inicia a animação somente após o carregamento da textura
+        };
+    </script>
+</body>
+</html>

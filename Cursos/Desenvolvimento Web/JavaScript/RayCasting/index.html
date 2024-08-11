@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ray Casting Simulation with Collision</title>
+    <style>
+        body {
+            background-color: #111;
+        }
+        #main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        canvas {
+            margin: 15px;
+            background-color: #111;
+            border: 1px solid white;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ray Casting</h1>
+    <div id="main">
+        <canvas id="mapView" width="400" height="400"></canvas>
+        <canvas id="view3D" width="800" height="400"></canvas>
+    </div>
+
+    <script>
+        const mapCanvas = document.getElementById('mapView');
+        const ctxMap = mapCanvas.getContext('2d');
+        const viewCanvas = document.getElementById('view3D');
+        const ctxView = viewCanvas.getContext('2d');
+
+        const mapSize = 10;
+        const tileSize = mapCanvas.width / mapSize;
+        const map = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ];
+
+        let player = {
+            x: 2,
+            y: 2,
+            angle: 0,
+            speed: 0.05,
+            turnSpeed: 0.03,
+            moveDirection: 0,
+            turnDirection: 0
+        };
+
+        function drawMap() {
+            for (let y = 0; y < mapSize; y++) {
+                for (let x = 0; x < mapSize; x++) {
+                    ctxMap.fillStyle = map[y][x] === 1 ? '#888' : '#000';
+                    ctxMap.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                }
+            }
+        }
+
+        function drawPlayer() {
+            ctxMap.fillStyle = 'red';
+            ctxMap.beginPath();
+            ctxMap.arc(player.x * tileSize, player.y * tileSize, tileSize / 4, 0, Math.PI * 2);
+            ctxMap.fill();
+        }
+
+        function castRays() {
+            const numRays = viewCanvas.width;
+            const fov = Math.PI / 3;
+            const rayStep = fov / numRays;
+
+            for (let i = 0; i < numRays; i++) {
+                const rayAngle = player.angle - (fov / 2) + (rayStep * i);
+                let rayX = player.x;
+                let rayY = player.y;
+                let hitWall = false;
+
+                while (!hitWall) {
+                    rayX += Math.cos(rayAngle) * 0.02;
+                    rayY += Math.sin(rayAngle) * 0.02;
+
+                    if (map[Math.floor(rayY)][Math.floor(rayX)] === 1) {
+                        hitWall = true;
+
+                        const distance = Math.sqrt((rayX - player.x) ** 2 + (rayY - player.y) ** 2);
+                        const wallHeight = viewCanvas.height / distance;
+                        const ceilingHeight = (viewCanvas.height / 2) - (wallHeight / 2);
+                        const floorHeight = viewCanvas.height - ceilingHeight - wallHeight;
+                        const color = Math.max(0, 255 - distance * 40);
+
+                        // Desenhar o céu
+                        ctxView.fillStyle = 'skyblue';
+                        ctxView.fillRect(i, 0, 1, ceilingHeight);
+
+                        // Desenhar a parede
+                        ctxView.fillStyle = `rgb(${color}, ${color}, ${color})`;
+                        ctxView.fillRect(i, ceilingHeight, 1, wallHeight);
+
+                        // Desenhar o chão
+                        ctxView.fillStyle = 'saddlebrown';
+                        ctxView.fillRect(i, ceilingHeight + wallHeight, 1, floorHeight);
+
+                        ctxMap.beginPath();
+                        ctxMap.moveTo(player.x * tileSize, player.y * tileSize);
+                        ctxMap.lineTo(rayX * tileSize, rayY * tileSize);
+                        ctxMap.stroke();
+                    }
+                }
+
+                ctxMap.beginPath();
+                ctxMap.moveTo(player.x * tileSize, player.y * tileSize);
+                ctxMap.lineTo(rayX * tileSize, rayY * tileSize);
+                ctxMap.strokeStyle = 'yellow';
+                ctxMap.stroke();
+            }
+        }
+
+        function updatePlayerPosition() {
+            const moveStep = player.moveDirection * player.speed;
+            const newX = player.x + Math.cos(player.angle) * moveStep;
+            const newY = player.y + Math.sin(player.angle) * moveStep;
+
+            if (map[Math.floor(newY)][Math.floor(newX)] === 0) {
+                player.x = newX;
+                player.y = newY;
+            }
+
+            player.angle += player.turnDirection * player.turnSpeed;
+        }
+
+        function update() {
+            ctxMap.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+            drawMap();
+            drawPlayer();
+
+            ctxView.clearRect(0, 0, viewCanvas.width, viewCanvas.height);
+            castRays();
+
+            updatePlayerPosition();
+
+            requestAnimationFrame(update);
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'ArrowUp') {
+                player.moveDirection = 1;
+            }
+            if (e.key === 'ArrowDown') {
+                player.moveDirection = -1;
+            }
+            if (e.key === 'ArrowLeft') {
+                player.turnDirection = -1;
+            }
+            if (e.key === 'ArrowRight') {
+                player.turnDirection = 1;
+            }
+        }
+
+        function handleKeyUp(e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                player.moveDirection = 0;
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                player.turnDirection = 0;
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
+        update(); // Iniciar a animação
+    </script>
+</body>
+</html>
