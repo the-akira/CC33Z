@@ -982,8 +982,8 @@ function drawCoordinates() {
     ctx.font = 'bold 19px Arial';
     ctx.fillStyle = 'blue';
     ctx.lineWidth = 2;
-    ctx.moveTo(0, canvas.height);
-    ctx.lineTo(canvas.width, canvas.height);
+    ctx.moveTo(0, 0); // Início na origem (0, 0)
+    ctx.lineTo(canvas.width, 0); // Linha até o limite da largura
     ctx.stroke();
 
     // Eixo Y
@@ -1027,6 +1027,13 @@ function drawDiagonalLineToOrigin(playerX, playerY) {
 
 // Função para desenhar as linhas de distância até os eixos X e Y
 function drawDistanceLines() {
+    ctx.beginPath();
+    ctx.strokeStyle = '#8a081a'; // Cor da linha
+    ctx.lineWidth = 2.5; // Espessura da linha
+    ctx.moveTo(0, 0); // Início na origem (0, 0)
+    ctx.lineTo(canvas.width, 0); // Linha até o limite da largura
+    ctx.stroke(); // Desenha a linha
+
     // Linha para o eixo X
     ctx.beginPath();
     ctx.strokeStyle = '#8a081a';
