@@ -16,6 +16,11 @@ td {
     border: 2px solid black;
 }
 
+.external-link {
+    color: black;
+    text-decoration: none;
+}
+
 h1 {
     text-align: center;
 }
