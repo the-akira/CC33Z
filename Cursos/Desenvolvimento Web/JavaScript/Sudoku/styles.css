@@ -1,0 +1,206 @@
+table {
+    border-collapse: collapse;
+    margin: 20px auto;
+}
+
+td {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-size: 25px;
+    position: relative;
+    padding: 0;
+}
+
+.bold-border {
+    border: 2px solid black;
+}
+
+h1 {
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 25px;
+    border: 1px solid black;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+input:disabled {
+    background-color: white;
+    cursor: default;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.controls {
+    text-align: center;
+    margin-top: 28px;
+}
+
+button {
+    margin: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.top-border {
+    border-top: 2px solid black;
+}
+
+.bottom-border {
+    border-bottom: 2px solid black;
+}
+
+.left-border {
+    border-left: 2px solid black;
+}
+
+.right-border {
+    border-right: 2px solid black;
+}
+
+.incorrect {
+    background-color: #ff878f;
+}
+
+.notes-container, .candidates-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 1px solid black;
+}
+
+.note.visible {
+    visibility: visible;
+}
+
+.note.active {
+    background-color: #e5d9ff;
+    font-weight: bold;
+}
+
+.note, .candidate {
+    width: 33.33%;
+    height: 33.33%;
+    text-align: center;
+    font-size: 12px;
+    pointer-events: auto;
+    cursor: pointer;
+    visibility: hidden;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.candidate {
+    visibility: visible;
+    background-color: #defeff;
+    font-weight: bold;
+}
+
+#validation-message {
+    margin-top: 10px;
+    margin-bottom: 14px;
+    font-size: 2rem;
+}
+
+#timer-container {
+    margin-top: 9px;
+    font-family: Arial, sans-serif;
+}
+
+#timer {
+    font-size: 16px;
+    margin-right: 10px;
+    margin-left: 5px;
+    border: 1px solid gray;
+    padding: 6.3px 10px;
+    background-color: #F0F0F0;
+    border-radius: 3px;
+}
+
+button {
+    padding: 5px 10px;
+    margin-right: 5px;
+}
+
+.hints {
+    font-size: 1.33rem;
+    font-weight: bold;
+}
+
+#hint-count {
+    font-weight: normal;
+}
+
+.highlight-group input {
+    background-color: lightyellow;
+}
+
+.highlight-group input:focus {
+    background-color: yellow;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: #c2fce7;
+        opacity: 1;
+    }
+    50% {
+        background-color: #fff8b0;
+        opacity: 0.8;
+    }
+    100% {
+        background-color: #c2fce7;
+        opacity: 1;
+    }
+}
+
+.highlight {
+    animation: pulse 1.5s infinite;
+}
+
+#numeric-box button {
+    margin: 2px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    padding: 4px 9px 3px 9px;
+}
+
+@keyframes fill {
+    from {
+        background-color: #fff8b0;
+    }
+    to {
+        background-color: #c2fce7;
+    }
+}
+
+.fill-animation {
+    animation: fill 0.8s ease-out;
+    animation-fill-mode: forwards;
+}
+
+.styled-hr {
+    border: none;
+    height: 4px;
+    background: linear-gradient(to right, gray, black, gray);
+    width: 80%;
+    margin: 20px auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku 数独</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <h1>Sudoku 数独</h1>
+    <table id="sudoku-board"></table>
+    <div class="controls">
+        <hr class="styled-hr">
+        <button id="solve-button">Auto-Solver</button>
+        <button id="reset-button">Resetar Tabuleiro</button>
+        <button id="check-button">Verificar Solução</button>
+        <button id="notes-trigger">Visualizar Anotações</button>
+        <button id="hint-btn">Dica</button>
+        <button id="undo-btn">Desfazer Dica</button>
+        <button id="export-btn">Exportar Tabuleiro</button>
+        <button id="toggle-candidates-btn">Visualizar Candidatos</button>
+        <button id="clear-cell-btn" disabled>Limpar Célula</button>
+        <label for="difficulty">Dificuldade:</label>
+        <select id="difficulty">
+            <option value="30">Fácil</option>
+            <option value="45">Médio</option>
+            <option value="60">Difícil</option>
+            <option value="100">Mestre</option>
+        </select>
+        <hr class="styled-hr">
+        <div id="timer-container">
+            <button id="start-btn">Play</button>
+            <button id="stop-btn">Stop</button>
+            <button id="reset-btn">Reset</button>
+            <span id="timer">00:00:00</span>
+            <span class="hints">Dicas usadas: <span id="hint-count">0</span></span>
+        </div>
+        <div id="validation-message"></div>
+        <div id="numeric-box" style="display: none;">
+            <button onclick="insertNumber(1)">1</button>
+            <button onclick="insertNumber(2)">2</button>
+            <button onclick="insertNumber(3)">3</button>
+            <button onclick="insertNumber(4)">4</button>
+            <button onclick="insertNumber(5)">5</button>
+            <button onclick="insertNumber(6)">6</button>
+            <button onclick="insertNumber(7)">7</button>
+            <button onclick="insertNumber(8)">8</button>
+            <button onclick="insertNumber(9)">9</button>
+        </div>
+    </div>
+    <script src="app.js" type="text/javascript"></script>
+</body>
+</html>
