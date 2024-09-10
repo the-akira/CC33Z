@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xadrez Master</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="game">
+        <h1>Xadrez Master</h1>
+        <small>"At the end of the game the king and the pawn go in the same box." <b>Italian Proverb</b></small>
+        <div class="buttons">
+            <button id="startAI">Start AI</button>
+            <button id="stopAI" disabled>Stop AI</button>
+            <button id="undoMove" title="CTRL + Z">Desfazer Movimento</button>
+            <button id="redoMove" title="CTRL + Y">Refazer Movimento</button>
+            <button id="exportButton" title="CTRL + E">Exportar Tabuleiro</button>
+            <button id="resetButton" title="CTRL + R">Resetar Tabuleiro</button>
+        </div>
+        <div id="loading-container" style="display: none;">
+            <div id="loading-bar"></div>
+        </div>
+        <div class="turn-indicator"><b>Turn:</b> <span id="turn">White</span></div>
+
+        <div id="chessboard-container">
+            <div id="chessboard"></div>
+        </div>
+
+        <div id="captured-pieces">
+            <div class="captured-section">
+                <div><b>White's Captured Pieces</b></div>
+                <div id="black-captured" class="captured-pieces"></div>
+            </div>
+            <div class="captured-section">
+                <div><b>Black's Captured Pieces</b></div>
+                <div id="white-captured" class="captured-pieces"></div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js" type="text/javascript"></script>
+</body>
+</html>
