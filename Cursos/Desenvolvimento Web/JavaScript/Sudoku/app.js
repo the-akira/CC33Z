@@ -958,6 +958,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('notes-trigger').textContent = 'Visualizar Anotações';
         document.getElementById('toggle-candidates-btn').textContent = 'Visualizar Candidatos';
         history = [];
+        hintCount = 0;
     });
 
     // Esconde a caixa numérica se clicar fora dela
