@@ -111,7 +111,6 @@ function aiMove() {
 
         // Executa o movimento
         movePiece(randomMove.from.row, randomMove.from.col, randomMove.to.row, randomMove.to.col);
-        saveState();
     }
 }
 
