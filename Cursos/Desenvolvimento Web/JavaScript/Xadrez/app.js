@@ -271,12 +271,10 @@ function undoMove() {
         turn = lastState.turn;
         document.getElementById('turn').textContent = turn;
 
-        // Restaure as peças capturadas
-        const lastLastState = moveHistory.slice().pop();
-        
-        if (lastLastState) {
-            hasMoved = JSON.parse(JSON.stringify(lastLastState.hasMoved)); // Restaure hasMoved
-            restoreCapturedPieces(lastLastState.whiteCapturedPieces, lastLastState.blackCapturedPieces);
+        // Restaure as peças capturadas     
+        if (lastState) {
+            hasMoved = JSON.parse(JSON.stringify(lastState.hasMoved)); // Restaure hasMoved
+            restoreCapturedPieces(lastState.whiteCapturedPieces, lastState.blackCapturedPieces);
         }
 
         // Atualize a interface do usuário
@@ -440,7 +438,6 @@ function handleCellClick(row, col) {
     if (selectedPiece) {
         if (isCastlingMove(selectedPiece.row, selectedPiece.col, row, col)) {
             movePiece(selectedPiece.row, selectedPiece.col, row, col);
-            saveState();
         }
         // Verifique se é um movimento válido de en passant
         else if (validMoves.some(move => move.row === row && move.col === col && move.type === 'enpassant')) {
@@ -452,7 +449,6 @@ function handleCellClick(row, col) {
             clearHighlights();
             clearKingInCheckHighlight();
             movePiece(selectedPiece.row, selectedPiece.col, row, col);
-            saveState();
             // switchTurn();
         } else {
             clearSelection();
@@ -809,6 +805,8 @@ function movePiece(fromRow, fromCol, toRow, toCol) {
     } else {
         enPassantTarget = null;
     }
+
+    saveState();
 
     if (targetPiece !== '') {
         capturePieceImage(targetPiece);
