@@ -282,6 +282,7 @@ function setBoard(board, disableFilled = true, animate = false) {
                             input.classList.remove('fill-animation');
                         });
                         input.style.backgroundColor = 'white';
+                        disableInitialValues();
                     }, delay);
                     delay += 100; // Incrementa o delay para cada célula
                 }
@@ -346,6 +347,20 @@ function clearUserInputs() {
         if (!input.disabled) {
             input.value = '';
             input.disabled = false; // Permite que o solver possa preencher             
+        }
+    });
+}
+
+function disableInitialValues() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        const fontWeight = window.getComputedStyle(input).fontWeight;
+
+        // Verifica se o font-weight não é 'bold' (ou equivalente numérico 700)
+        if (fontWeight !== 'bold' && fontWeight !== '700') {
+            input.disabled = true;  // Desabilita os inputs que não têm o font-weight bold
+        } else {
+            input.style.backgroundColor = "#f0f0f0";
         }
     });
 }
@@ -846,7 +861,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearUserInputs();
             clearErrorHighlights();
             solveSudoku(board);
-            setBoard(board, false, true);    
+            setBoard(board, false, true);
         }
     });
 
