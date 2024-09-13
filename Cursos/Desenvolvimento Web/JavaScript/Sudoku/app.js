@@ -519,60 +519,56 @@ function clearErrorHighlights() {
 let noteVisibility = false;
 
 function toggleNotesVisibility() {
-    if (isBoardComplete(getBoard())) {
-        alert('O tabuleiro está completo.');
+    noteVisibility = !noteVisibility;
+    clearHighlightedCells();
+
+    if (noteVisibility) {
+        toggleButtons([
+            'solve-button', 
+            'reset-button', 
+            'check-button', 
+            'hint-btn', 
+            'undo-btn', 
+            'export-btn', 
+            'toggle-candidates-btn', 
+        ], false);
     } else {
-        noteVisibility = !noteVisibility;
-        clearHighlightedCells();
-
-        if (noteVisibility) {
-            toggleButtons([
-                'solve-button', 
-                'reset-button', 
-                'check-button', 
-                'hint-btn', 
-                'undo-btn', 
-                'export-btn', 
-                'toggle-candidates-btn', 
-            ], false);
-        } else {
-            toggleButtons([
-                'solve-button', 
-                'reset-button', 
-                'check-button', 
-                'hint-btn', 
-                'undo-btn', 
-                'export-btn', 
-                'toggle-candidates-btn', 
-            ], true);
-        }
-        // Seleciona todas as células com anotações
-        const cellsWithNotes = document.querySelectorAll('td .notes-container');
-
-        cellsWithNotes.forEach(notesContainer => {
-            // Verifica se a célula associada ao contêiner de notas é editável
-            const td = notesContainer.parentElement;
-            const input = td.querySelector('input');
-
-            if (!input || input.disabled) {
-                // Se o input está desativado, não faz nada
-                return;
-            }
-
-            // Seleciona todas as notas dentro do contêiner de notas
-            const notes = notesContainer.querySelectorAll('.note');
-
-            notes.forEach(note => {
-                // Adiciona ou remove a classe 'visible'
-                note.classList.toggle('visible');
-                if (note.classList.contains('visible')) {
-                    document.getElementById('notes-trigger').innerHTML = "Ocultar Anotações";
-                } else {
-                    document.getElementById('notes-trigger').innerHTML = "Visualizar Anotações";
-                }
-            });
-        });
+        toggleButtons([
+            'solve-button', 
+            'reset-button', 
+            'check-button', 
+            'hint-btn', 
+            'undo-btn', 
+            'export-btn', 
+            'toggle-candidates-btn', 
+        ], true);
     }
+    // Seleciona todas as células com anotações
+    const cellsWithNotes = document.querySelectorAll('td .notes-container');
+
+    cellsWithNotes.forEach(notesContainer => {
+        // Verifica se a célula associada ao contêiner de notas é editável
+        const td = notesContainer.parentElement;
+        const input = td.querySelector('input');
+
+        if (!input || input.disabled) {
+            // Se o input está desativado, não faz nada
+            return;
+        }
+
+        // Seleciona todas as notas dentro do contêiner de notas
+        const notes = notesContainer.querySelectorAll('.note');
+
+        notes.forEach(note => {
+            // Adiciona ou remove a classe 'visible'
+            note.classList.toggle('visible');
+            if (note.classList.contains('visible')) {
+                document.getElementById('notes-trigger').innerHTML = "Ocultar Anotações";
+            } else {
+                document.getElementById('notes-trigger').innerHTML = "Visualizar Anotações";
+            }
+        });
+    });
 }
 
 let timerInterval;
