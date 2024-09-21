@@ -1,0 +1,175 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 35px;
+    font-size: 2.33rem;
+}
+
+#go-board-wrapper {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+#go-board {
+    position: relative;
+    width: 631px;
+    height: 631px;
+    background-color: #e2bf85;
+    border: 2px solid black;
+}
+
+.line {
+    position: absolute;
+    background-color: black;
+}
+
+.line.horizontal {
+    height: 1px;
+    width: calc(100% - 36px);
+    left: 20px;
+}
+
+.line.vertical {
+    width: 1px;
+    height: calc(100% - 36px);
+    top: 20px;
+}
+
+.intersection {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+
+.intersection:hover {
+    background-color: var(--hover-color, transparent);
+    z-index: 10;
+}
+
+.black {
+    background-color: black;
+    border: 1px solid black;
+}
+
+.white {
+    background-color: white;
+    border: 1px solid black;
+}
+
+.hoshi {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.coordinate {
+    position: absolute;
+    font-size: 14px;
+    color: black;
+    font-weight: bold;
+}
+
+.coordinate.horizontal {
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.coordinate.vertical {
+    left: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media screen and (max-width: 850px) {
+    #go-board {
+        width: 581px;
+        height: 581px;
+    }
+    .line.horizontal {
+        height: 1px;
+        width: calc(100% - 40px);
+        left: 20px;
+    }
+    .line.vertical {
+        width: 1px;
+        height: calc(100% - 40px);
+        top: 20px;
+    }
+    .intersection {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+@media screen and (max-width: 655px), screen and (max-height: 700px) {
+    h1 {
+        margin-top: 10px;
+        margin-bottom: 30px;
+        font-size: 2.30rem;
+    }
+    #go-board {
+        width: 470px;
+        height: 470px;
+    }
+    .line.horizontal {
+        height: 1px;
+        width: calc(100% - 37px);
+        left: 20px;
+    }
+    .line.vertical {
+        width: 1px;
+        height: calc(100% - 37px);
+        top: 20px;
+    }
+    .intersection {
+        font-size: 14px;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media screen and (max-width: 540px), screen and (max-height: 570px) {
+    h1 {
+        margin-top: 10px;
+        margin-bottom: 30px;
+        font-size: 2.30rem;
+    }
+    #go-board {
+        width: 390px;
+        height: 390px;
+    }
+    .line.horizontal {
+        height: 1px;
+        width: calc(100% - 29px);
+        left: 20px;
+    }
+    .line.vertical {
+        width: 1px;
+        height: calc(100% - 29px);
+        top: 20px;
+    }
+    .intersection {
+        font-size: 14px;
+        width: 16px;
+        height: 16px;
+    }
+}
