@@ -622,7 +622,7 @@ function moveToBase(ghost) {
 
     // Se chegou à posição inicial, remove o estado de retorno e limpa o caminho
     if (ghost.x === initialPosition.x && ghost.y === initialPosition.y) {
-        ghost.returningToBase = false;
+        // ghost.returningToBase = false;
         ghost.path = []; // Limpa o caminho
     }
 }
