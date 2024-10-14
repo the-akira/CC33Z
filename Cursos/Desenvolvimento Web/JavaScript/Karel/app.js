@@ -642,6 +642,18 @@ function paintCorner(color) {
   }
 }
 
+function cornerColorIs(color) {
+  const cellX = karel.x;
+  const cellY = karel.y;
+
+  // Verifica se a célula tem a cor especificada
+  if (cellColors[cellX] && cellColors[cellX][cellY] === color) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 canvas.addEventListener('contextmenu', function(event) {
   event.preventDefault();
 
@@ -1155,6 +1167,15 @@ function evaluateCommand(command) {
       paintCorner(color); // Chama a função para pintar
     } else {
       console.error(`Comando paint_corner inválido: ${command}`);
+    }
+  } else if (command.startsWith('corner_color_is')) {
+    const colorMatch = command.match(/\(([^)]+)\)/);
+    if (colorMatch && colorMatch[1]) {
+      const color = colorMatch[1].trim().replace(/['"]+/g, '');
+      const result = cornerColorIs(color);
+      console.log(`A célula está pintada com a cor ${color}: ${result}`);
+    } else {
+      console.error(`Comando corner_color_is inválido: ${command}`);
     }
   } else if (command.startsWith('print')) {
     const messageMatch = command.match(/\(([^)]+)\)/); // Extrai a mensagem dentro dos parênteses
