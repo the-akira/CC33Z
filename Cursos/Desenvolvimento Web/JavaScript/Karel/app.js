@@ -1132,11 +1132,13 @@ function executeStep() {
       const conditionMet = evaluateCondition(command.condition);
       const blockToExecute = conditionMet ? command.ifBlock : command.elseBlock;
       document.getElementById("command").innerHTML = command.condition;
+      console.log(`Condição '${command.condition}' é ${conditionMet ? 'verdadeira' : 'falsa'}`);
 
       if (blockToExecute.length > 0) {
         commandQueue.unshift(...blockToExecute);
       }
     } else if (command.type === 'while') {
+      console.log(`Avaliando condição do while: ${command.condition}`);
       const conditionMet = evaluateCondition(command.condition);
       document.getElementById("command").innerHTML = command.condition;
       if (conditionMet) {
