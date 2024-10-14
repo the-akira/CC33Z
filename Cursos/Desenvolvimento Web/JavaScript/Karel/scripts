@@ -1,0 +1,84 @@
+--------------------------------------------------------------
+
+turn_left()
+turn_left()
+if facing_east()
+  if front_is_clear()
+    repeat 5
+      move()
+      put_beeper()
+      paint_corner(pink)
+else
+  turn_left()
+  turn_left()
+  turn_left()
+  move()
+
+--------------------------------------------------------------
+
+while front_is_clear()
+  if no_beepers_present()
+    if not_facing_north()
+      move()
+
+--------------------------------------------------------------
+
+while front_is_clear()
+  repeat 3
+    turn_left()
+
+--------------------------------------------------------------
+
+repeat 3
+  turn_left()
+  move()
+  paint_corner(purple)
+if front_is_clear()
+  repeat j:2-5
+    print(i=j)
+    solve((3*j)/j)
+
+--------------------------------------------------------------
+
+repeat 5
+  move()
+  pick_beeper()
+turn_left()
+turn_left()
+turn_left()
+
+repeat 3
+  move()
+
+turn_left()
+turn_left()
+turn_left()
+
+repeat 2
+  move()
+  pick_beeper()
+
+repeat 2
+  move()
+
+turn_left()
+turn_left()
+turn_left()
+move()
+pick_beeper()
+
+turn_left()
+turn_left()
+turn_left()
+
+repeat 3
+  move()
+
+turn_left()
+turn_left()
+turn_left()
+
+repeat 2
+  move()
+
+--------------------------------------------------------------

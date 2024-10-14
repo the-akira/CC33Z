@@ -1,0 +1,378 @@
+.light {
+  --background-color: #d7edfc;
+  --button-bg-color: white;
+  --button-hover-color: #aafabf;
+  --button-disabled-bg-color: black;
+  --button-disabled-text-color: white;
+  --button-link-color: black;
+  --canvas-bg-color: white;
+  --canvas-border: black;
+  --font-family: "Courier New", Courier, monospace;
+  --button-txt-color: black;
+  --editor-container-border: 1px solid black;
+  --line-numbers-bg-color: #f0f0f0;
+  --line-numbers-txt-color: #999;
+  --line-numbers-border-right: 1px solid #ddd;
+  --karel-script-bg-color: white;
+  --karel-script-txt-color: black;
+  --modal-bg-color: #fff;
+  --modal-txt-color: black;
+  --info-bg-color: white;
+  --info-border: 1px solid black;
+  --info-txt-color: black;
+  --separator-color: blue;
+  --title-color: black;
+  --pre-bg-color: #F0F0F0;
+  --pre-txt-color: black;
+  --copy-btn-bg: #007bff;
+  --copy-btn-bg-hover: #0056b3;
+  --select-bg-color: white;
+  --select-txt-color: black;
+  --feedback-txt-color: black;
+  --loading-bar-bgcolor: #e0e0e0;
+  --loading-bar-color: blue;
+  --xyColor: black;
+  --close-btn-color: #aaa;
+  --close-btn-color-hover: #000;
+}
+
+.dark {
+  --background-color: #1f1f1f;
+  --button-bg-color: black;
+  --button-hover-color: #333333;
+  --button-disabled-bg-color: white;
+  --button-disabled-text-color: black;
+  --button-link-color: white;
+  --canvas-bg-color: black;
+  --canvas-border: white;
+  --font-family: "Courier New", Courier, monospace;
+  --button-txt-color: white;
+  --editor-container-border: 1px solid white;
+  --line-numbers-bg-color: #616060;
+  --line-numbers-txt-color: white;
+  --line-numbers-border-right: 1px solid white;
+  --karel-script-bg-color: black;
+  --karel-script-txt-color: white;
+  --modal-bg-color: black;
+  --modal-txt-color: white;
+  --info-bg-color: black;
+  --info-border: 1px solid white;
+  --info-txt-color: white;
+  --separator-color: #00ff5e;
+  --title-color: white;
+  --pre-bg-color: #1f1f1f;
+  --pre-txt-color: white;
+  --copy-btn-bg: #808080;
+  --copy-btn-bg-hover: #545454;
+  --select-bg-color: black;
+  --select-txt-color: white;
+  --feedback-txt-color: white;
+  --loading-bar-bgcolor: white;
+  --loading-bar-color: #00ff5e;
+  --xyColor: white;
+  --close-btn-color: white;
+  --close-btn-color-hover: #ababab;
+}
+
+.alternative {
+  --background-color: #ffebcd;
+  --button-bg-color: #f3ffbf;
+  --button-hover-color: #fac398;
+  --button-disabled-bg-color: #3d0301;
+  --button-disabled-text-color: #f3ffbf;
+  --button-link-color: #3d0301;
+  --canvas-bg-color: #f3ffbf;
+  --canvas-border: #3d0301;
+  --font-family: "Courier New", Courier, monospace;
+  --button-txt-color: #3d0301;
+  --editor-container-border: 1px solid #3d0301;
+  --line-numbers-bg-color: #fac398;
+  --line-numbers-txt-color: #3d0301;
+  --line-numbers-border-right: 1px solid #3d0301;
+  --karel-script-bg-color: #f3ffbf;
+  --karel-script-txt-color: #3d0301;
+  --modal-bg-color: #fff;
+  --modal-txt-color: #3d0301;
+  --info-bg-color: #f3ffbf;
+  --info-border: 1px solid #3d0301;
+  --info-txt-color: #3d0301;
+  --separator-color: red;
+  --title-color: #8a0404;
+  --pre-bg-color: #F3FFBF;
+  --pre-txt-color: #3d0301;
+  --copy-btn-bg: #ab0600;
+  --copy-btn-bg-hover: #630502;
+  --select-bg-color: #f3ffbf;
+  --select-txt-color: #3d0301;
+  --feedback-txt-color: #3d0301;
+  --loading-bar-bgcolor: white;
+  --loading-bar-color: red;
+  --xyColor: #3d0301;
+  --close-btn-color: #aaa;
+  --close-btn-color-hover: #000;
+}
+
+h1 {
+  color: var(--title-color);
+}
+
+canvas {
+  border: 1px solid var(--canvas-border);
+  background-color: var(--canvas-bg-color);
+  user-select: none;
+  margin-bottom: 10px;
+}
+
+canvas:hover {
+  cursor: cell;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+}
+
+button {
+  padding: 4px 8px;
+  border: 1px solid var(--canvas-border);
+  background-color: var(--button-bg-color);
+  font-size: 1.05rem;
+  margin: 5px;
+  color: var(--button-txt-color);
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: var(--button-hover-color);
+}
+
+button:disabled {
+  background-color: var(--button-disabled-bg-color);
+  color: var(--button-disabled-text-color);
+}
+
+button > a {
+  text-decoration: none;
+  color: var(--button-link-color);
+}
+
+.separator {
+  color: var(--separator-color);
+}
+
+.main {
+  text-align: center;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+  margin-top: 15px;
+}
+
+#editor-container {
+  display: flex;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  width: 600px; /* Largura total do editor */
+  height: 300px; /* Altura do editor, para limitar a área de visualização */
+  border: var(--editor-container-border);
+}
+
+#line-numbers {
+  background-color: var(--line-numbers-bg-color);
+  color: var(--line-numbers-txt-color);
+  text-align: right;
+  padding: 5px 5px; /* Ajuste de espaçamento interno */
+  border-right: var(--line-numbers-border-right);
+  width: 40px; /* Largura fixa para os números de linha */
+  overflow: hidden; /* Remover rolagem desnecessária */
+  line-height: 20px; /* Altura de linha */
+  font-size: 18px;
+  box-sizing: border-box; /* Inclui padding na largura */
+}
+
+#line-numbers span {
+  display: block;
+  height: 20px; /* Mesma altura que o line-height */
+}
+
+#karelScript {
+  flex-grow: 1;
+  padding: 5px;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  line-height: 20px; /* Altura de linha */
+  font-family: "Courier New", Courier, monospace; /* Fonte monoespaçada */
+  resize: none;
+  overflow-y: scroll; /* Ativar rolagem vertical */
+  tab-size: 2; /* Tamanho da tabulação */
+  height: 100%; /* Preencher altura do contêiner */
+  box-sizing: border-box; /* Inclui padding na altura */
+  white-space: pre; /* Preserva espaços e quebras de linha */
+  transition: opacity 0.5s ease;
+  background: var(--karel-script-bg-color);
+  color: var(--karel-script-txt-color);
+}
+
+.hidden {
+  opacity: 0; /* Quando escondido */
+  height: 0; /* Remove o espaço */
+  overflow: hidden; /* Evita que o texto apareça ao esconder */
+}
+
+#karelScript:focus {
+  border: none;
+  outline: none;
+}
+
+.modal {
+  display: none; /* Oculto por padrão */
+  position: fixed; /* Fica fixo na tela */
+  z-index: 1; /* Fica acima de outros elementos */
+  left: 0;
+  top: 0;
+  width: 100%; /* Largura total da tela */
+  height: 100%; /* Altura total da tela */
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo escurecido */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+}
+
+.modal-content {
+  background-color: var(--modal-bg-color);
+  padding: 20px 30px;
+  border: 1px solid #888;
+  width: 80%; /* Define a largura do modal */
+  max-width: 500px; /* Limite máximo de largura */
+  max-height: 80%; /* Limite máximo de altura para que caiba na tela */
+  overflow-y: auto; /* Habilita a rolagem vertical, caso o conteúdo seja grande */
+  position: relative;
+  color: var(--modal-txt-color);
+}
+
+.close {
+  color: var(--close-btn-color);
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: var(--close-btn-color-hover);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+pre, li {
+  text-align: left;
+}
+
+pre {
+  background-color: var(--pre-bg-color);
+  color: var(--pre-txt-color);
+}
+
+.code-container {
+  position: relative;
+}
+
+.copy-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: var(--copy-btn-bg);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background-color: var(--copy-btn-bg-hover);
+}
+
+#loadingBarContainer {
+  width: 50%; /* Diminui a largura da barra para 50% da tela */
+  background-color: var(--loading-bar-bgcolor);
+  height: 20px;
+  border-radius: 10px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  margin-left: auto;
+  margin-right: auto; /* Centraliza horizontalmente */
+  display: none; /* Inicialmente escondida */
+}
+
+#loadingBar {
+  width: 0%;
+  height: 100%;
+  background-color: var(--loading-bar-color);
+  border-radius: 10px;
+  transition: width 2s linear; /* Animação suave */
+}
+
+#feedback {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  color: var(--feedback-txt-color);
+}
+
+select {
+  font-size: 1.2rem;
+  background-color: var(--select-bg-color);
+  color: var(--select-txt-color);
+}
+
+.grid {
+  transition: background-color 0.5s ease; /* Efeito suave na cor de fundo */
+}
+
+.grid.animate {
+  background-color: rgba(255, 255, 0, 0.5); /* Cor temporária quando Karel se move */
+}
+
+.info {
+  margin: 0 auto;
+  background-color: var(--info-bg-color);
+  border: var(--info-border);
+  color: var(--info-txt-color);
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 60%;
+  padding: 20px 15px 10px 15px;
+}
+
+.detail {
+  display: inline-block;
+  margin-top: 0px;
+  margin-bottom: 8px;
+}
+
+#output > p {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+#xyPosition {
+  color: var(--xyColor);
+}
+
+@media screen and (max-width: 850px) {
+  .info {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .info {
+    width: 90%;
+  }
+}

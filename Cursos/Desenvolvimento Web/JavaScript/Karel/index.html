@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karel The Robot</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body class="light">
+  <div class="main">
+    <h1>Karel The Robot</h1>
+
+    <canvas id="karelCanvas" width="500" height="500"></canvas>
+
+    <div>
+      <button onclick="moveCameraLeft()">&#9668;</button>
+      <button onclick="moveCameraRight()">&#9658;</button>
+      <button onclick="moveCameraUp()">&#9650;</button>
+      <button onclick="moveCameraDown()">&#9660;</button>
+      <button id="openModal">Manual</button>
+      <button><a href="rur.pdf">R.U.R</a></button>
+      <select id="themeSelect">
+        <option value="light">Tema A</option>
+        <option value="dark">Tema B</option>
+        <option value="alternative">Tema C</option>
+      </select>
+      <select id="canvasSizeSelector">
+        <option value="600">600x600</option>
+        <option selected="selected" value="500">500x500</option>
+        <option value="400">400x400</option>
+        <option value="300">300x300</option>
+      </select>
+    </div>
+    <div class="info">
+      <p class="detail"><strong>Beepers loaded:</strong> <span id="beeperCount"></span></p> 
+      <b class="separator">|</b>
+      <p class="detail"><strong>Current command:</strong> <span id="command">None</span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Current Level:</strong> <span id="level"></span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Level Objective:</strong> <span id="objective"></span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Beepers:</strong> <span id="beeperList"></span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Beepers to Drop:</strong> <span id="dropedBeeperList"></span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Barriers:</strong> <span id="barrierList"></span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Moves:</strong> <span id="moves"></span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Collected:</strong> <span id="collected"></span></p>
+      <b class="separator">|</b>
+      <p class="detail"><strong>Dropped:</strong> <span id="dropped"></span></p>
+      <span id="xyPosition"></span>
+      <span id="output"></span>
+    </div>
+
+    <div>
+      <button class="controlBtn" onclick="moveKarel()">Move</button>
+      <button class="controlBtn" onclick="turnLeft()">Turn Left</button>
+      <button class="controlBtn" onclick="putBeeper()">Put Beeper</button>
+      <button class="controlBtn" onclick="pickBeeper()">Pick Beeper</button>
+      <button class="controlBtn" id="toggleButton" onclick="toggleKarel()">Turn On</button>
+      <button id="toggleScriptButton">Show Text Editor</button> 
+      <button onclick="resetKarel()">Reset</button>
+      <button class="controlBtn" onclick="executeScript()">Run</button>
+      <button class="controlBtn" onclick="executeStep()">Step</button>
+    </div>
+
+    <div id="feedback"></div>
+    <div id="loadingBarContainer">
+      <div id="loadingBar"></div>
+    </div>
+
+    <div class="wrapper hidden">
+      <div id="editor-container">
+        <div id="line-numbers"></div>
+        <textarea id="karelScript" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h2>Manual do Karel</h2>
+        <p>Karel é uma linguagem de programação educacional para iniciantes, criada por Richard E. Pattis em seu livro Karel The Robot: A Gentle Introduction to the Art of Programming. Pattis usou a linguagem em seus cursos na Universidade de Stanford, Califórnia. A linguagem recebeu o nome de Karel Čapek, um escritor tcheco que introduziu a palavra robô em sua peça R.U.R.</p>
+        <h2>Comandos Básicos</h2>
+        <p>Karel é um robô que pode executar comandos para se mover, virar, pegar ou colocar objetos (chamados beepers) e outras ações. A seguir estão os comandos básicos que Karel pode executar:</p>
+        
+        <ul>
+            <li><strong>move()</strong>: Move Karel uma unidade para frente.</li>
+            <li><strong>turn_left()</strong>: Faz Karel virar 90 graus à esquerda.</li>
+            <li><strong>put_beeper()</strong>: Karel coloca um beeper na célula atual.</li>
+            <li><strong>pick_beeper()</strong>: Karel pega um beeper da célula atual.</li>
+            <li><strong>paint_corner(cor)</strong>: Karel pinta o canto onde está com a cor especificada, ex: <code>paint_corner(pink)</code>.</li>
+            <li><strong>print("mensagem")</strong>: Exibe uma mensagem no console ou na tela.</li>
+            <li><strong>solve(22/7)</strong>: Soluciona uma expressão aritmética ou lógica.</li>
+        </ul>
+
+        <h2>Condições</h2>
+        <p>Karel pode tomar decisões com base em certas condições do mundo ao seu redor. As condições podem ser usadas dentro de estruturas <code>if</code> ou <code>while</code> para controlar o fluxo do programa.</p>
+        
+        <ul>
+            <h3>Positivas</h3>
+            <li><strong>front_is_clear()</strong>: Retorna <em>true</em> se não houver obstáculos diretamente à frente de Karel.</li>
+            <li><strong>beepers_present()</strong>: Retorna <em>true</em> se houver beepers na célula atual.</li>
+            <li><strong>beepers_in_bag()</strong>: Retorna <em>true</em> se Karel ainda tiver beepers em sua bolsa.</li>
+            <li><strong>left_is_clear()</strong>: Retorna <em>true</em> se não houver obstáculos à esquerda de Karel.</li>
+            <li><strong>right_is_clear()</strong>: Retorna <em>true</em> se não houver obstáculos à direita de Karel.</li>
+            <li><strong>facing_north()</strong>: Retorna <em>true</em> se Karel estiver virado para o norte.</li>
+            <li><strong>facing_south()</strong>: Retorna <em>true</em> se Karel estiver virado para o sul.</li>
+            <li><strong>facing_east()</strong>: Retorna <em>true</em> se Karel estiver virado para o leste.</li>
+            <li><strong>facing_west()</strong>: Retorna <em>true</em> se Karel estiver virado para o oeste.</li>
+            <h3>Negativas</h3>
+            <li><strong>front_is_blocked()</strong>: Retorna <em>true</em> se houver um obstáculo diretamente à frente de Karel.</li>
+            <li><strong>no_beepers_present()</strong>: Retorna <em>true</em> se não houver beepers na célula atual de Karel.</li>
+            <li><strong>no_beepers_in_bag()</strong>: Retorna <em>true</em> se Karel não tiver mais beepers em sua bolsa.</li>
+            <li><strong>left_is_blocked()</strong>: Retorna <em>true</em> se houver um obstáculo à esquerda de Karel.</li>
+            <li><strong>right_is_blocked()</strong>: Retorna <em>true</em> se houver um obstáculo à direita de Karel.</li>
+            <li><strong>not_facing_north()</strong>: Retorna <em>true</em> se Karel não estiver virado para o norte.</li>
+            <li><strong>not_facing_south()</strong>: Retorna <em>true</em> se Karel não estiver virado para o sul.</li>
+            <li><strong>not_facing_east()</strong>: Retorna <em>true</em> se Karel não estiver virado para o leste.</li>
+            <li><strong>not_facing_west()</strong>: Retorna <em>true</em> se Karel não estiver virado para o oeste.</li>
+        </ul>
+
+        <h2>Palavras-chave de Controle</h2>
+        
+        <h3>if/else</h3>
+        <p>A estrutura <code>if</code> permite que Karel execute um bloco de código se uma condição for verdadeira. Se a condição for falsa, você pode usar <code>else</code> para executar um bloco alternativo. Exemplo:</p>
+
+        <div class="code-container">
+          <button class="copy-btn">Copiar</button>
+          <pre><code>
+if front_is_clear()
+  move()
+else
+  turn_left()
+          </code></pre>
+        </div>
+        
+        <p>Este exemplo faz Karel se mover se a frente estiver livre, ou virar à esquerda se houver um obstáculo.</p>
+
+        <h3>while</h3>
+        <p>A estrutura <code>while</code> repete um bloco de código enquanto a condição for verdadeira. Exemplo:</p>
+        
+        <div class="code-container">
+          <button class="copy-btn">Copiar</button>
+          <pre><code>
+while front_is_clear()
+  move()
+          </code></pre>
+        </div>  
+        
+        <p>Este exemplo faz Karel continuar se movendo enquanto a frente estiver livre.</p>
+        
+        <h3>repeat</h3>
+        <p>O comando <code>repeat</code> permite repetir um bloco de código um número fixo de vezes. Exemplo:</p>
+        
+        <pre><code>
+repeat 5
+  move()
+        </code></pre>
+        
+        <p>Este exemplo faz Karel se mover 5 vezes.</p>
+        
+        <h3>repeat com intervalo</h3>
+        <p>O <code>repeat</code> também pode ser usado com uma variável de intervalo. Exemplo:</p>
+
+        <div class="code-container">
+          <button class="copy-btn">Copiar</button>       
+          <pre><code>
+repeat i:0-5
+  print(Índice: i);
+  solve(i/i**i)
+          </code></pre>
+        </div>
+        
+        <p>Este exemplo imprime os valores de <code>i</code> de 0 a 5.</p>
+        
+        <h2>Como Funciona</h2>
+        <p>O código do Karel é interpretado em blocos. Cada bloco de comandos é executado de acordo com as condições e repetições definidas. Karel pode tomar decisões, repetir ações e resolver problemas no mundo 2D usando as estruturas de controle descritas acima.</p>
+
+        <h2>Exemplo Completo</h2>
+        <p>Um exemplo mais completo de um programa Karel pode ser:</p>
+
+        <div class="code-container">
+          <button class="copy-btn">Copiar</button>
+          <pre><code>
+if front_is_clear()
+  move()
+else
+  turn_left()
+
+repeat 3
+  move()
+  put_beeper()
+  paint_corner(purple)
+
+while beepers_present()
+  pick_beeper()
+          </code></pre>
+        </div>
+        
+        <p>Este código move Karel para frente se possível, coloca 3 beepers e depois tenta coletar todos os beepers na célula.</p>
+      </div>
+    </div>
+  </div>
+  <script src="app.js" type="text/javascript"></script>
+</body>
+</html>
