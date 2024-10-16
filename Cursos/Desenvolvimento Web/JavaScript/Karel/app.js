@@ -877,8 +877,6 @@ function pickBeeper() {
     
     // Verificar se a posição já foi coletada antes
     const isAlreadyCollected = collectedBeeperPositions.some(pos => pos.x === beeper.x && pos.y === beeper.y);
-
-    console.log(beeper)
     
     if (!isAlreadyCollected && karel.beeperCount < karel.beeperLimit) {
       // A primeira vez que coleta um beeper desta posição conta para o progresso
