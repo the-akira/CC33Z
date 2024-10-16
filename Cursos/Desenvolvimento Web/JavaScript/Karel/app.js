@@ -98,7 +98,8 @@ const pathColors = {
 const themes = ['light', 'dark', 'alternative'];
 let currentThemeIndex = 0;
 
-const levels = [
+let originalLevel;
+let levels = [
   {
     start: { x: 1, y: 1 },
     target: { x: 5, y: 5 },
@@ -145,6 +146,11 @@ const levels = [
     ], 
   }
 ];
+
+function copyLevel(levels) {
+  return JSON.parse(JSON.stringify(levels));
+}
+
 let currentLevelIndex = 0; // Índice do nível atual
 let collectedBeepers = 0; // Beepers coletados
 let droppedBeepers = 0; // Beepers dropados
@@ -393,6 +399,7 @@ function drawCoordinates() {
 }
 
 function initializeGrid() {
+  originalLevel = copyLevel(levels);
   for (let x = 0; x < globalGridWidth; x++) {
     cellColors[x] = [];
     for (let y = 0; y < globalGridHeight; y++) {
@@ -835,6 +842,7 @@ function putBeeper() {
     if (karel.beeperCount > 0) {
       // Adiciona o beeper no array de beepers
       beepers.push({ x: karel.x, y: karel.y });  
+      levels[currentLevelIndex].beepers.push({ x: karel.x, y: karel.y });
       karel.beeperCount--;
       updateBeeperDisplay();
       drawGrid();
@@ -845,6 +853,7 @@ function putBeeper() {
       
       if (correctDrop && !droppedBeeperPositions.some(pos => pos.x === karel.x && pos.y === karel.y)) {
         droppedBeeperPositions.push({ x: karel.x, y: karel.y });
+        levels[currentLevelIndex].dropBeepers.push({ x: karel.x, y: karel.y });
         updateDroppedBeepersInUI(levels[currentLevelIndex]);
         droppedBeepers++; // Incrementa o número de beepers dropados corretamente
         document.getElementById('dropped').innerHTML = `${droppedBeepers}/${levels[currentLevelIndex].beepersDropRequired}`;
@@ -868,6 +877,8 @@ function pickBeeper() {
     
     // Verificar se a posição já foi coletada antes
     const isAlreadyCollected = collectedBeeperPositions.some(pos => pos.x === beeper.x && pos.y === beeper.y);
+
+    console.log(beeper)
     
     if (!isAlreadyCollected && karel.beeperCount < karel.beeperLimit) {
       // A primeira vez que coleta um beeper desta posição conta para o progresso
@@ -878,6 +889,7 @@ function pickBeeper() {
       
       karel.beeperCount++;  // Karel coleta o beeper
       beepers.splice(beeperIndex, 1);  // Remove o beeper do tabuleiro
+      levels[currentLevelIndex].beepers.splice(beeperIndex, 1);
       
       updateBeeperDisplay();
       drawGrid();
@@ -885,6 +897,7 @@ function pickBeeper() {
       // Permite pegar o beeper, mas sem aumentar o progresso
       karel.beeperCount++;
       beepers.splice(beeperIndex, 1);
+      levels[currentLevelIndex].beepers.splice(beeperIndex, 1);
       
       updateBeeperDisplay();
       drawGrid();
@@ -1343,10 +1356,11 @@ function resetKarel() {
   camera.y = 0;
   karel.direction = 'right';
   karel.active = true;
-  karel.beeperCount = 0;
+  karel.beeperCount = 3;
   commandQueue = [];
   barriers = [];
   beepers = [];
+  dropBeepers = [];
   isExecuting = false;
   isParsed = false;
   cellColors = [];
@@ -1358,6 +1372,7 @@ function resetKarel() {
   collectedBeepers = 0;
   droppedBeepers = 0;
   currentMoves = 0;
+  levels = originalLevel;
   resetLevel();
   initializeGrid();
   document.getElementById("command").innerHTML = "None";
