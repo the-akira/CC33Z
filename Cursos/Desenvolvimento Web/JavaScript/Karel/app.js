@@ -194,14 +194,17 @@ canvas.addEventListener('click', (event) => {
     // Se já houver uma barreira, remove-a
     if (barrierIndex !== -1) {
       barriers.splice(barrierIndex, 1); // Remove a barreira da lista
+      levels[currentLevelIndex].barriers.splice(barrierIndex, 1);
     }
     // Caso contrário, adiciona uma barreira, desde que não seja a posição de Karel e esteja dentro do grid
     else if (!(karel.x === x && karel.y === y) && x < totalGridSize && y < totalGridSize) {
       barriers.push({ x, y });
+      levels[currentLevelIndex].barriers.push({ x, y });
     }
 
     // Redesenha o grid para refletir as mudanças
     drawGrid();
+    updateBarriersInUI(levels[currentLevelIndex]);
   }
 });
 
@@ -416,6 +419,7 @@ function loadLevel(level) {
   collectedBeepers = 0; // Beepers coletados
   droppedBeepers = 0;
   currentMoves = 0; // Movimentos realizados
+  droppedBeeperPositions = [];
   document.getElementById('objective').innerHTML = `(${objectiveX},${objectiveY})`
   document.getElementById('level').innerHTML = `${currentLevelIndex}`
   document.getElementById('moves').innerHTML = `${currentMoves}/${levels[currentLevelIndex].maxMoves}`;
@@ -424,9 +428,9 @@ function loadLevel(level) {
   addBeepers(level);
   addBarriers(level);
   addDroppedBeepers(level);
-  updateBeepersInUI(level);
+  updateBeepersInUI(originalLevel[currentLevelIndex]);
   updateBarriersInUI(level);
-  updateDroppedBeepersInUI(level);
+  updateDroppedBeepersInUI(originalLevel[currentLevelIndex]);
   drawGrid();
   resetGameState(); // Reseta o estado do jogo
 }
@@ -854,7 +858,8 @@ function putBeeper() {
       if (correctDrop && !droppedBeeperPositions.some(pos => pos.x === karel.x && pos.y === karel.y)) {
         droppedBeeperPositions.push({ x: karel.x, y: karel.y });
         levels[currentLevelIndex].dropBeepers.push({ x: karel.x, y: karel.y });
-        updateDroppedBeepersInUI(levels[currentLevelIndex]);
+        updateDroppedBeepersInUI(originalLevel[currentLevelIndex]);
+        updateBeepersInUI(originalLevel[currentLevelIndex]);
         droppedBeepers++; // Incrementa o número de beepers dropados corretamente
         document.getElementById('dropped').innerHTML = `${droppedBeepers}/${levels[currentLevelIndex].beepersDropRequired}`;
 
@@ -874,24 +879,28 @@ function pickBeeper() {
   
   if (beeperIndex !== -1) {
     const beeper = beepers[beeperIndex];
+
+    // Verifica se o beeper é original (foi um dos beepers colocados no mapa no início do nível)
+    const isOriginalBeeper = originalLevel[currentLevelIndex].beepers.some(original => original.x === beeper.x && original.y === beeper.y);
     
     // Verificar se a posição já foi coletada antes
     const isAlreadyCollected = collectedBeeperPositions.some(pos => pos.x === beeper.x && pos.y === beeper.y);
     
-    if (!isAlreadyCollected && karel.beeperCount < karel.beeperLimit) {
+    // Apenas conta o progresso se for um beeper original e não já coletado
+    if (!isAlreadyCollected && isOriginalBeeper && karel.beeperCount < karel.beeperLimit) {
       // A primeira vez que coleta um beeper desta posição conta para o progresso
       collectedBeeperPositions.push({ x: beeper.x, y: beeper.y });
-      updateBeepersInUI(levels[currentLevelIndex]);
       collectedBeepers++;  // Aumenta o progresso do objetivo
       document.getElementById('collected').innerHTML = `${collectedBeepers}/${levels[currentLevelIndex].beepersRequired}`;
       
       karel.beeperCount++;  // Karel coleta o beeper
       beepers.splice(beeperIndex, 1);  // Remove o beeper do tabuleiro
       levels[currentLevelIndex].beepers.splice(beeperIndex, 1);
+      updateBeepersInUI(originalLevel[currentLevelIndex]);
       
       updateBeeperDisplay();
       drawGrid();
-    } else if (isAlreadyCollected && karel.beeperCount < karel.beeperLimit) {
+    } else if (isAlreadyCollected || !isOriginalBeeper) {
       // Permite pegar o beeper, mas sem aumentar o progresso
       karel.beeperCount++;
       beepers.splice(beeperIndex, 1);
