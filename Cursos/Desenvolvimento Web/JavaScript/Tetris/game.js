@@ -80,9 +80,12 @@ class Tetromino {
   }
 
   rotateCounterClockwise() {
+    const originalShape = this.shape; // Salva a forma original
     const n = this.shape.length;
     const m = this.shape[0].length;
     const newShape = [];
+
+    // Calcular nova forma
     for (let i = m - 1; i >= 0; i--) {
       const newRow = [];
       for (let j = 0; j < n; j++) {
@@ -90,7 +93,24 @@ class Tetromino {
       }
       newShape.push(newRow);
     }
+
+    // Tenta rotacionar
     this.shape = newShape;
+
+    // Verificar colisões
+    if (hasRightCollisions() && !hasLeftCollisions()) {
+      this.moveLeft(); // Tenta mover uma vez para a esquerda
+      if (hasRightCollisions() && !hasLeftCollisions()) {
+        this.moveLeft(); // Tenta mover mais uma vez
+        if (hasRightCollisions() && !hasLeftCollisions()) {
+          this.moveLeft(); // Tenta mover mais uma vez, se necessário
+          if (hasRightCollisions() && !hasLeftCollisions()) {
+            // Se ainda colidir, restaura a forma original
+            this.shape = originalShape;
+          }
+        }
+      }
+    }
   }
 
   moveDown() {
@@ -169,26 +189,6 @@ function isGameOver() {
 scoreElement = document.getElementById("score")
 score = 0
 
-function update() {
-  currentTetromino.moveDown();
-  if (hasCollisions()) {
-    currentTetromino.moveUp();
-    mergeTetromino();
-    if (isGameOver()) {
-      score = 0;
-      scoreElement.innerHTML = `Pontuação: ${score}`;
-      alert("Game Over!")
-      for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-          board[row][col] = "white";
-        }
-      }
-    } else {
-      currentTetromino = tetrominos.getRandomTetromino();
-    }
-  }
-}
-
 function hasCollisions() {
   const shape = currentTetromino.getShape();
   const x = currentTetromino.getX();
@@ -205,6 +205,55 @@ function hasCollisions() {
     }
   }
   return false;
+}
+
+function hasRightCollisions() {
+  const shape = currentTetromino.getShape();
+  const x = currentTetromino.getX();
+  const y = currentTetromino.getY();
+  const rightBoundary = x + shape[0].length; // Uma unidade a mais, para checar a borda
+
+  // Verifica se a posição da peça está na borda direita do tabuleiro
+  if (rightBoundary > COLS) {
+    return true; // Colisão com a borda direita do tabuleiro
+  }
+
+  return false; // Sem colisão à direita
+}
+
+function hasLeftCollisions() {
+  const shape = currentTetromino.getShape(); // Obter a forma atual
+  const x = currentTetromino.getX(); // Posição x da peça
+  const y = currentTetromino.getY(); // Posição y da peça
+
+  // Verificar se a peça está na borda esquerda
+  if (x <= 0) {
+    return true; // Colisão com a borda esquerda do tabuleiro
+  }
+
+  const isPieceI = shape.length === 1 && shape[0].length === 4;
+
+  // Percorre as linhas e colunas da peça
+  for (let row = 0; row < shape.length; row++) {
+    for (let col = 0; col < shape[row].length; col++) {
+      if (shape[row][col]) { // Se a célula estiver ocupada (parte da peça)
+        let nextX = x + col - 1; // Verifica o tile imediatamente à esquerda
+        const nextY = y + row;
+
+        if (isPieceI) {
+          nextX = x + col - 3;
+        }
+
+        // Se a célula à esquerda está fora do tabuleiro ou é uma célula ocupada
+        // A verificação para nextY deve ser incluída para garantir que não saímos do limite
+        if (nextX < 0 || (nextY < ROWS && board[nextY][nextX] !== "white")) {
+          return true; // Colisão detectada
+        }
+      }
+    }
+  }
+
+  return false; // Sem colisão à esquerda
 }
 
 function isRowComplete(row) {
@@ -243,40 +292,198 @@ function mergeTetromino() {
   }
 }
 
-function handleKeyPress(event) {
+let keys = {
+  left: false,
+  right: false,
+  down: false,
+  rotate: false,
+};
+
+let dropInterval;
+let moveLeftInterval;
+let moveRightInterval;
+let dropSpeed = 100;  // Velocidade de descida rápida
+let autoDropSpeed = 400;  // Velocidade de descida automática
+let moveSpeed = 150;  // Velocidade do movimento lateral contínuo
+
+function handleKeyDown(event) {
   switch (event.keyCode) {
     case 37: // left arrow
-      currentTetromino.moveLeft();
-      if (hasCollisions()) {
-        currentTetromino.moveRight();
+      if (!keys.left) {
+        keys.left = true;
+        moveTetrominoLeft();  // Movimento único ao pressionar
+        startMoveLeft();      // Iniciar o movimento contínuo ao segurar
       }
       break;
     case 38: // up arrow
-      currentTetromino.rotateCounterClockwise();
-      if (hasCollisions()) {
-        currentTetromino.rotateClockwise();
+      if (!keys.rotate) {
+        currentTetromino.rotateCounterClockwise();
+        if (hasCollisions()) {
+          currentTetromino.rotateClockwise();
+        }
+        keys.rotate = true;
       }
+      draw();
       break;
     case 39: // right arrow
-      currentTetromino.moveRight();
-      if (hasCollisions()) {
-        currentTetromino.moveLeft();
+      if (!keys.right) {
+        keys.right = true;
+        moveTetrominoRight(); // Movimento único ao pressionar
+        startMoveRight();     // Iniciar o movimento contínuo ao segurar
       }
       break;
     case 40: // down arrow
-      currentTetromino.moveDown();
-      if (hasCollisions()) {
-        currentTetromino.moveUp();
-        mergeTetromino();
-        currentTetromino = tetrominos.getRandomTetromino();
+      if (!keys.down) {
+        keys.down = true;
+        startFastDrop();
       }
       break;
   }
 }
 
-document.addEventListener("keydown", handleKeyPress);
+function handleKeyUp(event) {
+  switch (event.keyCode) {
+    case 37:
+      keys.left = false;
+      stopMoveLeft();
+      break;
+    case 38:
+      keys.rotate = false;
+      break;
+    case 39:
+      keys.right = false;
+      stopMoveRight();
+      break;
+    case 40:
+      keys.down = false;
+      stopFastDrop();
+      break;
+  }
+}
 
-setInterval(() => {
-  update();
+// Movimento único para a esquerda
+function moveTetrominoLeft() {
+  currentTetromino.moveLeft();
+  if (hasCollisions()) {
+    currentTetromino.moveRight();
+  }
   draw();
-}, 400);
+}
+
+// Movimento único para a direita
+function moveTetrominoRight() {
+  currentTetromino.moveRight();
+  if (hasCollisions()) {
+    currentTetromino.moveLeft();
+  }
+  draw();
+}
+
+// Movimento lateral contínuo (esquerda)
+function startMoveLeft() {
+  clearInterval(moveLeftInterval);
+  moveLeftInterval = setInterval(() => {
+    moveTetrominoLeft();
+  }, moveSpeed);
+}
+
+function stopMoveLeft() {
+  clearInterval(moveLeftInterval);
+}
+
+// Movimento lateral contínuo (direita)
+function startMoveRight() {
+  clearInterval(moveRightInterval);
+  moveRightInterval = setInterval(() => {
+    moveTetrominoRight();
+  }, moveSpeed);
+}
+
+function stopMoveRight() {
+  clearInterval(moveRightInterval);  // Para o movimento ao soltar a tecla
+}
+
+// Movimento contínuo rápido para baixo
+function startFastDrop() {
+  clearInterval(dropInterval);
+  dropInterval = setInterval(() => {
+    currentTetromino.moveDown();
+    if (hasCollisions()) {
+      currentTetromino.moveUp();
+      mergeTetromino();
+      if (isGameOver()) {
+        endGame();
+      } else {
+        currentTetromino = tetrominos.getRandomTetromino();
+      }
+    }
+    draw();
+  }, dropSpeed);
+}
+
+function stopFastDrop() {
+  clearInterval(dropInterval);
+  dropInterval = setInterval(() => {
+    currentTetromino.moveDown();
+    if (hasCollisions()) {
+      currentTetromino.moveUp();
+      mergeTetromino();
+      if (isGameOver()) {
+        endGame();
+      } else {
+        currentTetromino = tetrominos.getRandomTetromino();
+      }
+    }
+    draw();
+  }, autoDropSpeed);
+}
+
+function resetBoard() {
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      board[row][col] = "white";
+    }
+  }
+}
+
+function endGame() {
+  clearInterval(dropInterval);
+  clearInterval(moveLeftInterval);
+  clearInterval(moveRightInterval);
+
+  resetBoard();
+  alert("Game Over!");
+  startGame();
+}
+
+function startGame() {
+  // Reiniciar o Tetromino atual
+  currentTetromino = tetrominos.getRandomTetromino();
+
+  // Reiniciar intervalos e o loop de queda automática
+  dropInterval = setInterval(() => {
+    currentTetromino.moveDown();
+    if (hasCollisions()) {
+      currentTetromino.moveUp();
+      mergeTetromino();
+      if (isGameOver()) {
+        endGame();
+      } else {
+        currentTetromino = tetrominos.getRandomTetromino();
+      }
+    }
+    draw();
+  }, autoDropSpeed);
+
+  // Reiniciar as teclas pressionadas
+  keys = {
+    left: false,
+    right: false,
+    down: false,
+    rotate: false,
+  };
+}
+
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
+startGame();
