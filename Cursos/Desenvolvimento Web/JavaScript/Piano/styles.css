@@ -1,0 +1,378 @@
+body {
+    background-color: #f5f5f5;
+}
+
+.key {
+    width: 35px;
+    height: 200px;
+    margin: 2px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    font-size: 15px;
+    color: #333;
+    cursor: pointer;
+}
+
+.key:active {
+    background-color: lightgray;
+}
+
+.key.black {
+    width: 25px;
+    height: 120px;
+    margin-left: -15px;
+    margin-right: -15px;
+    background-color: black;
+    color: white;
+    z-index: 1;
+}
+
+.key:active, .key.pressed {
+    background-color: darkgray;
+}
+
+.key.black:active, .key.black.pressed {
+    background-color: darkgray;
+}
+
+.piano-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.piano {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    background-color: #d1d1d1;
+    border: 1.5px solid black;
+    margin-bottom: 22px;
+}
+
+.menu {
+    text-align: center;
+    margin-bottom: 14px;
+    margin-top: 10px;
+}
+
+.boxes {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 85%;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+input[type=checkbox] {
+  -ms-transform: scale(2); /* IE */
+  -moz-transform: scale(2); /* FF */
+  -webkit-transform: scale(2); /* Safari and Chrome */
+  -o-transform: scale(2); /* Opera */
+  transform: scale(2);
+  padding: 10px;
+}
+
+.key-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 4.5px;
+    margin-bottom: 7px;
+    background-color: #a1c3ed;
+    transition: background-color 0.3s ease;
+}
+
+.highlight {
+    background-color: #467ABC !important;
+}
+
+.melody {
+    text-align: center;
+}
+
+.selects {
+    background-color: #d1d1d1;
+    width: 84%;
+    margin: 0 auto;
+    padding-top: 9px;
+    padding-bottom: 4px;
+    margin-bottom: 15px;
+    border: 1.5px solid black;
+}
+
+#chord-select {
+    height: 100px;
+}
+
+#chord-select.expanded {
+    height: 300px;
+}
+
+h1 {
+    text-align: center;
+}
+
+h3 {
+    margin-bottom: 12px;
+    display: none;
+}
+
+.label {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+label {
+    display: inline-block;
+    margin-right: 5px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+#last-note {
+    font-weight: normal;
+    background-color: white;
+    border: 1.5px solid black;
+    padding: 3px 5px;
+}
+
+select {
+    width: 85%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1.5px solid black;
+    background-color: white;
+    transition: border-color 0.3s;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+select:focus {
+    border-color: #007bff;
+    background-color: #fff;
+}
+
+option {
+    padding: 5px;
+}
+
+#add-note,
+#add-chord,
+#play-music,
+.remove-button,
+#start-recording-btn,
+#stop-recording-btn,
+#play-recording-btn,
+#export-json-btn,
+#importButton,
+#stop-playback-btn {
+    background: white;
+    padding: 6px 9px;
+    border: 1.5px solid black;
+    font-weight: bold;
+    font-size: 1.02rem;
+}
+
+#add-note:hover,
+#add-chord:hover,
+#play-music:hover,
+.remove-button:hover,
+#start-recording-btn:hover,
+#stop-recording-btn:hover,
+#play-recording-btn:hover,
+#export-json-btn:hover,
+#importButton:hover,
+#stop-playback-btn:hover {
+    opacity: 0.8;
+    cursor: pointer;
+    background-color: #e3e3e3;
+}
+
+#add-note:disabled,
+#add-chord:disabled,
+#play-music:disabled,
+.remove-button:disabled,
+#start-recording-btn:disabled,
+#stop-recording-btn:disabled,
+#play-recording-btn:disabled,
+#export-json-btn:disabled,
+#importButton:disabled,
+#stop-playback-btn:disabled {
+    background-color: black;
+    color: white;
+}
+
+#play-music {
+    margin-left: 5px;
+}
+
+#add-note {
+    margin-top: 10px;
+}
+
+#add-chord {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+#melody-list {
+    margin-bottom: 15px;
+}
+
+.remove-button {
+    padding: 4px 8px;
+    font-size: 0.95rem;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#delay-input {
+    padding: 3.5px 7px;
+    font-size: 1.05rem;   
+    width: 57px; 
+}
+
+#volume-control {
+    -webkit-appearance: none; /* Remove o estilo padrão */
+    height: 10px; /* Altura do trilho */
+    background: #adadad; /* Cor do trilho */
+    border-radius: 5px; /* Bordas arredondadas */
+}
+
+/* Estilizando o círculo (thumb) do slider */
+#volume-control::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Remove o estilo padrão */
+    appearance: none; /* Para Firefox */
+    width: 20px; /* Largura do thumb */
+    height: 20px; /* Altura do thumb */
+    background: black; /* Cor do thumb */
+    border: 2px solid #888; /* Cor da borda do thumb */
+    border-radius: 0; /* Torna o thumb quadrado */
+    cursor: pointer; /* Cursor de ponteiro ao passar sobre o thumb */
+}
+
+#volume-control::-moz-range-thumb {
+    width: 20px; /* Largura do thumb */
+    height: 20px; /* Altura do thumb */
+    background: black; /* Cor do thumb */
+    border: 2px solid #888; /* Cor da borda do thumb */
+    border-radius: 0; /* Torna o thumb quadrado */
+    cursor: pointer; /* Cursor de ponteiro ao passar sobre o thumb */
+}
+
+#volume-control::-ms-thumb {
+    width: 20px; /* Largura do thumb */
+    height: 20px; /* Altura do thumb */
+    background: black; /* Cor do thumb */
+    border: 2px solid #888; /* Cor da borda do thumb */
+    border-radius: 0; /* Torna o thumb quadrado */
+    cursor: pointer; /* Cursor de ponteiro ao passar sobre o thumb */
+}
+
+#volume-control::-webkit-slider-runnable-track {
+    background: #adadad; /* Cor do trilho */
+}
+
+#volume-control::-moz-range-track {
+    height: 10px; /* Altura do trilho */
+    background: #adadad; /* Cor do trilho */
+}
+
+#volume-control::-ms-track {
+    height: 10px; /* Altura do trilho */
+    background: #adadad; /* Cor do trilho */
+    border: none; /* Remove a borda */
+    color: transparent; /* Torna a área transparente */
+}
+
+#volume-control::-ms-fill-lower {
+    background: #888; /* Cor da parte inferior do trilho */
+}
+
+#volume-control::-ms-fill-upper {
+    background: #444; /* Cor da parte superior do trilho */
+}
+
+.highlight-melody {
+    background-color: #D1D1D1;  /* Destaque com cor de fundo amarelo */
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+input[type='file'] {
+    color: transparent;
+    width: 90px;
+}
+
+@media (max-width: 1350px) {
+    .piano {
+        transform: scale(0.9);
+        margin-top: -10px; 
+    }
+}
+
+@media (max-width: 1225px) {
+    .piano {
+        transform: scale(0.8); 
+        margin-top: -25px; 
+    }
+}
+
+@media (max-width: 1090px) {
+    .piano {
+        transform: scale(0.7); 
+        margin-top: -40px; 
+    }
+}
+
+@media (max-width: 950px) {
+    .piano {
+        transform: scale(0.6); 
+        margin-top: -50px; 
+    }
+}
+
+@media (max-width: 825px) {
+    .piano {
+        transform: scale(0.5); 
+        margin-top: -60px; 
+    }
+}
+
+@media (max-width: 695px) {
+    .piano {
+        transform: scale(0.4); 
+        margin-top: -75px; 
+    }
+}
+
+@media (max-width: 555px) {
+    .piano {
+        transform: scale(0.3); 
+        margin-top: -85px; 
+    }
+}
+
+@media (max-width: 430px) {
+    .piano {
+        transform: scale(0.2); 
+        margin-top: -95px; 
+    }
+}
+
+@media (max-width: 290px) {
+    .piano {
+        transform: scale(0.13); 
+        margin-top: -105px; 
+    }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Digital</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+<h1>Piano Digital</h1>
+<div class="menu">
+    <div class="boxes">
+        <input type="checkbox" id="show-shortcuts" />
+        <label>Teclas</label>
+        
+        <input type="checkbox" id="show-notes" />
+        <label>Notas</label>
+
+        <input type="checkbox" id="show-syllables" />
+        <label>Sílabas</label>
+
+        <input type="checkbox" id="show-scales" />
+        <label>Escalas</label>
+
+        <input type="checkbox" id="play-audio" />
+        <label>Metro</label>
+    </div>
+
+    <div class="selects">
+        <p class="label" for="note-select">Escalas</p>
+        <select id="scale-selector">
+            <option value="C_Major">C Major</option>
+            <option value="A_minor">A Minor</option>
+            <option value="G_Major">G Major</option>
+            <option value="E_minor">E Minor</option>
+        </select>
+
+        <p class="label" for="note-select">Notas</p>
+        <select id="note-select"></select>
+        <button id="add-note">Adicionar Nota</button>
+            
+        <p class="label" for="chord-select">Acordes</p>
+        <select id="chord-select" multiple></select>
+        <button id="add-chord">Adicionar Acorde</button>
+    </div>
+
+    <button id="start-recording-btn">Iniciar Gravação</button> 
+    <button id="stop-recording-btn">Parar Gravação</button> 
+    <input type="file" id="importRecording" accept=".json" style="display: none;" />
+    <button id="importButton">Importar Gravação</button>
+    <button id="export-json-btn">Exportar Gravação</button>
+    <button id="play-recording-btn">Tocar Gravação</button>
+    <label>Última Nota: <span id="last-note">#</span></label>
+    <label for="delay-input">Intervalo (ms):</label>
+    <input type="number" id="delay-input" value="500">
+    <label for="volume-control">Volume:</label>
+    <input type="range" id="volume-control" min="0" max="1" step="0.01" value="1">
+    <button id="play-music">Tocar Música</button>
+    <button id="stop-playback-btn" disabled onclick="stopPlayback()">Parar</button>
+</div>
+
+<p id="recording-status" style="display: none; text-align: center;">Gravando...</p>
+<div id="progress-container" style="margin:0 auto; width: 84%; background-color: #ddd; display: none;">
+    <div id="progress-bar" style="width: 0%; height: 20px; background-color: gray;"></div>
+</div>
+
+<div class="melody">
+    <h3 id="current-melody">Melodia Atual</h3>
+    <div id="melody-list"></div>
+</div>
+
+<div class="piano-container">
+    <div class="piano" id="piano"></div>
+</div>
+
+<script type="text/javascript" src="app.js"></script>
+</body>
+</html>
