@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let cardsChosenId = [];
   let cardsWon = [];
   let onMatchCheckComplete;
+  let isCheckingMatch = false;
 
   modalButton.addEventListener('click', () => {
     modal.style.display = 'none';
@@ -76,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetChosenCards();
       });
     }
+    isCheckingMatch = false;  // Permite clicar novamente
   }
 
   function resetChosenCards() {
@@ -91,11 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function flipCard() {
+    if (isCheckingMatch) return;  // Impede novos cliques durante a verificação
+    
     let cardId = this.getAttribute('data-id');
+    if (cardsChosenId.includes(cardId)) return;  // Impede escolher a mesma carta duas vezes
+    
     cardsChosen.push(cardArray[cardId].name);
     cardsChosenId.push(cardId);
     this.setAttribute('src', cardArray[cardId].img);
+    
     if (cardsChosen.length === 2) {
+      isCheckingMatch = true;  // Desativa novos cliques temporariamente
       setTimeout(checkForMatch, 500);
     }
   }
