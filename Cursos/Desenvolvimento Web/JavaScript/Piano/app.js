@@ -103,18 +103,53 @@ function stopPlayback() {
     document.getElementById('stop-playback-btn').disabled = true;
 }
 
+let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let bufferCache = {};  // Cache dos buffers de áudio
+let gainNode = audioContext.createGain();  // Controle de volume
+gainNode.connect(audioContext.destination);  // Conectar ao destino de áudio
+let isAudioLoaded = false;
+
+async function preloadAudioBuffers() {
+    const loadPromises = notes.map(async (note) => {
+        const actualNote = altNames[note] || note;
+        const audioBuffer = await fetchAudioBuffer(`sound/${actualNote}.mp3`);
+        bufferCache[note] = audioBuffer;
+    });
+
+    // Espera até que todas as promessas de carregamento sejam resolvidas
+    await Promise.all(loadPromises);
+    isAudioLoaded = true;  // Sinaliza que o carregamento foi concluído
+    document.getElementById('piano-container').style.display = 'flex';
+    document.getElementById('pianoMessage').style.display = 'none';
+}
+
+async function fetchAudioBuffer(url) {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    return await audioContext.decodeAudioData(arrayBuffer);
+}
+
 function playNoteAudio(note) {
-    const actualNote = altNames[note] || note;  // Usa o nome alternativo se disponível
-    const audio = new Audio(`sound/${actualNote}.mp3`);
+    if (!isAudioLoaded) return;  // Se o áudio não foi carregado, ignora o toque
 
-    // Obtém o valor do controle de volume da UI (valor entre 0 e 1)
+    const audioBuffer = bufferCache[note];
+    if (!audioBuffer) {
+        console.error(`Áudio para a nota ${note} não encontrado.`);
+        return;
+    }
+
+    // Configura volume com controle da UI
     const volumeControl = document.getElementById('volume-control');
-    const volume = parseFloat(volumeControl.value);
+    gainNode.gain.value = parseFloat(volumeControl.value);
 
+    // Criar e tocar a fonte de áudio
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(gainNode);
+    source.start(0);
+
+    // Exibe a última nota tocada
     document.getElementById('last-note').innerHTML = note;
-
-    audio.volume = volume;  // Define o volume para o áudio
-    audio.play();
 
     highlightKey(note);  // Destaca a tecla
 
@@ -123,6 +158,12 @@ function playNoteAudio(note) {
         recording.push({ note: note, time: timeElapsed });
     }
 }
+
+window.addEventListener('load', () => {
+    preloadAudioBuffers();
+    document.getElementById('piano-container').style.display = 'none';
+    document.getElementById('pianoMessage').style.display = 'block';
+});
 
 let recording = [];
 let isRecording = false;
