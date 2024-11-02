@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dicionário de Símbolos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Dicionário de Símbolos</h1>
+
+    <input type="text" id="search-input" placeholder="Buscar símbolo..." />
+    <div id="suggestions" class="suggestions-list"></div>
+
+    <label for="category-select">Filtrar por Categoria:</label>
+    <select id="category-select">
+      <option value="all">Todas</option>
+    </select>
+
+    <label for="initial-select">Filtrar por Inicial:</label>
+    <select id="initial-select">
+      <option value="all">Todas</option>
+    </select>
+
+    <select id="sort-order" onclick="updateSortOrder(this.value)">
+      <option value="alphabetical">Ordenar A-Z</option>
+      <option value="reverse">Ordenar Z-A</option>
+    </select>
+
+    <div id="symbol-data">
+      <button id="shuffle-button" onclick="shuffleSymbols()">Embaralhar</button>
+      <button id="export-button" onclick="exportSymbolsAsJSON()">Exportar</button>
+      <button id="go-all-left" class="pagination-button">«</button>
+      <button id="go-left" class="pagination-button">⬅</button>
+      <button id="go-right" class="pagination-button">➡</button>
+      <button id="go-all-right" class="pagination-button">»</button>
+      <span id="current-page"></span> <span id="total-symbols"></span> 
+      <a id="link" href="https://en.wikipedia.org/wiki/Semiotics">Semiótica</a>
+    </div>
+
+    <div id="messageNotFound" style="display: none; text-align: center;">Nenhum resultado encontrado.</div>
+    <div id="symbol-list" class="symbol-list"></div>
+
+    <div id="pagination" class="pagination">
+      <button id="first-page" class="pagination-button">Primeiro</button>
+      <button id="prev-page" class="pagination-button">Anterior</button>
+      <div id="page-numbers" class="page-numbers"></div>
+      <button id="next-page" class="pagination-button">Próximo</button>
+      <button id="last-page" class="pagination-button">Último</button>
+    </div>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h2 id="modal-symbol"></h2>
+      <img id="modal-image" alt="">
+      <p id="modal-description"></p>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
