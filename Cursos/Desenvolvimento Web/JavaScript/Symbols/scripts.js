@@ -783,6 +783,118 @@ const symbols = [
     description: 'A terra representa solidez, segurança e sustentação. É símbolo de fertilidade e crescimento, sendo associada à natureza e ao cuidado.',
     category: 'Elementos'
   },
+  {
+    symbol: 'Sereia',
+    image: 'images/mermaid.jpeg',
+    meaning: 'Sedução, Mistério, Feminilidade',
+    description: 'A sereia simboliza o mistério e a sedução, sendo frequentemente associada ao mar e ao subconsciente. Em várias culturas, representa tanto a beleza quanto o perigo.',
+    category: 'Mitologia'
+  },
+  {
+    symbol: 'Espectro',
+    image: 'images/specter.jpeg',
+    meaning: 'Medo, Mistério, Transição',
+    description: 'O espectro simboliza o desconhecido e a ligação com o mundo espiritual, evocando sentimentos de medo e mistério, além de representar a transição entre mundos.',
+    category: 'Espiritualidade'
+  },
+  {
+    symbol: 'Portal',
+    image: 'images/portal.jpeg',
+    meaning: 'Transição, Mudança, Mistério',
+    description: 'O portal representa uma passagem para o desconhecido, simbolizando novas oportunidades e transformações profundas que podem ser misteriosas e reveladoras.',
+    category: 'Misticismo'
+  },
+  {
+    symbol: 'Anjo',
+    image: 'images/angel.jpeg',
+    meaning: 'Proteção, Pureza, Guia Espiritual',
+    description: 'O anjo simboliza proteção e guia espiritual, associado à bondade, à pureza e ao amor divino. É uma figura de esperança e proteção em várias tradições.',
+    category: 'Espiritualidade'
+  },
+  {
+    symbol: 'Coroa',
+    image: 'images/crown.jpeg',
+    meaning: 'Realeza, Poder, Liderança',
+    description: 'A coroa simboliza autoridade, poder e legitimidade, sendo um símbolo de realeza e liderança suprema, frequentemente representando o controle e a responsabilidade.',
+    category: 'Antiguidade'
+  },
+  {
+    symbol: 'Punhal',
+    image: 'images/dagger.jpeg',
+    meaning: 'Perigo, Sacrifício, Proteção',
+    description: 'O punhal representa perigo e sacrifício, sendo um símbolo ambíguo de defesa e ameaça. É frequentemente associado à coragem e à força.',
+    category: 'Armas'
+  },
+  {
+    symbol: 'Diamante',
+    image: 'images/diamond.jpeg',
+    meaning: 'Pureza, Perfeição, Força',
+    description: 'O diamante é um símbolo de pureza e perfeição, representando a resistência e a força. É valorizado por sua raridade e clareza inigualáveis.',
+    category: 'Objetos'
+  },
+  {
+    symbol: 'Pombo',
+    image: 'images/dove.jpeg',
+    meaning: 'Paz, Esperança, Harmonia',
+    description: 'O pombo simboliza a paz e a harmonia, sendo amplamente utilizado como símbolo de esperança e reconciliação. É visto como mensageiro divino em várias culturas.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Bandeira',
+    image: 'images/flag.jpeg',
+    meaning: 'Identidade, União, Propósito',
+    description: 'A bandeira representa a união e a identidade de um grupo ou nação, carregando o propósito e a determinação de quem ela representa.',
+    category: 'Objetos'
+  },
+  {
+    symbol: 'Floresta',
+    image: 'images/forest.jpeg',
+    meaning: 'Mistério, Vida, Refúgio',
+    description: 'A floresta simboliza o mistério e o refúgio, sendo um lugar de vida e renovação. É associada à natureza selvagem e ao desconhecido.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Fonte',
+    image: 'images/fountain.jpeg',
+    meaning: 'Vitalidade, Pureza, Renovação',
+    description: 'A fonte simboliza a vitalidade e a renovação, sendo frequentemente associada à juventude e à energia renovada. Representa a fluidez e o ciclo de vida.',
+    category: 'Elementos'
+  },
+  {
+    symbol: 'Moeda',
+    image: 'images/coin.jpeg',
+    meaning: 'Fortuna, Valor, Prosperidade',
+    description: 'A moeda representa a prosperidade e o valor, simbolizando a riqueza material e a troca. É vista como símbolo de fortuna e recompensa.',
+    category: 'Objetos'
+  },
+  {
+    symbol: 'Machado',
+    image: 'images/axe.jpeg',
+    meaning: 'Força, Coragem, Superação',
+    description: 'O machado simboliza força e coragem, sendo associado a superação e transformação. É também um símbolo de desbravamento e da luta por um objetivo.',
+    category: 'Armas'
+  },
+  {
+    symbol: 'Bola de Cristal',
+    image: 'images/crystalball.jpeg',
+    meaning: 'Visão, Intuição, Profecia',
+    description: 'A bola de cristal simboliza a clarividência e a intuição, sendo um instrumento místico usado para acessar informações além do comum. É associada à visão do futuro e à sabedoria oculta.',
+    category: 'Misticismo'
+  },
+  {
+    symbol: 'Cálice',
+    image: 'images/chalice.jpeg',
+    meaning: 'Sacralidade, Fertilidade, União',
+    description: 'O cálice representa a sacralidade e a abundância, simbolizando união e celebração. Em diversas tradições, é um símbolo de espiritualidade e de comunhão.',
+    category: 'Espiritualidade'
+  },
+  {
+    symbol: 'Dado',
+    image: 'images/dice.jpeg',
+    meaning: 'Destino, Sorte, Aleatoriedade',
+    description: 'O dado simboliza o acaso e o destino, remetendo à sorte e à imprevisibilidade da vida. É um símbolo de escolhas e caminhos inesperados.',
+    category: 'Objetos'
+  },
 ];
 
 let currentPage = 1;
