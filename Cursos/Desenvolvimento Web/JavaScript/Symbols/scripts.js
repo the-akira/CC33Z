@@ -893,7 +893,161 @@ const symbols = [
     image: 'images/dice.jpeg',
     meaning: 'Destino, Sorte, Aleatoriedade',
     description: 'O dado simboliza o acaso e o destino, remetendo à sorte e à imprevisibilidade da vida. É um símbolo de escolhas e caminhos inesperados.',
-    category: 'Objetos'
+    category: 'Misticismo'
+  },
+  {
+    symbol: 'Pântano',
+    image: 'images/swamp.jpeg',
+    meaning: 'Mistério, Ocultação, Transformação',
+    description: 'O pântano representa mistério e transformação. Áreas de difícil acesso, os pântanos são vistos como lugares ocultos, onde se escondem segredos e criaturas, simbolizando o desconhecido e a transição entre o conhecido e o oculto.',
+    category: 'Paisagens'
+  },
+  {
+    symbol: 'Deserto',
+    image: 'images/desert.jpeg',
+    meaning: 'Resiliência, Isolamento, Busca Espiritual',
+    description: 'O deserto é um símbolo de resiliência e busca espiritual. Representa desafios e superação, lembrando-nos da importância do isolamento para a introspecção e da força necessária para sobreviver em condições adversas.',
+    category: 'Paisagens'
+  },
+  {
+    symbol: 'Montanhas',
+    image: 'images/mountains.jpeg',
+    meaning: 'Ascensão, Perseverança, Espiritualidade',
+    description: 'As montanhas simbolizam ascensão e desafios espirituais. Com sua imponência, elas representam a jornada de superação e a busca por uma visão mais ampla e elevada da vida.',
+    category: 'Paisagens'
+  },
+  {
+    symbol: 'Minotauro',
+    image: 'images/minotaur.jpeg',
+    meaning: 'Força, Complexidade, Desafio',
+    description: 'O Minotauro representa força e o desafio de enfrentar medos internos. Mitológico, ele simboliza a complexidade do inconsciente e a necessidade de enfrentar o que é desconhecido dentro de nós.',
+    category: 'Mitologia'
+  },
+  {
+    symbol: 'Javali',
+    image: 'images/boar.jpeg',
+    meaning: 'Coragem, Determinação, Fúria',
+    description: 'O javali é um símbolo de coragem e determinação, conhecido por sua bravura e força. Representa a ferocidade e a capacidade de lutar com intensidade, especialmente em situações de adversidade.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Hiena',
+    image: 'images/hyena.jpeg',
+    meaning: 'Resiliência, Oportunidade, Sobrevivência',
+    description: 'A hiena representa sobrevivência e adaptabilidade, sendo símbolo de resiliência e capacidade de encontrar oportunidades nas situações mais difíceis. Ela lembra a importância de aproveitar o que a vida oferece.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Ceifador',
+    image: 'images/reaper.jpeg',
+    meaning: 'Morte, Fim, Transformação',
+    description: 'O Ceifador, com sua foice, representa o fim de ciclos e a inevitabilidade da morte. Simboliza a transição e a transformação, sendo uma figura de mistério e reflexão sobre a impermanência da vida.',
+    category: 'Mitologia'
+  },
+  {
+    symbol: 'Amuleto',
+    image: 'images/amulet.jpeg',
+    meaning: 'Proteção, Sorte, Poder',
+    description: 'O amuleto é um símbolo de proteção e sorte, frequentemente utilizado para afastar o mal e trazer boas energias. Representa o poder de atrair o positivo e a força de proteger quem o carrega.',
+    category: 'Misticismo'
+  },
+  {
+    symbol: 'Cavalo',
+    image: 'images/horse.jpeg',
+    meaning: 'Liberdade, Nobreza, Força',
+    description: 'O cavalo simboliza liberdade, poder e nobreza, sendo um companheiro em jornadas e batalhas em diversas culturas. Ele representa a força e a capacidade de superar desafios, associado também ao espírito de aventura e ao dinamismo.',
+    category: 'Animais'
+  },
+  {
+    symbol: 'Baphomet',
+    image: 'images/baphomet.jpeg',
+    meaning: 'Dualidade, Sabedoria, Misticismo',
+    description: 'Baphomet é um símbolo de dualidade e equilíbrio entre forças opostas, como o bem e o mal, a luz e as trevas. Representa o conhecimento oculto e é uma figura mística cercada de mistério e sabedoria, frequentemente associada a práticas esotéricas e a busca pelo entendimento das dualidades do mundo.',
+    category: 'Esoterismo'
+  },
+  {
+    symbol: 'Caranguejo',
+    image: 'images/crab.jpeg',
+    meaning: 'Proteção, Introspecção, Ciclos',
+    description: 'O caranguejo simboliza proteção e introspecção, vivendo em constante conexão com a terra e a água. Com sua carapaça resistente, ele representa autodefesa e adaptabilidade. Também associado aos ciclos naturais e à mudança, o caranguejo nos lembra de honrar nossa sensibilidade e força interior.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Centauro',
+    image: 'images/centaur.jpeg',
+    meaning: 'Dualidade, Sabedoria, Instinto',
+    description: 'O centauro, metade homem e metade cavalo, simboliza a dualidade entre razão e instinto. Ele representa a busca por conhecimento e, ao mesmo tempo, o poder dos desejos naturais. Associado à liberdade e ao espírito aventureiro, o centauro é símbolo de força bruta aliada à sabedoria.',
+    category: 'Mitologia'
+  },
+  {
+    symbol: 'Beija-Flor',
+    image: 'images/hummingbird.jpeg',
+    meaning: 'Alegria, Resiliência, Leveza',
+    description: 'O beija-flor simboliza alegria e leveza, movendo-se com agilidade e graça. Ele representa a capacidade de encontrar a felicidade nas pequenas coisas, a resiliência e a força apesar de seu tamanho. Em várias culturas, o beija-flor é visto como um mensageiro de boas energias e renovação.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Pato',
+    image: 'images/duck.jpeg',
+    meaning: 'Equilíbrio, Navegação, Intuição',
+    description: 'O pato simboliza a habilidade de navegar entre diferentes elementos, como a água e a terra. Ele representa equilíbrio, adaptabilidade e intuição. Conhecido por sua habilidade de migrar longas distâncias, o pato também é um símbolo de viagem e exploração.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Fornalha',
+    image: 'images/furnace.jpeg',
+    meaning: 'Transformação, Fogo, Purificação',
+    description: 'A fornalha simboliza transformação e purificação pelo fogo. Ela representa o processo de forjar algo novo a partir da destruição do antigo, um símbolo de renascimento e mudança.',
+    category: 'Elementos'
+  },
+  {
+    symbol: 'Tridente',
+    image: 'images/trident.jpeg',
+    meaning: 'Poder, Oceano, Realeza',
+    description: 'O tridente é símbolo de autoridade e controle sobre o mar. Associado a divindades como Poseidon, representa o poder e a realeza dos oceanos.',
+    category: 'Mitologia'
+  },
+  {
+    symbol: 'Caverna',
+    image: 'images/cave.jpeg',
+    meaning: 'Mistério, Refúgio, Desconhecido',
+    description: 'A caverna é um símbolo de mistério e exploração interior, representando o subconsciente e o desconhecido. Em muitas culturas, ela é vista como um local de refúgio e renascimento, um espaço onde segredos são guardados e o indivíduo pode confrontar medos internos e encontrar sabedoria oculta.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Mapa',
+    image: 'images/map.jpeg',
+    meaning: 'Exploração, Direção, Conhecimento',
+    description: 'O mapa é um símbolo de orientação e descoberta, representando o desejo humano de explorar e entender o mundo. Ele é uma ferramenta de navegação que auxilia na busca de novos caminhos e objetivos, além de simbolizar o conhecimento e a capacidade de planejar e visualizar o futuro.',
+    category: 'Ferramentas'
+  },
+  {
+    symbol: 'Alce',
+    image: 'images/moose.jpeg',
+    meaning: 'Força, Dignidade, Independência',
+    description: 'O alce simboliza força, dignidade e uma natureza independente. Conhecido por sua presença imponente, ele representa a capacidade de se manter firme e determinado, mesmo em ambientes desafiadores. Em várias culturas, o alce é reverenciado como um símbolo de resistência e nobreza.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Porco',
+    image: 'images/pig.jpeg',
+    meaning: 'Prosperidade, Fertilidade, Determinação',
+    description: 'O porco é um símbolo de prosperidade, abundância e determinação. Em muitas culturas, ele representa boa sorte e fertilidade, sendo valorizado como um animal de grande valor. Sua presença simboliza a generosidade da terra e a importância de viver em harmonia com a natureza.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Zebra',
+    image: 'images/zebra.jpeg',
+    meaning: 'Equilíbrio, Singularidade, Unidade',
+    description: 'A zebra representa equilíbrio, singularidade e harmonia entre contrastes. Suas listras preto e branco simbolizam a união de opostos e a aceitação das diferenças, inspirando respeito pela diversidade. Em muitas tradições africanas, a zebra também simboliza proteção e a importância de preservar a identidade própria.',
+    category: 'Natureza'
+  },
+  {
+    symbol: 'Girafa',
+    image: 'images/giraffe.jpeg',
+    meaning: 'Perspectiva, Visão, Serenidade',
+    description: 'A girafa simboliza uma perspectiva ampla e a capacidade de ver além das situações imediatas. Com seu pescoço alto, ela representa a visão e serenidade para observar de longe antes de agir. Em várias culturas, a girafa é valorizada por sua postura graciosa e pacífica, inspirando uma visão mais elevada e paciência nas decisões.',
+    category: 'Natureza'
   },
 ];
 
