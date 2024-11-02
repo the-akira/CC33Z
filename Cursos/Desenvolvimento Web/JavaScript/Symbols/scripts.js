@@ -700,88 +700,88 @@ const symbols = [
     category: 'Natureza'
   },
   {
-      symbol: 'Rei',
-      image: 'images/king.jpeg',
-      meaning: 'Liderança, Autoridade, Poder',
-      description: 'O Rei simboliza poder, liderança e autoridade suprema. Muitas vezes associado ao domínio e à responsabilidade, ele representa a capacidade de governar com justiça, força e sabedoria. Em várias culturas, o rei é uma figura de proteção e é visto como a cabeça do reino, guiando e defendendo seu povo.',
-      category: 'Nobreza'
+    symbol: 'Rei',
+    image: 'images/king.jpeg',
+    meaning: 'Liderança, Autoridade, Poder',
+    description: 'O Rei simboliza poder, liderança e autoridade suprema. Muitas vezes associado ao domínio e à responsabilidade, ele representa a capacidade de governar com justiça, força e sabedoria. Em várias culturas, o rei é uma figura de proteção e é visto como a cabeça do reino, guiando e defendendo seu povo.',
+    category: 'Nobreza'
   },
   {
-      symbol: 'Rainha',
-      image: 'images/queen.jpeg',
-      meaning: 'Graça, Sabedoria, Fertilidade',
-      description: 'A Rainha simboliza graça, sabedoria e poder feminino. Ela é muitas vezes associada à bondade, à proteção de seu povo e ao equilíbrio entre força e compaixão. Em várias mitologias e culturas, a rainha representa fertilidade, soberania e o poder de nutrir e transformar o reino.',
-      category: 'Nobreza'
+    symbol: 'Rainha',
+    image: 'images/queen.jpeg',
+    meaning: 'Graça, Sabedoria, Fertilidade',
+    description: 'A Rainha simboliza graça, sabedoria e poder feminino. Ela é muitas vezes associada à bondade, à proteção de seu povo e ao equilíbrio entre força e compaixão. Em várias mitologias e culturas, a rainha representa fertilidade, soberania e o poder de nutrir e transformar o reino.',
+    category: 'Nobreza'
   },
   {
-      symbol: 'Cetro',
-      image: 'images/scepter.jpeg',
-      meaning: 'Poder, Soberania, Autoridade',
-      description: 'O cetro representa autoridade e realeza. Ele é associado ao poder de governar e simboliza a legitimidade e o direito de liderança em várias culturas ao longo da história.',
-      category: 'Nobreza'
+    symbol: 'Cetro',
+    image: 'images/scepter.jpeg',
+    meaning: 'Poder, Soberania, Autoridade',
+    description: 'O cetro representa autoridade e realeza. Ele é associado ao poder de governar e simboliza a legitimidade e o direito de liderança em várias culturas ao longo da história.',
+    category: 'Nobreza'
   },
   {
-      symbol: 'Martelo',
-      image: 'images/hammer.jpeg',
-      meaning: 'Trabalho, Justiça, Construção',
-      description: 'O martelo simboliza trabalho e criação, representando a capacidade humana de moldar e construir o mundo ao seu redor. É também um símbolo de força e justiça.',
-      category: 'Construção'
+    symbol: 'Martelo',
+    image: 'images/hammer.jpeg',
+    meaning: 'Trabalho, Justiça, Construção',
+    description: 'O martelo simboliza trabalho e criação, representando a capacidade humana de moldar e construir o mundo ao seu redor. É também um símbolo de força e justiça.',
+    category: 'Construção'
   },
   {
-      symbol: 'Ponte',
-      image: 'images/bridge.jpeg',
-      meaning: 'Conexão, União, Transição',
-      description: 'A ponte é um símbolo de união e transição, conectando pessoas, lugares e ideias. Ela representa a passagem de um ponto a outro, física ou espiritualmente.',
-      category: 'Arquitetura'
+    symbol: 'Ponte',
+    image: 'images/bridge.jpeg',
+    meaning: 'Conexão, União, Transição',
+    description: 'A ponte é um símbolo de união e transição, conectando pessoas, lugares e ideias. Ela representa a passagem de um ponto a outro, física ou espiritualmente.',
+    category: 'Arquitetura'
   },
   {
-      symbol: 'Corrente',
-      image: 'images/chain.jpeg',
-      meaning: 'União, Conexão, Restrição',
-      description: 'A corrente representa ligação e conexão, mas também pode simbolizar restrição. Ela é usada tanto para unir quanto para limitar.',
-      category: 'Objetos'
+    symbol: 'Corrente',
+    image: 'images/chain.jpeg',
+    meaning: 'União, Conexão, Restrição',
+    description: 'A corrente representa ligação e conexão, mas também pode simbolizar restrição. Ela é usada tanto para unir quanto para limitar.',
+    category: 'Objetos'
   },
   {
-      symbol: 'Vaga-lume',
-      image: 'images/firefly.jpeg',
-      meaning: 'Esperança, Iluminação, Orientação',
-      description: 'O vaga-lume simboliza esperança e orientação em tempos de escuridão. Sua luz representa a inspiração e a capacidade de encontrar o caminho.',
-      category: 'Natureza'
+    symbol: 'Vaga-lume',
+    image: 'images/firefly.jpeg',
+    meaning: 'Esperança, Iluminação, Orientação',
+    description: 'O vaga-lume simboliza esperança e orientação em tempos de escuridão. Sua luz representa a inspiração e a capacidade de encontrar o caminho.',
+    category: 'Natureza'
   },
   {
-      symbol: 'Flecha',
-      image: 'images/arrow.jpeg',
-      meaning: 'Direção, Foco, Objetivo',
-      description: 'A flecha representa direção e propósito. Ela é símbolo de foco e determinação, sempre apontando em direção a um objetivo específico.',
-      category: 'Guerra'
+    symbol: 'Flecha',
+    image: 'images/arrow.jpeg',
+    meaning: 'Direção, Foco, Objetivo',
+    description: 'A flecha representa direção e propósito. Ela é símbolo de foco e determinação, sempre apontando em direção a um objetivo específico.',
+    category: 'Guerra'
   },
   {
-      symbol: 'Fogo',
-      image: 'images/fire.jpeg',
-      meaning: 'Transformação, Energia, Paixão',
-      description: 'O fogo simboliza transformação e poder, representando tanto a destruição quanto a renovação. Ele está associado à paixão, coragem e impulso vital.',
-      category: 'Elementos'
+    symbol: 'Fogo',
+    image: 'images/fire.jpeg',
+    meaning: 'Transformação, Energia, Paixão',
+    description: 'O fogo simboliza transformação e poder, representando tanto a destruição quanto a renovação. Ele está associado à paixão, coragem e impulso vital.',
+    category: 'Elementos'
   },
   {
-      symbol: 'Água',
-      image: 'images/water.jpeg',
-      meaning: 'Pureza, Renovação, Emoção',
-      description: 'A água representa a fluidez e adaptação. É símbolo de purificação, vida e emoções profundas, conectando-se também ao inconsciente e à intuição.',
-      category: 'Elementos'
+    symbol: 'Água',
+    image: 'images/water.jpeg',
+    meaning: 'Pureza, Renovação, Emoção',
+    description: 'A água representa a fluidez e adaptação. É símbolo de purificação, vida e emoções profundas, conectando-se também ao inconsciente e à intuição.',
+    category: 'Elementos'
   },
   {
-      symbol: 'Ar',
-      image: 'images/air.jpeg',
-      meaning: 'Liberdade, Inteligência, Movimento',
-      description: 'O ar simboliza liberdade e expansão. Representa a mente, o pensamento e o movimento, sendo também ligado à comunicação e criatividade.',
-      category: 'Elementos'
+    symbol: 'Ar',
+    image: 'images/air.jpeg',
+    meaning: 'Liberdade, Inteligência, Movimento',
+    description: 'O ar simboliza liberdade e expansão. Representa a mente, o pensamento e o movimento, sendo também ligado à comunicação e criatividade.',
+    category: 'Elementos'
   },
   {
-      symbol: 'Terra',
-      image: 'images/earth.jpeg',
-      meaning: 'Estabilidade, Fertilidade, Crescimento',
-      description: 'A terra representa solidez, segurança e sustentação. É símbolo de fertilidade e crescimento, sendo associada à natureza e ao cuidado.',
-      category: 'Elementos'
+    symbol: 'Terra',
+    image: 'images/earth.jpeg',
+    meaning: 'Estabilidade, Fertilidade, Crescimento',
+    description: 'A terra representa solidez, segurança e sustentação. É símbolo de fertilidade e crescimento, sendo associada à natureza e ao cuidado.',
+    category: 'Elementos'
   },
 ];
 
