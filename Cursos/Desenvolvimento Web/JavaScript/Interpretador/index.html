@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interpretador SACI</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">Interpretador SACI</h1>
+
+        <div id="editor-container">
+            <div id="line-numbers"></div>
+            <textarea id="editor" spellcheck="false"
+                onscroll="syncScroll()" 
+                oninput="updateLineNumbers()" 
+                onkeydown="handleKeyEvents(event)"
+            ></textarea>
+        </div>
+
+        <div class="buttons">
+            <button title="Executar o código automaticamente" onclick="startExecution()">Run</button>
+            <button title="Executar o código passo a passo" id="stepButton">Step</button>  
+            <button title="Resetar memória" onclick="resetMemory()">Reset</button>
+            <button title="Gerar código aleatório" onclick="newRandomScript()">Random</button>
+            <button title="Manual de instruções da linguagem SACI" id="openModalBtn">Manual</button>
+            <button title="Introdução à Teoria das Linguagens de Programação" id="openModalTheoryBtn">Teoria</button>
+            <button title="Clássico!" id="toggle-snake-game">Snake Game</button>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span id="closeModalBtn" class="close">&times;</span>
+            <h2 class="title">Manual da Linguagem de Programação</h2>
+            
+            <h3>1. Introdução</h3>
+            <p>SACI: <b>S</b>imbólica de <b>A</b>prendizado e <b>C</b>ódigo <b>I</b>nterativo.</p> 
+            <p>Linguagem que permite criar variáveis, estruturas de controle, funções e usar expressões matemáticas com funções embutidas.</p>
+
+            <h3>2. Instruções Básicas</h3>
+            <ul>
+                <li><strong>LET</strong>: Define uma variável ou atribui um valor. <br>
+                    <code>LET A = 3</code><br>
+                    <code>LET B = A * 2</code>
+                </li>
+                <li><strong>PRINT</strong>: Exibe o valor de uma expressão. <br>
+                    <code>PRINT 3 + 3</code><br>
+                    <code>PRINT A * 5</code>
+                </li>
+                <li><strong>INPUT</strong>: Recebe um valor do usuário. <br>
+                    <code>INPUT X</code><br>
+                    <code>PRINT X</code>
+                </li>
+            </ul>
+
+            <h3>3. Estruturas de Controle</h3>
+            <ul>
+                <li><strong>IF, ELSEIF, ELSE</strong>: Estrutura condicional.<br>
+                    <code>
+                        IF A > B THEN<br>
+                        &nbsp;&nbsp;&nbsp;PRINT "A é maior que B"<br>
+                        ELSEIF A < B THEN<br>
+                        &nbsp;&nbsp;&nbsp;PRINT "A é menor que B"<br>
+                        ELSE<br>
+                        &nbsp;&nbsp;&nbsp;PRINT "A é igual a B"<br>
+                        END
+                    </code>
+                </li>
+                <li><strong>FOR, NEXT</strong>: Loop de contagem.<br>
+                    <code>
+                        FOR I = 1 TO 5 STEP 1<br>
+                        &nbsp;&nbsp;&nbsp;PRINT I<br>
+                        NEXT
+                    </code>
+                </li>
+                <li><strong>WHILE, END WHILE</strong>: Loop baseado em condição.<br>
+                    <code>
+                        LET X = 1<br>
+                        WHILE X < 6<br>
+                        &nbsp;&nbsp;&nbsp;PRINT X<br>
+                        &nbsp;&nbsp;&nbsp;LET X = X + 1<br>
+                        END WHILE
+                    </code>
+                </li>
+                <li><strong>BREAK</strong>: Interrompe a execução de loops ou funções.<br>
+                    <code>
+                        IF X == 5 THEN<br>
+                        &nbsp;&nbsp;&nbsp;BREAK<br>
+                        END
+                    </code>
+                </li>
+            </ul>
+
+            <h3>4. Funções</h3>
+            <p>Para definir uma função, use <strong>DEF</strong> seguido do nome e argumentos. Para chamar uma função, use <strong>CALL</strong>.</p>
+
+
+            <ul>
+                <li><strong>Função</strong><br>
+                    <code>
+                        DEF AreaRet X, Y<br>
+                        &nbsp;&nbsp;&nbsp;LET AREA = X * Y<br>
+                        &nbsp;&nbsp;&nbsp;PRINT AREA<br>
+                        END DEF<br>
+                        <br>
+                        CALL AreaRet 2, 5
+                    </code>
+                </li>
+                <li><strong>Função Recursiva</strong><br>
+                    <code>
+                        DEF Quadrado X<br>
+                        &nbsp;&nbsp;&nbsp;IF X &lt;= 1 THEN<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PRINT "Condição de parada atingida."<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BREAK<br>
+                        &nbsp;&nbsp;&nbsp;ELSE<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PRINT "TESTE"<br>
+                        &nbsp;&nbsp;&nbsp;END<br>
+                        &nbsp;&nbsp;&nbsp;LET Result = X * X<br>
+                        &nbsp;&nbsp;&nbsp;PRINT Result<br>
+                        &nbsp;&nbsp;&nbsp;CALL Quadrado X - 1<br>
+                        END DEF<br>
+                        <br>
+                        CALL Quadrado 2<br>
+                        CALL Quadrado 5
+                    </code>
+                </li>
+            </ul>
+
+            <h3>5. Arrays</h3>
+            <ul>
+                <li><strong>Definindo arrays:</strong><br>
+                    <code>LET arr = [1, 2, 3, 4, 5]</code>
+                </li>
+                <li><strong>Acessando elementos:</strong><br>
+                    <code>PRINT arr[2]</code> (exibe o terceiro elemento)
+                </li>
+            </ul>
+
+            <h3>6. Funções Embutidas (Built-In)</h3>
+            <p>A linguagem inclui algumas funções matemáticas embutidas:</p>
+            <ul style="margin-bottom: 0px;">
+                <li><strong>ABS(X)</strong>: Retorna o valor absoluto de X.<br>
+                    <code>PRINT ABS(-3)</code>
+                </li>
+                <li><strong>ATN(X)</strong>: Retorna o arco tangente de X.<br>
+                    <code>PRINT ATN(1)</code>
+                </li>
+                <li><strong>COS(X)</strong>: Retorna o cosseno de X (em radianos).<br>
+                    <code>PRINT COS(3.14)</code>
+                </li>
+                <li><strong>EXP(X)</strong>: Retorna o exponencial de X.<br>
+                    <code>PRINT EXP(2)</code>
+                </li>
+                <li><strong>INT(X)</strong>: Retorna a parte inteira de X.<br>
+                    <code>PRINT INT(3.7)</code>
+                </li>
+                <li><strong>LOG(X)</strong>: Retorna o logaritmo natural de X.<br>
+                    <code>PRINT LOG(10)</code>
+                </li>
+                <li><strong>RND()</strong>: Gera um número aleatório entre 0 e 1.<br>
+                    <code>PRINT RND()</code>
+                </li>
+                <li><strong>SIN(X)</strong>: Retorna o seno de X (em radianos).<br>
+                    <code>PRINT SIN(1)</code>
+                </li>
+                <li><strong>SQR(X)</strong>: Retorna a raiz quadrada de X.<br>
+                    <code>PRINT SQR(9)</code>
+                </li>
+                <li><strong>TAN(X)</strong>: Retorna a tangente de X (em radianos).<br>
+                    <code>PRINT TAN(1)</code>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="snake-game-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-snake-game" class="close">&times;</span>
+            <canvas id="snake-game-canvas" width="400" height="400"></canvas>
+        </div>
+    </div>
+
+    <div id="theory-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-theory" class="close">&times;</span>
+            <h2 class="title">Teoria das Linguagens de Programação</h2>
+
+            <h3>1. Introdução</h3>
+            <p>A teoria das linguagens de programação estuda as diversas abordagens para a criação e interpretação de linguagens usadas para programar computadores. Entre os conceitos principais estão os <b>interpretadores</b> e os <b>compiladores</b>, responsáveis por traduzir o código-fonte escrito por programadores para um formato que possa ser executado pela máquina.</p>
+
+            <h3>2. Interpretadores e Compiladores</h3>
+            <p><b>Interpretador:</b> Um interpretador lê e executa o código-fonte diretamente, linha por linha, sem gerar um arquivo intermediário. Ele traduz as instruções para a máquina em tempo real, o que pode resultar em um desempenho mais lento, mas com a vantagem de ser interativo.</p>
+            <p><b>Compilador:</b> Um compilador traduz todo o código-fonte para código de máquina antes da execução, gerando um arquivo binário. Esse arquivo pode ser executado diretamente pela máquina, o que normalmente resulta em melhor desempenho.</p>
+
+            <h3>3. Diferenças Entre Interpretador e Compilador</h3>
+            <ul>
+                <li><strong>Execução:</strong> O interpretador executa o código enquanto o lê, enquanto o compilador gera um arquivo executável antes de executar.</li>
+                <li><strong>Desempenho:</strong> Os programas gerados por compiladores tendem a ter um desempenho melhor, pois são traduzidos diretamente para código de máquina.</li>
+                <li><strong>Feedback:</strong> O interpretador fornece feedback imediato, enquanto o compilador só dá feedback após a compilação ser concluída.</li>
+                <li><strong>Facilidade de Depuração:</strong> O interpretador facilita a depuração em tempo real, enquanto o compilador exige que o código seja recompilado após cada modificação.</li>
+            </ul>
+
+            <h3>4. Etapas do Processo de Compilação</h3>
+            <p>O processo de compilação transforma o código-fonte em um programa executável, passando por várias etapas críticas. Essas etapas garantem que o código seja traduzido corretamente para a linguagem de máquina. O processo de compilação é geralmente dividido em cinco fases principais:</p>
+            <ul>
+                <li><strong>1. Análise Léxica (Lexical Analysis):</strong> O compilador começa examinando o código-fonte para identificar e classificar os componentes básicos, como palavras-chave, identificadores, números e operadores. O objetivo dessa etapa é dividir o código em unidades chamadas <b>tokens</b>, que são os blocos fundamentais para a análise subsequente.</li>
+                <li><strong>2. Análise Sintática (Syntactic Analysis):</strong> Na análise sintática, o compilador organiza os tokens identificados em uma estrutura hierárquica conhecida como <b>árvore sintática</b>. Essa estrutura representa a gramática do código e é usada para verificar se o código segue as regras da linguagem, ou seja, se a sintaxe está correta.</li>
+                <li><strong>3. Análise Semântica (Semantic Analysis):</strong> A análise semântica garante que o código seja logicamente correto. Isso inclui a verificação da consistência dos tipos de dados, escopo de variáveis, e outras restrições lógicas, como a tentativa de acessar variáveis não declaradas ou realizar operações incompatíveis entre tipos de dados.</li>
+                <li><strong>4. Otimização de Código (Code Optimization):</strong> Durante esta fase, o compilador tenta melhorar o código gerado, tornando-o mais eficiente. Isso pode incluir a eliminação de redundâncias, a simplificação de expressões ou a reorganização do código para melhorar o desempenho, como a redução do uso de memória ou a aceleração de operações.</li>
+                <li><strong>5. Geração de Código (Code Generation):</strong> A etapa final é a tradução do código para um formato de máquina que o computador possa executar diretamente. O compilador gera o código de máquina (código binário) ou código intermediário (como bytecode), que será utilizado pelo sistema operacional para executar o programa.</li>
+            </ul>
+
+            <h3>5. Etapas do Processo de Interpretação</h3>
+            <p>O processo de interpretação é uma abordagem dinâmica, onde o código é analisado e executado em tempo real, sem a necessidade de gerar código intermediário. Ele envolve as seguintes etapas:</p>
+            <ul>
+                <li><strong>1. Análise Léxica (Lexical Analysis):</strong> O interpretador começa dividindo o código-fonte em <b>tokens</b>, que são as unidades mínimas de significado (como palavras-chave, operadores e identificadores). Essa etapa é essencial para entender a estrutura básica do código.</li>
+                <li><strong>2. Análise Sintática (Syntactic Analysis):</strong> Após identificar os tokens, o interpretador verifica se eles estão organizados de acordo com as regras gramaticais da linguagem. Esta etapa organiza os tokens em uma estrutura hierárquica chamada de árvore sintática, que representa a sintaxe do código.</li>
+                <li><strong>3. Análise Semântica (Semantic Analysis):</strong> Nesta fase, o interpretador garante que o código faz sentido logicamente. Isso envolve verificar a coerência das operações e garantir que as variáveis sejam utilizadas corretamente, que os tipos de dados sejam compatíveis e que não haja erros lógicos, como a tentativa de dividir por zero ou acessar variáveis não inicializadas.</li>
+                <li><strong>4. Execução (Execution):</strong> Finalmente, o interpretador executa o código linha por linha. Durante a execução, as instruções são traduzidas em ações que o computador pode realizar, como realizar cálculos, manipular dados ou interagir com o usuário, tudo em tempo real. Ao contrário do compilador, o interpretador não gera um código intermediário, mas sim traduz e executa o código diretamente.</li>
+            </ul>
+
+            <h3>6. Interpretando e Compilando</h3>
+            <p>Vamos explorar um exemplo simples de um programa em pseudo-código que seria interpretado e compilado de maneiras diferentes.</p>
+
+            <h4>Exemplo de Código</h4>
+            <code>
+            LET A = 5<br>
+            LET B = 10<br>
+            IF A > B THEN<br>
+            &nbsp;&nbsp;&nbsp;PRINT "A é maior que B"<br>
+            ELSE<br>
+            &nbsp;&nbsp;&nbsp;PRINT "B é maior que A"<br>
+            END
+            </code>
+
+            <p>Para um interpretador, ele começaria executando o código linha por linha, avaliando e imprimindo o resultado de cada instrução diretamente. Já para um compilador, o código acima seria compilado para um arquivo binário e, quando executado, realizaria a mesma operação, mas sem a necessidade de ler e traduzir o código em tempo real.</p>
+
+            <h3>7. Código de Máquina (Assembly)</h3>
+            <p>O código de máquina ou assembly é uma forma de linguagem de baixo nível que é processada diretamente pelo processador. Abaixo está um exemplo simples de um código em Assembly, onde a operação <b>"A > B"</b> seria implementada:</p>
+
+            <h4>Exemplo em Assembly</h4>
+            <code>
+            MOV AX, 5      ; Carrega o valor de A em AX<br>
+            MOV BX, 10     ; Carrega o valor de B em BX<br>
+            CMP AX, BX     ; Compara A e B<br>
+            JLE ELSE       ; Se A <= B, pula para ELSE<br>
+            MOV CX, "A é maior que B"<br>
+            JMP END<br>
+            ELSE:<br>
+            MOV CX, "B é maior que A"<br>
+            END:<br>
+            ; Exibe o valor armazenado em CX
+            </code>
+            <p>No exemplo acima, o compilador converte o código de alto nível em assembly, que é traduzido para código de máquina para execução direta.</p>
+
+            <h3>8. Conclusão</h3>
+            <p>A teoria das linguagens de programação desempenha um papel fundamental na computação, permitindo a criação de ferramentas que tornam a interação entre humanos e máquinas mais eficiente e intuitiva. Interpretadores e compiladores representam abordagens complementares para a execução de programas, cada um com vantagens específicas que atendem a diferentes necessidades, como interatividade e desempenho.</p>
+            <p>Compreender as etapas envolvidas na compilação e na interpretação é essencial para desenvolver programas eficientes e funcionais, seja otimizando código para execução rápida ou depurando erros em tempo real. Além disso, o estudo das diferenças entre essas abordagens fornece uma base sólida para entender como linguagens de alto nível são traduzidas para instruções compreensíveis pelas máquinas, destacando a complexidade e a elegância do processo.</p>
+            <p>Ao integrar essas noções, desenvolvedores podem escolher as ferramentas e técnicas mais adequadas para seus projetos, explorando o potencial de linguagens de programação em níveis variados, desde pseudocódigos até o assembly. Assim, o aprendizado contínuo dessa teoria capacita programadores a criar soluções melhores e a contribuir para o avanço da tecnologia.</p>
+        </div>
+    </div>
+
+    <script src="interpreter.js"></script>
+</body>
+</html>

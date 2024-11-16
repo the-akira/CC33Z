@@ -1,0 +1,296 @@
+-----------------------------------------------------------------------------------------------
+
+PRINT 3 + 3
+
+LET A = 7
+LET B = A
+PRINT A * 5
+PRINT B * 2
+
+-----------------------------------------------------------------------------------------------
+
+LET A = 8
+LET B = 8
+LET C = 10
+LET D = 10
+
+IF A > B THEN
+    PRINT "A é maior que B"
+ELSEIF A < B THEN
+    PRINT "A é menor que B"
+ELSEIF A == C THEN
+    PRINT "A é igual a C"
+ELSEIF D == C THEN
+    PRINT "D é igual a C"
+ELSE
+    PRINT "Nenhuma das condições acima foi atendida"
+END
+
+-----------------------------------------------------------------------------------------------
+
+LET X = 5
+LET Y = 10
+
+IF X > Y THEN
+    PRINT "X é maior que Y"
+ELSEIF X < Y THEN
+    PRINT "X é menor que Y"
+ELSE
+    PRINT "X é igual a Y"
+END
+
+-----------------------------------------------------------------------------------------------
+
+DEF Test
+    LET arr = [1,2,3,4,5]
+
+    FOR I = 0 TO 4
+        PRINT arr[I]
+    NEXT
+END DEF
+
+Call Test
+
+-----------------------------------------------------------------------------------------------
+
+FOR I = 1 TO 5 STEP 1
+    PRINT I
+NEXT
+
+-----------------------------------------------------------------------------------------------
+
+DEF Quadrado X
+   LET Result = X * X
+   PRINT Result
+END DEF
+
+CALL Quadrado 4
+
+-----------------------------------------------------------------------------------------------
+
+DEF Quadrado X
+    FOR I = 1 TO 5 STEP 1
+        PRINT I * X
+    NEXT
+END DEF
+
+CALL Quadrado 2
+
+-----------------------------------------------------------------------------------------------
+
+DEF AreaRet X, Y
+    LET AREA = X * Y
+    PRINT AREA
+END DEF
+
+CALL AreaRet 2, 5
+
+-----------------------------------------------------------------------------------------------
+
+DEF TesteLogico X, Y
+    IF X > Y THEN
+        PRINT "X é maior que Y"
+    ELSEIF X < Y THEN
+        PRINT "X é menor que Y"
+    ELSE
+        PRINT "X é igual a Y"
+    END
+END DEF
+
+CALL TesteLogico 5, 1
+
+-----------------------------------------------------------------------------------------------
+
+DEF Quadrado X
+    FOR I = 1 TO 5 STEP 1
+        FOR I = 1 TO 5 STEP 1
+            PRINT I * X
+        NEXT
+    NEXT
+END DEF
+
+CALL Quadrado 2
+
+-----------------------------------------------------------------------------------------------
+
+DEF Teste X
+   WHILE X < 3
+      PRINT X
+      LET X = X + 1
+   END WHILE
+END DEF
+
+Call Teste 2
+
+-----------------------------------------------------------------------------------------------
+
+LET X = 1
+
+WHILE X < 6
+   PRINT X
+   LET X = X + 1
+END WHILE
+
+-----------------------------------------------------------------------------------------------
+
+INPUT X
+PRINT X
+
+-----------------------------------------------------------------------------------------------
+
+DEF Test X
+    INPUT Y
+    PRINT X * Y
+END DEF
+
+Call Test 2
+
+-----------------------------------------------------------------------------------------------
+
+DEF Ola
+    PRINT "oi"
+    FOR I = 1 TO 5 STEP 1
+        PRINT I
+    NEXT
+END DEF
+
+CALL Ola
+
+-----------------------------------------------------------------------------------------------
+
+# Esse é um comentário
+LET arr = [0,1,2,3,4,5,6]  # Inicializa um array com 7 elementos
+FOR i = 0 TO 5
+    PRINT arr[i]  # Imprime cada elemento do array
+NEXT
+
+-----------------------------------------------------------------------------------------------
+
+DEF Quadrado X
+    IF X <= 1 THEN
+        PRINT "Condição de parada atingida."
+        BREAK
+    ELSE
+        PRINT "TESTE"
+    END
+    LET Result = X * X
+    PRINT Result
+    CALL Quadrado X - 1
+END DEF
+
+CALL Quadrado 2
+CALL Quadrado 5
+
+-----------------------------------------------------------------------------------------------
+
+DEF Teste X
+   WHILE X < 5
+      PRINT X
+      LET X = X + 1
+      IF X < 2 THEN
+          PRINT "X MENOR Q 1"
+      ELSEIF X > 3 THEN
+          PRINT "X MAIOR Q 2"
+      ELSE
+          PRINT "TESTE"
+      END
+   END WHILE
+END DEF
+
+Call Teste 0
+
+-----------------------------------------------------------------------------------------------
+
+LET X = 50
+LET Y = 50
+
+IF X > Y THEN
+    PRINT "X é maior que Y"
+ELSEIF X < Y THEN
+    PRINT "X é menor que Y"
+ELSE
+    PRINT "X é igual a Y"
+END
+
+
+LET V = 80
+LET Q = 50
+
+IF V > Q THEN
+    PRINT "X é maior que Y"
+ELSEIF V < Q THEN
+    PRINT "X é menor que Y"
+ELSE
+    PRINT "X é igual a Y"
+END
+
+-----------------------------------------------------------------------------------------------
+
+LET A = 80
+LET B = 8
+LET C = 10
+LET D = 10
+
+IF A > B THEN
+    PRINT "A é maior que B"
+ELSEIF A < B THEN
+    PRINT "A é menor que B"
+ELSEIF A == C THEN
+    PRINT "A é igual a C"
+ELSEIF D == C THEN
+    PRINT "D é igual a C"
+ELSE
+    PRINT "Nenhuma das condições acima foi atendida"
+END
+
+
+LET E = 80
+LET F = 888
+LET G = 50
+LET H = 50
+
+IF E > F THEN
+    PRINT "E é maior que F"
+ELSEIF E < F THEN
+    PRINT "E é menor que F"
+ELSEIF E == G THEN
+    PRINT "E é igual a G"
+ELSEIF G == H THEN
+    PRINT "G é igual a H"
+ELSE
+    PRINT "Nenhuma das condições acima foi atendida"
+END
+
+-----------------------------------------------------------------------------------------------
+
+LET A = 3
+
+DEF Quadrado X
+    PRINT X * X
+
+    PRINT X * X
+
+    PRINT X * X
+
+    PRINT X * X
+END DEF
+
+LET G = 9
+
+CALL Quadrado 2
+
+DEF Quad X
+    PRINT X/X
+
+    PRINT X/X
+
+    PRINT X/X
+END DEF
+
+CALL Quad 8
+
+LET C = 15
+PRINT C * C
+PRINT C + C
+
+-----------------------------------------------------------------------------------------------
