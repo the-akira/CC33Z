@@ -40,15 +40,21 @@ const twilightColors = [
 function interpolateColor(colors, t) {
   const numColors = colors.length;
 
-  // Limitar `t` entre 0 e 1 para evitar índices inválidos
-  const scaledT = Math.min(Math.max(t, 0), 1) * (numColors - 1);
-
+  // Garantir que t esteja no intervalo [0, 1]
+  const clampedT = Math.max(0, Math.min(t, 1));
+  const scaledT = clampedT * (numColors - 1); // Escalar para o intervalo da paleta
   const i = Math.floor(scaledT); // Índice inferior
   const f = scaledT - i; // Fração entre os dois índices
 
   // Garante que o índice `i + 1` esteja dentro do intervalo válido
   const c1 = colors[i];
   const c2 = colors[Math.min(i + 1, numColors - 1)];
+
+  // Verificar se as cores existem antes de tentar acessar
+  if (!c1 || !c2) {
+    console.error("Erro: Índices inválidos ao acessar o esquema de cores.");
+    return [0, 0, 0, 255]; // Cor de fallback
+  }
 
   return [
     Math.round(c1[0] * (1 - f) + c2[0] * f),
