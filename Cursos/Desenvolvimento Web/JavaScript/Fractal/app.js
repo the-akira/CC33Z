@@ -52,7 +52,6 @@ function interpolateColor(colors, t) {
 
   // Verificar se as cores existem antes de tentar acessar
   if (!c1 || !c2) {
-    console.error("Erro: Índices inválidos ao acessar o esquema de cores.");
     return [0, 0, 0, 255]; // Cor de fallback
   }
 
