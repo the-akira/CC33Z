@@ -1,0 +1,204 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #4556A0;
+  font-family: system-ui;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0px;
+  margin-bottom: 16px;
+  color: #4556a0;
+  font-weight: bold;
+}
+
+select {
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 0px;
+  border: 1px solid #4556A0;
+}
+
+#juliaReal,
+#juliaImag {
+  margin-right: 4px;
+}
+
+#maxIter,
+#juliaReal,
+#juliaImag {
+  width: 65px;
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 0px;
+  border: 1px solid #4556A0;
+}
+
+select:focus,
+#maxIter:focus,
+#juliaReal:focus,
+#juliaImag:focus {
+  outline: none;
+}
+
+.container {
+  background: #d9e0ff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 90%;
+}
+
+.controls, 
+.subcontrols {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.status {
+  font-family: monospace;
+  margin: 10px 0;
+  color: #30333d;
+  text-align: center;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  background: black;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 1.03rem;
+  background: #4556a0;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #6045a0;
+}
+
+button:disabled {
+  background: #9e4997;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  pointer-events: none;
+  display: none;
+}
+
+#juliaControls {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+}
+
+.modal-content {
+  background-color: #D9E0FF;
+  margin: 0;
+  padding: 25px;
+  width: 80%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.close {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: #30333d;
+  text-decoration: none;
+}
+
+.range-container {
+  display: flex;
+  align-items: center;
+}
+
+.range-container label {
+  color: #333;
+  margin-right: 5px; 
+}
+
+.range-container input[type="range"] {
+  flex: 1;
+  appearance: none;
+  height: 4px;
+  background: black;
+  outline: none;
+  transition: background 0.3s;
+}
+
+.range-container input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4556a0;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); 
+  transition: background 0.3s;
+}
+
+.range-container input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.range-container input[type="range"]::-ms-thumb {
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.range-container input[type="range"]:active::-webkit-slider-thumb {
+  background: #0056b3; 
+}
+
+.range-container input[type="range"]::-webkit-slider-thumb:hover {
+  background: #6045a0;
+}

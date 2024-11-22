@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mundo Fractal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Mundo Fractal</h1>
+    <canvas id="mandelbrotCanvas" width="800" height="600"></canvas>
+    <div class="status" id="status">Iniciando...</div>
+
+    <div class="controls">
+      <button id="initBtn" onclick="startAnimation()">Iniciar</button>
+      <button id="pauseBtn" onclick="pauseAnimation()">Pausar</button>
+      <button id="resetBtn" onclick="resetView()">Resetar</button>
+      <button id="exportBtn" onclick="exportImage()">Exportar</button>
+      <button id="playColorAnimationBtn" onclick="startColorAnimation()">Animação de Cores</button>
+      <button id="stopColorAnimationBtn" onclick="stopColorAnimation()">Cancelar Animação</button>
+      <button id="infoBtn">Informações</button>
+      <button id="transitionBtn" onclick="startTransition()">Transição Mandelbrot ⇄ Julia</button>
+      <button onclick="stopTransition()">Cancelar Transição</button>
+      <button id="playWaveAnimationBtn" onclick="startWaveAnimation()">Animação de Ondas</button>
+      <button id="stopWaveAnimationBtn" onclick="stopWaveAnimation()">Cancelar Ondas</button>
+      <button id="playCircularAnimationBtn" onclick="startCircularDistortion()">Animação de Distorção Circular</button>
+      <button id="stopCircularAnimationBtn" onclick="stopCircularDistortion()">Cancelar Distorção</button>
+    </div>
+
+    <div class="subcontrols">
+      <div class="range-container">
+        <label>Velocidade:</label>
+        <input type="range" id="speed" min="1" max="20" value="5">
+      </div>
+
+      <div>
+        <label>Iterações:</label>
+        <input type="number" id="maxIter" value="100" min="10" max="1000" step="10">
+      </div>
+
+      <div>
+        <label>Qualidade:</label>
+        <select id="quality" onchange="updateQuality()">
+          <option value="1">Normal</option>
+          <option value="0.5">Rápida</option>
+          <option value="2">Alta</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Padrão:</label>
+        <select id="fractalMode" onchange="updateQuality()">
+          <option value="mandelbrot">Mandelbrot</option>
+          <option value="burningShip">Burning Ship</option>
+          <option value="julia">Julia</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Cores:</label>
+        <select id="colorScheme" onchange="updateQuality()">
+          <option value="hsl">HSL (Padrão)</option>
+          <option value="blue-red">Azul para Vermelho</option>
+          <option value="grayscale">Escala de Cinza</option>
+          <option value="rgb-cycle">Ciclo RGB</option>
+          <option value="warm">Cores Quentes</option>
+          <option value="twilight">Twilight</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Dimensões:</label>
+        <select id="canvasSize" onchange="resizeCanvasToSelection()">
+          <option value="1000x800">1000x800</option>
+          <option value="900x700">900x700</option>
+          <option selected="selected" value="800x600">800x600</option>
+          <option value="700x500">700x500</option>
+          <option value="600x400">600x400</option>
+          <option value="500x300">500x300</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Filtros: </label>
+        <select id="filterSelect" onchange="applyFilter()">
+          <option value="none">Nenhum</option>
+          <option value="blur">Desfoque</option>
+          <option value="edge-detection">Realce de Bordas</option>
+          <option value="gradient">Gradiente Dinâmico</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="juliaControls" style="display: none;">
+        <label>c (Real): </label>
+        <input type="number" id="juliaReal" value="-0.8" step="0.01">
+        
+        <label>c (Imaginário): </label>
+        <input type="number" id="juliaImag" value="0.156" step="0.01">
+
+        <label>Fórmulas: </label>
+        <select id="juliaPresets" onchange="applyJuliaPreset()">
+          <option value="default">Customizado</option>
+          <option value="goldenRatio">1 - Φ</option>
+          <option value="tree">Árvore fractal</option>
+          <option value="fibonacci">Razão Fibonacci</option>
+          <option value="unitary">Quadrado de -1</option>
+          <option value="spiral">Forma Espiral</option>
+          <option value="feather">Feather Shape</option>
+          <option value="web">Teia de Aranha</option>
+          <option value="flower">Flor</option>
+          <option value="star">Estrela</option>
+          <option value="treeFlowers">Árvore de Flores</option>
+          <option value="leaves">Folhas</option>
+          <option value="smoothWaves">Ondas Suaves</option>
+          <option value="centered">Zoom Central</option>
+          <option value="strongSwirl">Redemoinho Forte</option>
+          <option value="triangle">Triângulo Fragmentado</option>
+          <option value="largeCombination">Combinação Grande</option>
+          <option value="highComplexity">Alta Complexidade</option>
+          <option value="smoothLinear">Linear Suave</option>
+          <option value="explosiveVariation">Variação Explosiva</option>
+          <option value="oscillator">Oscilador</option>
+        </select>
+    </div>
+  </div>
+
+  <div id="tooltip" class="tooltip"></div>
+
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>O que é um Fractal?</h2>
+      <p>
+        Um fractal é uma figura geométrica que apresenta <strong>auto-semelhança</strong>, o que significa que suas partes menores refletem as mesmas características do todo. 
+        Eles são definidos por meio de <em>equações iterativas</em> e geram padrões infinitamente complexos. Exemplos famosos incluem o 
+        <strong>Conjunto de Mandelbrot</strong> e o <strong>Conjunto de Julia</strong>, que exibem formas surpreendentes ao serem ampliados.
+      </p>
+      <p>
+        Fractais não são apenas objetos matemáticos, mas também possuem uma beleza visual única e aplicações práticas em diversas áreas da ciência e tecnologia.
+      </p>
+
+      <h3>Como os cálculos são feitos?</h3>
+      <p>
+        Os cálculos de fractais começam com números complexos representados como coordenadas no plano (\(c = x + yi\)). 
+        Cada ponto é processado iterativamente usando fórmulas como:
+      </p>
+      <pre><code>z<sub>n+1</sub> = z<sub>n</sub>² + c</code></pre>
+      <p>
+        O processo funciona assim:
+      </p>
+      <ul>
+        <li>
+          <strong>Condição Inicial:</strong> No Conjunto de Mandelbrot, começamos com \(z_0 = 0\). No Conjunto de Julia, o valor inicial de \(z\) é o próprio ponto \(c\).
+        </li>
+        <li>
+          <strong>Iteração:</strong> A fórmula é repetida para calcular novos valores de \(z_n\).
+        </li>
+        <li>
+          <strong>Teste de Escape:</strong> Se o valor de \(z_n\) exceder um limite, como \(|z_n| > 2\), o ponto "escapa". O número de iterações até o escape define a cor do ponto.
+        </li>
+      </ul>
+      <p>
+        Pontos que não escapam são considerados parte do fractal e são coloridos de forma diferente, geralmente em preto.
+      </p>
+
+      <h3>Aplicações dos Fractais</h3>
+      <p>
+        Os fractais são utilizados em uma ampla gama de áreas, como:
+      </p>
+      <ul>
+        <li>
+          <strong>Compressão de Imagens:</strong> Representar padrões repetitivos usando fórmulas matemáticas para economizar espaço.
+        </li>
+        <li>
+          <strong>Modelagem de Formas Naturais:</strong> Fractais simulam formas da natureza, como montanhas, árvores, flocos de neve e redes fluviais.
+        </li>
+        <li>
+          <strong>Representação de Dados Caóticos:</strong> Fractais ajudam a descrever padrões imprevisíveis em meteorologia, economia e biologia.
+        </li>
+        <li>
+          <strong>Arte e Design:</strong> Fractais inspiram artistas na criação de visuais únicos e padrões complexos.
+        </li>
+        <li>
+          <strong>Engenharia:</strong> Usados para projetar antenas, modelar circuitos elétricos e até em diagnósticos médicos.
+        </li>
+      </ul>
+
+      <h3>Fascínio dos Fractais</h3>
+      <p>
+        Fractais combinam simplicidade e complexidade de forma única. Eles representam como fórmulas matemáticas simples podem gerar padrões infinitos e visualmente impressionantes. Explorar um fractal é como mergulhar em um universo infinito onde a matemática se encontra com a arte.
+      </p>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="app.js"></script>
+</body>
+</html>
