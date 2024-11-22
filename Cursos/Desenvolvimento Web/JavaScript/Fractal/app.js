@@ -644,6 +644,7 @@ function stopTransition() {
     'transitionBtn', 'infoBtn', 'playColorAnimationBtn', 
     'stopColorAnimationBtn', 'playWaveAnimationBtn', 'stopWaveAnimationBtn',
     'playCircularAnimationBtn', 'stopCircularAnimationBtn']);
+  enableSelect();
 }
 
 function startTransition() {
