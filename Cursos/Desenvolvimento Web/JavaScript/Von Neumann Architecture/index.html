@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Von Neumann Architecture</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <h1 class="title">Arquitetura de Von Neumann</h1>
+    <div class="container">
+        <div class="control-panel" style="grid-column: 1 / -1;">
+            <h2 style="margin-bottom: 15px;" class="heading">Painel de Controle</h2>
+            <select id="program-selector" onchange="loadProgramFromDropdown()">
+                <option value="">Selecione um programa</option>
+                <option value="program1">Programa 1</option>
+                <option value="program2">Programa 2</option>
+                <option value="program3">Programa 3</option>
+                <option value="program4">Programa 4</option>
+            </select>
+            <div style="display: inline-block; float: right;">
+                <label for="theme-selector">Selecione o Tema:</label>
+                <select id="theme-selector" onchange="changeTheme()">
+                    <option value="theme-light">Claro</option>
+                    <option value="theme-dark">Escuro</option>
+                </select>
+            </div>
+
+            <button id="openModalBtn">Manual</button>
+            <button onclick="exportLogsAsJSON()">Exportar Log</button>
+
+            <div id="speed-control">
+                <label for="speedRange">Velocidade:</label>
+                <input type="range" id="speedRange" min="200" max="2000" step="100" value="1500">
+                <span id="speedDisplay">1500ms</span>
+            </div>
+
+            <textarea id="program-input" placeholder="Digite seu programa aqui..." spellcheck="false"></textarea>
+            <div>
+                <button title="F5" onclick="loadProgram()">Carregar Programa na Memória</button>
+                <button title="F6" id="stepBtn" onclick="nextStep()">Executar Instrução</button>
+                <button title="F10" onclick="reverseStep()">Reverter</button>
+                <button title="F8" onclick="runProgram()">Executar Programa</button>
+                <button titlte="F9" onclick="stopProgram()">Parar</button>
+                <button title="F7" onclick="reset()">Resetar</button>
+                <button onclick="saveProgram()">Salvar Programa</button>
+                <input type="file" id="loadFileInput" style="display:none;" accept=".txt" onchange="loadProgramFromFile(event)">
+                <button onclick="document.getElementById('loadFileInput').click()">Carregar Programa</button>
+            </div>
+
+            <div class="progress-container">
+                <div id="global-progress-bar" class="progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="cpu-section">
+            <h2 class="heading">CPU</h2>
+            
+            <div id="registers">
+                <div class="register">AC (Acumulador): <span id="ac">0</span></div>
+                <div class="register">PC (Program Counter): <span id="pc">0</span></div>
+                <div class="register">IR (Instruction Register): <span id="ir">00000000</span></div>
+                <div class="register">MAR (Memory Address Register): <span id="mar">0</span></div>
+                <div class="register">MDR (Memory Data Register): <span id="mdr">0</span></div>
+                <div id="flags-section" class="flags">
+                    <span id="zf-flag" class="flag">ZF</span>
+                    <span id="nf-flag" class="flag">NF</span>
+                </div>
+            </div>
+
+            <h3>Registradores de Propósito Geral</h3>
+            <div id="general-registers">
+                <div style="margin: 0px;" class="register">EAX: <span id="eax">0</span></div>
+                <div style="margin: 0px;" class="register">EBX: <span id="ebx">0</span></div>
+                <div style="margin: 0px;" class="register">ECX: <span id="ecx">0</span></div>
+                <div style="margin: 0px;" class="register">EDX: <span id="edx">0</span></div>
+            </div>
+
+            <div id="register-values">
+                <h3>Valores dos Registradores</h3>
+                <canvas id="registerChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="clock-container">
+                <h3>Ciclo de Clock</h3>
+                <div class="clock-bar">
+                    <div id="clock-progress" class="clock-progress"></div>
+                </div>
+            </div>
+
+            <div id="clock-section">
+                <div id="clock-bar">
+                    <div id="fetch-stage" class="clock-stage">Fetch</div>
+                    <div id="decode-stage" class="clock-stage">Decode</div>
+                    <div id="execute-stage" class="clock-stage">Execute</div>
+                </div>
+            </div>
+
+            <div id="flowchart-section">
+                <h3>Fluxograma da Execução</h3>
+                <div id="instruction-flowchart"></div>
+            </div>
+
+            <div id="decode-section">
+                <h3 id="decode-title" style="margin-top: 8px;">Decodificação de Instrução</h3>
+                <div id="decoded-instruction">
+                    <p>Instrução Atual:</p>
+                    <p id="binary-instruction">-</p>
+                    <p id="mnemonic-instruction">-</p>
+                </div>
+                <h3 id="flow-title">Fluxo do Programa</h3>
+                <ul id="program-flow"></ul>
+            </div>
+
+            <h3>Status da ULA</h3>
+            <div id="alu-status" class="status">Última operação: Nenhuma</div>
+            <div id="operation-status" class="status">Último resultado: -</div>
+
+            <div id="alu-section">
+                <h3>ULA (Unidade Lógica e Aritmética)</h3>
+                <div class="alu">
+                    <div class="alu-operand" id="alu-operand1">-</div>
+                    <div class="alu-operator" id="alu-operator">?</div>
+                    <div class="alu-operand" id="alu-operand2">-</div>
+                    <div class="alu-equals">=</div>
+                    <div class="alu-result" id="alu-result">-</div>
+                </div>
+            </div>
+
+            <h3>Histórico de Operações</h3>
+            <div id="alu-history" class="status" style="height: 100px; overflow-y: auto;">
+                Nenhuma operação registrada ainda.
+            </div>
+
+            <div id="debug-section">
+                <h4>Pilha do Programa</h4>
+                <ul id="program-stack"></ul>
+            </div>
+        </div>
+
+        <div id="memory-section" class="memory-section">
+            <h2 class="heading">Memória</h2>
+
+            <div id="page-controls">
+                <label for="page-size">Tamanho da Página:</label>
+                <select id="page-size" onchange="updatePageSize()">
+                    <option value="16">16 Células</option>
+                    <option value="32">32 Células</option>
+                    <option value="64" selected>64 Células</option>
+                </select>
+
+                <label style="margin-left: 10px;" for="memory-filter-select">Filtrar Memória:</label>
+                <select id="memory-filter-select" onchange="applyMemoryFilterDropdown()">
+                    <option value="all" selected>Mostrar Todos</option>
+                    <option value="program">Mostrar Programa</option>
+                    <option value="data">Mostrar Dados</option>
+                    <option value="temp">Mostrar Temporários</option>
+                </select>
+            </div>
+
+            <div id="memory" class="memory-grid"></div>
+            <div id="global-range"></div>
+
+            <div id="memory-controls">
+                <button id="prevPageBtn" onclick="prevPage()">Anterior</button>
+                <span id="page-indicator">Página 1</span>
+                <button id="nextPageBtn" onclick="nextPage()">Próxima</button>
+                <input id="search-address" type="number" placeholder="Endereço" min="0" max="1023">
+                <button id="searchAddressBtn" onclick="goToAddress()">Ir</button>
+            </div>
+
+            <div id="memory-history-section">
+                <h3>Histórico de Memória</h3>
+                <table id="memory-history">
+                    <thead>
+                        <tr>
+                            <th>Endereço</th>
+                            <th>Operação</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3" style="text-align: center;">Nenhum acesso registrado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="memory-usage">
+                <h3>Uso de Memória</h3>
+                <canvas id="memoryChart" width="400" height="200"></canvas>
+            </div>
+
+            <h3>Mapa de Frequência de Acesso</h3>
+            <div id="heatmap-container" style="width: 100%; max-width: 600px; margin: 20px auto;">
+                <canvas id="memory-heatmap"></canvas>
+            </div>
+
+            <div id="memory-stats-section">
+                <h3>Estatísticas de Uso da Memória</h3>
+                <table id="memory-stats-table">
+                    <thead>
+                        <tr>
+                            <th>Endereço</th>
+                            <th>Leituras</th>
+                            <th>Escritas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3" style="text-align: center;">Nenhum dado registrado ainda.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>  
+
+            <div class="graphics-section">
+                <h3>Tela Gráfica</h3>
+                <canvas id="graphicsCanvas" width="440" height="240" style="border:1px solid #CCCCCC;"></canvas>
+                <label for="pixelColor">Selecione a cor do pixel:</label>
+                <input type="color" id="pixelColor" value="#000000">
+            </div>  
+
+            <div id="stats-panel" class="stats-section">
+                <h2 style="margin-bottom: 0px;" class="heading">Estatísticas Detalhadas</h2>
+                <p style="margin-bottom: 0px; margin-top: 0px;"><strong>Total de Instruções Executadas:</strong> <span id="total-instructions">0</span></p>
+                <p style="margin-bottom: 0px; margin-top: 0px;"><strong>Instrução Mais Frequente:</strong> <span id="most-frequent-instruction">-</span></p>
+                <h3 style="margin-bottom: 0px; margin-top: 0px;">Gráficos de Estatísticas</h3>
+                <div style="width: 100%; max-width: 600px; margin: 20px auto; margin-top: 0px; margin-bottom: 0px;">
+                    <canvas style="margin-bottom: 15px;" width="400" height="200" id="instructionChart"></canvas>
+                    <canvas width="400" height="200" id="memoryAccessChart"></canvas>
+                </div>
+            </div>     
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <h2 class="title">Arquitetura de Von Neumann</h2>
+            <h3>História e Importância</h3>
+            <p>
+                A arquitetura de Von Neumann, proposta por John von Neumann na década de 1940, é a base para a maioria dos computadores modernos. 
+                Essa arquitetura organiza o computador em três componentes principais: Unidade Central de Processamento (CPU), memória e dispositivos de entrada/saída. 
+                A principal inovação foi o uso de uma memória única para armazenar dados e instruções, permitindo a execução sequencial de programas.
+            </p>
+            <p>
+                Sua importância reside na simplicidade e flexibilidade, permitindo a criação de programas complexos que podem ser facilmente armazenados, modificados e executados.
+            </p>
+
+            <h3>Componentes Principais</h3>
+            <ul>
+                <li><strong>Unidade de Controle:</strong> Gerencia a execução das instruções e coordena o funcionamento de outros componentes.</li>
+                <li><strong>Unidade Lógica e Aritmética (ULA):</strong> Realiza operações matemáticas e lógicas.</li>
+                <li><strong>Memória:</strong> Armazena instruções e dados de forma unificada.</li>
+                <li><strong>Registradores:</strong> Pequenos espaços de armazenamento rápido dentro da CPU.</li>
+            </ul>
+
+            <h3>Instruções Implementadas</h3>
+            <p>Abaixo estão as instruções disponíveis na simulação e exemplos de uso:</p>
+
+            <h4>1. <code>LOAD</code></h4>
+            <p>Carrega o valor de um endereço de memória em um registrador.</p>
+            <code>LOAD eax, 20</code>
+            <p><em>Exemplo:</em> Carrega o valor armazenado na posição 20 da memória para o registrador <code>eax</code>.</p>
+
+            <h4>2. <code>STORE</code></h4>
+            <p>Armazena o valor de um registrador em um endereço de memória.</p>
+            <code>STORE eax, 30</code>
+            <p><em>Exemplo:</em> Armazena o valor do registrador <code>eax</code> na posição 30 da memória.</p>
+
+            <h4>3. <code>ADD</code></h4>
+            <p>Adiciona o valor de um endereço de memória ao registrador.</p>
+            <code>ADD eax, 21</code>
+            <p><em>Exemplo:</em> Soma o valor na posição 21 da memória ao valor atual de <code>eax</code>.</p>
+
+            <h4>4. <code>SUB</code></h4>
+            <p>Subtrai o valor de um endereço de memória do registrador.</p>
+            <code>SUB eax, 22</code>
+            <p><em>Exemplo:</em> Subtrai o valor na posição 22 da memória do registrador <code>eax</code>.</p>
+
+            <h4>5. <code>MUL</code></h4>
+            <p>Multiplica o valor de um endereço de memória pelo registrador.</p>
+            <code>MUL eax, 23</code>
+            <p><em>Exemplo:</em> Multiplica o valor de <code>eax</code> pelo valor armazenado na posição 23 da memória.</p>
+
+            <h4>6. <code>DIV</code></h4>
+            <p>Divide o registrador pelo valor de um endereço de memória.</p>
+            <code>DIV eax, 24</code>
+            <p><em>Exemplo:</em> Divide o valor de <code>eax</code> pelo valor armazenado na posição 24 da memória.</p>
+
+            <h4>7. <code>POW</code></h4>
+            <p>Eleva o valor de um registrador a uma potência.</p>
+            <code>POW eax, 2</code>
+            <p><em>Exemplo:</em> Eleva o valor de <code>eax</code> ao quadrado.</p>
+
+            <h4>8. <code>LOG</code></h4>
+            <p>Calcula o logaritmo de base 10 do valor em um registrador.</p>
+            <code>LOG eax</code>
+            <p><em>Exemplo:</em> Substitui o valor de <code>eax</code> pelo logaritmo de base 10 de seu valor atual.</p>
+
+            <h4>9. <code>SIN</code>, <code>COS</code>, <code>TAN</code></h4>
+            <p>Calcula o seno, cosseno ou tangente de um ângulo armazenado em radianos.</p>
+            <code>SIN eax</code>
+            <p><em>Exemplo:</em> Calcula o seno do valor armazenado em <code>eax</code>.</p>
+
+            <h4>10. <code>AND</code></h4>
+            <p>Realiza uma operação lógica E entre o acumulador e o valor na memória.</p>
+            <code>AND 20</code>
+            <p><em>Exemplo:</em> O acumulador passa a ser o resultado de <code>AC & mem[20]</code>.</p>
+
+            <h4>11. <code>OR</code></h4>
+            <p>Realiza uma operação lógica OU entre o acumulador e o valor na memória.</p>
+            <code>OR 21</code>
+            <p><em>Exemplo:</em> O acumulador passa a ser o resultado de <code>AC | mem[21]</code>.</p>
+
+            <h4>12. <code>NOT</code></h4>
+            <p>Inverte todos os bits do acumulador.</p>
+            <code>NOT</code>
+            <p><em>Exemplo:</em> O acumulador passa a ser o complemento de seu valor atual.</p>
+
+            <h4>13. <code>HALT</code></h4>
+            <p>Finaliza a execução do programa.</p>
+            <code>HALT</code>
+            <p><em>Exemplo:</em> Interrompe o processamento de instruções.</p>
+
+            <h4>14. <code>IN</code> e <code>OUT</code></h4>
+            <p><code>IN</code> recebe entrada do usuário; <code>OUT</code> exibe saída do registrador.</p>
+            <code>IN eax</code><br>
+            <code>OUT eax</code>
+            <p><em>Exemplo:</em> Solicita ao usuário um valor para <code>eax</code> e, em seguida, exibe o valor de <code>eax</code>.</p>
+
+            <h4>15. <code>JUMP</code> e <code>JMPZ</code></h4>
+            <p><code>JUMP</code> desvia para uma instrução específica; <code>JMPZ</code> desvia se o acumulador for zero.</p>
+            <code>JUMP 10</code><br>
+            <code>JMPZ 15</code>
+            <p><em>Exemplo:</em> Desvia para a instrução na posição 10 ou, no caso de <code>JMPZ</code>, apenas se o acumulador for zero.</p>
+
+            <h4>16. <code>CALL</code> e <code>RET</code></h4>
+            <p>Controla sub-rotinas; <code>CALL</code> executa uma sub-rotina e <code>RET</code> retorna dela.</p>
+            <code>CALL 20</code><br>
+            <code>RET</code>
+            <p><em>Exemplo:</em> Salta para a posição 20 na memória e, ao encontrar <code>RET</code>, retorna para a próxima instrução após o <code>CALL</code>.</p>
+
+            <h4>17. <code>NOP</code></h4>
+            <p>Não faz nada e avança para a próxima instrução.</p>
+            <code>NOP</code>
+            <p><em>Exemplo:</em> Usado para sincronização ou espaço reservado no programa.</p>
+
+            <h4>18. <code>PIXEL</code></h4>
+            <p>Controla o estado de um pixel na tela gráfica, permitindo ligá-lo ou desligá-lo.</p>
+            <code>PIXEL x, y, value</code>
+            <p><em>Exemplo:</em></p>
+            <ul>
+                <li><code>PIXEL 10, 10, 1</code> ; Liga o pixel na posição (10, 10).</li>
+                <li><code>PIXEL 20, 20, 0</code> ; Desliga o pixel na posição (20, 20).</li>
+            </ul>
+            <p>Os valores de <code>x</code> e <code>y</code> devem estar dentro dos limites da tela, e <code>value</code> pode ser <code>1</code> (ligado) ou <code>0</code> (desligado).</p>
+
+            <h4>19. <code>CLS</code></h4>
+            <p>Limpa a tela gráfica, apagando todos os pixels (tornando-os apagados/brancos).</p>
+            <code>CLS</code>
+            <p><em>Exemplo:</em></p>
+            <code>CLS</code>
+            <p>Após executar este comando, todos os pixels na tela gráfica serão desligados.</p>
+
+            <h4>20. <code>MOV</code></h4>
+            <p>Mover o valor de um registrador de origem para outro registrador de destino.</p>
+            <code>MOV ebx, eax</code>
+            <p><em>Exemplo:</em> Move o valor de <code>eax</code> para o registrador <code>ebx</code>.</p>
+        </div>
+    </div>
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>
