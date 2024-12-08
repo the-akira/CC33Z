@@ -1,0 +1,718 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+    background-color: #f4f4f4;
+    overflow: scroll;
+    position: relative;
+    width: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-color: #F4F4F4;
+    animation: animateBackground 10s infinite linear;
+    transition: background-size 0.5s ease;
+}
+
+#container.fast {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 0px),
+                linear-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 0px);
+    background-color: #F4F4F4;
+    background-size: 55px 55px;
+    animation: animateBackgroundFast 2s infinite linear;
+}
+
+#grid {
+    width: 4000px;
+    height: 4000px;
+    background: linear-gradient(to right, #ccc 1px, transparent 1px),
+                linear-gradient(to bottom, #ccc 1px, transparent 1px);
+    background-size: 40px 40px;
+    position: absolute;
+    background-color: #F4F4F4;
+    top: 0;
+    left: 0;
+    transform-origin: top left;
+    transform: scale(1);
+}
+
+.block {
+    width: 150px;
+    height: 100px;
+    background: #ffc107;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-align: center;
+}
+
+#minimap {
+    width: 200px;
+    height: 200px;
+    border: 2px solid #000;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 5px;
+}
+
+#minimapViewport {
+    width: 50%;
+    height: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    position: absolute;
+}
+
+#addBlockButton:hover {
+    background: #0056b3;
+}
+
+.note-block {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: grab;
+}
+
+.note-textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 1.15rem;
+    resize: none; 
+    overflow-wrap: break-word;
+    overflow: auto; 
+    box-sizing: border-box; 
+}
+
+.note-textarea[readonly] {
+    background-color: #f9f9f9;
+    cursor: default;
+}
+
+.resize-handle {
+    width: 10px;
+    height: 10px;
+    background: #ccc;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+    z-index: 2; 
+    pointer-events: auto;
+}
+
+#zoomIndicator, #currentMapIndicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    text-align: center;
+    z-index: 1000;
+    width: 80px;
+}
+
+#currentMapIndicator {
+    top: 220px;    
+    width: 183px;    
+}
+
+.button {
+    position: fixed;
+    width: 135px;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    z-index: 1000; 
+    color: white;
+}
+
+#createTable, 
+.removeButton, 
+#createMap, 
+#showStorageInfoBtn {
+    width: 135px;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);    
+    user-select: none; 
+    color: white;    
+    background: #a30b7b;
+    border: 0px;
+    margin-top: 10px;  
+}
+
+#showStorageInfoBtn {
+    width: 160px;
+    margin-left: 10px;
+    background: #187255;
+}
+
+#createMap {
+    margin-top: 10px;
+    background: #184972;
+}
+
+#createMap:hover,
+.accessMapButton:hover,
+.removeMapButton:hover,
+#showStorageInfoBtn:hover {
+    opacity: 0.9;
+}
+
+#addAudioButton {
+    background: #8707f0;
+    top: 160px;
+    left: 10px;
+}
+
+#addAudioButton:hover {
+    background: #440875;
+}
+
+#addTableButton {
+    top: 210px;
+    left: 10px;
+    background: #a30b7b;
+}
+
+#addTableButton:hover,
+#createTable:hover {
+    background: #540740;
+}
+
+#openSidebarButton {
+    top: 310px;
+    left: 10px;      
+    background: #1e10e6;      
+}
+
+#openSidebarButton:hover {
+    background: #12089e;
+}
+
+#navigateHomeButton {
+    top: 460px;
+    left: 10px;      
+    background: #0b96a3;      
+}
+
+#toggleDrawingModeButton {
+    top: 410px;
+    left: 10px;      
+    background: #a3310b;  
+}
+
+#toggleDrawingModeButton:hover {
+    background: #4d1604;
+}
+
+#exportZipButton {
+    top: 360px;
+    left: 10px;      
+    background: #68910f;                
+}
+
+#exportZipButton:hover {
+    background: #344a05;
+}
+
+#navigateHomeButton:hover {
+    background: #036770;
+}
+
+#addPdfButton {
+    top: 260px;
+    left: 10px;   
+    background: #828009;                 
+}
+
+#addPdfButton:hover {
+    background: #3b3a03;
+}
+
+#addBlockButton {
+    background: #007bff;
+    top: 10px;
+    left: 10px;
+}
+
+#addImageButton {
+    background: #28a745;
+    top: 110px;
+    left: 10px;
+}
+
+#addVideoButton {
+    background: #d48435;
+    top: 60px;
+    left: 10px;
+}
+
+#addVideoButton:hover {
+    background: #9c5e21;
+}
+
+#addImageButton:hover {
+    background: #218838;
+}
+
+.image-block {
+    position: absolute;
+    border: 2px solid transparent;
+    cursor: grab;
+    resize: none; 
+    user-select: none;
+}
+
+.image-block img {
+    width: 100%;
+    height: 100%;
+    pointer-events: none; 
+    user-select: none; 
+}
+
+.image-block.selected {
+    border-color: blue;
+}
+
+.video-block {
+    position: absolute;
+    border: 2px solid transparent;
+    cursor: grab;
+    resize: none; 
+    user-select: none;
+}
+
+.video-block video {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none; 
+}
+
+.video-block.selected {
+    border-color: blue;
+}
+
+.audio-block {
+    position: absolute;
+    border: 2px solid transparent;
+    cursor: grab;
+    user-select: none;
+    width: 320px; 
+    height: 80px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #b8b8b8; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.audio-block audio {
+    width: 90%; 
+    pointer-events: auto; 
+}
+
+.audio-block.selected {
+    border-color: blue; 
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    padding-top: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+}
+
+.modal-content input {
+    margin: 10px 0;
+    width: 60px;
+    text-align: center;
+}
+
+.table-block {
+    position: absolute;
+    border: 2px solid transparent;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: grab;
+}
+
+.table-block.selected {
+    border-color: blue;
+}
+
+.table-block table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; 
+}
+
+.table-block td {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+    cursor: text;
+}
+
+#grid, #elements, #minimap {
+    display: none;
+}
+
+.close {
+    font-size: 36px;
+    cursor: pointer;
+}
+
+#rows, #columns {
+    width: 40px;
+    font-size: 1.05rem;
+    padding: 4px;
+    margin-right: 5px;
+}
+
+#startScreen {
+    text-align: center;
+}
+
+@keyframes animateBackground {
+    0% {
+        background-position: 0 0, 0 0;
+    }
+    25% {
+        background-position: 40px 40px, -40px -40px;
+    }
+    50% {
+        background-position: 80px 80px, -80px -80px;
+    }
+    75% {
+        background-position: 120px 120px, -120px -120px;
+    }
+    100% {
+        background-position: 160px 160px, -160px -160px;
+    }
+}
+
+@keyframes animateBackgroundFast {
+    0% {
+        background-position: 0 0, 0 0;
+    }
+    25% {
+        background-position: 55px 55px, -55px -55px;
+    }
+    50% {
+        background-position: 110px 110px, -110px -110px;
+    }
+    75% {
+        background-position: 165px 165px, -165px -165px;
+    }
+    100% {
+        background-position: 220px 220px, -220px -220px;
+    }
+}
+
+#mapList { 
+    display: inline-table;
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.mapItem { 
+    border: 1px solid black;
+    padding: 8px;
+    font-size: 1.5rem;
+}
+
+.removeButton {
+    width: 100px;
+    margin-top: 0px;
+    padding: 10px 0px;
+}
+
+#loadingScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8); 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#loadingBarContainer {
+    width: 80%;
+    height: 20px;
+    background-color: #444;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+#loadingBar {
+    width: 0;
+    height: 100%;
+    background-color: #4caf50; 
+    transition: width 0.2s ease;
+}
+
+#loadingText {
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#startScreen > form {
+    border: 1px solid rgb(221, 221, 221);
+    border-radius: 5px;
+    background-color: rgb(249, 249, 249);
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+form > label {
+    font-size: 1.2rem;
+}
+
+form > input {
+    display: block;
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 25px;
+    font-size: 1.1rem;
+    padding: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+form > input:focus {
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.8);
+}
+
+.avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 5px;
+    margin-top: 28px;
+    transition: filter 5s ease;
+}
+
+.avatar:hover {
+    filter: sepia(70%);
+}
+
+.mapName {
+    text-align: left;
+    margin-left: 10px;
+}
+
+.pdf-block {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #f8f8f8;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 50px;
+    cursor: grab;
+}
+
+.pdf-block:hover {
+    background-color: #e8e8e8;
+}
+
+.pdf-icon {
+    font-size: 24px;
+    user-select: none;
+}
+
+.pdf-block.selected {
+    border: 2px solid blue;
+}
+
+#sidebar {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #f9f9f9;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    padding: 10px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+#elementList,
+#localStorageElementList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#elementList li,
+#localStorageElementList li {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #e9e9e9;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#elementList li:hover,
+#localStorageElementList li:hover {
+    background-color: #d3d3d3;
+}
+
+#closeSidebarButton {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    font-size: 36px;
+    padding: 10px;
+    padding-right: 15px;
+    cursor: pointer;
+}
+
+#minimapElements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.minimap-element {
+    position: absolute;
+    background-color: black;
+    opacity: 0.7;
+    border-radius: 2px;
+}
+
+#storageInfo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centraliza o modal */
+    width: 500px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    z-index: 9999; /* Garante que o modal fique acima dos outros elementos */
+    display: none; /* Inicialmente escondido */
+}
+
+#modalContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#storageInfo h3 {
+    margin-top: 0;
+}
+
+#storageInfo p {
+    font-size: 16px;
+}
+
+#storageInfo button {
+    margin-top: 20px;
+}
+
+#closeModalBtn {
+    position: absolute; 
+    top: 10px; 
+    right: 18px; 
+    font-size: 1.8rem;
+}
+
+#closeModalBtn:hover {
+    cursor: pointer;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Cor preta com opacidade */
+    z-index: 9998; /* Coloca o overlay abaixo do modal */
+    display: none; /* Inicialmente escondido */
+}
+
+#buttons, #minimap, #coordinatesDisplay, #zoomIndicator, #currentMapIndicator {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+}

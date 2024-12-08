@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMap</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body id="mainBody">
+    <div id="container">
+        <div id="drawingControls" style="display: none; position: absolute; bottom: 20px; left: 20px; background: white; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <label for="brushColor">Cor do Pincel:</label>
+            <input type="color" id="brushColor" style="margin-right: 10px;" value="#000000" />
+            
+            <label for="brushSize">Tamanho do Pincel:</label>
+            <input type="range" id="brushSize" min="1" max="20" value="5" />
+        </div>
+        <canvas id="drawingCanvas"></canvas>
+        <div id="startScreen">
+            <img title="MindMap: Organize seus materiais de estudos e ideias!" class="avatar" src="avatar.jpeg">
+            <h1>MindMap</h1>
+            <form id="mapConfigForm">
+                <label for="mapName">Nome do Mapa</label>
+                <input type="text" id="mapName" placeholder="Digite o nome do mapa" required>
+                
+                <label for="mapWidth">Largura (px)</label>
+                <input type="number" id="mapWidth" value="4000" required>
+                
+                <label for="mapHeight">Altura (px)</label>
+                <input type="number" id="mapHeight" value="4000" required>
+                
+                <button id="createMap" type="submit">Criar Mapa</button>
+                <button id="showStorageInfoBtn">Armazenamento</button>
+            </form>
+            
+            <h2 id="existingMap"></h2>
+
+            <div id="mapList"></div>
+        </div>
+
+        <div id="loadingScreen" style="display: none;">
+            <div id="loadingBarContainer">
+                <div id="loadingBar"></div>
+            </div>
+            <p id="loadingText">Preparando Mapa...</p>
+        </div>
+
+        <div id="grid"></div>
+
+        <div id="elements">
+            <section id="buttons">
+                <div class="button" id="addBlockButton">Adicionar Registro</div>
+                <div class="button" id="addImageButton">Adicionar Imagem</div>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                <div class="button" id="addVideoButton">Adicionar Vídeo</div>
+                <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                <div class="button" id="addAudioButton">Adicionar Áudio</div>
+                <input type="file" id="audioInput" accept="audio/*" style="display: none;">
+                <div class="button" id="addTableButton">Adicionar Tabela</div>
+                <div class="button" id="addPdfButton">Adicionar PDF</div>
+                <input type="file" id="pdfInput" accept="application/pdf" style="display: none;">
+                <div class="button" id="openSidebarButton">Abrir Sidebar</div>
+                <div class="button" id="exportZipButton">Exportar Arquivos</div>
+                <div class="button" onclick="navigateHome()" id="navigateHomeButton">Página Inicial</div>
+                <div class="button" id="toggleDrawingModeButton">Ativar Desenho</div>
+            </section>
+            <div id="sidebar">
+                <span id="closeSidebarButton">&times;</span>
+                <h2 style="margin-top: 9px;">Elementos do Mapa</h2>
+                <ul id="elementList"></ul>
+                <ul id="localStorageElementList"></ul>
+            </div>
+            <div id="zoomIndicator">Zoom: 100%</div>
+            <div id="currentMapIndicator"></div>
+        </div>
+
+        <div id="tableModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3 style="text-align: center; margin-top: 0px; margin-bottom: 10px;">Configurar Tabela</h3>
+                <label for="rows">Linhas:</label>
+                <input type="number" id="rows" min="1" value="2">
+                <label for="columns">Colunas:</label>
+                <input type="number" id="columns" min="1" value="2">
+                <button id="createTable">Criar Tabela</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="coordinatesDisplay" style="position: fixed; bottom: 10px; right: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 5px; border-radius: 5px; z-index: 100; display: none;">X: 0, Y: 0</div>
+
+    <div id="minimap">
+        <div id="minimapViewport"></div>
+        <div id="minimapElements"></div>
+    </div>
+
+    <div id="overlay" style="display: none;"></div>
+    <div id="storageInfo" style="display:none;">
+        <div id="modalContent">
+            <span id="closeModalBtn">&times;</span>
+            <h3 style="margin-bottom: 8px;">Informações de Armazenamento</h3>
+            <p id="indexedDBUsage"></p>
+            <div>
+                <label>Uso do IndexedDB:</label>
+                <div id="indexedDBProgress" style="width: 100%; background: #ddd;">
+                    <div id="indexedDBProgressBar" style="height: 20px; width: 0; background: green;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>
