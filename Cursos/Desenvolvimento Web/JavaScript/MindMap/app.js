@@ -1005,11 +1005,14 @@ function enablePdfInteractions(pdfBlock) {
 
     document.addEventListener('mousemove', (e) => {
         if (isDragging) {
-            const deltaX = e.clientX - initialMouseX;
-            const deltaY = e.clientY - initialMouseY;
+            const deltaX = (e.clientX - initialMouseX) / scale;
+            const deltaY = (e.clientY - initialMouseY) / scale;
 
-            pdfBlock.style.left = `${initialBlockX + deltaX}px`;
-            pdfBlock.style.top = `${initialBlockY + deltaY}px`;
+            const newLeft = initialBlockX + deltaX;
+            const newTop = initialBlockY + deltaY;
+
+            pdfBlock.style.left = `${Math.max(0, Math.min(grid.offsetWidth - pdfBlock.offsetWidth, newLeft))}px`;
+            pdfBlock.style.top = `${Math.max(0, Math.min(grid.offsetHeight - pdfBlock.offsetHeight, newTop))}px`;
         }
     });
 
