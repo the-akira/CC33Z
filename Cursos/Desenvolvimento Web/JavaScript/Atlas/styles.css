@@ -1,0 +1,264 @@
+body, html { 
+    margin: 0; 
+    padding: 0; 
+    height: 100%; 
+    font-family: Arial, sans-serif;
+    background-color: #c2fa98;
+}
+
+#map { 
+    width: 100%; 
+    height: 100%; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#sidebar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 330px;
+    max-height: 80%;
+    background: white;
+    z-index: 1000;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    resize: vertical;
+}
+
+.feature-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f4f4f4;
+}
+
+.feature-actions {
+    text-align: center;
+    margin-top: 7px;
+}
+
+#pagination-controls {
+    margin-bottom: 10px;
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1.03rem;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid black;
+}
+
+p {
+    word-wrap: break-word;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+button {
+    background: #e0dede;
+    padding: 5px 10px;
+    border: 1px solid black;
+}
+
+button:hover {
+    cursor: pointer;
+    opacity: 0.75;
+}
+
+#create-db-button, 
+.access-db-button,
+.delete-db-button {
+    background-color: white;
+    font-size: 1.02rem;
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+
+.modal-content {
+    background-color: white;
+    margin: 8% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+#image-list {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    justify-content: space-evenly;
+    gap: 5px;
+}
+
+#image-info {
+    margin-bottom: 15px;
+}
+
+#uploadImageButton {
+    float: right;
+}
+
+#full-image-modal button {
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#full-image-modal button:hover {
+    background-color: darkred;
+}
+
+.feature-image:hover {
+    cursor: pointer;
+}
+
+#search-input, 
+#layer-filter, 
+#type-filter, 
+#new-attribute-key, 
+#new-attribute-value {
+    outline: none;
+    border: 1px solid black;
+    background-color: #EFEFEF;
+    height: 30px;
+    width: 315px;
+}
+
+#new-attribute-key,
+#new-attribute-value {
+    height: 23px;
+}
+
+#search-input {
+    width: 309px;
+    font-size: 1.01rem;
+}
+
+#layer-filter {
+    margin-top: 10px;
+}
+
+#type-filter {
+    margin-top: 10px;
+}
+
+#new-db-name {
+    outline: none;
+    border: 1px solid black;    
+    font-size: 1.02rem;   
+}
+
+@media screen and (max-width: 1200px) {
+    .modal-content {
+        width: 90%;
+    }
+    #image-list {
+        grid-template-columns: auto auto auto auto;
+    }
+}
+
+@media screen and (max-width: 830px) {
+    #image-list {
+        grid-template-columns: auto auto auto;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    #image-list {
+        grid-template-columns: auto auto;
+    }
+}
+
+.leaflet-control-attribution {
+    display: none;
+}
+
+.avatar {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 25px;
+    border: 1px solid black;
+}
+
+.dbItem {
+    background-color: #c2fa98;
+    padding: 20px 10px;
+}
+
+#db-list {
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#start-screen {
+    transition: transform 1s ease-in-out;
+    transform: translateY(0); 
+}
+
+#start-screen.hidden {
+    transform: translateY(-100%); 
+    pointer-events: none;
+}
+
+#map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; 
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+#map-container.visible {
+    opacity: 1; 
+}
+
+.toast-success {
+    background-color: #4caf50; 
+}
+
+.toast-error {
+    background-color: #f44336; 
+}
+
+.toast-info {
+    background-color: #2196f3; 
+}

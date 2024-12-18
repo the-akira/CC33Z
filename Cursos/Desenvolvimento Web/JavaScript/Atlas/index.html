@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Atlas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="start-screen" style="
+        position: absolute; 
+        width: 100%; 
+        background-color: #e2fccf; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 9999;">
+        <h1>Atlas</h1>
+        <img class="avatar" src="avatar.jpeg">
+        <h2 id="projects" style="margin-top: 0px;">Projetos</h2>
+        <ul id="db-list" style="list-style: none; padding: 0; width: 80%;"></ul>
+        <div style="margin-bottom: 30px;">
+            <input id="new-db-name" type="text" placeholder="Nome do mapa" style="padding: 5px; margin-right: 5px;">
+            <button id="create-db-button" style="padding: 5px 10px;">Criar Mapa</button>
+        </div>
+    </div>
+
+    <div id="map-container">
+        <div id="map"></div>
+
+        <div id="sidebar">
+            <h3 style="margin-top: 5px; margin-bottom: 15px; text-align: center;">Geometrias Salvas (<span id="db-name-info"></span>)</h3>
+            <div id="features-list"></div>
+            <div id="pagination-controls" class="pagination"></div>
+
+            <h3 style="text-align: center; margin: 12px 0px;">Filtro de Dados</h3>
+            <div id="filter-container">
+                <input type="text" id="search-input" placeholder="Buscar feature por nome ou descrição..." oninput="applyFilters()">
+                <select id="layer-filter" onchange="applyFilters()">
+                    <option value="">Todas as Layers</option>
+                </select>
+                <select id="type-filter" onchange="applyFilters()">
+                    <option value="">Todas as Geometrias</option>
+                </select>
+            </div>
+
+            <h3 style="text-align: center; margin: 15px 0px;">Visualização de Camadas</h3>
+            <div id="layers-container" style="margin-top: 10px;"></div>
+            <button id="create-layer-btn" style="margin: 1px;">Criar Camada</button>
+            <button id="statistics-btn" style="margin-top: 5px;">Gráficos</button>
+            <button onclick="reloadPage()">Página Inicial</button>
+
+            <h3 style="text-align: center; margin-top: 10px; margin-bottom: 12px;">Gerenciamento de Dados</h3>
+            <div style="margin-top: 10px; text-align: center;">
+                <button id="export-btn" style="margin-right: 5px;">Exportar GeoJSON</button>
+                <input type="file" id="import-input" style="display: none;" />
+                <button id="import-btn">Importar GeoJSON</button>
+                <button style="margin-top: 8px;" id="open-history-btn" onclick="openHistoryModal()">Ver Linha do Tempo</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="image-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeImageModal()">&times;</span>
+            <h3 style="margin-top: 0px;">Gerenciar Imagens</h3>
+            <div id="image-list"></div>
+            <div id="image-info"></div>
+            <input type="file" id="image-upload" accept="image/*" multiple>
+            <button id="uploadImageButton" onclick="uploadImages()">Upload Imagens</button>
+            <button id="exportImagesButton" onclick="exportImages()">Exportar Imagens</button>
+        </div>
+    </div>
+
+    <div id="statistics-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeStatisticsModal()">&times;</span>
+            <h3 style="margin-top: 0px; margin-bottom: 15px;">Estatísticas do Projeto</h3>
+            <h4 style="margin-top: 3px; margin-bottom: 15px;">Geometrias por Tipo</h4>
+            <canvas id="chart-types" style=""></canvas>
+            <h4 style="margin-top: 12px; margin-bottom: 0px;">Geometrias por Camada</h4>
+            <canvas id="chart-layers" style="margin: 15px 0px;"></canvas>
+            <h4 style="margin-top: 10px; margin-bottom: 7px;">Ações no Histórico</h4>
+            <canvas id="chart-actions"></canvas>
+            <div id="statistics-summary">
+                <!-- Resumo geral será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-attributes-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCustomAttributesModal()">&times;</span>
+            <h3 style="margin-top: 0px;">Atributos Personalizados</h3>
+            <ul id="attributes-list"></ul>
+            <input type="text" id="new-attribute-key" placeholder="Chave do Atributo">
+            <input type="text" id="new-attribute-value" placeholder="Valor do Atributo">
+            <button id="add-save-attribute-btn">Adicionar Atributo</button>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeHistoryModal()">&times;</span>
+            <h3 style="margin-top: 0px;">Linha do Tempo de Edições</h3>
+            <ul id="history-list">
+                <!-- Logs aparecerão aqui -->
+            </ul>
+            <button id="clear-history-btn" onclick="clearHistory()">Limpar Histórico</button>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>
