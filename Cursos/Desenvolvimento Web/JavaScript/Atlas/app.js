@@ -2,6 +2,7 @@ let map, drawControl, db;
 let layers = {}; // Armazena as layers (camadas) criadas
 let activeLayer = null; // Define a layer ativa para edição
 let layerStyles = {};
+let currentCoordinates = '';
 
 function logAction(action, details) {
     const transaction = db.transaction(['history'], 'readwrite');
@@ -619,13 +620,34 @@ function initDatabase(dbName) {
     };
 }
 
-// Inicializar Mapa com Ferramentas de Desenho
-function initMap() {
-    map = L.map('map').setView([-22.9068, -43.1729], 10);
+function isFullscreen() {
+    return !!document.fullscreenElement; // Retorna true se estiver em modo fullscreen
+}
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
+// Inicializar Mapa com Ferramentas de Desenho
+function initMap(mapStyle) {
+    map = L.map('map', {fullscreenControl: true}).setView([-22.9068, -43.1729], 10);
+    let worldMiniMap = L.control.worldMiniMap({style: {opacity: 0.9, borderRadius: '0px', border: '1px solid black'}}).addTo(map);
+
+    let options = {position: 'bottomright'};
+    L.control.ruler(options).addTo(map);
+
+    map.addControl(L.control.search({ position: 'bottomleft' }));
+
+    L.tileLayer(mapStyle, {
+        attribution: '© Contribuidores do mapa e provedores do estilo'
     }).addTo(map);
+
+    // Obtém o elemento onde as coordenadas serão exibidas
+    const coordinatesDisplay = document.getElementById('coordinates-display');
+
+    // Adiciona o evento de "mousemove" ao mapa
+    map.on('mousemove', (event) => {
+        const { lat, lng } = event.latlng; // Obtém latitude e longitude
+        currentCoordinates = `Lat ${lat.toFixed(6)}, Lng ${lng.toFixed(6)}`;
+        coordinatesDisplay.style.display = 'block';
+        coordinatesDisplay.innerHTML = `<b>Coordenadas:</b> ${currentCoordinates}`;
+    });
 
     // Configuração do Leaflet Draw
     drawControl = new L.Control.Draw({
@@ -702,12 +724,21 @@ function initMap() {
                 geoJSON.properties.layerColor = layerColor;
             }
 
-            // Adiciona os dados da geometria à camada ativa
+            let name, description;
+
+            if (isFullscreen()) {
+                name = 'Editar nome';
+                description = 'Editar descrição';
+            } else {
+                name = prompt('Digite um nome para esta geometria:') || 'Sem nome';
+                description = prompt('Digite uma descrição (opcional):') || '';
+            }
+
             layer.feature = {
                 id: featureId,
                 type: e.layerType,
-                name: prompt('Digite um nome para esta geometria:') || 'Sem nome',
-                description: prompt('Digite uma descrição (opcional):') || '',
+                name: name,
+                description: description,
                 layer: activeLayer,
                 geoJSON: geoJSON,
                 timestamp: new Date()
@@ -1667,6 +1698,7 @@ function accessDatabase(dbName) {
     
     const startScreen = document.getElementById('start-screen');
     const mapContainer = document.getElementById('map-container');
+    const mapStyle = document.getElementById('map-style-dropdown').value;
 
     // Adiciona a classe para iniciar a animação de subida
     startScreen.classList.add('hidden');
@@ -1682,7 +1714,7 @@ function accessDatabase(dbName) {
 
         // Inicializa o mapa
         initDatabase(dbName);
-        initMap();
+        initMap(mapStyle);
     }, 1000); // Duração igual ao tempo da transição CSS
 }
 
@@ -2033,6 +2065,47 @@ document.addEventListener('keyup', function(e) {
     if (e.key === "Escape") {
         reloadPage();
     }
+});
+
+document.addEventListener('keydown', (event) => {
+    // Verifica se a tecla pressionada é "C" (ou outra que preferir)
+    if (event.key.toLowerCase() === 'c') {
+        if (currentCoordinates) {
+            navigator.clipboard.writeText(currentCoordinates)
+                .then(() => {
+                    const coordinatesDisplay = document.getElementById('coordinates-display');
+                    coordinatesDisplay.textContent = 'Coordenadas copiadas!';
+                    setTimeout(() => {
+                        coordinatesDisplay.textContent = `Coordenadas: ${currentCoordinates}`;
+                    }, 1000);
+                })
+                .catch(err => {
+                    console.error('Erro ao copiar para o clipboard:', err);
+                });
+        } else {
+            console.error('Nenhuma coordenada disponível para copiar.');
+        }
+    }
+});
+
+document.getElementById('go-to-coordinate-button').addEventListener('click', () => {
+    const input = document.getElementById('coordinate-input').value.trim();
+
+    // Valida a entrada
+    const regex = /^Lat\s*(-?\d+(\.\d+)?),\s*Lng\s*(-?\d+(\.\d+)?)$/i;
+    const match = input.match(regex);
+
+    if (!match) {
+        alert('Formato inválido! Use: Lat -22.806567, Lng -42.938690');
+        return;
+    }
+
+    // Extrai as coordenadas
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[3]);
+
+    // Move o mapa para as coordenadas
+    map.setView([lat, lng], 15); // Ajuste o zoom (15 é um exemplo)
 });
 
 // Inicialização

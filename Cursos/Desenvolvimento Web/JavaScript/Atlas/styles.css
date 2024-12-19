@@ -150,12 +150,22 @@ button:hover {
 #layer-filter, 
 #type-filter, 
 #new-attribute-key, 
-#new-attribute-value {
+#new-attribute-value,
+#coordinate-input {
     outline: none;
     border: 1px solid black;
     background-color: #EFEFEF;
     height: 30px;
     width: 315px;
+}
+
+#coordinate-navigator {
+    text-align: center;
+}
+
+#go-to-coordinate-button {
+    width: 257px;
+    margin-top: 10px;    
 }
 
 #new-attribute-key,
@@ -176,10 +186,18 @@ button:hover {
     margin-top: 10px;
 }
 
-#new-db-name {
+#new-db-name,
+#map-style-dropdown {
     outline: none;
     border: 1px solid black;    
     font-size: 1.02rem;   
+}
+
+#map-style-dropdown {
+    padding: 4.3px;
+    margin-right: 5px;
+    background-color: white;
+    margin-bottom: 10px;
 }
 
 @media screen and (max-width: 1200px) {
@@ -261,4 +279,13 @@ button:hover {
 
 .toast-info {
     background-color: #2196f3; 
+}
+
+.geo-search > button {
+    padding-top: 5px !important;
+    background-color: white !important;
+}
+
+.geo-search {
+    box-shadow: none !important;
 }

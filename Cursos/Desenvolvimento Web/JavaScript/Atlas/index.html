@@ -21,6 +21,13 @@
         <h1>Atlas</h1>
         <img class="avatar" src="avatar.jpeg">
         <h2 id="projects" style="margin-top: 0px;">Projetos</h2>
+        <select id="map-style-dropdown">
+            <option value="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">OpenStreetMap</option>
+            <option value="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png">Carto Light</option>
+            <option value="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png">Carto Dark</option>
+            <option value="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png">Topo Map</option>
+            <option value="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}">Esri World Imagery</option>
+        </select>
         <ul id="db-list" style="list-style: none; padding: 0; width: 80%;"></ul>
         <div style="margin-bottom: 30px;">
             <input id="new-db-name" type="text" placeholder="Nome do mapa" style="padding: 5px; margin-right: 5px;">
@@ -60,6 +67,26 @@
                 <button id="import-btn">Importar GeoJSON</button>
                 <button style="margin-top: 8px;" id="open-history-btn" onclick="openHistoryModal()">Ver Linha do Tempo</button>
             </div>
+
+            <h3 style="text-align: center; margin-top: 12px; margin-bottom: 12px;">Navegação</h3>
+            <div id="coordinate-navigator" style="margin-top: 10px; margin-bottom: 4px;">
+                <input type="text" id="coordinate-input" placeholder="Lat -22.806567, Lng -42.938690" style="width: 250px;">
+                <button id="go-to-coordinate-button">Teleportar</button>
+            </div>
+        </div>
+
+        <div id="coordinates-display" style="
+            position: absolute;
+            bottom: 10px;
+            left: 195px;
+            padding: 5px 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+            z-index: 1000;">
+            <b>Coordenadas:</b> -
         </div>
     </div>
 
@@ -113,12 +140,27 @@
         </div>
     </div>
 
-    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+    <div id="toast-container" style="position: fixed; bottom: 14px; right: 62px; z-index: 9999;"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    <script src="https://cdn.jsdelivr.net/gh/maneoverland/leaflet.WorldMiniMap@1.0.0/dist/Control.WorldMiniMap.js" integrity="sha512-PFw8St3qenU1/dmwCfiYYN/bRcqY1p3+sBATR+rZ6622eyXOk/8izVtlmm/k8qW7KbRIJsku838WCV5LMs6FCg==" crossorigin=""></script>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/gokertanrisever/leaflet-ruler@master/src/leaflet-ruler.css"
+        integrity="sha384-P9DABSdtEY/XDbEInD3q+PlL+BjqPCXGcF8EkhtKSfSTr/dS5PBKa9+/PMkW2xsY"
+        crossorigin="anonymous"
+    />
+    <script
+        src="https://cdn.jsdelivr.net/gh/gokertanrisever/leaflet-ruler@master/src/leaflet-ruler.js"
+        integrity="sha384-8SqKZR7V8uOetpjjbcNJHvwuHpb074WS0UXjCLhzfJUqYn3B/uWx1WVv5mwRp1mV"
+        crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/@sjaakp/leaflet-search/dist/leaflet-search.js"></script>
     <script type="text/javascript" src="app.js"></script>
 </body>
 </html>
