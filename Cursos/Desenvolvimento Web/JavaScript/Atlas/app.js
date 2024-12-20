@@ -649,6 +649,35 @@ function initMap(mapStyle) {
         coordinatesDisplay.innerHTML = `<b>Coordenadas:</b> ${currentCoordinates}`;
     });
 
+    const coordinatesOverlay = L.control({ position: 'bottomleft' });
+
+    coordinatesOverlay.onAdd = function () {
+        const div = L.DomUtil.create('div', 'leaflet-bar');
+        div.id = 'coordinates-overlay';
+        div.style.padding = '5px 10px';
+        div.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        div.style.color = 'black';
+        div.style.borderRadius = '4px';
+        div.style.border = '1px solid rgb(204, 204, 204)';
+        div.innerHTML = '<b>Coordenadas:</b> ';
+        return div;
+    };
+
+    map.on('mousemove', (e) => {
+        if (map.isFullscreen()) {
+            const { lat, lng } = e.latlng;
+            document.getElementById('coordinates-overlay').innerHTML = `<b>Coordenadas:</b> Lat ${lat.toFixed(6)}, Lng ${lng.toFixed(6)}`;
+        }
+    });
+
+    map.on('fullscreenchange', () => {
+        if (map.isFullscreen()) {
+            coordinatesOverlay.addTo(map);
+        } else {
+            coordinatesOverlay.remove();
+        }
+    });
+
     // Configuração do Leaflet Draw
     drawControl = new L.Control.Draw({
         edit: {
@@ -2061,9 +2090,19 @@ function reloadPage() {
     window.location.reload();
 }
 
-document.addEventListener('keyup', function(e) {
-    if (e.key === "Escape") {
-        reloadPage();
+let canReload = true; // Variável de controle
+
+document.addEventListener('keyup', function (e) {
+    if (event.key.toLowerCase() === 'b' && document.getElementById('map-container').style.display === 'block') {
+        if (canReload) {
+            reloadPage();
+
+            // Bloqueia novas ações por 1 segundo
+            canReload = false;
+            setTimeout(() => {
+                canReload = true; // Permite novamente após 1 segundo
+            }, 8000);
+        }
     }
 });
 
