@@ -649,7 +649,7 @@ function initMap(mapStyle) {
         coordinatesDisplay.innerHTML = `<b>Coordenadas:</b> ${currentCoordinates}`;
     });
 
-    const coordinatesOverlay = L.control({ position: 'bottomleft' });
+    const coordinatesOverlay = L.control({ position: 'topright' });
 
     coordinatesOverlay.onAdd = function () {
         const div = L.DomUtil.create('div', 'leaflet-bar');
