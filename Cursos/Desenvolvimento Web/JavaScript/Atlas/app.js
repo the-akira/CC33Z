@@ -2093,14 +2093,14 @@ function reloadPage() {
 let canReload = true; // Variável de controle
 
 document.addEventListener('keyup', function (e) {
-    if (event.key.toLowerCase() === 'b' && document.getElementById('map-container').style.display === 'block') {
+    if (e.ctrlKey && e.key.toLowerCase() === 'b' && document.getElementById('map-container').style.display === 'block') {
         if (canReload) {
             reloadPage();
 
-            // Bloqueia novas ações por 1 segundo
+            // Bloqueia novas ações por 8 segundos
             canReload = false;
             setTimeout(() => {
-                canReload = true; // Permite novamente após 1 segundo
+                canReload = true; // Permite novamente após 8 segundos
             }, 8000);
         }
     }
