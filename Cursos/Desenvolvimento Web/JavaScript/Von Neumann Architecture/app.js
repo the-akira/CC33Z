@@ -542,7 +542,7 @@ function updateGlobalAddressRangeDisplay() {
     }
 }
 
-function updateUI(updateChart = true, updateFlow = true) {
+function updateUI(updateChart = true, updateFlow = true, updateSecondaryChart = true) {
     document.getElementById('ac').textContent = registers.ac;
     document.getElementById('pc').textContent = registers.pc;
     document.getElementById('ir').textContent = registers.ir;
@@ -634,8 +634,11 @@ function updateUI(updateChart = true, updateFlow = true) {
 
     if (updateChart) {
         updateRegisterChart();
+    }
+
+    if (updateSecondaryChart) {
         updateMemoryChart();
-        updateStatsPanel();
+        updateStatsPanel();        
     }
 }
 
@@ -794,7 +797,7 @@ function saveMemoryEdit(cell, input, address) {
     memory[address] = newValue;
     cell.textContent = `${address}: ${newValue}`;
     cell.classList.remove('editing');
-    updateUI(updateChart = true, updateFlow = false);
+    updateUI(updateChart = false, updateFlow = false);
 }
 
 function cancelMemoryEdit(cell, oldValue) {
@@ -889,7 +892,7 @@ function loadProgram() {
     Object.keys(data).forEach(address => dataAddresses.add(parseInt(address)));
 
     programLoaded = true;
-    updateUI();
+    updateUI(updateChart = false);
     addToHistory('Programa carregado');
     updateAluStatus('Programa carregado');
 }
