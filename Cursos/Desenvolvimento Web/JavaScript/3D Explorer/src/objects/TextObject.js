@@ -26,6 +26,7 @@ export function createTextObject(content, options = {}) {
 
                 const textMesh = new THREE.Mesh(geometry, material);
                 textMesh.userData.textContent = content;
+                textMesh.userData.color = options.color;
                 textMesh.name = 'textObject';
                 resolve(textMesh);
             },

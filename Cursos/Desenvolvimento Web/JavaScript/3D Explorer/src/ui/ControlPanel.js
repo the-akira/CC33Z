@@ -73,15 +73,17 @@ export class ControlPanel {
                 if (!file) return;
 
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = async (e) => {
                     const jsonData = JSON.parse(e.target.result);
 
-                    // Verificar e tratar geometries do tipo "TextGeometry"
+                    // Armazene os textos removidos
+                    const textGeometries = [];
                     if (jsonData.geometries) {
                         jsonData.geometries = jsonData.geometries.filter((geometry) => {
                             if (geometry.type === "TextGeometry") {
-                                console.warn(`TextGeometry removida:`, geometry);
-                                return false; // Remove TextGeometry
+                                textGeometries.push(geometry);
+                                console.warn(`TextGeometry armazenada para recriação:`, geometry);
+                                return false; // Remove TextGeometry da lista principal
                             }
                             return true; // Mantém outras geometrias
                         });
@@ -93,15 +95,30 @@ export class ControlPanel {
                     const loadedScene = loader.parse(jsonData);
 
                     // Adicionar objetos carregados
-                    loadedScene.children.forEach((child) => {
-                        if ((child.type === 'Mesh' || child.name === 'GLB') && child.name !== 'essential') {
+                    for (const child of loadedScene.children) {
+                        console.log(child);
+                        if ((child.type === 'Mesh' || child.name === 'GLB') && child.name !== 'essential' && Object.keys(child.userData).length === 0) {
                             this.scene.add(child.clone());
                             addObjectToScene();
+                        } else if (child.userData && child.userData.textContent !== undefined) {
+                            try {
+                                const options = {
+                                    color: child.userData.color || 0xffffff,
+                                };
+                                const textMesh = await createTextObject(child.userData.textContent, options);
+                                textMesh.position.set(child.position.x, child.position.y, child.position.z);
+                                textMesh.scale.set(child.scale.x, child.scale.y, child.scale.z);
+                                textMesh.rotation.set(child.rotation._x, child.rotation._y, child.rotation._z);
+                                this.scene.add(textMesh);
+                                addObjectToScene();
+                            } catch (error) {
+                                console.error('Erro ao recriar TextGeometry:', error);
+                            }
                         }
-                    });
+                    }
 
                     // Atualizar UI
-                    console.log('Cena carregada com sucesso!');
+                    console.log('Cena carregada e textos recriados com sucesso!');
                 };
                 reader.readAsText(file);
             });
