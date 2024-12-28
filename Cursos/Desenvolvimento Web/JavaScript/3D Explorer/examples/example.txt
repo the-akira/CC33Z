@@ -1,0 +1,212 @@
+const particleCount = 15000;
+const particles = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+const velocities = [];
+const originalPositions = [];
+const colors = new Float32Array(particleCount * 3);
+const sizes = new Float32Array(particleCount);
+
+// Physics parameters
+const attractionStrength = 0.005;
+const maxSpeed = 0.15;
+const particleInertia = 0.95;
+const returnStrength = 0.01;
+
+// Create super bright attractor
+const attractor = new THREE.Mesh(
+   new THREE.SphereGeometry(0.5, 32, 32),
+   new THREE.MeshStandardMaterial({
+       color: 0x000000,
+       emissive: 0x4444ff,
+       emissiveIntensity: 20,
+       transparent: true,
+       opacity: 0.9
+   })
+);
+
+// Add core glow to attractor
+const attractorGlow = new THREE.Mesh(
+   new THREE.SphereGeometry(0.6, 32, 32),
+   new THREE.MeshStandardMaterial({
+       color: 0x000000,
+       emissive: 0x4444ff,
+       emissiveIntensity: 10,
+       transparent: true,
+       opacity: 0.4
+   })
+);
+attractor.add(attractorGlow);
+scene.add(attractor);
+
+// Initialize particles
+for(let i = 0; i < particleCount; i++) {
+   const i3 = i * 3;
+   const theta = Math.random() * Math.PI * 2;
+   const phi = Math.acos((Math.random() * 2) - 1);
+   const radius = 5 + Math.random() * 5;
+   
+   positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+   positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+   positions[i3 + 2] = radius * Math.cos(phi);
+   
+   originalPositions.push({
+       x: positions[i3],
+       y: positions[i3 + 1],
+       z: positions[i3 + 2]
+   });
+   
+   velocities.push({ x: 0, y: 0, z: 0 });
+
+   // Initial colors (pure white)
+   colors[i3] = 1.0;      // Red
+   colors[i3 + 1] = 1.0;  // Green
+   colors[i3 + 2] = 1.0;  // Blue
+
+   // Slightly varied sizes for more dynamic look
+   sizes[i] = 0.15 + Math.random() * 0.15;
+}
+
+particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+particles.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+const particleMaterial = new THREE.ShaderMaterial({
+   uniforms: {
+       time: { value: 0 },
+       diffuse: { value: new THREE.Color(0xffffff) },
+   },
+   vertexShader: `
+       attribute float size;
+       attribute vec3 color;
+       varying vec3 vColor;
+       uniform float time;
+       void main() {
+           vColor = color;
+           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+           gl_Position = projectionMatrix * mvPosition;
+           gl_PointSize = size * (300.0 / -mvPosition.z);
+       }
+   `,
+   fragmentShader: `
+       varying vec3 vColor;
+       void main() {
+           vec2 center = gl_PointCoord - vec2(0.5);
+           float dist = length(center);
+           float alpha = 1.0 - smoothstep(0.45, 0.5, dist);
+           vec3 finalColor = vColor * 5.0 * (1.0 - dist * 0.5);
+           gl_FragColor = vec4(finalColor, alpha);
+       }
+   `,
+   transparent: true,
+   blending: THREE.AdditiveBlending,
+   depthWrite: false,
+});
+
+const particleSystem = new THREE.Points(particles, particleMaterial);
+scene.add(particleSystem);
+
+function animate() {
+   requestAnimationFrame(animate);
+   const time = Date.now() * 0.001;
+   particleMaterial.uniforms.time.value = time;
+   
+   const positions = particles.attributes.position.array;
+   const colors = particles.attributes.color.array;
+   const sizes = particles.attributes.size.array;
+
+   for(let i = 0; i < particleCount; i++) {
+       const i3 = i * 3;
+       
+       const dx = attractor.position.x - positions[i3];
+       const dy = attractor.position.y - positions[i3 + 1];
+       const dz = attractor.position.z - positions[i3 + 2];
+       
+       const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+       const attractionFactor = Math.max(0, 1 - distance / 10) * attractionStrength;
+       
+       velocities[i].x += dx * attractionFactor;
+       velocities[i].y += dy * attractionFactor;
+       velocities[i].z += dz * attractionFactor;
+       
+       if(distance > 8) {
+           const returnX = originalPositions[i].x - positions[i3];
+           const returnY = originalPositions[i].y - positions[i3 + 1];
+           const returnZ = originalPositions[i].z - positions[i3 + 2];
+           
+           velocities[i].x += returnX * returnStrength;
+           velocities[i].y += returnY * returnStrength;
+           velocities[i].z += returnZ * returnStrength;
+       }
+       
+       velocities[i].x *= particleInertia;
+       velocities[i].y *= particleInertia;
+       velocities[i].z *= particleInertia;
+       
+       const speed = Math.sqrt(
+           velocities[i].x * velocities[i].x + 
+           velocities[i].y * velocities[i].y + 
+           velocities[i].z * velocities[i].z
+       );
+       
+       if(speed > maxSpeed) {
+           velocities[i].x = (velocities[i].x / speed) * maxSpeed;
+           velocities[i].y = (velocities[i].y / speed) * maxSpeed;
+           velocities[i].z = (velocities[i].z / speed) * maxSpeed;
+       }
+       
+       positions[i3] += velocities[i].x;
+       positions[i3 + 1] += velocities[i].y;
+       positions[i3 + 2] += velocities[i].z;
+
+       const normalizedSpeed = Math.min(1, speed / maxSpeed);
+       
+       // Enhanced color transitions with more prominent blue
+       if (normalizedSpeed < 0.25) {
+           // White to intense blue
+           colors[i3] = Math.max(0.2, 1.0 - normalizedSpeed * 4 * 0.8);  // R: 1.0 -> 0.2
+           colors[i3 + 1] = Math.max(0.2, 1.0 - normalizedSpeed * 4 * 0.8); // G: 1.0 -> 0.2
+           colors[i3 + 2] = 1.0;                            // B: stay 1.0
+       } else if (normalizedSpeed < 0.5) {
+           // Intense blue to yellow
+           const t = (normalizedSpeed - 0.25) * 4;
+           colors[i3] = 0.2 + t * 0.8;      // R: 0.2 -> 1.0
+           colors[i3 + 1] = 0.2 + t * 0.8;  // G: 0.2 -> 1.0
+           colors[i3 + 2] = 1.0 - t;        // B: 1.0 -> 0.0
+       } else if (normalizedSpeed < 0.75) {
+           // Yellow to orange
+           const t = (normalizedSpeed - 0.5) * 4;
+           colors[i3] = 1.0;                // R: stay 1.0
+           colors[i3 + 1] = 1.0 - t * 0.5;  // G: 1.0 -> 0.5
+           colors[i3 + 2] = 0.0;            // B: stay 0.0
+       } else {
+           // Orange to deep orange/red
+           const t = (normalizedSpeed - 0.75) * 4;
+           colors[i3] = 1.0;                // R: stay 1.0
+           colors[i3 + 1] = 0.5 - t * 0.3;  // G: 0.5 -> 0.2
+           colors[i3 + 2] = 0.0;            // B: stay 0.0
+       }
+
+       // Make particles near attractor brighter
+       const proximityBrightness = Math.max(0, 1 - distance / 3);
+       colors[i3] = Math.min(1, colors[i3] + proximityBrightness * 0.5);
+       colors[i3 + 1] = Math.min(1, colors[i3 + 1] + proximityBrightness * 0.5);
+       colors[i3 + 2] = Math.min(1, colors[i3 + 2] + proximityBrightness * 0.5);
+
+       // Dynamic size based on speed and distance
+       sizes[i] = 0.15 + 
+                 (normalizedSpeed * 0.3) + 
+                 (proximityBrightness * 0.2) +
+                 Math.sin(time * 2 + i) * 0.05;
+   }
+   
+   particles.attributes.position.needsUpdate = true;
+   particles.attributes.color.needsUpdate = true;
+   particles.attributes.size.needsUpdate = true;
+   
+   // Pulse attractor glow
+   attractor.material.emissiveIntensity = 20 + Math.sin(time * 2) * 5;
+   attractorGlow.material.emissiveIntensity = 10 + Math.sin(time * 3) * 3;
+   
+   renderer.render(scene, camera);
+}
+animate();

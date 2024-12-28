@@ -1,0 +1,301 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+canvas {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+.controls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.controls button {
+    display: block;
+    width: 150px;
+    margin: 5px 0;
+    padding: 8px 15px;
+    background: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.controls button:hover {
+    background: #45a049;
+}
+
+.coordinates {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.help-text {
+    position: fixed;
+    top: 20px;
+    right: 280px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.control-panel {
+    position: fixed;
+    right: 15px;
+    top: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 250px;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.panel-section {
+    margin-bottom: 15px;
+}
+
+.panel-section h3 {
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 5px;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.control-row input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.control-row input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.control-row label {
+    flex: 1;
+}
+
+button {
+    width: 100%;
+    padding: 8px;
+    margin: 4px 0;
+    background: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+.shortcut-key {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin: 0 2px;
+    font-family: monospace;
+}
+
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+[data-tooltip]:hover:before {
+    visibility: visible;
+    opacity: 1;
+}
+
+.properties-panel {
+    position: fixed;
+    left: 210px;
+    top: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 270px;
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.property-group {
+    margin-bottom: 15px;
+}
+
+.property-group h4 {
+    margin-bottom: 8px;
+    color: #4CAF50;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 4px;
+}
+
+.property-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.property-row label {
+    width: 80px;
+    margin-right: 10px;
+}
+
+.property-row input[type="number"],
+.property-row input[type="range"],
+.property-row input[type="text"] {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    padding: 4px 8px;
+}
+
+.property-row input[type="color"] {
+    flex: 1;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    background: none;
+}
+
+.property-row input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.hidden {
+    display: none;
+}
+
+#monaco-editor {
+    z-index: 1000;
+}
+
+#monaco-editor button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#monaco-editor button:hover {
+    background: #45a049;
+}
+
+#monaco-editor {
+    min-width: 400px;
+    min-height: 300px;
+    left: 20px;
+    top: 356px;
+}
+
+.hierarchy-panel {
+    position: fixed;
+    top: 400px;
+    right: 280px;
+    width: 192px;
+    height: 306px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    z-index: 1000;
+    border-radius: 8px;
+}
+
+.hierarchy-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hierarchy-panel li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.hierarchy-panel button {
+    margin-left: 5px;
+    padding: 2px 5px;
+    font-size: 16px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

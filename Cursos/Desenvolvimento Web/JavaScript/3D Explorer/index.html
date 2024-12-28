@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Explorer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div class="controls">
+      <button id="addCube">Cubo</button>
+      <button id="addSphere">Esfera</button>
+      <button id="addCylinder">Cilindro</button>
+      <button id="addTorus">Torus</button>
+      <button id="addCone">Cone</button>
+    </div>
+    <div id="hierarchy-panel" class="hierarchy-panel">
+      <h3 style="margin-bottom: 5px;">Objetos da Cena</h3>
+      <ul id="hierarchy-list"></ul>
+    </div>
+    <div class="coordinates" id="coordinates">Nenhum objeto selecionado</div>
+    <div class="help-text">
+      <b>Atalhos</b><br>
+      <b>G</b> - Modo Mover<br>
+      <b>R</b> - Modo Rotacionar<br>
+      <b>S</b> - Modo Escalar<br>
+      <b>Delete</b> - Deletar Objeto<br>
+      <b>CTRL+C</b> - Copiar Objeto<br>
+      <b>CTRL+P</b> - Colar Objeto<br>
+      <b>CTRL+Z</b> - Desfazer<br>
+      <b>CTRL+Y</b> - Refazer<br>
+      <b>CTRL+M</b> - Code Editor<br>
+      <b>CTRL+Q</b> - Comandos<br>
+      <b>CTRL+B</b> - Bloom Effect<br>
+      <b>CTRL+I</b> - Lista de Objetos<br>
+      <b>CTRL+D</b> - Limpar Tudo<br>
+      <b>CTRL+G</b> - Gravidade<br>
+      <b>Clique</b> - Selecionar objeto
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
