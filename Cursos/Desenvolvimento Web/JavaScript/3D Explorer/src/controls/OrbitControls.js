@@ -1,4 +1,5 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as THREE from 'three';
 
 export function setupOrbitControls(camera, renderer) {
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -13,6 +14,8 @@ export function setupOrbitControls(camera, renderer) {
     
     // Limitar rotação vertical
     controls.maxPolarAngle = Math.PI / 2;
+
+    controls.mouseButtons.RIGHT = null;
     
     return controls;
 }
