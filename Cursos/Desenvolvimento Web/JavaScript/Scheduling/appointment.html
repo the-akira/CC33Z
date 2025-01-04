@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Agendamento</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #0066cc;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0052a3;
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover:not(.disabled):not(.selected) {
+            background: #e9ecef;
+        }
+
+        .time-slot.selected {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+
+        .time-slot.disabled {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #confirmation {
+            display: none;
+        }
+
+        #error-message {
+            margin-bottom: 12px;
+        }
+
+        .confirmation-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .confirmation-details p {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="scheduling-form">
+            <h2 style="margin-bottom: 20px;">Agendar Horário</h2>
+            
+            <div class="form-group">
+                <label for="date">Data:</label>
+                <input type="date" id="date" required>
+            </div>
+
+            <div class="form-group">
+                <label>Horários Disponíveis:</label>
+                <div id="time-slots" class="time-slots"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div id="error-message" class="error"></div>
+
+            <button onclick="scheduleAppointment()">Confirmar Agendamento</button>
+            <a href="index.html" style="text-decoration: none;">
+                <button style="margin-top: 10px;">Lista de Agendamentos</button>
+            </a>
+        </div>
+
+        <div id="confirmation">
+            <div class="success">Agendamento confirmado com sucesso!</div>
+            
+            <div class="confirmation-details">
+                <h3 style="margin-bottom: 10px;">Detalhes do Agendamento:</h3>
+                <div id="confirmation-details"></div>
+            </div>
+
+            <button onclick="resetForm()">Fazer Novo Agendamento</button>
+            <a href="index.html" style="text-decoration: none;">
+                <button style="margin-top: 10px;">Lista de Agendamentos</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let db;
+        const DB_NAME = 'AppointmentsDB';
+        const STORE_NAME = 'appointments';
+
+        // Inicializar banco de dados
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('datetime', 'datetime', { unique: true });
+                    }
+                };
+            });
+        }
+
+        // Verificar horários ocupados
+        async function getBookedAppointments(date) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+
+                request.onsuccess = () => {
+                    const appointments = request.result;
+                    const booked = appointments
+                        .filter(app => app.datetime.startsWith(date))
+                        .map(app => app.time);
+                    resolve(booked);
+                };
+
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Gerar horários disponíveis
+        async function generateTimeSlots(date) {
+            const timeSlots = document.getElementById('time-slots');
+            timeSlots.innerHTML = '';
+
+            // Gerar horários das 9h às 17h
+            const bookedTimes = await getBookedAppointments(date);
+            
+            for (let hour = 9; hour <= 17; hour++) {
+                const time = `${hour.toString().padStart(2, '0')}:00`;
+                const slot = document.createElement('div');
+                slot.className = 'time-slot';
+                if (bookedTimes.includes(time)) {
+                    slot.className += ' disabled';
+                }
+                slot.textContent = time;
+                slot.onclick = () => selectTimeSlot(slot, time);
+                timeSlots.appendChild(slot);
+            }
+        }
+
+        // Selecionar horário
+        function selectTimeSlot(slot, time) {
+            if (slot.classList.contains('disabled')) return;
+
+            document.querySelectorAll('.time-slot').forEach(s => {
+                s.classList.remove('selected');
+            });
+            slot.classList.add('selected');
+            window.selectedTime = time;
+        }
+
+        // Agendar horário
+        async function scheduleAppointment() {
+            const date = document.getElementById('date').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const errorElement = document.getElementById('error-message');
+
+            errorElement.textContent = '';
+
+            if (!date || !window.selectedTime || !name || !email) {
+                errorElement.textContent = 'Por favor, preencha todos os campos.';
+                return;
+            }
+
+            const appointment = {
+                datetime: `${date} ${window.selectedTime}`,
+                date,
+                time: window.selectedTime,
+                name,
+                email,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                await store.add(appointment);
+
+                showConfirmation(appointment);
+            } catch (error) {
+                errorElement.textContent = 'Erro ao salvar o agendamento. Tente novamente.';
+            }
+        }
+
+        // Mostrar confirmação
+        function showConfirmation(appointment) {
+            document.getElementById('scheduling-form').style.display = 'none';
+            document.getElementById('confirmation').style.display = 'block';
+
+            const details = document.getElementById('confirmation-details');
+            details.innerHTML = `
+                <p><strong>Nome:</strong> ${appointment.name}</p>
+                <p><strong>Email:</strong> ${appointment.email}</p>
+                <p><strong>Data:</strong> ${formatDate(appointment.date)}</p>
+                <p><strong>Horário:</strong> ${appointment.time}</p>
+            `;
+        }
+
+        // Resetar formulário
+        function resetForm() {
+            document.getElementById('scheduling-form').style.display = 'block';
+            document.getElementById('confirmation').style.display = 'none';
+            
+            document.getElementById('date').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('time-slots').innerHTML = '';
+            document.getElementById('error-message').textContent = '';
+            window.selectedTime = null;
+        }
+
+        // Formatar data
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // Inicializar aplicação
+        window.onload = async () => {
+            await initDB();
+            
+            // Configurar data mínima como hoje
+            const dateInput = document.getElementById('date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+            
+            // Atualizar horários quando a data for alterada
+            dateInput.addEventListener('change', (e) => {
+                generateTimeSlots(e.target.value);
+            });
+        };
+    </script>
+</body>
+</html>

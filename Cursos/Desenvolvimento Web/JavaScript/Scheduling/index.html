@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Agendamentos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #0066cc;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #0052a3;
+        }
+
+        button.delete {
+            background: #dc3545;
+        }
+
+        button.delete:hover {
+            background: #c82333;
+        }
+
+        button.edit {
+            background: #28a745;
+        }
+
+        button.edit:hover {
+            background: #218838;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pagination button {
+            min-width: 40px;
+        }
+
+        .pagination button.active {
+            background: #004d99;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .past-date {
+            color: #721c24; 
+            font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Gerenciamento de Agendamentos</h2>
+            <a href="appointment.html" style="text-decoration: none;">
+                <button>Novo Agendamento</button>
+            </a>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Data Inicial:</label>
+                <input type="date" id="start-date">
+            </div>
+            <div class="filter-group">
+                <label>Data Final:</label>
+                <input type="date" id="end-date">
+            </div>
+            <div class="filter-group">
+                <label>Buscar por nome:</label>
+                <input type="text" id="search-name" placeholder="Digite um nome...">
+            </div>
+            <div class="filter-group">
+                <label>Buscar por email:</label>
+                <input type="text" id="search-email" placeholder="Digite um email...">
+            </div>
+            <div class="filter-group">
+                <label>&nbsp;</label>
+                <button onclick="applyFilters()">Filtrar</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Horário</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Criado em</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="appointments-table"></tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Editar Agendamento</h3>
+            
+            <div class="form-group">
+                <label>Data:</label>
+                <input type="date" id="edit-date">
+            </div>
+
+            <div class="form-group">
+                <label>Horário:</label>
+                <select id="edit-time"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Nome:</label>
+                <input type="text" id="edit-name">
+            </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="edit-email">
+            </div>
+
+            <div id="edit-error" class="error"></div>
+
+            <div class="modal-actions">
+                <button onclick="saveEdit()">Salvar</button>
+                <button onclick="closeEditModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let db;
+        const DB_NAME = 'AppointmentsDB';
+        const STORE_NAME = 'appointments';
+        const ITEMS_PER_PAGE = 10;
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentEditId = null;
+
+        // Inicializar banco de dados
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    loadAppointments();
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('datetime', 'datetime', { unique: true });
+                    }
+                };
+            });
+        }
+
+        // Verificar horários ocupados
+        async function getBookedAppointments(date) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+
+                request.onsuccess = () => {
+                    const appointments = request.result;
+                    const booked = appointments
+                        .filter(app => app.datetime.startsWith(date))
+                        .map(app => app.time);
+                    resolve(booked);
+                };
+
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Carregar agendamentos com filtros e paginação
+        async function loadAppointments() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const searchName = document.getElementById('search-name').value.toLowerCase();
+            const searchEmail = document.getElementById('search-email').value.toLowerCase();
+
+            const transaction = db.transaction(STORE_NAME, 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                let appointments = request.result;
+
+                // Aplicar filtros
+                appointments = appointments.filter(app => {
+                    let matchesDate = true;
+                    let matchesName = true;
+                    let matchesEmail = true;
+
+                    if (startDate && endDate) {
+                        matchesDate = app.date >= startDate && app.date <= endDate;
+                    }
+
+                    if (searchName) {
+                        matchesName = app.name.toLowerCase().includes(searchName);
+                    }
+
+                    if (searchEmail) {
+                        matchesEmail = app.email.toLowerCase().includes(searchEmail);
+                    }
+
+                    return matchesDate && matchesName && matchesEmail;
+                });
+
+                // Ordenar por data/hora
+                appointments.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+
+                // Calcular paginação
+                totalPages = Math.ceil(appointments.length / ITEMS_PER_PAGE);
+                const start = (currentPage - 1) * ITEMS_PER_PAGE;
+                const paginatedAppointments = appointments.slice(start, start + ITEMS_PER_PAGE);
+
+                renderAppointments(paginatedAppointments);
+                renderPagination();
+            };
+        }
+
+        function getDateWithoutTime(date) {
+            return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        }
+
+        // Renderizar tabela de agendamentos
+        function renderAppointments(appointments) {
+            const tbody = document.getElementById('appointments-table');
+            tbody.innerHTML = '';
+
+            const today = getDateWithoutTime(new Date()); // Obtém a data atual sem horário
+
+            appointments.forEach(app => {
+                const tr = document.createElement('tr');
+
+                // Verifica se a data do compromisso já passou
+                const appointmentDate = getDateWithoutTime(parseDateToLocal(app.date));
+                const isPastDate = appointmentDate < today;
+
+                // Adiciona a classe 'past-date' se a data já tiver passado
+                const dateCellClass = isPastDate ? 'past-date' : '';
+
+                tr.innerHTML = `
+                    <td class="${dateCellClass}">${formatDate(app.date)}</td>
+                    <td>${app.time}</td>
+                    <td>${app.name}</td>
+                    <td>${app.email}</td>
+                    <td>${new Date(app.createdAt).toLocaleString("pt-br")}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="openEditModal(${app.id})">Editar</button>
+                        <button class="delete" onclick="deleteAppointment(${app.id})">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function parseDateToLocal(dateString) {
+            const [year, month, day] = dateString.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        // Renderizar paginação
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // Não renderiza nada se só houver uma página
+            if (totalPages <= 1) {
+                return;
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = i === currentPage ? 'active' : '';
+                button.onclick = () => {
+                    currentPage = i;
+                    loadAppointments();
+                };
+                pagination.appendChild(button);
+            }
+        }
+
+        // Aplicar filtros
+        function applyFilters() {
+            currentPage = 1;
+            loadAppointments();
+        }
+
+        // Abrir modal de edição
+        async function openEditModal(id) {
+            const modal = document.getElementById('edit-modal');
+            const transaction = db.transaction(STORE_NAME, 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.get(id);
+
+            request.onsuccess = async () => {
+                const appointment = request.result;
+                currentEditId = id;
+
+                const editDateInput = document.getElementById('edit-date');
+                const editNameInput = document.getElementById('edit-name');
+                const editEmailInput = document.getElementById('edit-email');
+                const timeSelect = document.getElementById('edit-time');
+
+                // Preencher os dados do agendamento
+                editDateInput.value = appointment.date;
+                editNameInput.value = appointment.name;
+                editEmailInput.value = appointment.email;
+
+                // Define a data mínima como hoje
+                const today = new Date().toISOString().split('T')[0];
+                editDateInput.min = today;
+
+                // Preencher horários disponíveis para a data atual
+                await updateAvailableTimes(appointment.date, timeSelect, appointment.time);
+
+                // Remover event listener antigo para evitar múltiplas execuções
+                const newDateInput = editDateInput.cloneNode(true); // Cria um novo nó
+                editDateInput.replaceWith(newDateInput); // Substitui o nó antigo pelo novo
+                newDateInput.addEventListener('change', async () => {
+                    const selectedDate = newDateInput.value;
+                    await updateAvailableTimes(selectedDate, timeSelect);
+                });
+
+                modal.style.display = 'block';
+            };
+
+            request.onerror = () => {
+                console.error('Erro ao carregar o agendamento para edição.');
+            };
+        }
+
+        // Função para atualizar os horários disponíveis
+        async function updateAvailableTimes(date, timeSelect, currentTime = null) {
+            timeSelect.innerHTML = '';
+
+            // Obter horários ocupados para a data selecionada
+            const bookedTimes = await getBookedAppointments(date);
+
+            // Gerar horários disponíveis
+            for (let hour = 9; hour <= 17; hour++) {
+                const time = `${hour.toString().padStart(2, '0')}:00`;
+
+                // Adiciona o horário somente se não estiver ocupado ou for o horário atual do agendamento
+                if (!bookedTimes.includes(time) || time === currentTime) {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    option.textContent = time;
+                    option.selected = time === currentTime; // Seleciona o horário atual, se aplicável
+                    timeSelect.appendChild(option);
+                }
+            }
+        }
+
+        // Fechar modal de edição
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            document.getElementById('edit-error').textContent = '';
+            currentEditId = null;
+        }
+
+        // Salvar edição
+        async function saveEdit() {
+            const date = document.getElementById('edit-date').value;
+            const time = document.getElementById('edit-time').value;
+            const name = document.getElementById('edit-name').value;
+            const email = document.getElementById('edit-email').value;
+            const errorElement = document.getElementById('edit-error');
+
+            if (!date || !time || !name || !email) {
+                errorElement.textContent = 'Por favor, preencha todos os campos.';
+                return;
+            }
+
+            const appointment = {
+                id: currentEditId,
+                datetime: `${date} ${time}`,
+                date,
+                time,
+                name,
+                email,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                await store.put(appointment);
+
+                closeEditModal();
+                loadAppointments();
+            } catch (error) {
+                errorElement.textContent = 'Erro ao salvar as alterações. Tente novamente.';
+            }
+        }
+
+        // Excluir agendamento
+        async function deleteAppointment(id) {
+            if (!confirm('Tem certeza que deseja excluir este agendamento?')) return;
+
+            const transaction = db.transaction(STORE_NAME, 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            await store.delete(id);
+
+            // Recarregar os agendamentos
+            const request = store.getAll();
+            request.onsuccess = () => {
+                const appointments = request.result;
+
+                // Recalcular o número total de páginas
+                const totalItems = appointments.length;
+                totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+                // Ajustar a página atual, se necessário
+                if (currentPage > totalPages) {
+                    currentPage = Math.max(1, totalPages); // Nunca deixe currentPage ser menor que 1
+                }
+
+                // Recarregar os agendamentos
+                loadAppointments();
+            };
+        }
+
+        // Formatar data
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // Inicializar aplicação
+        window.onload = initDB;
+    </script>
+</body>
+</html>
