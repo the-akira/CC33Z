@@ -1,0 +1,354 @@
+body {
+    background: black;
+}
+
+.player-container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: #242424;
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.media-element {
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.progress-container {
+    grid-column: 1 / -1;
+    background: #444;
+    height: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    background: #1db954;
+    height: 100%;
+    width: 0%;
+    border-radius: 5px;
+    transition: width 0.1s linear;
+}
+
+.control-button {
+    background: #333;
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.control-button i {
+    font-size: 1.1em;
+}
+
+.control-button:hover {
+    background: #444;
+}
+
+.control-button.active {
+    background: #1db954;
+}
+
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.volume-slider {
+    width: 100px;
+}
+
+.playlist {
+    margin-top: 15px;
+    background: #333;
+    padding: 10px;
+    border-radius: 4px;
+    min-height: 100px;
+}
+
+.playlist-item {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    transition: background 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.playlist-item:hover {
+    background: #444;
+}
+
+.playlist-item.active {
+    background: #1db954;
+}
+
+.time-display {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.upload-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #666;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.big-upload-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;    
+}
+
+.upload-zone.dragover {
+    border-color: #1db954;
+    background: rgba(29, 185, 84, 0.1);
+}
+
+.remove-button {
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.download-button {
+    background: #3ea3b8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.remove-button:hover,
+.download-button:hover {
+    opacity: 0.8;
+}
+
+#fileInput {
+    display: none;
+}
+
+#groupControls {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    margin-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+#groupNameInput {
+    flex: 1;
+    padding: 8px 10px;
+    border: 2px solid #666;
+    border-radius: 4px;
+    background: #333;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#groupNameInput:focus {
+    border-color: #1db954;
+}
+
+#addGroupButton {
+    padding: 8px 15px;
+    border: none;
+    background: #1db954;
+    color: white;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+#addGroupButton:hover {
+    background: #16a34a;
+}
+
+#addGroupButton:active {
+    transform: scale(0.95);
+}
+
+#groupContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+    border-radius: 4px;
+    background: #242424;
+}
+
+.group {
+    padding: 8px 15px;
+    background: #333;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.group:hover {
+    background: #444;
+}
+
+.group:active {
+    transform: scale(0.95);
+}
+
+.group.active {
+    background: #1db954;
+}
+
+.equalizer {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    height: 20px;
+    margin-top: 10px;
+}
+
+.equalizer-bar {
+    width: 3px;
+    background: #1db954;
+    animation: equalize 1s infinite;
+}
+
+@keyframes equalize {
+    0% { height: 20%; }
+    50% { height: 100%; }
+    100% { height: 20%; }
+}
+
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    background: #333;
+    border-radius: 8px;
+    max-width: 200px;
+    margin: auto;
+    margin-bottom: 15px;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 5px;
+    background: #444;
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s;
+    cursor: pointer;
+}
+
+.volume-slider:hover {
+    background: #555;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #1db954;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: #16a34a;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #1db954;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    background: #16a34a;
+}
+
+.volume-slider::-ms-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #1db954;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.volume-slider::-ms-thumb:hover {
+    transform: scale(1.2);
+    background: #16a34a;
+}
+
+.equalizer-bar:nth-child(1) { animation-delay: 0.0s; }
+.equalizer-bar:nth-child(2) { animation-delay: 0.1s; }
+.equalizer-bar:nth-child(3) { animation-delay: 0.2s; }
+.equalizer-bar:nth-child(4) { animation-delay: 0.3s; }
+.equalizer-bar:nth-child(5) { animation-delay: 0.4s; }
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #242424;          
+}
+
+::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

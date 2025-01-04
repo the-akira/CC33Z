@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multimedia Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <div class="player-container">
+        <h1 style="margin-top: 0px; text-align: center; margin-bottom: 20px;">Multimedia Player</h1>
+
+        <video id="mediaPlayer" class="media-element">
+            Seu navegador não suporta o elemento de vídeo.
+        </video>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="time-display">
+            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+        </div>
+
+        <div class="controls">
+            <button class="control-button" id="prevButton">
+                <i class="fas fa-backward"></i>
+            </button>
+            <button class="control-button" id="playPauseButton">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="control-button" id="nextButton">
+                <i class="fas fa-forward"></i>
+            </button>
+            <button class="control-button" id="stopButton">
+                <i class="fas fa-stop"></i>
+            </button>
+            <button class="control-button" id="loopButton">
+                <i class="fas fa-redo"></i>
+            </button>
+            <button class="control-button" id="shuffleButton">
+                <i class="fas fa-random"></i>
+            </button>
+            <button class="control-button" id="fullscreenButton">
+                <i class="fas fa-expand"></i>
+            </button>
+            <button class="control-button" id="muteButton">
+                <i class="fas fa-volume-up"></i>
+            </button>
+        </div>
+
+        <div class="volume-container">
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+        </div>
+
+        <div class="equalizer" id="equalizer">
+            <div class="equalizer-bar"></div>
+            <div class="equalizer-bar"></div>
+            <div class="equalizer-bar"></div>
+            <div class="equalizer-bar"></div>
+            <div class="equalizer-bar"></div>
+        </div>
+
+        <div class="big-upload-zone">
+            <button class="control-button" title="Limite 110MB" id="largeFileUploadButton">
+                <i class="fas fa-upload"></i> Upload Arquivo Grande
+            </button>
+            <input type="file" id="largeFileInput" accept="video/*,audio/*" style="display: none;">
+        </div>
+
+        <div class="upload-zone" id="uploadZone">
+            <i class="fas fa-cloud-upload-alt fa-2x"></i>
+            <p>Arraste e solte arquivos pequenos aqui ou</p>
+            <button class="control-button" title="Limite 20MB" id="uploadButton">
+                <i class="fas fa-folder-open"></i> Selecione Arquivos
+            </button>
+            <input type="file" id="fileInput" multiple accept="video/*,audio/*">
+        </div>
+
+        <div id="uploadProgress" style="display: none; text-align: center; color: white;"><span id="progressPercentage"></span></div>
+
+        <div id="groupControls">
+            <input type="text" id="groupNameInput" placeholder="Nome da playlist">
+            <button id="addGroupButton">Adicionar</button>
+        </div>
+
+        <div id="groupContainer">
+            <p id="noGroupMessage" style="display: none; text-align: center; color: #666; margin: 0px;">Nenhuma playlist criada. Adicione uma playlist para poder carregar mídias.</p>
+            <p id="loadingGroupMessage" style="display: none; text-align: center; color: #666; margin: 0px;">Carregando playlists do banco de dados, por favor, aguarde.</p>
+        </div>
+
+        <div class="playlist" id="playlist"></div>
+    </div>
+
+    <script src="app.js" type="text/javascript"></script>
+</body>
+</html>
