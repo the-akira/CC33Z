@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Visualização do Algoritmo de Huffman</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Visualização do Algoritmo de Huffman</h1>
+        <div style="display: flex; align-items: center;">
+            <input type="text" id="input" placeholder="Digite um texto" value="exemplo de texto" maxlength="2500" oninput="updateTreeOnInput()">
+        </div>
+    </div>
+
+    <p id="warningMessage" style="color: red; display: none;">O texto deve conter pelo menos dois caracteres únicos para gerar uma árvore válida.</p>
+
+    <div class="container">
+        <h1>Informações de Processamento</h1>
+        <p id="originalBinary"></p>
+        <p id="generatedCode" rows="4" readonly></p>
+        <p id="decodedText" rows="4" readonly></p>
+        <p style="display: none;" id="stepDecodedText"><b>Texto decodificado (passo a passo):</b> </p>
+        <p><b>Entropia:</b> <span id="entropy">0 bits/caractere</span></p>
+        <p><b>Tamanho Esperado da Mensagem:</b> <span id="expectedSize">0 bits</span></p>
+        <button onclick="decodeBinary()">Decodificação Automática</button>
+        <button id="stepButton" onclick="nextStep()">Próximo Passo</button>
+        <button id="resetButton" onclick="resetDecoding()">Reiniciar</button>
+        <button onclick="exportTree()">Exportar</button>
+        <input type="file" id="importTreeInput" style="display:none;" onchange="importTree(event)">
+        <button id="importTreeInputButton" onclick="document.getElementById('importTreeInput').click()">Importar</button>
+        <button id="fileButton" onclick="handleFileUploadOrDownload()">Carregar e Comprimir Arquivo</button>
+        <input type="file" id="fileInput" accept=".txt" style="display: none;" onchange="processFile(event)">
+        <button id="decompressButton" onclick="handleDecompressAction()">Carregar para Descompressão</button>
+        <input type="file" id="decompressedFileInput" accept=".json" style="display: none;" onchange="processDecompressedFile(event)">
+    </div>
+
+    <div id="progressContainer" style="width: 100%; background: white; border-radius: 4px; margin: 20px 0;">
+        <div id="progressBar" style="width: 0%; height: 20px; background: #4CAF50; border-radius: 4px;"></div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>Taxa de Compressão</h3>
+            <div id="compressionRate" class="stat-value">0%</div>
+        </div>
+        <div class="stat-card">
+            <h3>Tamanho Original</h3>
+            <div id="originalSize" class="stat-value">0 bits</div>
+        </div>
+        <div class="stat-card">
+            <h3>Tamanho Comprimido</h3>
+            <div id="compressedSize" class="stat-value">0 bits</div>
+        </div>
+        <div class="stat-card">
+            <h3>Caracteres Únicos</h3>
+            <div id="uniqueChars" class="stat-value">0</div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-box">
+            <canvas id="frequencyChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="bitDistributionChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="sizeComparisonChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="bitFrequencyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <div id="tooltip" class="tooltip"></div>
+        <canvas id="treeCanvas"></canvas>
+    </div>
+
+    <div class="container" style="margin-bottom: 0px;">
+        <h1>Tabela de Frequência</h1>
+        <table id="frequencyTable">
+            <thead>
+                <tr>
+                    <th>Caractere</th>
+                    <th>Frequência</th>
+                    <th>Código Huffman</th>
+                    <th>Bits Economizados</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>

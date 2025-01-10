@@ -1,0 +1,169 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    word-wrap: break-word;
+}
+
+.container > h1 {
+    margin-top: 2.5px;
+}
+
+.canvas-container {
+    margin: 20px 0;
+    overflow: auto;
+    max-height: 800px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4CAF50;
+    margin: 10px 0;
+}
+
+.chart-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.chart-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 20px; 
+    margin: 20px 0;
+}
+
+.chart-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    height: 300px; 
+}
+
+input, button {
+    margin: 10px 0;
+    padding: 8px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button.disabled:hover {
+    background-color: #ccc;
+}
+
+input {
+    width: 400px;
+    padding: 7.5px;
+    border: 2px solid #4CAF50;
+    border-radius: 4px;
+    background: #F9F9F9;
+}
+
+#frequencyTable {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#frequencyTable th {
+    background-color: #f8f9fa;
+}
+
+#frequencyTable th, #frequencyTable td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
+
+.code {
+    font-family: monospace;
+    background-color: #f0f0f0;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    pointer-events: none;
+    display: none;
+}
+
+#progressContainer {
+    width: 100%;
+    background: #f3f3f3;
+    border-radius: 4px;
+    margin: 20px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#progressBar {
+    height: 20px;
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    border-radius: 4px;
+    transition: width 0.3s ease-in-out;
+}   
