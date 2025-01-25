@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vida & Arte - Artesanatos</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="no-scroll">
+    <!-- Efeito Troca de Tema -->
+    <div class="theme-mosaic" id="themeMosaic"></div>
+
+    <button id="fullscreenButton" class="fullscreen-btn"><i class="fa-solid fa-expand"></i></button>
+
+    <!-- Intro -->
+    <div class="intro-overlay">
+        <canvas id="particleCanvas"></canvas>
+        <img id="randomImage" src="" alt="Imagem Aleatória">
+        <div class="intro-text">Bem-vindo à Loja Vida & Arte</div>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img id="logo" src="images/avatar/default.png" class="logo">
+            <h1>Vida & Arte</h1>
+            <div class="theme-switcher">
+                <label id="themeSelectLabel" for="themeSelect">Tema:</label>
+                <select id="themeSelect">
+                    <option value="default">Padrão</option>
+                    <option value="autumn">Outono</option>
+                    <option value="desert">Deserto</option>
+                    <option value="cherry-blossom">Cerejeira</option>
+                </select>
+            </div>
+            <button title="Tocar Música Aleatória" id="playButton"><i class="fa-solid fa-music"></i></button>
+            <button title="Parar Música" id="stopButton"><i class="fas fa-volume-mute"></i></button>
+            <audio id="audioPlayer" src="" preload="auto"></audio>
+            <div class="music-controls">
+                <label id="volumeMusicLabel" for="volume">Volume:</label>
+                <input type="range" id="volume" class="volume-control" min="0" max="1" step="0.1" value="0.5">
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação -->
+    <nav id="navbar">
+        <ul>
+            <li><a href="#historia">História</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#produtos">Produtos</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#faq">Perguntas Frequentes</a></li>
+            <li><a href="#localizacao">Localização</a></li>
+            <li><a href="#contato">Contato</a></li>
+            <li><a href="#testemunhos">Testemunhos</a></li>
+            <li><a href="#eventos">Eventos</a></li>
+        </ul>
+    </nav>
+
+    <!-- História -->
+    <section id="historia">
+        <h2>Nossa História</h2>
+        <p>Há mais de 30 anos, nossa loja nasceu do amor pelo artesanato sustentável e da vontade de compartilhar peças únicas 
+           e especiais com nossos clientes. Cada item em nossa loja conta uma história e carrega consigo o carinho 
+           e dedicação de artesãos talentosos.</p>
+    </section>
+
+    <!-- Carousel -->
+    <section>
+        <div class="carousel">
+            <div class="carousel-container">
+                <div class="carousel-slide">
+                    <img src="images/carousel/art1.png" alt="Artesanato 1">
+                </div>
+                <div class="carousel-slide">
+                    <img src="images/carousel/art2.png" alt="Artesanato 2">
+                </div>
+                <div class="carousel-slide">
+                    <img src="images/carousel/art3.png" alt="Artesanato 3">
+                </div>
+                <div class="carousel-slide">
+                    <img src="images/carousel/art4.png" alt="Artesanato 4">
+                </div>
+            </div>
+            <button class="carousel-button prev"><i class="fa-solid fa-arrow-left"></i></button>
+            <button class="carousel-button next"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Sobre -->   
+    <section id="sobre">
+        <h2>Sobre Nós</h2>
+        <div class="about-container">
+            <div class="about-mvv">
+                <div class="mvv-item">
+                    <i class="fa-solid fa-bullseye about-icon"></i>
+                    <h3>Missão</h3>
+                    <p>Transformar o artesanato em arte acessível e significativa, conectando nossos clientes com produtos únicos e feitos com amor. <br>Reinventar o futuro através da sustentabilidade e renovação.</p>
+                </div>
+                <div class="mvv-item">
+                    <i class="fa-solid fa-eye about-icon"></i>
+                    <h3>Visão</h3>
+                    <p>Ser reconhecida como a principal loja de artesanatos no mercado, inspirando criatividade e promovendo a cultura sustentável.</p>
+                </div>
+                <div class="mvv-item">
+                    <i class="fa-solid fa-moon about-icon"></i>
+                    <h3>Valores</h3>
+                    <ul>
+                        <li>Qualidade</li>
+                        <li>Autenticidade</li>
+                        <li>Sustentabilidade</li>
+                        <li>Respeito à cultura</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="team-container">
+            <h3>Conheça Nossa Equipe</h3>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="images/staff/member1.png" alt="Maria Oliveira">
+                    <h4>Rosa Maira</h4>
+                    <p><b>Fundadora e Artesã Principal</b></p>
+                    <p>"Acredito que cada peça conta uma história, e meu objetivo é compartilhar essas histórias com o mundo."</p>
+                </div>
+                <div class="team-member">
+                    <img src="images/staff/member2.png" alt="Samurai Santos">
+                    <h4>Samurai Santos</h4>
+                    <p><b>Especialista em Esculturas de Madeira</b></p>
+                    <p>"Minha paixão é transformar ideias em peças que encantam e inspiram."</p>
+                </div>
+                <div class="team-member">
+                    <img src="images/staff/member3.png" alt="Ana Souza">
+                    <h4>Luana Souza</h4>
+                    <p><b>Design, Marketing e Vendas</b></p>
+                    <p>"Trabalhar com artesanato é mais do que um trabalho; é uma forma de preservar tradições."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal para imagem ampliada -->
+    <div class="modal" id="imageModal">
+        <img src="" alt="Imagem ampliada">
+    </div>
+
+    <!-- Modal para post do blog -->
+    <div id="postModal" class="post-modal">
+        <div class="modal-content">
+            <button id="closeModal">×</button>
+            <h2 id="modalTitle"></h2>
+            <img id="modalImage" alt="">
+            <div id="modalParagrafos"></div>
+        </div>
+    </div>
+
+    <div id="productModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modalTitleProduct"></h2>
+            <div id="modalImages"></div>
+            <p id="modalDescription"></p>
+            <ul id="modalDetails"></ul>
+        </div>
+    </div>
+
+    <!-- Produtos -->
+    <div id="progressBar" class="progress hidden"></div>
+    <section id="produtos">
+        <h2>Nossos Produtos</h2>
+        <div id="search">
+            <input type="text" id="searchInput" placeholder="Buscar por nome ou descrição">
+            <div id="priceFilter">
+                <label class="priceRangeLabel" for="priceRange">Faixa de Preço: </label>
+                <input type="range" id="priceRange" min="0" max="500" step="10" value="500">
+                <span id="priceValue">Até R$ 500</span>
+            </div>
+            <select id="categoryFilter">
+                <option value="">Todas as Categorias</option>
+                <option value="Decoração">Decoração</option>
+                <option value="Têxtil">Têxtil</option>
+                <option value="Arte">Arte</option>
+                <option value="Brinquedos">Brinquedos</option>
+            </select>
+            <select id="priceSort">
+                <option value="none">Ordenar por</option>
+                <option value="asc">Menor Preço</option>
+                <option value="desc">Maior Preço</option>
+            </select>
+        </div>
+        <div class="products-grid" id="productsGrid"></div>
+        <div id="noProductsMessage" class="hidden">Nenhum produto encontrado.</div>
+        <div class="pagination" id="pagination"></div>
+    </section>
+
+    <!-- Blog -->
+    <section id="blog">
+        <h2>Nosso Blog</h2>
+        <div id="blogSearch">
+            <input type="text" id="blogSearchInput" placeholder="Buscar por título ou conteúdo">
+            <select id="blogCategoryFilter">
+                <option value="">Todas as Categorias</option>
+                <option value="Dicas">Dicas</option>
+                <option value="Tutoriais">Tutoriais</option>
+                <option value="Histórias">Histórias</option>
+            </select>
+        </div>
+        <div class="posts-grid" id="postsGrid"></div>
+        <div id="noPostsMessage" class="hidden">Nenhum post encontrado.</div>
+        <div class="pagination" id="blogPagination"></div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+        <h2>Perguntas Frequentes (FAQ)</h2>
+        <div class="faq-item">
+            <div class="faq-question">Como posso fazer um pedido?<i class="fas fa-plus faq-icon"></i></div>
+            <div class="faq-answer hidden">Você pode fazer um pedido diretamente pelo nosso site. Basta adicionar os produtos ao carrinho e seguir as instruções de checkout.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Quais são as opções de pagamento?<i class="fas fa-plus faq-icon"></i></div>
+            <div class="faq-answer hidden">Aceitamos cartões de crédito, débito e pagamentos via PayPal.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Como posso rastrear meu pedido?<i class="fas fa-plus faq-icon"></i></div>
+            <div class="faq-answer hidden">Após o envio, você receberá um e-mail com um link para rastrear seu pedido.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Vocês fazem entregas internacionais?<i class="fas fa-plus faq-icon"></i></div>
+            <div class="faq-answer hidden">Sim, fazemos entregas internacionais. As taxas de envio podem variar de acordo com o destino.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Qual é a política de devolução?<i class="fas fa-plus faq-icon"></i></div>
+            <div class="faq-answer hidden">Você pode devolver os produtos em até 30 dias após a compra, desde que estejam em suas condições originais.</div>
+        </div>
+    </section>
+
+    <!-- Produtos em Destaque -->
+    <section>
+        <h2>Produtos em Destaque</h2>
+        <div class="product-carousel-container">
+            <div id="productSlides" class="product-slides"></div>
+            <button id="prev" class="carousel-product-button"><i class="fa-solid fa-arrow-left"></i></button>
+            <button id="next" class="carousel-product-button"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Mapa -->
+    <section id="localizacao">
+        <h2>Nossa Localização</h2>
+        <p>Estamos localizados na cidade de Criciúma (SC) na rua Campos Novos 72. Venha nos visitar!</p>
+        <div class="map-container">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d874.9326382554966!2d-49.38107467125455!3d-28.69770571443272!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjjCsDQxJzUxLjgiUyA0OcKwMjInNTEuOCJX!5e0!3m2!1sen!2sus!4v1737421653140!5m2!1sen!2sus?"
+                width="100%" 
+                height="400" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+    </section>
+
+    <!-- Contato -->
+    <section id="contato">
+        <h2>Entre em Contato</h2>
+        <p style="margin-bottom: 10px;">Tem alguma dúvida ou sugestão? Envie uma mensagem para nós!</p>
+        <button title="Mensagem com Comando de Voz" style="background: #FFFFFF; font-size: 1.5rem;" type="button" id="speechToTextBtn" class="voice-search" aria-label="Falar mensagem">
+            <i class="fa-solid fa-microphone"></i>
+        </button>
+        <form name="contact" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="contact">
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" name="name" placeholder="Seu nome" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" placeholder="Seu e-mail" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Mensagem:</label>
+                <textarea id="message" name="message" placeholder="Escreva sua mensagem" rows="5" required></textarea>
+            </div>
+            <button type="submit">Enviar</button>
+        </form>
+    </section>
+
+    <!-- Testemunhos -->
+    <section id="testemunhos">
+        <h2>O que nossos clientes dizem</h2>
+        <div class="testimonial-carousel">
+            <button class="testimonial-carousel-button prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="testimonial-carousel-container" id="testemunhosSlides"></div>
+            <button class="testimonial-carousel-button next"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Eventos -->
+    <section id="eventos" class="eventos-section">
+        <h2>Presencie nossos Eventos</h2>
+        <select id="eventStatusSort">
+            <option value="all">Todos os Eventos</option>
+            <option selected value="upcoming">Próximos Eventos</option>
+            <option value="past">Eventos Finalizados</option>
+        </select>
+        <div class="eventos-container" id="eventosContainer">
+            <!-- Os eventos serão adicionados dinamicamente -->
+        </div>
+        <div class="pagination" id="eventosPagination"></div>
+    </section>
+
+    <!-- Vídeos -->
+    <section id="videoCarouselSection" class="video-carousel-section">
+        <h2 class="video-carousel-title">Explore nossos vídeos</h2>
+        <div class="video-carousel">
+            <button class="video-carousel-btn prev" disabled><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="video-container">
+                <video id="videoPlayer" controls>
+                    <source src="videos/video1.mp4" type="video/mp4">
+                    Seu navegador não suporta a tag de vídeo.
+                </video>
+                <p class="video-caption">Tutorial de Artesanato Sustentável</p>
+            </div>
+            <button class="video-carousel-btn next"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none; text-align: center; margin-bottom: 0px;">Carregando vídeo...</div>
+        
+        <div class="video-controls">
+            <button title="Ver Todos os Vídeos" id="showAllVideosBtn"><i class="fa-solid fa-list"></i></button>
+            <div id="videoList" class="video-list" style="display: none;">
+                <h3>Lista de Vídeos</h3>
+                <ul>
+                    <!-- A lista de vídeos será preenchida dinamicamente -->
+                </ul>
+                <div class="pagination-controls">
+                    <button id="prevPageBtn" class="pagination-btn" disabled><i class="fa-solid fa-arrow-left"></i></button>
+                    <button id="nextPageBtn" class="pagination-btn"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Vida & Arte</h3>
+                <p>Artesanato com amor e dedicação</p>
+            </div>
+            <div>
+                <p>In Memoriam <b>Mariana</b> <i class="fa-solid fa-heart"></i></p>
+            </div>
+            <div class="social-links">
+                <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão UP -->
+    <button id="backToTop" class="back-to-top hidden"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html>
