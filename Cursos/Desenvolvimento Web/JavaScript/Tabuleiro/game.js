@@ -88,7 +88,7 @@ const keysPressed = {};
 // Function to handle player movement
 function handlePlayerMovement() {
   window.addEventListener("keydown", function (event) {
-    if (!player.canMove) {
+    if (!player.canMove || isMoving) {
       return; // If the player can't move, ignore key input
     }
 
@@ -163,6 +163,110 @@ function movePlayer() {
   requestAnimationFrame(movePlayer); // Continue moving the player
 }
 
+let isMoving = false; // Impede múltiplos cliques antes de terminar o percurso
+let targetX = null, targetY = null; // Posição do tile clicado
+
+canvas.addEventListener("click", function(event) {
+    if (isMoving) return; // Impede cliques durante a movimentação
+
+    let rect = canvas.getBoundingClientRect();
+    let clickX = event.clientX - rect.left + cameraX;
+    let clickY = event.clientY - rect.top + cameraY;
+
+    let tileX = Math.floor(clickX / tileWidth) * tileWidth;
+    let tileY = Math.floor(clickY / tileHeight) * tileHeight;
+
+    let tileCol = Math.floor(tileX / tileWidth);
+    let tileRow = Math.floor(tileY / tileHeight);
+
+    if (scenario[tileRow] && scenario[tileRow][tileCol] === 0) {
+        targetX = tileX; // Armazena o tile clicado
+        targetY = tileY;
+
+        let path = aStar(player.x, player.y, tileX, tileY);
+        if (path.length > 0) {
+            isMoving = true;
+            moveAlongPath(path, () => { isMoving = false; });
+        }
+    }
+});
+
+// Função para desenhar o tile clicado
+function drawTargetTile() {
+    if (targetX !== null && targetY !== null) {
+        ctx.strokeStyle = "red"; // Cor da borda
+        ctx.lineWidth = 3; // Espessura da linha
+        ctx.strokeRect(targetX - cameraX, targetY - cameraY, tileWidth, tileHeight);
+    }
+}
+
+function moveAlongPath(path, callback) {
+    function step() {
+        if (path.length === 0) {
+            targetX = null; // Remove o destaque do tile
+            targetY = null;
+            callback();
+            return;
+        }
+
+        let nextTile = path.shift(); // Pega o próximo passo do caminho
+        player.x = nextTile.x;
+        player.y = nextTile.y;
+
+        setTimeout(step, 200); // Tempo de delay entre os passos (ajuste conforme necessário)
+    }
+    step();
+}
+
+function aStar(startX, startY, targetX, targetY) {
+    let openSet = [{ x: startX, y: startY, g: 0, h: 0, f: 0, parent: null }];
+    let closedSet = [];
+    let path = [];
+
+    function heuristic(a, b) {
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Distância de Manhattan
+    }
+
+    while (openSet.length > 0) {
+        openSet.sort((a, b) => a.f - b.f); // Ordena pelo menor custo f
+        let current = openSet.shift();
+        closedSet.push(current);
+
+        // Se chegamos ao destino, reconstruímos o caminho
+        if (current.x === targetX && current.y === targetY) {
+            while (current) {
+                path.push({ x: current.x, y: current.y });
+                current = current.parent;
+            }
+            return path.reverse();
+        }
+
+        let neighbors = [
+            { x: current.x + tileWidth, y: current.y },
+            { x: current.x - tileWidth, y: current.y },
+            { x: current.x, y: current.y + tileHeight },
+            { x: current.x, y: current.y - tileHeight }
+        ];
+
+        for (let neighbor of neighbors) {
+            let tileCol = Math.floor(neighbor.x / tileWidth);
+            let tileRow = Math.floor(neighbor.y / tileHeight);
+
+            if (scenario[tileRow] && scenario[tileRow][tileCol] === 0) {
+                let g = current.g + 1;
+                let h = heuristic(neighbor, { x: targetX, y: targetY });
+                let f = g + h;
+
+                if (!closedSet.find(n => n.x === neighbor.x && n.y === neighbor.y) &&
+                    !openSet.find(n => n.x === neighbor.x && n.y === neighbor.y && n.f <= f)) {
+                    openSet.push({ ...neighbor, g, h, f, parent: current });
+                }
+            }
+        }
+    }
+    return []; // Se não encontrou caminho
+}
+
 // Function to stop the player movement
 function stopPlayer() {
   player.canMove = true; // Enable player movement
@@ -219,6 +323,7 @@ function gameLoop() {
   handleCollision(); // Handle collision detection
   updateCamera(); // Update the camera
   drawScenario(); // Draw the scenario
+  drawTargetTile();
 
   // Draw the player
   tilePlayer.src = "images/wizard.png";
