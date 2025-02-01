@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamento de Professores</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 style="margin-bottom: 0px;">Sistema de Agendamento de Professores</h1>
+        
+        <div id="teacherForm">
+            <h2 style="margin-top: 5px;">Cadastro de Professor</h2>
+            <div class="form-group">
+                <label for="teacherName">Nome</label>
+                <input type="text" id="teacherName" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherSubject">Disciplina</label>
+                <input type="text" id="teacherSubject" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherHours">Número de horários semanais</label>
+                <input type="number" id="teacherHours" min="1" required>
+            </div>
+            <h3>Disponibilidade de Horários</h3>
+            <div id="availabilityGrid" class="schedule-grid">
+                <!-- Será preenchido via JavaScript -->
+            </div>
+            <button onclick="saveTeacher()" id="saveButton">Cadastrar Professor</button>
+            <button id="cancelEditButton" style="display: none;" onclick="cancelEdit()">Cancelar Edição</button>
+        </div>
+
+        <div class="teacher-list" id="teacherList">
+            <h2>Professores Cadastrados</h2>
+            <!-- Será preenchido via JavaScript -->
+        </div>
+
+        <button onclick="generateSimulation()" class="simulate">Gerar Nova Simulação de Grade</button>
+
+        <div id="simulationResults" class="simulation-results">
+            <!-- Será preenchido via JavaScript -->
+        </div>
+    </div>
+
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>

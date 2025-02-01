@@ -1,0 +1,103 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.container {
+    display: grid;
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+.schedule-header {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+}
+
+.time-slot {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.time-slot.available {
+    background-color: #e8f5e9;
+    cursor: pointer;
+}
+
+.time-slot.unavailable {
+    background-color: #ffebee;
+}
+
+.teacher-list {
+    margin-top: 0px;
+}
+
+.teacher-list > h2 {
+    margin-top: 5px;
+}
+
+.teacher-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fafafa;
+}
+
+input {
+    display: block;
+    margin-top: 10px;
+}
+
+button {
+    padding: 8px 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+button.delete {
+    background-color: #f44336;
+}
+
+button.edit {
+    background-color: #2196F3;
+    margin-right: 10px;
+}
+
+button.simulate {
+    background-color: #9c27b0;
+    margin-top: 0px;
+}
+
+.simulation-results {
+    margin-top: 0px;
+}
+
+.simulation-grid {
+    margin-bottom: 30px;
+}
+
+.occupied-slot {
+    background-color: #bbdefb;
+}
