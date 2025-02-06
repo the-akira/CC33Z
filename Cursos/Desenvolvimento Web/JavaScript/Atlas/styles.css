@@ -151,12 +151,17 @@ button:hover {
 #type-filter, 
 #new-attribute-key, 
 #new-attribute-value,
-#coordinate-input {
+#coordinate-input,
+.go-to-page-input {
     outline: none;
     border: 1px solid black;
     background-color: #EFEFEF;
     height: 30px;
     width: 315px;
+}
+
+.go-to-page-input {
+    height: 19px;
 }
 
 #coordinate-navigator {

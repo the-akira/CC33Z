@@ -984,23 +984,107 @@ function updatePaginationControls(totalPages) {
 
     if (totalPages <= 1) return; // Sem paginação se houver apenas uma página
 
-    for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.classList.add('pagination-btn'); // Classe padrão para todos os botões
+    const maxVisiblePages = 5; // Número máximo de páginas visíveis antes de exibir "..."
+    let pages = [];
 
-        if (i === currentPage) {
-            button.classList.add('active'); // Adiciona a classe 'active' apenas ao botão atual
+    if (totalPages <= maxVisiblePages) {
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+        }
+    } else {
+        pages.push(1);
+
+        if (currentPage > 3) {
+            pages.push("...");
         }
 
-        button.addEventListener('click', () => {
-            currentPage = i;
-            paginateFeatures();
-        });
+        let startPage = Math.max(2, currentPage - 1);
+        let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+
+        if (currentPage < totalPages - 2) {
+            pages.push("...");
+        }
+
+        pages.push(totalPages);
+    }
+
+    // Criar botões de paginação
+    pages.forEach(page => {
+        const button = document.createElement('button');
+
+        if (page === "...") {
+            button.textContent = "...";
+            button.disabled = true;
+            button.style.cursor = "default";
+        } else {
+            button.textContent = page;
+            button.classList.add('pagination-btn');
+
+            if (page === currentPage) {
+                button.classList.add('active');
+            }
+
+            button.addEventListener('click', () => {
+                currentPage = page;
+                paginateFeatures();
+            });
+        }
 
         paginationContainer.appendChild(button);
+    });
+
+    // Criar div para centralizar o campo e o botão "Ir para"
+    const goToPageContainer = document.createElement('div');
+    goToPageContainer.style.marginTop = '10px';
+    goToPageContainer.style.display = 'flex';
+    goToPageContainer.style.alignItems = 'center';
+    goToPageContainer.style.gap = '5px';
+
+    // Criar campo de entrada para número da página
+    const pageInput = document.createElement('input');
+    pageInput.type = 'number';
+    pageInput.min = 1;
+    pageInput.max = totalPages;
+    pageInput.placeholder = "Página";
+    pageInput.style.width = '60px';
+    pageInput.style.padding = '5px';
+    pageInput.classList.add("go-to-page-input");
+
+    // Criar botão "Ir para Página"
+    const goToPageButton = document.createElement('button');
+    goToPageButton.textContent = "Ir";
+    goToPageButton.classList.add('pagination-btn');
+
+    // Quando pressionar Enter ou clicar no botão, navegar para a página
+    function goToPage() {
+        const pageNum = parseInt(pageInput.value);
+        if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
+            currentPage = pageNum;
+            paginateFeatures();
+        } else {
+            alert("Número de página inválido.");
+        }
     }
+
+    goToPageButton.addEventListener('click', goToPage);
+    pageInput.addEventListener('keypress', (event) => {
+        if (event.key === "Enter") {
+            goToPage();
+        }
+    });
+
+    // Adicionar campo e botão dentro da div
+    goToPageContainer.appendChild(pageInput);
+    goToPageContainer.appendChild(goToPageButton);
+
+    // Adicionar a div abaixo da paginação
+    paginationContainer.appendChild(goToPageContainer);
 }
+
 
 let allFeatures = []; // Armazena todas as features carregadas do banco
 let filteredFeatures = []; // Armazena features após aplicar os filtros
