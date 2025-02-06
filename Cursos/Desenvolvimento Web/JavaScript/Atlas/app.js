@@ -1019,7 +1019,7 @@ function updatePaginationControls(totalPages) {
         if (page === "...") {
             button.textContent = "...";
             button.disabled = true;
-            button.style.cursor = "default";
+            button.style.cursor = "not-allowed";
         } else {
             button.textContent = page;
             button.classList.add('pagination-btn');
