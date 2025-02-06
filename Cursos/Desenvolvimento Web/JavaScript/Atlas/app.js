@@ -1085,7 +1085,6 @@ function updatePaginationControls(totalPages) {
     paginationContainer.appendChild(goToPageContainer);
 }
 
-
 let allFeatures = []; // Armazena todas as features carregadas do banco
 let filteredFeatures = []; // Armazena features após aplicar os filtros
 
