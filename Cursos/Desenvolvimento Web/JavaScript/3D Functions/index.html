@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualizador de Funções 3D</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <h2 style="margin-bottom: 32px;">Visualizador de Funções 3D</h2>
+        <div id="loading-spinner"></div>
+        <p>Carregando...</p>
+    </div>
+    <div id="controls">
+        <div class="control-group">
+            <label>Função</label>
+            <select id="function-select" onchange="updateVisualization()">
+                <option value="sincos">sin(x) * cos(y)</option>
+                <option value="paraboloid">x² + y²</option>
+                <option value="wave">sin(√(x² + y²))</option>
+                <option value="ripple">sin(r)/r (Onda Circular)</option>
+                <option value="peaks">Picos Gaussianos</option>
+                <option value="saddle">Sela (x² - y²)</option>
+                <option value="torus">Torus</option>
+                <option value="linearX">x</option>
+                <option value="quadraticX">x²</option>
+                <option value="cubicX">x³</option>
+                <option value="sinX">sin(x)</option>
+                <option value="cosY">cos(y)</option>
+                <option value="exponential">exp(x)</option>
+                <option value="logarithmic">log(x² + y² + 1)</option>
+                <option value="hyperbolicTan">tanh(x)</option>
+                <option value="spiral3D">Espiral 3D</option>
+                <option value="mexicanHat">Chapéu Mexicano</option>
+                <option value="torusAdvanced">Torus Avançado</option>
+                <option value="concentricWaves">Ondas Concêntricas</option>
+                <option value="monkeySaddle">Sela de Macaco</option>
+                <option value="catenoid">Catenóide</option>
+                <option value="cylinder">Cilindro</option>
+                <option value="tanX">tan(x)</option>
+                <option value="cone">Cone</option>
+                <option value="catenary">Catenária</option>
+                <option value="mandelbrot">Mandelbrot</option>
+                <option value="wave2D">wave2D</option>
+                <option value="invertedDome">invertedDome</option>
+                <option value="enneperSurface">enneperSurface</option>
+                <option value="scherkSurface">Função de Scherk</option>
+                <option value="besselFunction">Função de Bessel</option>
+                <option value="diniSurface">Superfície de Dini</option>
+                <option value="airyFunction">Função de Airy</option>
+                <option value="kuenSurface">Superfície de Kuen</option>
+                <option value="boySurface">Superfície de Boy</option>
+                <option value="hermiteFunction">Função de Hermite</option>
+                <option value="veroneseSurface">Superfície de Veronese</option>
+                <option value="breatherSurface">Superfície de Breather</option>
+                <option value="pluckerSurface">Superfície de Plücker</option>
+                <option value="whitneyUmbrella">Superfície de Whitney</option>
+                <option value="moebiusStrip">Faixa de Möbius</option>
+                <option value="pearceyFunction">Função de Pearcey</option>
+                <option value="weierstrassFunction">Função Weierstrass</option>
+                <option value="riemannZeta">Função Zeta de Riemann</option>
+                <option value="oscillatingTorus">Torus Oscilante</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Visualização</label>
+            <select id="visualization-type" onchange="updateVisualization()">
+                <option value="wireframe">Wireframe</option>
+                <option value="solid">Sólido</option>
+                <option value="points">Pontos</option>
+                <option value="combined">Wireframe + Sólido</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Cor:</label>
+            <input type="color" id="color-picker" class="color-picker" value="#00ff00" onchange="updateVisualization()">
+        </div>
+        <div class="control-group">
+            <label>Resolução</label>
+            <input type="range" id="resolution" min="10" max="100" value="50" onchange="updateVisualization()">
+        </div>
+        <div class="control-group">
+            <label>Amplitude</label>
+            <input type="range" id="amplitude" min="1" max="100" value="50" onchange="updateVisualization()">
+        </div>
+        <div class="control-group">
+            <label>Frequência</label>
+            <input type="range" id="frequency" min="1" max="100" value="50" onchange="updateVisualization()">
+        </div>
+        <div class="control-group">
+            <label>Transparência</label>
+            <input type="range" id="opacity-slider" min="0.1" max="1" step="0.1" value="1" onchange="updateVisualization()">
+        </div>
+        <div class="control-group">
+            <label>Deslocamento Y</label>
+            <input type="range" id="verticalShift" min="-10" max="10" step="0.5" value="0" onchange="updateVisualization()">
+        </div>
+        <div class="control-group">
+            <label>Velocidade</label>
+            <input type="range" id="animation-speed" min="1" max="100" value="50">
+        </div>
+        <div class="control-group">
+            <label>Plano de Corte</label>
+            <input type="range" id="plane-slider" min="-5" max="5" value="5" step="0.1">
+        </div>
+        <div class="control-group" id="light-intensity-control" style="display: none;">
+            <label>Intensidade Luz</label>
+            <input type="range" id="light-intensity" min="0" max="2" step="0.1" value="1" onchange="updateLight()">
+        </div>
+        <div class="control-group" id="light-direction-x-control" style="display: none;">
+            <label>Direção X</label>
+            <input type="range" id="light-direction-x" min="-1" max="1" step="0.1" value="1" onchange="updateLight()">
+        </div>
+        <div class="control-group" id="light-direction-y-control" style="display: none;">
+            <label>Direção Y</label>
+            <input type="range" id="light-direction-y" min="-1" max="1" step="0.1" value="1" onchange="updateLight()">
+        </div>
+        <div class="control-group" id="light-direction-z-control" style="display: none;">
+            <label>Direção Z</label>
+            <input type="range" id="light-direction-z" min="-1" max="1" step="0.1" value="1" onchange="updateLight()">
+        </div>
+        <div class="control-group">
+            <label>Animação</label>
+            <select id="animation-type" onchange="updateVisualization()">
+                <option value="none">Nenhuma</option>
+                <option value="rotate">Rotação</option>
+                <option value="wave">Ondulação</option>
+                <option value="pulse">Pulsação</option>
+                <option value="varying-frequency">Frequência</option>
+                <option value="varying-amplitude">Amplitude</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <input type="checkbox" id="toggle-grid" checked>
+            <label for="toggle-grid">Grade</label>
+            <br>
+            <input type="checkbox" id="toggle-axes" checked>
+            <label for="toggle-axes">Eixos</label>
+            <br>
+            <input type="checkbox" id="toggle-function" checked>
+            <label for="toggle-function">Função</label>
+            <br>
+            <input type="checkbox" id="toggle-plane" unchecked>
+            <label for="toggle-plane">Plano</label>
+            <br>
+            <input type="checkbox" id="toggle-derivatives" unchecked>
+            <label for="toggle-derivatives">Derivadas</label>
+            <br>
+            <input type="checkbox" id="toggle-contour">
+            <label for="toggle-contour">Curvas de Nível</label>
+            <br>
+            <section id="heatmap-control" style="display: none;">
+                <input type="checkbox" id="toggle-heatmap">
+                <label for="toggle-heatmap">Mapa de Calor</label>
+            </section>
+        </div>
+        <div class="control-group">
+            <button id="repeat-animation">Repetir Animação</button>
+        </div>
+        <div class="control-group" style="margin-bottom: 0px;">
+            <button id="psychedelic-button">Ativar Geometrias</button>
+        </div>
+    </div>
+
+    <div id="point-info">
+        <p>
+            <b>Coordenadas:</b>
+            {<span style="color: red;">X:</span> 0.00, 
+            <span style="color: #ae00ff;">Y:</span> 0.00, 
+            <span style="color: blue;">Z:</span> 0.00}
+        </p>
+        <p style="margin-bottom: 0px;">
+            <b>Valor da Função:</b> 0.00
+            <button style="float: right;" id="clear-points">Limpar</button>
+        </p>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
+
+        // Configuração inicial
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Constantes para zoom
+        const ZOOM_MIN = 2;
+        const ZOOM_MAX = 20;
+
+        // Adiciona controles de órbita
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.mouseButtons.RIGHT = null;
+        controls.minDistance = ZOOM_MIN; // Aplica zoom mínimo
+        controls.maxDistance = ZOOM_MAX; // Aplica zoom máximo
+
+        // Iluminação
+        let directionalLight; // Variável global para a luz direcional
+
+        function createLight() {
+            directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            scene.add(new THREE.AmbientLight(0x404040)); // Luz ambiente para iluminação básica
+        }
+
+        window.updateLight = function() {
+            const intensity = parseFloat(document.getElementById('light-intensity').value);
+            const directionX = parseFloat(document.getElementById('light-direction-x').value);
+            const directionY = parseFloat(document.getElementById('light-direction-y').value);
+            const directionZ = parseFloat(document.getElementById('light-direction-z').value);
+
+            directionalLight.intensity = intensity;
+            directionalLight.position.set(directionX, directionY, directionZ).normalize();
+        };
+        
+        // Posição inicial da câmera
+        camera.position.set(5, 5, 5);
+        camera.lookAt(0, 0, 0);
+
+        // Adicionando os eixos X, Y e Z que sempre ficam visíveis
+        function createAxisLine(color, start, end) {
+            const material = new THREE.LineBasicMaterial({ 
+                color: color, 
+                linewidth: 5, 
+                depthTest: false, // Impede que seja ocultado por outros objetos
+                polygonOffset: true, // Ajusta a posição para frente na renderização
+                polygonOffsetFactor: -1, // Garante sobreposição correta
+                transparent: true
+            });
+            const points = [start, end];
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(geometry, material);
+            line.renderOrder = 999; // Força renderização posterior
+            return line;
+        }
+
+        const xAxis = createAxisLine(0xff0000, new THREE.Vector3(-5, 0, 0), new THREE.Vector3(5, 0, 0)); // Vermelho para X
+        const yAxis = createAxisLine(0xae00ff, new THREE.Vector3(0, -5, 0), new THREE.Vector3(0, 5, 0)); // Roxo para Y
+        const zAxis = createAxisLine(0x0000ff, new THREE.Vector3(0, 0, -5), new THREE.Vector3(0, 0, 5)); // Azul para Z
+
+        const axesGroup = new THREE.Group();
+        axesGroup.add(xAxis, yAxis, zAxis);
+        scene.add(axesGroup);
+
+        // Adicionando grades no plano XZ
+        const gridHelper = new THREE.GridHelper(10, 20, 0xff0000, 0x555555);
+        gridHelper.material.depthTest = false;
+        gridHelper.renderOrder = 1;
+        scene.add(gridHelper);
+
+        // Criar um plano de corte
+        renderer.localClippingEnabled = true;
+
+        // Criar o plano de corte
+        const clippingPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 5); // Plano inicial
+        const planeHelper = new THREE.PlaneHelper(clippingPlane, 10, 0xffff00); // Helper para visualização
+        planeHelper.visible = false; // Ocultar o helper inicialmente
+        scene.add(planeHelper);
+
+        // Atualizar o plano de corte com o slider
+        document.getElementById('plane-slider').addEventListener('input', (event) => {
+            const value = parseFloat(event.target.value);
+            const offset = 0.0001; // Pequeno deslocamento para evitar z-fighting
+            clippingPlane.constant = value + offset; // Atualiza a posição do plano de corte
+        });
+
+        document.getElementById('toggle-grid').addEventListener('change', (event) => {
+            gridHelper.visible = event.target.checked;
+        });
+
+        document.getElementById('toggle-axes').addEventListener('change', (event) => {
+            axesGroup.visible = event.target.checked;
+        });
+
+        document.getElementById('toggle-plane').addEventListener('change', (event) => {
+            planeHelper.visible = event.target.checked;
+        });
+
+        document.getElementById('toggle-function').addEventListener('change', (event) => {
+            surface.visible = event.target.checked;
+        });
+
+        // Variáveis de animação
+        let time = 0;
+        let animationParams = {
+            type: 'none',
+            speed: 0.5
+        };
+
+        // Funções matemáticas
+        const functions = {
+            sincos: (x, y, params, time) => {
+                let z = Math.sin(x * params.frequency/25) * Math.cos(y * params.frequency/25) * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            paraboloid: (x, y, params, time) => {
+                let z = (x * x + y * y) * params.amplitude/250;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            wave: (x, y, params, time) => {
+                let z = Math.sin(Math.sqrt(x * x + y * y) * params.frequency/25) * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            ripple: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y) + 0.000001;
+                let z = Math.sin(r * params.frequency/25) / r * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + r) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            peaks: (x, y, params, time) => {
+                const freq = params.frequency / 25;
+                const amp = params.amplitude / 25;
+                let z = amp * (Math.exp(-(x*x + y*y) * freq) + 
+                            Math.exp(-((x+1)*(x+1) + (y+1)*(y+1)) * freq) +
+                            Math.exp(-((x-1)*(x-1) + (y-1)*(y-1)) * freq));
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            saddle: (x, y, params, time) => {
+                let z = (x * x - y * y) * params.amplitude/250;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            torus: (x, y, params, time) => {
+                const R = 2;
+                const r = 0.5;
+                const theta = Math.atan2(y, x);
+                const rho = Math.sqrt(x * x + y * y);
+                let z = (R + r * Math.cos(theta * params.frequency/25)) * 
+                        Math.sin(rho * params.frequency/25) * params.amplitude/50;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + rho) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            linearX: (x, y, params, time) => {
+                let z = x * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            quadraticX: (x, y, params, time) => {
+                let z = (x * x) * params.amplitude/250;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            cubicX: (x, y, params, time) => {
+                let z = (x * x * x) * params.amplitude/1000;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            sinX: (x, y, params, time) => {
+                let z = Math.sin(x * params.frequency/25) * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            cosY: (x, y, params, time) => {
+                let z = Math.cos(y * params.frequency/25) * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            exponential: (x, y, params, time) => {
+                let z = Math.exp(x * params.frequency/25) * params.amplitude/100;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            logarithmic: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y) + 1; // Evita log(0)
+                let z = Math.log(r) * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + r) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            hyperbolicTan: (x, y, params, time) => {
+                let z = Math.tanh(x * params.frequency/25) * params.amplitude/25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x*x + y*y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            spiral3D: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y);
+                let z = Math.sin(r * params.frequency/10 + time) * params.amplitude/20;
+                return z;
+            },
+            mexicanHat: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y) + 0.0001; // Evita divisão por zero
+                let z = (Math.sin(r * params.frequency/10) / r) * params.amplitude/10;
+                return z;
+            },
+            torusAdvanced: (x, y, params, time) => {
+                const R = 3; // Raio maior do Torus
+                const r = 1; // Raio menor do Torus
+                const theta = Math.atan2(y, x);
+                const phi = Math.sin(time + theta) * params.frequency/20;
+                let z = (R + r * Math.cos(phi)) * Math.sin(phi) * params.amplitude/30;
+                return z;
+            },
+            concentricWaves: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y);
+                let z = Math.sin(r - time * params.frequency/5) * params.amplitude/25;
+                return z;
+            },
+            monkeySaddle: (x, y, params, time) => {
+                let z = (x * x * x - 3 * x * y * y) * params.amplitude/500;
+                return z;
+            },
+            catenoid: (x, y, params, time) => {
+                let z = Math.cosh(Math.sqrt(x * x + y * y) * params.frequency/25) * params.amplitude/50;
+                return z;
+            },
+            cylinder: (x, y, params, time) => {
+                const radius = Math.sqrt(x * x + y * y);
+                let z = radius <= 1 ? Math.sqrt(1 - radius * radius) * params.amplitude / 25 : 0; // Garante que o valor não seja negativo
+                return z;
+            },
+            tanX: (x, y, params, time) => {
+                let z = Math.tan(x * params.frequency / 25) * params.amplitude / 25;
+                return z;
+            },
+            cone: (x, y, params, time) => {
+                let z = Math.sqrt(x * x + y * y) * params.amplitude / 25;
+                return z;
+            },
+            catenary: (x, y, params, time) => {
+                let z = Math.cosh(x) * params.amplitude / 50;
+                return z;
+            },
+            mandelbrot: (x, y, params, time) => {
+                let zx = 0, zy = 0, iteration = 0;
+                const maxIteration = 100;
+                while (zx * zx + zy * zy < 4 && iteration < maxIteration) {
+                    const tmp = zx * zx - zy * zy + x;
+                    zy = 2.0 * zx * zy + y;
+                    zx = tmp;
+                    iteration++;
+                }
+                return iteration / maxIteration * params.amplitude / 25; // Normaliza a altura
+            },
+            wave2D: (x, y, params, time) => {
+                return Math.sin(x * params.frequency / 25) * Math.sin(y * params.frequency / 25) * params.amplitude / 25;
+            },
+            invertedDome: (x, y, params, time) => {
+                const radius = 1; // Defina o raio da cúpula invertida
+                const radiusSquared = x * x + y * y; // Calcula x² + y²
+                let z = (radiusSquared <= radius * radius) ? -Math.sqrt(radius * radius - radiusSquared) * params.amplitude / 25 : 0; // Garante que o valor não seja negativo
+                return z;
+            },
+            enneperSurface: (x, y, params, time) => {
+                let z = (x * x * x - 3 * x * y * y) * params.amplitude / 500;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x * x + y * y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            scherkSurface: (x, y, params, time) => {
+                let z = Math.log(Math.cos(y) / Math.cos(x)) * params.amplitude / 25;
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x * x + y * y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            besselFunction: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y);
+                let z = (r === 0) ? 1 : (Math.sin(r) / r) * params.amplitude / 25; // Aproximação de Bessel
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + r) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            diniSurface: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y);
+                let z = Math.sin(r - time * params.frequency / 5) * params.amplitude / 25;
+                return z;
+            },
+            airyFunction: (x, y, params, time) => {
+                let z = (x < 0) ? 0 : (Math.sin(x) / x) * params.amplitude / 25; // Aproximação simples
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x * x + y * y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            kuenSurface: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y);
+                let z = Math.sin(r - time * params.frequency / 5) * params.amplitude / 25;
+                return z;
+            },
+            boySurface: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y);
+                let z = Math.sin(r - time * params.frequency / 5) * params.amplitude / 25;
+                return z;
+            },
+            hermiteFunction: (x, y, params, time) => {
+                let z = (2 * x * x - 1) * params.amplitude / 25; // Hermite H_2(x)
+                if (params.animationType === 'wave') {
+                    z += Math.sin(time + Math.sqrt(x * x + y * y)) * 0.2;
+                } else if (params.animationType === 'pulse') {
+                    z *= 1 + Math.sin(time) * 0.2;
+                }
+                return z;
+            },
+            veroneseSurface: (x, y, params, time) => {
+                const r = Math.sqrt(x * x + y * y);
+                let z = Math.sin(r - time * params.frequency / 5) * params.amplitude / 25;
+                return z;
+            },
+            breatherSurface: (x, y, params, time) => {
+                const t = time / 5;
+                const denom = Math.cosh(x * params.frequency / 10) + Math.sin(y * params.frequency / 10) * Math.sin(t);
+                let z = Math.sin(x) * params.amplitude / (10 * denom);
+                return z;
+            },
+            pluckerSurface: (x, y, params, time) => {
+                let z = Math.sin(x) * Math.cos(y) + Math.cos(x) * Math.sin(y);
+                return z * params.amplitude / 10;
+            },
+            whitneyUmbrella: (x, y, params, time) => {
+                let z = x * y * params.amplitude / 25;
+                return z;
+            },
+            moebiusStrip: (x, y, params, time) => {
+                const u = x * Math.PI;
+                const v = y * Math.PI;
+                let z = Math.sin(v) * params.amplitude / 25;
+                return z;
+            },
+            pearceyFunction: (x, y, params, time) => {
+                let z = Math.sin(x * x + y * y) * Math.cos(x - y) * params.amplitude / 25;
+                return z;
+            },
+            weierstrassFunction: (x, y, params, time) => {
+                let z = 0;
+                for (let i = 1; i < 10; i++) {
+                    z += Math.sin(i * x) / i + Math.cos(i * y) / i;
+                }
+                return z * params.amplitude / 25;
+            },
+            riemannZeta: (x, y, params, time) => {
+                let sum = 0;
+                for (let n = 1; n < 10; n++) {
+                    sum += 1 / Math.pow(n, x * y);
+                }
+                return sum * params.amplitude / 25;
+            },
+            oscillatingTorus: (x, y, params, time) => {
+                const R = 3;
+                const r = 1 + Math.sin(time * params.frequency / 10) * 0.5; // Oscila o raio menor
+                let z = (R + r * Math.cos(x)) * Math.sin(y) * params.amplitude / 30;
+                return z;
+            },
+        };
+
+        let surface;
+
+        // Cria a geometria da superfície
+        function createSurface(func, params) {
+            const resolution = params.resolution;
+            const geometry = new ParametricGeometry((u, v, target) => {
+                const x = (u - 0.5) * 10;
+                const y = (v - 0.5) * 10;
+                const z = func(x, y, params, time);
+                target.set(x, z + params.verticalShift, y);
+            }, resolution, resolution);
+
+            const color = new THREE.Color(params.color);
+            let materials = [];
+            
+            switch(params.visualizationType) {
+                case 'wireframe':
+                    materials = [new THREE.MeshBasicMaterial({
+                        color: color,
+                        wireframe: true,
+                        clippingPlanes: [clippingPlane],
+                        transparent: params.opacity < 1,
+                        opacity: params.opacity,
+                    })];
+                    break;
+                case 'solid':
+                    materials = [new THREE.MeshPhongMaterial({
+                        color: color,
+                        side: THREE.DoubleSide,
+                        clippingPlanes: [clippingPlane],
+                        transparent: params.opacity < 1,
+                        opacity: params.opacity,
+                    })];
+                    break;
+                case 'points':
+                    const pointsMaterial = new THREE.PointsMaterial({
+                        color: color,
+                        size: 0.1,
+                        clippingPlanes: [clippingPlane],
+                        transparent: params.opacity < 1,
+                        opacity: params.opacity,
+                    });
+                    return new THREE.Points(geometry, pointsMaterial);
+                case 'combined':
+                    materials = [
+                        new THREE.MeshPhongMaterial({
+                            color: color,
+                            side: THREE.DoubleSide,
+                            opacity: 0.7,
+                            transparent: true,
+                            clippingPlanes: [clippingPlane],
+                            transparent: true,
+                            opacity: params.opacity * 0.7, // Opacidade ajustada para melhor efeito
+                        }),
+                        new THREE.MeshBasicMaterial({
+                            color: 0xffffff,
+                            wireframe: true,
+                            opacity: 0.3,
+                            transparent: true,
+                            clippingPlanes: [clippingPlane],
+                            transparent: true,
+                            opacity: params.opacity * 0.3, // Opacidade ajustada para melhor efeito
+                        })
+                    ];
+                    break;
+            }
+
+            if (materials.length === 1) {
+                return new THREE.Mesh(geometry, materials[0]);
+            } else {
+                return new THREE.Group().add(
+                    ...materials.map(material => new THREE.Mesh(geometry.clone(), material))
+                );
+            }
+        }
+
+        function toggleLightControls(visible) {
+            const lightControls = [
+                document.getElementById('light-intensity-control'),
+                document.getElementById('light-direction-x-control'),
+                document.getElementById('light-direction-y-control'),
+                document.getElementById('light-direction-z-control'),
+                document.getElementById('heatmap-control'),
+            ];
+
+            lightControls.forEach(control => {
+                control.style.display = visible ? 'block' : 'none';
+            });
+        }
+
+        function resetLightToDefault() {
+            // Redefine a intensidade e a direção da luz para os valores padrão
+            directionalLight.intensity = 1;
+            directionalLight.position.set(1, 1, 1).normalize();
+
+            // Redefine os valores dos controles para os padrões
+            document.getElementById('light-intensity').value = 1;
+            document.getElementById('light-direction-x').value = 1;
+            document.getElementById('light-direction-y').value = 1;
+            document.getElementById('light-direction-z').value = 1;
+        }
+
+        let isAnimating = false; // 🔹 Variável para evitar animação duplicada
+
+        function animateSlider() {
+            if (isAnimating) return; // 🔹 Impede múltiplas execuções ao mesmo tempo
+            isAnimating = true;
+
+            const slider = document.getElementById('plane-slider');
+            const speedSlider = document.getElementById('animation-speed');
+            const startValue = parseFloat(slider.value);
+            const minValue = parseFloat(slider.min);
+            
+            slider.disabled = true;
+
+            let currentValue = startValue;
+            let direction = -1;
+
+            function update() {
+                // 🔹 Atualiza a velocidade em tempo real
+                const speed = parseFloat(speedSlider.value) / 1000;
+
+                if (direction === -1 && currentValue > minValue) {
+                    currentValue -= speed;
+                } else if (direction === 1 && currentValue < startValue) {
+                    currentValue += speed;
+                } else {
+                    if (direction === -1) {
+                        direction = 1; // 🔹 Inverte direção
+                    } else {
+                        isAnimating = false; // 🔹 Finaliza a animação
+                        slider.disabled = false;
+                        return;
+                    }
+                }
+
+                slider.value = currentValue;
+
+                // Dispara o evento 'input' para atualizar a visualização
+                const event = new Event('input', { bubbles: true });
+                slider.dispatchEvent(event);
+
+                requestAnimationFrame(update);
+            }
+
+            update(); // 🔹 Inicia a animação
+        }
+
+        // 🔹 Liga o botão para repetir a animação quando necessário
+        document.getElementById('repeat-animation').addEventListener('click', animateSlider);
+
+        animateSlider();
+
+        function partialDerivativeX(x, y, func, params, delta = 0.001) {
+            return (func(x + delta, y, params, 0) - func(x - delta, y, params, 0)) / (2 * delta);
+        }
+
+        function partialDerivativeY(x, y, func, params, delta = 0.001) {
+            return (func(x, y + delta, params, 0) - func(x, y - delta, params, 0)) / (2 * delta);
+        }
+
+        let derivativeVectors = []; // Armazena os vetores das derivadas
+
+        function createDerivativeVectors(func, params) {
+            // Remove os vetores antigos, se existirem
+            derivativeVectors.forEach(vector => scene.remove(vector));
+            derivativeVectors = [];
+
+            const resolution = 10; // Resolução da grade de vetores
+            const scale = 0.5; // Escala dos vetores
+
+            for (let x = -5; x <= 5; x += 10 / resolution) {
+                for (let y = -5; y <= 5; y += 10 / resolution) {
+                    const z = func(x, y, params, 0);
+
+                    // Calcula as derivadas parciais
+                    const dzdx = partialDerivativeX(x, y, func, params);
+                    const dzdy = partialDerivativeY(x, y, func, params);
+
+                    // Cria um vetor para a derivada em relação a x
+                    const arrowX = new THREE.ArrowHelper(
+                        new THREE.Vector3(1, 0, dzdx).normalize(), // Direção do vetor
+                        new THREE.Vector3(x, z, y), // Posição inicial
+                        scale, // Comprimento do vetor
+                        0xff0000 // Cor vermelha para ∂z/∂x
+                    );
+                    scene.add(arrowX);
+                    derivativeVectors.push(arrowX);
+
+                    // Cria um vetor para a derivada em relação a y
+                    const arrowY = new THREE.ArrowHelper(
+                        new THREE.Vector3(0, 1, dzdy).normalize(), // Direção do vetor
+                        new THREE.Vector3(x, z, y), // Posição inicial
+                        scale, // Comprimento do vetor
+                        0xae00ff // Cor roxo para ∂z/∂y
+                    );
+                    scene.add(arrowY);
+                    derivativeVectors.push(arrowY);
+                }
+            }
+        }
+
+        document.getElementById('toggle-derivatives').addEventListener('change', () => {
+            updateVisualization();
+        });
+
+        document.getElementById('toggle-contour').addEventListener('change', () => {
+            updateVisualization();
+        });
+
+        let contourLines = new THREE.Group();
+        scene.add(contourLines);
+
+        function createContourLines(func, params) {
+            if (contourLines) scene.remove(contourLines); // Remove linhas antigas se existirem
+            contourLines = new THREE.Group();
+
+            const resolution = 50; // Quantidade de pontos por linha
+            const numContours = 10; // Número de curvas de nível
+            const minZ = -5, maxZ = 5; // Intervalo de altura das curvas de nível
+            const threshold = 0.1; // Limiar para considerar a interseção
+
+            for (let i = 0; i <= numContours; i++) {
+                const zLevel = minZ + (i / numContours) * (maxZ - minZ);
+                const points = [];
+
+                for (let x = -5; x <= 5; x += 10 / resolution) {
+                    for (let y = -5; y <= 5; y += 10 / resolution) {
+                        const z = func(x, y, params, 0);
+                        if (Math.abs(z - zLevel) < threshold) {
+                            points.push(new THREE.Vector3(x, zLevel, y));
+                        }
+                    }
+                }
+
+                if (points.length > 1) {
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const material = new THREE.LineBasicMaterial({ 
+                        color: new THREE.Color().setHSL(i / numContours, 1.0, 0.5) // Cores dinâmicas
+                    });
+                    const line = new THREE.Line(geometry, material);
+                    contourLines.add(line);
+                }
+            }
+
+            scene.add(contourLines);
+        }
+
+        // Função para criar um material de mapa de calor
+        function createHeatmapMaterial(func, params) {
+            const colors = [
+                new THREE.Color(0x0000ff), // Azul (valores baixos)
+                new THREE.Color(0x00ff00), // Verde (valores médios)
+                new THREE.Color(0xff0000)  // Vermelho (valores altos)
+            ];
+
+            const material = new THREE.MeshPhongMaterial({
+                vertexColors: true,
+                side: THREE.DoubleSide,
+                clippingPlanes: [clippingPlane],
+                transparent: params.opacity < 1,
+                opacity: params.opacity,
+            });
+
+            const positions = surface.geometry.attributes.position.array;
+            const colorsArray = new Float32Array(positions.length);
+
+            // Encontra os valores mínimo e máximo de z para normalização
+            let minZ = Infinity;
+            let maxZ = -Infinity;
+
+            for (let i = 0; i < positions.length; i += 3) {
+                const x = positions[i];
+                const y = positions[i + 1];
+                const z = positions[i + 2];
+                const value = func(x, y, params, time);
+
+                if (value < minZ) minZ = value;
+                if (value > maxZ) maxZ = value;
+            }
+
+            // Aplica as cores com base nos valores normalizados de z
+            for (let i = 0; i < positions.length; i += 3) {
+                const x = positions[i];
+                const y = positions[i + 1];
+                const z = positions[i + 2];
+                const value = func(x, y, params, time);
+
+                // Normaliza o valor para o intervalo [0, 1]
+                const normalizedValue = (value - minZ) / (maxZ - minZ);
+
+                // Interpola as cores com base no valor normalizado
+                const color = new THREE.Color().lerpColors(colors[0], colors[1], normalizedValue);
+                color.lerp(colors[2], normalizedValue);
+
+                colorsArray[i] = color.r;
+                colorsArray[i + 1] = color.g;
+                colorsArray[i + 2] = color.b;
+            }
+
+            surface.geometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+            return material;
+        }
+
+        // Função para atualizar a visualização
+        window.updateVisualization = function() {
+            const params = {
+                resolution: parseInt(document.getElementById('resolution').value),
+                amplitude: parseInt(document.getElementById('amplitude').value),
+                frequency: parseInt(document.getElementById('frequency').value),
+                color: document.getElementById('color-picker').value,
+                visualizationType: document.getElementById('visualization-type').value,
+                animationType: document.getElementById('animation-type').value,
+                opacity: parseFloat(document.getElementById('opacity-slider').value),
+                verticalShift: parseFloat(document.getElementById('verticalShift').value),
+            };
+
+            animationParams = {
+                type: params.animationType,
+                speed: document.getElementById('animation-speed').value / 500
+            };
+
+            toggleLightControls(params.visualizationType === 'solid');
+
+            if (params.visualizationType !== 'solid') {
+                resetLightToDefault();
+            }
+
+            const selectedFunction = document.getElementById('function-select').value;
+            
+            if (surface) {
+                scene.remove(surface);
+                if (surface.geometry) {
+                    surface.geometry.dispose();
+                }
+                if (Array.isArray(surface.material)) {
+                    surface.material.forEach(m => m.dispose());
+                } else if (surface.material) {
+                    surface.material.dispose();
+                }
+            }
+
+            surface = createSurface(functions[selectedFunction], params);
+            if (document.getElementById('toggle-heatmap').checked && params.visualizationType === 'solid') {
+                const heatmapMaterial = createHeatmapMaterial(functions[selectedFunction], params);
+                surface.material = heatmapMaterial;
+            }
+            scene.add(surface);
+
+            const showDerivatives = document.getElementById('toggle-derivatives').checked;
+            if (showDerivatives) {
+                createDerivativeVectors(functions[selectedFunction], params);
+                document.getElementById('toggle-function').checked = true;
+            } else {
+                // Remove os vetores das derivadas se a checkbox não estiver marcada
+                derivativeVectors.forEach(vector => scene.remove(vector));
+                derivativeVectors = [];
+            }
+
+            const showContours = document.getElementById('toggle-contour').checked;
+            if (showContours) {
+                createContourLines(functions[selectedFunction], params);
+            } else {
+                scene.remove(contourLines);
+            }
+        }
+
+        // Adiciona um listener para a checkbox do mapa de calor
+        document.getElementById('toggle-heatmap').addEventListener('change', () => {
+            updateVisualization();
+        });
+
+        // 🔥 Efeito Psicodélico Dark
+        let isPsychedelic = false;
+        let psychedelicHue = 0;
+        let psychedelicObjects = new THREE.Group();
+        scene.add(psychedelicObjects);
+
+        // 🎨 Atualiza o fundo com tons escuros
+        function updatePsychedelicBackground() {
+            if (isPsychedelic) {
+                psychedelicHue = (psychedelicHue + 1) % 360; // Rotação de cor
+                const color = new THREE.Color(`hsl(${psychedelicHue}, 80%, 10%)`); // 🌑 Tons escuros
+                renderer.setClearColor(color);
+
+                // 🔹 Atualiza as cores e o brilho dos objetos psicodélicos
+                psychedelicObjects.children.forEach(obj => {
+                    obj.material.color.setHSL((psychedelicHue + Math.random() * 30) % 360 / 360, 1, 0.4);
+                    obj.scale.setScalar(1 + 0.3 * Math.sin(Date.now() * 0.002)); // Pulsa suavemente
+                    obj.rotation.x += 0.005; // Gira lentamente
+                    obj.rotation.y += 0.008;
+                });
+            }
+        }
+
+        // 🔹 Função para adicionar diversos tipos de formas geométricas
+        function createPsychedelicShapes() {
+            psychedelicObjects.clear(); // Remove os antigos
+
+            const numShapes = 40;
+            for (let i = 0; i < numShapes; i++) {
+                let geometry;
+                const shapeType = Math.random();
+
+                if (shapeType < 0.2) {
+                    geometry = new THREE.SphereGeometry(0.5, 12, 12); // 🔹 Esferas
+                } else if (shapeType < 0.4) {
+                    geometry = new THREE.TorusGeometry(0.4, 0.15, 10, 20); // 🔹 Toróides
+                } else if (shapeType < 0.6) {
+                    geometry = new THREE.CylinderGeometry(0.3, 0.3, 1, 10); // 🔹 Cilindros
+                } else if (shapeType < 0.8) {
+                    geometry = new THREE.TetrahedronGeometry(0.5); // 🔹 Pirâmides
+                } else {
+                    geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5); // 🔹 Cubos
+                }
+
+                const material = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 30%)`), // Cores escuras vibrantes
+                    wireframe: Math.random() > 0.5 // Alternar entre sólido e wireframe
+                });
+
+                const shape = new THREE.Mesh(geometry, material);
+
+                shape.position.set((Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20);
+                shape.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+
+                psychedelicObjects.add(shape);
+            }
+        }
+
+        // 🔹 Remove o efeito psicodélico
+        function removePsychedelicBackground() {
+            renderer.setClearColor(0x000000); // 🔹 Preto puro quando desativado
+            psychedelicObjects.clear();
+        }
+
+        // 🔹 Botão para ativar/desativar o efeito
+        document.getElementById('psychedelic-button').addEventListener('click', () => {
+            isPsychedelic = !isPsychedelic;
+            if (isPsychedelic) {
+                createPsychedelicShapes(); // Cria os objetos psicodélicos
+                document.getElementById('psychedelic-button').textContent = 'Desativar Geometrias';
+            } else {
+                removePsychedelicBackground();
+                document.getElementById('psychedelic-button').textContent = 'Ativar Geometrias';
+            }
+        });
+
+        // Obtém os elementos do range slider
+        const amplitudeSlider = document.getElementById('amplitude');
+        const frequencySlider = document.getElementById('frequency');
+
+        // Converte os valores min/max para números
+        const ampMin = parseFloat(amplitudeSlider.min);
+        const ampMax = parseFloat(amplitudeSlider.max);
+        const freqMin = parseFloat(frequencySlider.min);
+        const freqMax = parseFloat(frequencySlider.max);
+
+        // Animação
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            time += animationParams.speed;
+
+            if (surface && animationParams.type !== 'none') {
+                if (animationParams.type === 'rotate') {
+                    surface.rotation.y += animationParams.speed;
+                } else if (animationParams.type === 'varying-frequency') {
+                    // 🔹 Faz a frequência oscilar entre os limites do slider
+                    const freqOscillation = freqMin + (freqMax - freqMin) * (0.5 + 0.5 * Math.sin(time * 0.5));
+                    frequencySlider.value = freqOscillation;
+                    updateVisualization(); // Atualiza a função
+
+                } else if (animationParams.type === 'varying-amplitude') {
+                    // 🔹 Faz a amplitude oscilar entre os limites do slider
+                    const ampOscillation = ampMin + (ampMax - ampMin) * (0.5 + 0.5 * Math.sin(time * 0.5));
+                    amplitudeSlider.value = ampOscillation;
+                    updateVisualization(); // Atualiza a função
+                } else {
+                    updateVisualization();
+                }
+            }
+
+            updatePsychedelicBackground();
+
+            // 🌀 Faz os objetos psicodélicos girarem
+            psychedelicObjects.rotation.y += 0.01;
+            psychedelicObjects.rotation.x += 0.005;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Responsividade
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        function getRandomBetween(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createStars() {
+            const starCount = 2000;
+            const starsGeometry = new THREE.BufferGeometry();
+
+            // Posições das estrelas
+            const starVertices = new Float32Array(starCount * 3);
+            // Valores aleatórios para o piscar
+            const starRandoms = new Float32Array(starCount);
+            // Cores aleatórias (RGB)
+            const starColors = new Float32Array(starCount * 3);
+            // Tamanhos aleatórios
+            const starSizes = new Float32Array(starCount);
+
+            for (let i = 0; i < starCount; i++) {
+                const x = (Math.random() - 0.5) * 200;
+                const y = (Math.random() - 0.5) * 200;
+                const z = (Math.random() - 0.5) * 200;
+                starVertices[i * 3] = x;
+                starVertices[i * 3 + 1] = y;
+                starVertices[i * 3 + 2] = z;
+
+                // Armazena um valor aleatório para cada estrela
+                starRandoms[i] = Math.random();
+
+                // Gera uma cor aleatória no espaço HSL (Matiz, Saturação, Luminosidade)
+                const hue = Math.random(); // Matiz (0 a 1)
+                const saturation = 1.0; // Saturação total
+                const lightness = 0.8 + Math.random() * 0.2; // Luminosidade alta (cores claras)
+                const color = new THREE.Color().setHSL(hue, saturation, lightness);
+
+                // Armazena a cor no atributo
+                starColors[i * 3] = color.r;
+                starColors[i * 3 + 1] = color.g;
+                starColors[i * 3 + 2] = color.b;
+
+                // Gera um tamanho aleatório pequeno (entre 0.5 e 2.0)
+                starSizes[i] = getRandomBetween(3, 10);
+            }
+
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(starVertices, 3));
+            starsGeometry.setAttribute('random', new THREE.BufferAttribute(starRandoms, 1)); // Atributo aleatório
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3)); // Atributo de cor
+            starsGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1)); // Atributo de tamanho
+
+            // Carrega uma textura de partícula redonda
+            const textureLoader = new THREE.TextureLoader();
+            const starTexture = textureLoader.load('https://threejs.org/examples/textures/sprites/spark1.png');
+
+            // Shader de vértice (simples)
+            const vertexShader = `
+                attribute float random;
+                attribute vec3 color;
+                attribute float size;
+                varying float vRandom;
+                varying vec3 vColor;
+                varying float vSize;
+                void main() {
+                    vRandom = random;
+                    vColor = color;
+                    vSize = size;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    gl_PointSize = size; // Tamanho aleatório das estrelas
+                }
+            `;
+
+            // Shader de fragmento (usa a textura para renderizar círculos)
+            const fragmentShader = `
+                uniform float uTime;
+                uniform sampler2D uTexture;
+                varying float vRandom;
+                varying vec3 vColor;
+                varying float vSize;
+                void main() {
+                    // Efeito de piscar usando o tempo e o valor aleatório
+                    float blink = sin(uTime * 0.5 + vRandom * 10.0) * 0.5 + 0.5;
+                    blink = pow(blink, 4.0); // Aumenta o contraste do piscar
+
+                    // Coordenadas da textura (gl_PointCoord é fornecido automaticamente para pontos)
+                    vec2 uv = gl_PointCoord;
+
+                    // Usa a textura para renderizar um círculo
+                    vec4 texColor = texture2D(uTexture, uv);
+
+                    // Cor da estrela (usa a cor aleatória e a textura)
+                    gl_FragColor = vec4(vColor, blink) * texColor;
+                }
+            `;
+
+            // Material com shader
+            const starsMaterial = new THREE.ShaderMaterial({
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+                uniforms: {
+                    uTime: { value: 0.0 }, // Tempo uniforme para animação
+                    uTexture: { value: starTexture } // Textura de partícula
+                },
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+
+            // Função para atualizar o tempo no shader
+            function animateStars() {
+                requestAnimationFrame(animateStars);
+
+                // Atualiza o tempo no shader
+                starsMaterial.uniforms.uTime.value = performance.now() * 0.001;
+
+                // Renderiza a cena
+                renderer.render(scene, camera);
+            }
+
+            animateStars(); // Inicia a animação das estrelas
+
+            // Carrega uma textura de supernova (ajuste para uma imagem real)
+            const supernovaTexture = textureLoader.load('https://threejs.org/examples/textures/lensflare/lensflare0.png');
+
+            // Criação das supernovas
+            const supernovaStars = [];
+            for (let i = 0; i < 10; i++) {
+                const material = new THREE.SpriteMaterial({
+                    map: supernovaTexture,
+                    transparent: true,
+                    opacity: 1,
+                    blending: THREE.AdditiveBlending,
+                });
+
+                const star = new THREE.Sprite(material);
+                const randomSize = getRandomBetween(1, 3);
+                star.scale.set(randomSize, randomSize, 1);
+                star.position.set((Math.random() - 0.5) * 200, (Math.random() - 0.5) * 200, (Math.random() - 0.5) * 200);
+                
+                scene.add(star);
+                supernovaStars.push(star);
+            }
+
+            // Variáveis para controlar a explosão
+            let isExploding = false;
+            let explodingStar = null;
+            let explosionStartTime = 0;
+            let lastExplosionTime = 0;
+            let explosionCooldown = 5000 + Math.random() * 5000;
+            let explosionParticles = null;
+            let explosionLight = new THREE.PointLight(0xffaa00, 5, 100);
+            scene.add(explosionLight);
+
+            // Função para iniciar uma explosão
+            function startExplosion() {
+                isExploding = true;
+                explodingStar = supernovaStars[Math.floor(Math.random() * supernovaStars.length)];
+                explosionStartTime = performance.now();
+                lastExplosionTime = explosionStartTime;
+
+                // Ajusta a posição da luz para a supernova
+                explosionLight.position.copy(explodingStar.position);
+                explosionLight.intensity = 5;
+
+                // Cria partículas para a explosão
+                createExplosionParticles(explodingStar.position);
+                
+                // Define um novo intervalo de tempo para a próxima explosão
+                explosionCooldown = 5000 + Math.random() * 10000;
+            }
+
+            // Função para criar partículas de explosão
+            function createExplosionParticles(position) {
+                const particleCount = 300;
+                const particlesGeometry = new THREE.BufferGeometry();
+                const particlesMaterial = new THREE.PointsMaterial({
+                    map: supernovaTexture,
+                    size: 1,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+
+                const particlesVertices = new Float32Array(particleCount * 3);
+                const velocities = new Float32Array(particleCount * 3);
+
+                for (let i = 0; i < particleCount; i++) {
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos((Math.random() * 2) - 1);
+                    const radius = Math.random() * 3;
+
+                    particlesVertices[i * 3] = position.x;
+                    particlesVertices[i * 3 + 1] = position.y;
+                    particlesVertices[i * 3 + 2] = position.z;
+
+                    velocities[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                    velocities[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                    velocities[i * 3 + 2] = radius * Math.cos(phi);
+                }
+
+                particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesVertices, 3));
+                particlesGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+
+                explosionParticles = new THREE.Points(particlesGeometry, particlesMaterial);
+                scene.add(explosionParticles);
+            }
+
+            // Função para animar as supernovas
+            function animateSupernova() {
+                requestAnimationFrame(animateSupernova);
+
+                const currentTime = performance.now();
+
+                if (!isExploding && currentTime - lastExplosionTime > explosionCooldown) {
+                    startExplosion();
+                }
+
+                if (isExploding) {
+                    const elapsedTime = currentTime - explosionStartTime;
+
+                    // Expande a supernova suavemente
+                    explodingStar.scale.multiplyScalar(1.02);
+                    explodingStar.material.opacity -= 0.02;
+
+                    // Reduz a luz ao longo do tempo
+                    explosionLight.intensity *= 0.95;
+
+                    // Anima as partículas
+                    if (explosionParticles) {
+                        const positions = explosionParticles.geometry.attributes.position.array;
+                        const velocities = explosionParticles.geometry.attributes.velocity.array;
+
+                        for (let i = 0; i < positions.length; i += 3) {
+                            positions[i] += velocities[i] * 0.05;
+                            positions[i + 1] += velocities[i + 1] * 0.05;
+                            positions[i + 2] += velocities[i + 2] * 0.05;
+                        }
+
+                        explosionParticles.geometry.attributes.position.needsUpdate = true;
+                    }
+
+                    if (explodingStar.material.opacity < 0.1 || explodingStar.scale.x > 10) {
+                        resetSupernova();
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            // Função para reiniciar a supernova
+            function resetSupernova() {
+                isExploding = false;
+                explodingStar.material.opacity = 1.0;
+                explodingStar.scale.set(1, 1, 1);
+                explodingStar.position.set((Math.random() - 0.5) * 200, (Math.random() - 0.5) * 200, (Math.random() - 0.5) * 200);
+
+                // Remove as partículas da explosão
+                if (explosionParticles) {
+                    scene.remove(explosionParticles);
+                    explosionParticles.geometry.dispose();
+                    explosionParticles.material.dispose();
+                    explosionParticles = null;
+                }
+
+                // Desliga a luz
+                explosionLight.intensity = 0;
+            }
+
+            // Inicia a animação das supernovas
+            animateSupernova();
+        }
+
+        const planets = []; // Lista para armazenar os planetas
+
+        function createPlanets(numPlanets) {
+            for (let i = 0; i < numPlanets; i++) {
+                const size = Math.random() * 0.6 + 0.5; // 🔹 Tamanhos aleatórios entre 0.5 e 1
+                const color = new THREE.Color(Math.random(), Math.random(), Math.random()); // 🔹 Cores aleatórias
+
+                const planetGeometry = new THREE.SphereGeometry(size, 32, 32);
+                const planetMaterial = new THREE.MeshPhongMaterial({ color: color });
+                const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+
+                // Define um raio e velocidade aleatórios para a órbita
+                planet.orbitRadius = Math.random() * 90 + 10; // 🔹 Raio entre 10 e 30
+                planet.orbitSpeed = Math.random() * 0.007 + 0.001; // 🔹 Velocidade aleatória
+                planet.orbitAngle = Math.random() * Math.PI * 2; // 🔹 Posição inicial na órbita
+
+                scene.add(planet);
+                planets.push(planet);
+            }
+        }
+
+        // Função para animar os planetas em suas órbitas
+        function animatePlanets() {
+            requestAnimationFrame(animatePlanets);
+
+            planets.forEach(planet => {
+                planet.orbitAngle += planet.orbitSpeed; // 🔹 Avança na órbita
+
+                // Atualiza a posição do planeta na órbita
+                planet.position.x = Math.cos(planet.orbitAngle) * planet.orbitRadius;
+                planet.position.z = Math.sin(planet.orbitAngle) * planet.orbitRadius;
+
+                planet.rotation.y += 0.01; // 🔹 Rotação do planeta
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let marker;
+
+        window.addEventListener('click', (event) => {
+            // Verifica se a tecla Ctrl estava pressionada
+            if (event.ctrlKey) {
+                // Converte a posição do mouse para coordenadas normalizadas (-1 a 1)
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                // Verifica se há interseção com a superfície
+                checkIntersection();
+            }
+        });
+
+        function checkIntersection() {
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(surface);
+
+            if (intersects.length > 0) {
+                const point = intersects[0].point;
+                addMarker(point);
+
+                const x = point.x;
+                const y = point.y;
+                const z = point.z;
+
+                const selectedFunction = document.getElementById('function-select').value;
+                const params = {
+                    resolution: parseInt(document.getElementById('resolution').value),
+                    amplitude: parseInt(document.getElementById('amplitude').value),
+                    frequency: parseInt(document.getElementById('frequency').value),
+                    color: document.getElementById('color-picker').value,
+                    visualizationType: document.getElementById('visualization-type').value,
+                    animationType: document.getElementById('animation-type').value
+                };
+                const functionValue = functions[selectedFunction](x, y, params, 0);
+
+                updatePointInfo(x, y, z, functionValue);
+            }
+        }
+
+        function addMarker(position) {
+            if (marker) {
+                scene.remove(marker);
+            }
+
+            const geometry = new THREE.SphereGeometry(0.1, 16, 16);
+            const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            marker = new THREE.Mesh(geometry, material);
+            marker.position.copy(position);
+            scene.add(marker);
+        }
+
+        function updatePointInfo(x, y, z, functionValue) {
+            const pointInfo = document.getElementById('point-info');
+            pointInfo.innerHTML = `
+                <p><b>Coordenadas:</b> (<span style="color: red;">X:</span> ${x.toFixed(2)}, <span style="color: #ae00ff">Y:</span> ${y.toFixed(2)}, <span style="color: blue;">Z:</span> ${z.toFixed(2)})</p>
+                <p style="margin-bottom: 0px;"><b>Valor da Função:</b> ${functionValue.toFixed(2)} 
+                <button style="float: right;" id="clear-points" id="clear-points">Limpar</button></p> 
+            `;
+
+            document.getElementById('clear-points').addEventListener('click', () => {
+                clearPoints();
+            });
+        }
+
+        function clearPoints() {
+            if (marker) {
+                scene.remove(marker);
+                marker = null;
+            }
+
+            updatePointInfo(0, 0, 0, 0);
+        }
+
+        createStars();
+        createPlanets(5);
+        animatePlanets();
+
+        // Inicialização
+        createLight();
+        updateVisualization();
+        animate();
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500); // Aguarda o fade-out
+            }, 1250); // Aumente esse valor para segurar o loader por mais tempo (exemplo: 3 segundos)
+        }
+
+        // Esconde a tela de carregamento após o tempo definido
+        window.addEventListener("load", hideLoadingScreen);
+
+        document.addEventListener("keydown", function(event) {
+            if (event.ctrlKey && event.key.toLowerCase() === "h") {
+                event.preventDefault(); // Evita atalhos padrão do navegador
+                toggleVisibility();
+            }
+        });
+
+        function toggleVisibility() {
+            const controls = document.getElementById("controls");
+            const pointInfo = document.getElementById("point-info");
+
+            const isHidden = controls.classList.contains("hidden");
+
+            if (isHidden) {
+                controls.classList.remove("hidden");
+                pointInfo.classList.remove("hidden");
+            } else {
+                controls.classList.add("hidden");
+                pointInfo.classList.add("hidden");
+            }
+        }
+    </script>
+</body>
+</html>
