@@ -12,7 +12,7 @@
         <div id="loading-spinner"></div>
         <p>Carregando...</p>
     </div>
-    <div id="controls" class="visible">
+    <div id="controls">
         <div class="control-group">
             <label>Função</label>
             <select id="function-select" onchange="updateVisualization()">
@@ -163,7 +163,7 @@
         </div>
     </div>
 
-    <div id="point-info" class="visible">
+    <div id="point-info">
         <p>
             <b>Coordenadas:</b>
             {<span style="color: red;">X:</span> 0.00, 
@@ -1543,21 +1543,6 @@
             if (event.ctrlKey && event.key.toLowerCase() === "h") {
                 event.preventDefault(); // Evita atalhos padrão do navegador
                 toggleVisibility();
-            }
-            if (event.ctrlKey && event.key.toLowerCase() === "h") {
-                event.preventDefault(); // Evita comportamento padrão
-
-                const controls = document.getElementById("controls");
-                const pointInfo = document.getElementById("point-info");
-
-                // Alterna as classes entre "visible" e "hidden"
-                if (controls.classList.contains("visible")) {
-                    controls.classList.replace("visible", "occult");
-                    pointInfo.classList.replace("visible", "occult");
-                } else {
-                    controls.classList.replace("occult", "visible");
-                    pointInfo.classList.replace("occult", "visible");
-                }
             }
         });
 
