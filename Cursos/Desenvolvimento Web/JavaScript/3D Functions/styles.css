@@ -143,3 +143,17 @@ span {
     opacity: 0 !important;
     pointer-events: none;
 }
+
+.occult {
+    opacity: 0;
+    visibility: hidden;
+    clip-path: circle(0% at center);
+    transition: opacity 0.6s ease, clip-path 0.6s ease, visibility 0.6s;
+}
+
+.visible {
+    opacity: 1;
+    visibility: visible;
+    clip-path: circle(100% at center);
+    transition: opacity 0.6s ease, clip-path 0.6s ease, visibility 0.6s;
+}
