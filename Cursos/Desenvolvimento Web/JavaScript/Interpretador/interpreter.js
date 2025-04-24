@@ -419,27 +419,144 @@ function startExecution() {
         const currentContext = contextStack[contextStack.length - 1];
 
         if (currentContext.currentLine >= currentContext.program.length || currentContext.breakTriggered) {
-            contextStack.pop();
+            const finishedContext = contextStack.pop();
+            
             if (contextStack.length === 0) {
                 output.innerHTML += "Fim do programa.<br/>";
                 clearInterval(intervalId);
+            } else {
+                const parentContext = contextStack[contextStack.length - 1];
+                output.innerHTML += `Finalizando ${finishedContext.functionName}` + 
+                    (finishedContext.isRecursive ? " (chamada recursiva)" : "") + 
+                    `. Retornando ao contexto anterior.<br/>`;
+                
+                // Ensure we return to the correct context line
+                if (finishedContext.returnInfo) {
+                    parentContext.currentLine = finishedContext.returnInfo.line;
+                }
             }
             return;
         }
 
         const statement = currentContext.program[currentContext.currentLine];
-
-        processStatement(statement, currentContext);
+        
+        // Handle CALL statements in automatic execution mode
+        if (statement.type === 'CALL') {
+            // Highlight the CALL line first
+            if (currentContext.functionName) {
+                highlightCurrentFunctionLine(currentContext.functionName, currentContext.currentLine);
+            } else {
+                highlightCurrentLine(currentContext.currentLine);
+            }
+            
+            const func = functions[statement.functionName];
+            if (!func) {
+                output.innerHTML += `Erro: Função ${statement.functionName} não definida.<br/>`;
+                currentContext.currentLine++; // Advance line on error
+                return;
+            }
+            
+            // Store the return point for when the function finishes
+            const returnInfo = {
+                line: currentContext.currentLine + 1, // Line to return to after function
+                isFunctionContext: !!currentContext.functionName,
+                functionName: currentContext.functionName,
+                logicalLine: currentContext.currentLine
+            };
+            
+            // We need to evaluate args in the current context before creating the new context
+            const evaluatedArgs = statement.args.map(arg => evaluateExpression(arg, currentContext));
+            
+            // Add a small delay for the CALL line highlight to be visible
+            setTimeout(() => {
+                const functionContext = { 
+                    program: parseCode(func.body.join('\n')), 
+                    currentLine: 0, 
+                    elseIfCount: 0, 
+                    breakTriggered: false, 
+                    functionName: func.name,
+                    returnInfo: returnInfo,
+                    isRecursive: statement.functionName === currentContext.functionName
+                };
+                
+                func.args.forEach((argName, index) => {
+                    functionContext[argName] = evaluatedArgs[index] || 0;
+                });
+                
+                contextStack.push(functionContext);
+                output.innerHTML += `Iniciando execução da função ${func.name}` + 
+                    (functionContext.isRecursive ? " (chamada recursiva)" : "") + `.<br/>`;
+                
+                highlightCurrentFunctionLine(func.name, functionContext.currentLine);
+            }, 200);
+            
+            return; // Important: return to prevent further processing in this step
+        } 
+        else {
+            if (currentContext.functionName) {
+                executeStatement(statement, currentContext);
+                currentContext.currentLine++;
+                highlightCurrentFunctionLine(currentContext.functionName, currentContext.currentLine);
+            } else {
+                executeStatement(statement, currentContext);
+                highlightCurrentLine(currentContext.currentLine);
+                currentContext.currentLine++;
+            }
+        }
     }, executionInterval);
 }
 
 function processStatement(statement, currentContext) {
     if (statement.type === 'CALL') {
-        // Executa a função no modo de passo único
+        // Highlight the CALL line first
+        if (currentContext.functionName) {
+            highlightCurrentFunctionLine(currentContext.functionName, currentContext.currentLine);
+        } else {
+            highlightCurrentLine(currentContext.currentLine);
+        }
+        
         const func = functions[statement.functionName];
-        const args = statement.args.map(arg => evaluateExpression(arg, currentContext));
-        executeFunction(func, args, true); // Passa true para ativar o modo de passo único
-        currentContext.currentLine++; // Avança a linha após a chamada da função
+        if (!func) {
+            output.innerHTML += `Erro: Função ${statement.functionName} não definida.<br/>`;
+            currentContext.currentLine++; // Advance line on error
+            return;
+        }
+        
+        // Store the return point for when the function finishes
+        const returnInfo = {
+            line: currentContext.currentLine + 1, // Line to return to after function
+            isFunctionContext: !!currentContext.functionName,
+            functionName: currentContext.functionName,
+            logicalLine: currentContext.currentLine // Store the logical line number
+        };
+        
+        // We need to evaluate args in the current context before creating the new context
+        const evaluatedArgs = statement.args.map(arg => evaluateExpression(arg, currentContext));
+        
+        // Add a small delay before executing the function to ensure the CALL line highlight is visible
+        setTimeout(() => {
+            const functionContext = { 
+                program: parseCode(func.body.join('\n')), 
+                currentLine: 0, 
+                elseIfCount: 0, 
+                breakTriggered: false, 
+                functionName: func.name,
+                returnInfo: returnInfo,
+                isRecursive: statement.functionName === currentContext.functionName
+            };
+            
+            func.args.forEach((argName, index) => {
+                functionContext[argName] = evaluatedArgs[index] || 0;
+            });
+            
+            contextStack.push(functionContext);
+            output.innerHTML += `Iniciando execução da função ${func.name}` + 
+                (functionContext.isRecursive ? " (chamada recursiva)" : "") + `.<br/>`;
+            
+            highlightCurrentFunctionLine(func.name, functionContext.currentLine);
+        }, 200); // 200ms delay to see the CALL line highlighted
+        
+        return; // Important: return here to prevent further processing in this step
     } 
     else if (currentContext.functionName) {
         executeStatement(statement, currentContext);
@@ -507,26 +624,34 @@ function stepProgram() {
     if (contextStack.length === 0) {
         output.innerHTML += "Fim do programa.<br/>";
         programFinished = true;
-        isFirstStep = true; // Permite reiniciar no próximo clique
+        isFirstStep = true; // Allows restart on next click
         return;
     }
 
     const currentContext = contextStack[contextStack.length - 1];
 
     if (currentContext.currentLine >= currentContext.program.length || currentContext.breakTriggered) {
-        contextStack.pop();
+        const finishedContext = contextStack.pop();
+        
         if (contextStack.length === 0) {
             output.innerHTML += "Fim do programa.<br/>";
             programFinished = true;
-            isFirstStep = true; // Permite reiniciar no próximo clique
+            isFirstStep = true; // Allows restart on next click
         } else {
-            output.innerHTML += `Retornando ao contexto anterior.<br/>`;
+            const parentContext = contextStack[contextStack.length - 1];
+            output.innerHTML += `Finalizando ${finishedContext.functionName}` + 
+                (finishedContext.isRecursive ? " (chamada recursiva)" : "") + 
+                `. Retornando ao contexto anterior.<br/>`;
+            
+            // Ensure we return to the correct context line
+            if (finishedContext.returnInfo) {
+                parentContext.currentLine = finishedContext.returnInfo.line;
+            }
         }
         return;
     }
 
     const statement = currentContext.program[currentContext.currentLine];
-
     processStatement(statement, currentContext);
 }
 
