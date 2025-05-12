@@ -1,6 +1,6 @@
 # Visão Computacional
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/ComputerVision.png)
+![img](/Imagens/ComputerVision.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Vis%C3%A3o%20Computacional/ComputerVision.pdf)**
 

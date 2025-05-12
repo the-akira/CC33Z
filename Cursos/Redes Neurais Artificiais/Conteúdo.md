@@ -1,6 +1,6 @@
 # Redes Neurais Artificiais
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/RNA.png)
+![img](/Imagens/RNA.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Redes%20Neurais%20Artificiais/RedesNeurais.pdf)**
 

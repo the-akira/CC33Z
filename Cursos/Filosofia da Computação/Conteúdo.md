@@ -1,6 +1,6 @@
 # Filosofia da Computação
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/FilosofiaComp.png)
+![img](/Imagens/FilosofiaComp.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Filosofia%20da%20Computa%C3%A7%C3%A3o/FilosofiaComputa%C3%A7%C3%A3o.pdf)**
 

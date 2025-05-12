@@ -1,6 +1,6 @@
 # Desenvolvimento Web
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/WebDev.png)
+![img](/Imagens/WebDev.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Desenvolvimento%20Web/DesenvolvimentoWeb.pdf)**
 

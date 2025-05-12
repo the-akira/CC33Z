@@ -1,6 +1,6 @@
 # Bancos de Dados
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/Databases.png)
+![img](/Imagens/Databases.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Bancos%20de%20Dados/Databases.pdf)**
 

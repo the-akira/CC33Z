@@ -1,6 +1,6 @@
 # Web Scraping
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/WebScraping.png)
+![img](/Imagens/WebScraping.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Web%20Scraping/WebScraping.pdf)**
 

@@ -1,6 +1,6 @@
 # Fundamentos de Programação
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/FPPython.png)
+![img](/Imagens/FPPython.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Fundamentos%20de%20Programa%C3%A7%C3%A3o/FundamentosPrograma%C3%A7%C3%A3oPython.pdf)**
 

@@ -159,7 +159,7 @@ python manage.py runserver
 
 Abra seu navegador e visite este endereço `http://127.0.0.1:8000/` se tudo correu bem você deve ver esta página.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/django101.png)
+![img](/Screenshots/django101.png)
 
 ## Modelos de Banco de Dados
 
@@ -234,11 +234,11 @@ python manage.py runserver
 
 Você deve ver uma página de login, insira as credenciais que você forneceu no cadastro do **superusuário**.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/logindjango.png)
+![img](/Screenshots/logindjango.png)
 
 Depois de fazer o login, você deve ver um painel de administração básico com modelos de grupos (**Groups**) e usuários (**Users**) que vêm do framework de autenticação Django localizado em `django.contrib.auth`.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/siteadmin.png)
+![img](/Screenshots/siteadmin.png)
 
 Ainda assim, não podemos criar postagens a partir do painel, precisamos adicionar o modelo **Post** ao nosso painel de administrador.
 
@@ -255,15 +255,15 @@ admin.site.register(Post)
 
 Salve o arquivo e atualize a página para ver o modelo **Posts** disponível no painel de administração.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/adminposts.png)
+![img](/Screenshots/adminposts.png)
 
 Agora vamos criar nossa primeira postagem no blog, clique no ícone **Add** ao lado de **Posts** que o levará a outra página onde você poderá criar uma postagem. Preencha os respectivos formulários e crie sua primeira postagem.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/post.png)
+![img](/Screenshots/post.png)
 
 Quando terminar de salvar a postagem você será redirecionado para a página da lista de postagens com uma mensagem de sucesso no topo.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/postsucess.png)
+![img](/Screenshots/postsucess.png)
 
 Podemos também personalizar a forma como os dados são exibidos no painel de administração de acordo com nossa conveniência. Abra novamente o arquivo `admin.py` e substitua seu conteúdo pelo código abaixo.
 
@@ -282,7 +282,7 @@ admin.site.register(Post, PostAdmin)
 
 Isso tornará nosso painel de administração mais eficiente. Agora, se você visitar a lista de postagens, verá mais detalhes sobre o **Post**.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/postupgrade.png)
+![img](/Screenshots/postupgrade.png)
 
 Observe que adicionei alguns posts para teste.
 
@@ -491,7 +491,7 @@ No conteúdo da postagem, também estamos usando filtros de template para limita
 
 Agora execute o servidor e visite `http://127.0.0.1:8000/` você verá a página inicial do nosso blog.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/index.png)
+![img](/Screenshots/index.png)
 
 Perceba que adicionei alguns posts apenas de exemplo para visualizarmos a estrutura de nossa página inicial.
 
@@ -519,7 +519,7 @@ Perceba que estamos filtrando o conteúdo de nosso post como seguro (**safe**) e
 
 Agora visite a página inicial e clique em **Read More**, isso deve redirecioná-lo para a página de detalhes do post.
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/detail.png)
+![img](/Screenshots/detail.png)
 
 ## Adicionando Estilos (CSS)
 
@@ -575,7 +575,7 @@ Abra novamente o seu arquivo `base.html` e logo embaixo da tag `<head>` adicione
 
 Nosso resultado final será:
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Cursos/Django%20101/Screenshots/blogfinal.png)
+![img](/Screenshots/blogfinal.png)
 
 ## Referências
 

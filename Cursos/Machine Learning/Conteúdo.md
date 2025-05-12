@@ -1,6 +1,6 @@
 # Machine Learning
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/MachineLearning.png)
+![img](/Imagens/MachineLearning.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Machine%20Learning/MachineLearning.pdf)**
 

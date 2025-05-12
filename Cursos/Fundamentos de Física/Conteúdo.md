@@ -1,6 +1,6 @@
 # Fundamentos de Física
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/Physics.png)
+![img](/Imagens/Physics.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Fundamentos%20de%20F%C3%ADsica/Physics.pdf)**
 

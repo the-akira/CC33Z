@@ -1,6 +1,6 @@
 # Eletrônica Básica
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/Electronics.png)
+![img](/Imagens/Electronics.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Eletr%C3%B4nica%20B%C3%A1sica/Electronics.pdf)**
 

@@ -1,6 +1,6 @@
 # Redes de Computadores
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/Networks.png)
+![img](/Imagens/Networks.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Redes%20de%20Computadores/Networking.pdf)**
 

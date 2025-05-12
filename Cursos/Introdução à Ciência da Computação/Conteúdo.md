@@ -1,6 +1,6 @@
 # Introdução à Ciência da Computação
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/ICC.png)
+![img](/Imagens/ICC.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Introdu%C3%A7%C3%A3o%20%C3%A0%20Ci%C3%AAncia%20da%20Computa%C3%A7%C3%A3o/Introdu%C3%A7%C3%A3oCi%C3%AAnciaComp.pdf)**
 

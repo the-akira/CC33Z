@@ -1,6 +1,6 @@
 # Análise e Manipulação de Dados
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/AMD.png)
+![img](/Imagens/AMD.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/An%C3%A1lise%20e%20Manipula%C3%A7%C3%A3o%20de%20Dados/An%C3%A1liseManipula%C3%A7%C3%A3oDados.pdf)**
 

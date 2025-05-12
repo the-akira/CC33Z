@@ -1,6 +1,6 @@
 # Comandos Linux
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/ComandosLinux.png)
+![img](/Imagens/ComandosLinux.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Comandos%20Linux/ComandosLinux.pdf)**
 

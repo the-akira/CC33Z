@@ -1,6 +1,6 @@
 # Computação Numérica
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/CompNum.png)
+![img](/Imagens/CompNum.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Computa%C3%A7%C3%A3o%20Num%C3%A9rica/CompNum%C3%A9rica.pdf)**
 

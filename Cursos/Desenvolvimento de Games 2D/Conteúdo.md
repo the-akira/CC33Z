@@ -1,6 +1,6 @@
 # Desenvolvimento de Games 2D
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/GameDev.png)
+![img](/Imagens/GameDev.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Desenvolvimento%20de%20Games%202D/Games.pdf)**
 

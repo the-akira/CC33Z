@@ -1,6 +1,6 @@
 # Computação Simbólica
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/CompSimb.png)
+![img](/Imagens/CompSimb.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Computa%C3%A7%C3%A3o%20Simb%C3%B3lica/CompSimb%C3%B3lica.pdf)**
 

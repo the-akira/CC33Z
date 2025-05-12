@@ -1,6 +1,6 @@
 # Segurança da Informação
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/InfoSec.png)
+![img](/Imagens/InfoSec.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Seguran%C3%A7a%20da%20Informa%C3%A7%C3%A3o/InfoSec.pdf)**
 

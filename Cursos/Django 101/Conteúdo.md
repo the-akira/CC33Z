@@ -1,6 +1,6 @@
 # Django 101
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/Django101.png)
+![img](/Imagens/Django101.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Django%20101/Django101.pdf)**
 
