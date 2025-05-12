@@ -1,6 +1,6 @@
 # Curso de Ciência da Computação
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/cc33z.png)
+![img](/Imagens/cc33z.png)
 
 Idealizado e Ministrado por **[Gabriel Felippe](https://akiradev.netlify.app/sobre/)**
 

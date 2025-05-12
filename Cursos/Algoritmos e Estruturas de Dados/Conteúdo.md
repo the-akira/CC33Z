@@ -1,6 +1,6 @@
 # Algoritmos e Estruturas de Dados
 
-![img](https://raw.githubusercontent.com/the-akira/CC33Z/master/Imagens/AED.png)
+![img](/Imagens/AED.png)
 
 Acesso ao Material: **[Download](https://github.com/the-akira/CC33Z/raw/master/Cursos/Algoritmos%20e%20Estruturas%20de%20Dados/AED.pdf)**
 
