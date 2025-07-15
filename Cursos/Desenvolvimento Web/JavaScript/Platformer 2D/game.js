@@ -64,65 +64,123 @@ function loadMap(file) {
     });
 }
 
-// Função para verificar colisões do player com os tiles
-function checkCollisions() {
-    const playerLeft = player.x;
-    const playerRight = player.x + player.width;
-    const playerTop = player.y;
-    const playerBottom = player.y + player.height;
+// Função para verificar se um tile é sólido
+function isSolidTile(x, y) {
+    if (x < 0 || y < 0 || x >= map[0].length || y >= map.length) {
+        return true; // Considera fora dos limites como sólido
+    }
+    return map[y][x] === 1;
+}
 
-    for (let y = 0; y < map.length; y++) {
-        for (let x = 0; x < map[y].length; x++) {
-            if (map[y][x] === 1) {
-                const tileLeft = x * TILE_SIZE;
-                const tileRight = tileLeft + TILE_SIZE;
-                const tileTop = y * TILE_SIZE;
-                const tileBottom = tileTop + TILE_SIZE;
+// Função para obter tiles próximos ao jogador (otimização)
+function getNearbyTiles(player) {
+    const tiles = [];
+    const startX = Math.max(0, Math.floor((player.x - TILE_SIZE) / TILE_SIZE));
+    const endX = Math.min(map[0].length - 1, Math.floor((player.x + player.width + TILE_SIZE) / TILE_SIZE));
+    const startY = Math.max(0, Math.floor((player.y - TILE_SIZE) / TILE_SIZE));
+    const endY = Math.min(map.length - 1, Math.floor((player.y + player.height + TILE_SIZE) / TILE_SIZE));
 
-                // Verifica se houve colisão
-                if (playerRight > tileLeft &&
-                    playerLeft < tileRight &&
-                    playerBottom > tileTop &&
-                    playerTop < tileBottom) {
+    for (let y = startY; y <= endY; y++) {
+        for (let x = startX; x <= endX; x++) {
+            if (isSolidTile(x, y)) {
+                tiles.push({
+                    x: x * TILE_SIZE,
+                    y: y * TILE_SIZE,
+                    width: TILE_SIZE,
+                    height: TILE_SIZE
+                });
+            }
+        }
+    }
+    return tiles;
+}
 
-                    const playerCenterX = player.x + player.width / 2;
-                    const playerCenterY = player.y + player.height / 2;
-                    const dx = playerCenterX - (tileLeft + TILE_SIZE / 2);
-                    const dy = playerCenterY - (tileTop + TILE_SIZE / 2);
-                    const width = (player.width + TILE_SIZE) / 2;
-                    const height = (player.height + TILE_SIZE) / 2;
-                    const crossWidth = width * dy;
-                    const crossHeight = height * dx;
+// Função para verificar colisão entre dois retângulos
+function checkRectCollision(rect1, rect2) {
+    return rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y < rect2.y + rect2.height &&
+           rect1.y + rect1.height > rect2.y;
+}
 
-                    if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
-                        if (crossWidth > -crossHeight) {
-                            if (crossWidth > crossHeight) {
-                                // Colisão por cima
-                                player.y = tileBottom;
-                                player.velocityY = 0;
-                            } else {
-                                // Colisão pela esquerda
-                                player.x = tileRight;
-                            }
-                        } else {
-                            if (crossWidth > crossHeight) {
-                                // Colisão pela direita
-                                player.x = tileLeft - player.width;
-                            } else {
-                                // Colisão por baixo
-                                player.y = tileTop - player.height;
-                                player.isJumping = false;
-                                player.velocityY = 0;
-                            }
-                        }
-                    }
+// Função para verificar colisões horizontais
+function checkHorizontalCollisions(player) {
+    const tiles = getNearbyTiles(player);
+    
+    for (let tile of tiles) {
+        if (checkRectCollision(player, tile)) {
+            // Determinar o lado da colisão baseado na velocidade e posição
+            const playerCenterX = player.x + player.width / 2;
+            const tileCenterX = tile.x + tile.width / 2;
+            
+            if (playerCenterX < tileCenterX) {
+                // Colisão pela esquerda do tile
+                player.x = tile.x - player.width;
+            } else {
+                // Colisão pela direita do tile
+                player.x = tile.x + tile.width;
+            }
+            
+            // Pequeno ajuste para evitar travamento
+            const overlap = Math.min(
+                (player.x + player.width) - tile.x,
+                (tile.x + tile.width) - player.x
+            );
+            
+            if (overlap > 0 && overlap < 2) {
+                if (playerCenterX < tileCenterX) {
+                    player.x -= 1;
+                } else {
+                    player.x += 1;
+                }
+            }
+            
+            return true;
+        }
+    }
+    return false;
+}
+
+// Função para verificar colisões verticais
+function checkVerticalCollisions(player) {
+    const tiles = getNearbyTiles(player);
+    let onGround = false;
+    
+    for (let tile of tiles) {
+        if (checkRectCollision(player, tile)) {
+            // Determinar o lado da colisão baseado na velocidade
+            if (player.velocityY > 0) {
+                // Caindo - colisão com o topo do tile
+                player.y = tile.y - player.height;
+                player.velocityY = 0;
+                player.isJumping = false;
+                onGround = true;
+            } else if (player.velocityY < 0) {
+                // Subindo - colisão com a parte inferior do tile
+                player.y = tile.y + tile.height;
+                player.velocityY = 0;
+            }
+            
+            // Pequeno ajuste para evitar tremulação
+            const overlap = Math.min(
+                (player.y + player.height) - tile.y,
+                (tile.y + tile.height) - player.y
+            );
+            
+            if (overlap > 0 && overlap < 2) {
+                if (player.velocityY >= 0) {
+                    player.y -= 1;
+                } else {
+                    player.y += 1;
                 }
             }
         }
     }
+    
+    return onGround;
 }
 
-// Classe do jogador
+// Classe do jogador com sistema de colisões melhorado
 class Player {
     constructor(x, y) {
         this.x = x;
@@ -134,54 +192,83 @@ class Player {
         this.isJumping = false;
         this.velocityY = 0;
         this.image = playerImage;
-        this.direction = 'right'; // Inicialmente o jogador está voltado para a direita
+        this.direction = 'right';
+        this.onGround = false;
+        
+        // Variáveis para controle mais suave
+        this.prevX = x;
+        this.prevY = y;
     }
 
     update() {
+        // Salvar posição anterior
+        this.prevX = this.x;
+        this.prevY = this.y;
+        
         // Movimento horizontal
+        let horizontalMovement = 0;
         if (controls.ArrowLeft) {
-            this.x -= this.speed;
-            this.direction = 'left'; // Define a direção como esquerda
+            horizontalMovement = -this.speed;
+            this.direction = 'left';
         }
         if (controls.ArrowRight) {
-            this.x += this.speed;
-            this.direction = 'right'; // Define a direção como direita
+            horizontalMovement = this.speed;
+            this.direction = 'right';
         }
-
-        // Simular gravidade e pulo
-        if (controls.Space && !this.isJumping) {
+        
+        // Aplicar movimento horizontal e verificar colisões
+        this.x += horizontalMovement;
+        checkHorizontalCollisions(this);
+        
+        // Pulo
+        if (controls.Space && this.onGround && !this.isJumping) {
             this.isJumping = true;
             this.velocityY = -this.jumpHeight * 2;
+            this.onGround = false;
         }
-
+        
         // Aplicar gravidade
         this.velocityY += 0.5;
+        
+        // Aplicar movimento vertical e verificar colisões
         this.y += this.velocityY;
-
-        // Verificar colisões
-        checkCollisions();
-
-        // Garantir que o jogador não ultrapasse os limites do mapa
-        if (this.x < 0) this.x = 0;
+        this.onGround = checkVerticalCollisions(this);
+        
+        // Verificar limites do mapa
+        this.checkMapBounds();
+    }
+    
+    checkMapBounds() {
+        // Limites horizontais
+        if (this.x < 0) {
+            this.x = 0;
+        }
         if (this.x + this.width > map[0].length * TILE_SIZE) {
             this.x = map[0].length * TILE_SIZE - this.width;
         }
-        if (this.y < 0) this.y = 0;
+        
+        // Limites verticais
+        if (this.y < 0) {
+            this.y = 0;
+            this.velocityY = 0;
+        }
         if (this.y + this.height > map.length * TILE_SIZE) {
             this.y = map.length * TILE_SIZE - this.height;
+            this.velocityY = 0;
+            this.isJumping = false;
+            this.onGround = true;
         }
     }
 
     draw() {
         // Desenhar a imagem do jogador
-        // Rotacionar o jogador de acordo com a direção
         if (this.direction === 'right') {
             ctx.drawImage(this.image, this.x - camera.x, this.y - camera.y, this.width, this.height);
         } else {
-            ctx.save(); // Salva o estado do contexto
-            ctx.scale(-1, 1); // Inverte o eixo x
-            ctx.drawImage(this.image, -(this.x + this.width - camera.x), this.y - camera.y, this.width, this.height); // Desenha o jogador invertido
-            ctx.restore(); // Restaura o estado do contexto
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(this.image, -(this.x + this.width - camera.x), this.y - camera.y, this.width, this.height);
+            ctx.restore();
         }
     }
 }
@@ -194,10 +281,9 @@ class Projectile {
         this.width = 10;
         this.height = 5;
         this.speed = 10;
-        this.direction = direction; // Direção do projétil (pode ser 'left' ou 'right')
+        this.direction = direction;
     }
 
-    // Atualiza a posição do projétil
     update() {
         if (this.direction === 'left') {
             this.x -= this.speed;
@@ -206,9 +292,8 @@ class Projectile {
         }
     }
 
-    // Desenha o projétil
     draw() {
-        ctx.fillStyle = '#f00'; // Cor do projétil
+        ctx.fillStyle = '#f00';
         ctx.fillRect(this.x - camera.x, this.y - camera.y, this.width, this.height);
     }
 }
@@ -216,77 +301,63 @@ class Projectile {
 // Lista de projéteis
 let projectiles = [];
 let projectileCooldown = 0;
-let projectileCooldownTime = 180; // Tempo de cooldown em milissegundos (0.5 segundos)
+let projectileCooldownTime = 180;
 let deltaTime = 10;
 
 // Função para lançar projéteis
 function launchProjectile() {
-    // Verificar se o cooldown está ativo
     if (projectileCooldown > 0) {
-        return; // Sai da função se o cooldown estiver ativo
+        return;
     }
 
-    // Criar um novo projétil e adicioná-lo à lista
     let projectile = new Projectile(player.x + player.width / 2, player.y + player.height / 2, player.direction);
     projectiles.push(projectile);
-
-    // Definir o cooldown após o lançamento do projétil
     projectileCooldown = projectileCooldownTime;
 }
 
 function updateProjectiles() {
-    // Atualizar o cooldown
     if (projectileCooldown > 0) {
-        projectileCooldown -= deltaTime; // deltaTime é o tempo decorrido desde a última atualização
+        projectileCooldown -= deltaTime;
     }
 
-    // Usar um loop for para percorrer os projéteis
     for (let i = 0; i < projectiles.length; i++) {
         const projectile = projectiles[i];
-        if (projectile) { // Verificar se o projétil é válido
+        if (projectile) {
             projectile.update();
             projectile.draw();
 
-            // Verificar colisões do projétil
-            checkProjectileCollisions(projectile);
-
-            // Remover o projétil se estiver fora da tela
-            if (projectile.x < 0 || projectile.x > map[0].length * TILE_SIZE || projectile.y < 0 || projectile.y > map.length * TILE_SIZE) {
+            // Verificar colisões do projétil com tiles
+            if (checkProjectileCollisions(projectile)) {
                 projectiles.splice(i, 1);
-                i--; // Decrementar o índice para compensar a remoção do projétil
+                i--;
+                continue;
+            }
+
+            // Remover projétil se estiver fora da tela
+            if (projectile.x < 0 || projectile.x > map[0].length * TILE_SIZE || 
+                projectile.y < 0 || projectile.y > map.length * TILE_SIZE) {
+                projectiles.splice(i, 1);
+                i--;
             }
         }
     }
 }
 
-// Função para verificar colisões do projétil
+// Função melhorada para verificar colisões do projétil
 function checkProjectileCollisions(projectile) {
-    // Percorra o mapa e verifique as colisões
-    for (let y = 0; y < map.length; y++) {
-        for (let x = 0; x < map[y].length; x++) {
-            if (map[y][x] === 1) {
-                const tileLeft = x * TILE_SIZE;
-                const tileRight = x * TILE_SIZE + TILE_SIZE;
-                const tileTop = y * TILE_SIZE;
-                const tileBottom = y * TILE_SIZE + TILE_SIZE;
-
-                // Verifica se houve colisão
-                if (
-                    projectile.x + projectile.width > tileLeft &&
-                    projectile.x < tileRight &&
-                    projectile.y + projectile.height > tileTop &&
-                    projectile.y < tileBottom
-                ) {
-                    // Se houver colisão, remova o projétil
-                    const index = projectiles.indexOf(projectile);
-                    if (index !== -1) {
-                        projectiles.splice(index, 1);
-                    }
-                    return; // Sai da função após remover o projétil
-                }
+    const tileX = Math.floor(projectile.x / TILE_SIZE);
+    const tileY = Math.floor(projectile.y / TILE_SIZE);
+    const tileXEnd = Math.floor((projectile.x + projectile.width) / TILE_SIZE);
+    const tileYEnd = Math.floor((projectile.y + projectile.height) / TILE_SIZE);
+    
+    for (let y = tileY; y <= tileYEnd; y++) {
+        for (let x = tileX; x <= tileXEnd; x++) {
+            if (isSolidTile(x, y)) {
+                return true;
             }
         }
     }
+    return false;
 }
 
 // Inicializar o jogador
@@ -297,7 +368,6 @@ function drawMap() {
     for (let y = 0; y < map.length; y++) {
         for (let x = 0; x < map[y].length; x++) {
             if (map[y][x] === 1) {
-                // Desenhe a imagem do tile
                 ctx.drawImage(tileImage, x * TILE_SIZE - camera.x, y * TILE_SIZE - camera.y, TILE_SIZE, TILE_SIZE);
             }
         }
