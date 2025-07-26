@@ -31,7 +31,7 @@
       return Math.floor(Math.random() * (max - min) + min); 
     }
     async function fetchText() {
-      let response = await fetch('https://swapi.dev/api/people/');
+      let response = await fetch('https://swapi.py4e.com/api/people/');
       let data = await response.text();
       obj = JSON.parse(data);
       output = document.querySelector('output');
