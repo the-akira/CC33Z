@@ -1,7 +1,7 @@
 const perPage = 9; // number of countries per page
 let currentPage = 1; // current page number
 let countriesData = []; // array to store all countries data
-let URL = 'https://restcountries.com/v3.1/all'; // API URL
+let URL = 'https://restcountries.com/v3.1/all?fields=name,flags,capital'; // API URL
 
 // Fetch data from API and store in array
 fetch(URL)
