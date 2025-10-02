@@ -1193,19 +1193,31 @@ function executeInstruction(instruction) {
         }
         case 'IN': {
             const reg = parts[1].toLowerCase();
-            const input = prompt(`Digite um valor para ${reg}:`);
-            registers[reg] = parseInt(input);
 
-            highlightRegister(reg);
+            // Roda a animação normalmente
+            animateClockCycle();
 
-            addToHistory(`IN: Registrador ${reg} <- ${input}`);
-            updateUI();
+            // Só pede input no fim do ciclo
+            setTimeout(() => {
+                const input = prompt(`Digite um valor para ${reg}:`);
+                registers[reg] = parseInt(input);
+                highlightRegister(reg);
+                addToHistory(`IN: Registrador ${reg} <- ${input}`);
+                updateUI();
+            }, 3 * (executionSpeed / SPEED_RATIO)); // tempo total do ciclo
             break;
         }
         case 'OUT': {
             const reg = parts[1].toLowerCase();
-            alert(`Valor de ${reg}: ${registers[reg]}`);
-            addToHistory(`OUT: Valor de ${reg} -> ${registers[reg]}`);
+
+            // Roda a animação completa antes do alert
+            animateClockCycle();
+
+            setTimeout(() => {
+                alert(`Valor de ${reg}: ${registers[reg]}`);
+                addToHistory(`OUT: Valor de ${reg} -> ${registers[reg]}`);
+            }, 3 * (executionSpeed / SPEED_RATIO)); // espera o ciclo inteiro
+
             break;
         }
         case 'XOR': {
@@ -1709,7 +1721,14 @@ function nextStep() {
     canExecuteNextStep = false;
     document.getElementById("stepBtn").disabled = true;
 
-    animateClockCycle();
+    // Verifica se a instrução atual é bloqueante
+    const blockingInstructions = new Set(['IN', 'OUT']);
+    const currentInstruction = memory[registers.pc];
+    const opcode = currentInstruction.trim().split(/[\s,]+/)[0].toUpperCase();
+
+    if (!blockingInstructions.has(opcode)) {
+        animateClockCycle();
+    }
 
     // Reseta o clock
     updateClockProgress(0);
