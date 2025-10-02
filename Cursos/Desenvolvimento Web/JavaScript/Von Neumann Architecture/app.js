@@ -1724,7 +1724,12 @@ function nextStep() {
     // Verifica se a instrução atual é bloqueante
     const blockingInstructions = new Set(['IN', 'OUT']);
     const currentInstruction = memory[registers.pc];
-    const opcode = currentInstruction.trim().split(/[\s,]+/)[0].toUpperCase();
+
+    // Se não for string, não tenta interpretar como instrução
+    let opcode = "";
+    if (typeof currentInstruction === "string") {
+        opcode = currentInstruction.trim().split(/[\s,]+/)[0].toUpperCase();
+    }
 
     if (!blockingInstructions.has(opcode)) {
         animateClockCycle();
