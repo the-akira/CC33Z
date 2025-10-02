@@ -1740,10 +1740,11 @@ function nextStep() {
         updateGlobalProgress();
 
         // Libera a execução após 500ms
+        const cycleDuration = 3 * (executionSpeed / SPEED_RATIO); // 3 etapas
         setTimeout(() => {
             canExecuteNextStep = true;
             document.getElementById("stepBtn").disabled = false;
-        }, executionSpeed / SPEED_RATIO);
+        }, cycleDuration);
     }, executionSpeed / SPEED_RATIO); // Delay para o ciclo de clock
 }
 
