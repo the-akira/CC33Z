@@ -6,6 +6,25 @@ const memoryHistory = [];
 let stateHistory = []; 
 const stack = [];
 
+// adicionar no topo (próximo às outras variáveis globais)
+let clockTimers = [];
+
+// limpa timeouts pendentes da animação do clock
+function clearClockTimers() {
+    // limpa timeouts registrados
+    clockTimers.forEach(id => clearTimeout(id));
+    clockTimers = [];
+
+    // remove classes ativas das etapas e zera a barra
+    const stages = ['fetch-stage', 'decode-stage', 'execute-stage'];
+    stages.forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.remove('active');
+    });
+
+    updateClockProgress(0);
+}
+
 const programs = {
             program1: `LOAD eax, 20  ; Carrega o valor do endereço 20 para o registrador eax
 ADD eax, 21   ; Soma o valor do endereço 21 com eax
@@ -1193,31 +1212,18 @@ function executeInstruction(instruction) {
         }
         case 'IN': {
             const reg = parts[1].toLowerCase();
-
-            // Roda a animação normalmente
-            animateClockCycle();
-
-            // Só pede input no fim do ciclo
-            setTimeout(() => {
-                const input = prompt(`Digite um valor para ${reg}:`);
-                registers[reg] = parseInt(input);
-                highlightRegister(reg);
-                addToHistory(`IN: Registrador ${reg} <- ${input}`);
-                updateUI();
-            }, 3 * (executionSpeed / SPEED_RATIO)); // tempo total do ciclo
+            // pede input imediatamente (já que a animação terminou antes de chamar executeInstruction)
+            const input = prompt(`Digite um valor para ${reg}:`);
+            registers[reg] = parseInt(input);
+            highlightRegister(reg);
+            addToHistory(`IN: Registrador ${reg} <- ${input}`);
+            updateUI();
             break;
         }
         case 'OUT': {
             const reg = parts[1].toLowerCase();
-
-            // Roda a animação completa antes do alert
-            animateClockCycle();
-
-            setTimeout(() => {
-                alert(`Valor de ${reg}: ${registers[reg]}`);
-                addToHistory(`OUT: Valor de ${reg} -> ${registers[reg]}`);
-            }, 3 * (executionSpeed / SPEED_RATIO)); // espera o ciclo inteiro
-
+            alert(`Valor de ${reg}: ${registers[reg]}`);
+            addToHistory(`OUT: Valor de ${reg} -> ${registers[reg]}`);
             break;
         }
         case 'XOR': {
@@ -1700,14 +1706,18 @@ function reverseStep() {
     updateGlobalProgress();
 }
 
-function nextStep() {
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function nextStep() {
     if (!programLoaded) {
         alert('Por favor, carregue um programa primeiro.');
         return;
     }
 
     if (isHalted) {
-        updateClockProgress(0);
+        clearClockTimers();
         alert('Programa finalizado. Use Reset para executar novamente.');
         updateGlobalProgress();
         return;
@@ -1721,55 +1731,45 @@ function nextStep() {
     canExecuteNextStep = false;
     document.getElementById("stepBtn").disabled = true;
 
-    // Verifica se a instrução atual é bloqueante
-    const blockingInstructions = new Set(['IN', 'OUT']);
-    const currentInstruction = memory[registers.pc];
-
-    // Se não for string, não tenta interpretar como instrução
-    let opcode = "";
-    if (typeof currentInstruction === "string") {
-        opcode = currentInstruction.trim().split(/[\s,]+/)[0].toUpperCase();
+    // animação do clock (aguarda terminar)
+    try {
+        await animateClockCycle();
+    } catch (e) {
+        // se por algum motivo a animação falhar, garante que continuamos limpos
+        clearClockTimers();
     }
 
-    if (!blockingInstructions.has(opcode)) {
-        animateClockCycle();
-    }
+    // Depois da animação concluída, executa a instrução
+    const instruction = memory[registers.pc];
+    if (typeof instruction === 'string') {
+        registers.ir = instruction;
 
-    // Reseta o clock
-    updateClockProgress(0);
-
-    // Simula o ciclo de clock
-    setTimeout(() => {
-        updateClockProgress(100); // Conclui o ciclo de clock
-
-        const instruction = memory[registers.pc];
-        if (typeof instruction === 'string') {
-            registers.ir = instruction;
-
-            // Verifica se é um breakpoint
-            if (breakpoints[registers.pc]) {
-                addToHistory(`Breakpoint atingido em ${registers.pc}`);
-                updateAluStatus(`Breakpoint: Execução pausada em ${registers.pc}`);
-                stopProgram(); // Pausa a execução automática
-                canExecuteNextStep = true; // Libera a execução para o próximo ciclo
-                document.getElementById("stepBtn").disabled = false;
-                return;
-            }
-
-            executeInstruction(instruction);
-            registers.pc++;
-        }
-
-        updateUI();
-        updateGlobalProgress();
-
-        // Libera a execução após 500ms
-        const cycleDuration = 3 * (executionSpeed / SPEED_RATIO); // 3 etapas
-        setTimeout(() => {
+        // Verifica breakpoint
+        if (breakpoints[registers.pc]) {
+            addToHistory(`Breakpoint atingido em ${registers.pc}`);
+            updateAluStatus(`Breakpoint: Execução pausada em ${registers.pc}`);
+            stopProgram(); // Pausa a execução automática
             canExecuteNextStep = true;
             document.getElementById("stepBtn").disabled = false;
-        }, cycleDuration);
-    }, executionSpeed / SPEED_RATIO); // Delay para o ciclo de clock
+            // garante que a barra zere (opcional)
+            clearClockTimers();
+            return;
+        }
+
+        await delay(executionSpeed / SPEED_RATIO);
+        executeInstruction(instruction);
+        registers.pc++;
+
+        await delay(executionSpeed / SPEED_RATIO / 3);
+        updateClockProgress(0);
+    }
+
+    updateUI();
+    updateGlobalProgress();
+
+    // libera execução imediatamente — animação já terminou
+    canExecuteNextStep = true;
+    document.getElementById("stepBtn").disabled = false;
 }
 
 function runProgram() {
@@ -1804,9 +1804,13 @@ function stopProgram() {
     if (executionInterval) {
         clearInterval(executionInterval); // Para o temporizador
         executionInterval = null; // Reseta o controle
-        updateClockProgress(0);
+        clearClockTimers();
         alert('Execução automática interrompida.');
     }
+
+    // Garante que o botão de passo volte a funcionar
+    canExecuteNextStep = true;
+    document.getElementById("stepBtn").disabled = false;
 }
 
 let executionSpeed = 1500; 
@@ -1818,22 +1822,48 @@ document.getElementById('speedRange').addEventListener('input', (event) => {
 });
 
 function animateClockCycle() {
-    const stages = ['fetch-stage', 'decode-stage', 'execute-stage'];
+    // resolve quando todas as etapas terminarem
+    clearClockTimers(); // garante que não há timers antigos
+    return new Promise((resolve) => {
+        const stages = ['fetch-stage', 'decode-stage', 'execute-stage'];
+        const totalStages = stages.length;
+        const stageInterval = executionSpeed / SPEED_RATIO; // ex: 1500 / 3 = 500ms por etapa
+        const totalTime = stageInterval * totalStages;
 
-    stages.forEach((stage, index) => {
-        setTimeout(() => {
-            // Limpa as classes ativas de todas as etapas
-            stages.forEach(s => document.getElementById(s).classList.remove('active'));
+        // começa em 0
+        updateClockProgress(0);
 
-            // Ativa a etapa atual
-            document.getElementById(stage).classList.add('active');
-        }, index * executionSpeed / SPEED_RATIO); // 500ms por etapa
+        stages.forEach((stage, index) => {
+            const t = setTimeout(() => {
+                // ativa etapa atual
+                stages.forEach(s => {
+                    const el = document.getElementById(s);
+                    if (el) el.classList.remove('active');
+                });
+                const el = document.getElementById(stage);
+                if (el) el.classList.add('active');
+
+                // atualiza barra de progresso (ex.: 33%, 66%, 100%)
+                const progress = Math.round(((index + 1) / totalStages) * 100);
+                updateClockProgress(progress);
+            }, index * stageInterval);
+
+            clockTimers.push(t);
+        });
+
+        // finalizador: remove classes e resolve
+        const tend = setTimeout(() => {
+            stages.forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.classList.remove('active');
+            });
+            // deixa a barra em 100% até o próximo ciclo/reset
+            clockTimers = [];
+            resolve();
+        }, totalTime);
+
+        clockTimers.push(tend);
     });
-
-    // Finaliza o ciclo após todas as etapas
-    setTimeout(() => {
-        stages.forEach(stage => document.getElementById(stage).classList.remove('active'));
-    }, stages.length * executionSpeed / SPEED_RATIO);
 }
 
 function reset() {
@@ -1886,7 +1916,7 @@ function reset() {
     resetFlowchart();
     resetCharts();
 
-    updateClockProgress(0);
+    clearClockTimers();
     resetMemoryStyles();
     updateUI();
     stopProgram();
