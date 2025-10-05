@@ -1034,6 +1034,13 @@ function drawDistanceLines() {
     ctx.lineTo(canvas.width, 0); // Linha até o limite da largura
     ctx.stroke(); // Desenha a linha
 
+    ctx.beginPath();
+    ctx.strokeStyle = '#8a081a'; // Cor da linha
+    ctx.lineWidth = 2.5;
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, canvas.height);
+    ctx.stroke();
+
     // Linha para o eixo X
     ctx.beginPath();
     ctx.strokeStyle = '#8a081a';
