@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Curso de Informática - CEBRAC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        margin: 10px 20px 0 20px;
+      }
+      .toolbar input[type="text"] {
+        padding: 10px 12px;
+        font-size: 1rem;
+        border: 2px solid #273E74;
+        min-width: 260px;
+      }
+      .toolbar input[type="text"]:focus {
+        border: 2px solid #5C6D82;
+        outline: none;
+      }
+      .toolbar .buttonish {
+        background-color: #5c6d82;
+        color: white;
+        padding: 10px 12px;
+        border: 3.3px solid #273E74;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .toolbar .buttonish:hover { background-color: #273E74; }
+      .alphabet {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        margin: 14px 20px;
+      }
+      .alphabet button {
+        border: 2px solid #273E74;
+        background: white;
+        color: #273E74;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .alphabet button.active, .alphabet button:hover {
+        background: #5C6D82; 
+        color: white; 
+        border-color: #273E74;
+      }
+      .alphabet button[data-letter] {
+        width: 36px;
+      }
+      hr {
+        border: none;
+        height: 0.5px;
+        background: #5C6D82;
+        opacity: 0.65;
+      }
+      main.dictionary {
+        gap: 0px;
+        margin-top: 15px;
+      }
+      article {
+        padding: 15px;
+      }
+      article.term {
+        text-align: left;
+        width: 100%;
+      }
+      article.term h2 {
+        margin-top: 0px;
+        margin-bottom: 6px;
+      }
+      article.term p {
+        margin-top: 12px;
+        margin-bottom: 6px;
+      }
+      a.dictBtn {
+        background-color: #5c6d82;
+        color: white;
+        display: inline-block;
+        padding: 8px 11px;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 10px;
+        font-size: 1rem;
+        border-right: 5px solid #273E74;
+        border-left: 5px solid #273E74;
+      }
+      a.dictBtn:hover {
+        background-color: #273E74;
+      }
+      .letter-header {
+        margin-top: 14px;
+        margin-bottom: 14px;
+        text-align: left;
+      }
+      .letter-header h2 {
+        font-size: 2.2rem;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+      @media only screen and (max-width: 390px) {
+        .toolbar input[type="text"] { min-width: 180px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+      <div class="icon">
+        <img class="computer" src="images/computer.png" alt="Computer">
+      </div>
+      <h1>Curso de Informática</h1>
+      <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+      <nav>
+        <a class="menu" href="index">Material</a>
+        <a class="menu" href="websites">Websites</a>
+        <a class="menu" href="ferramentas">Ferramentas</a>
+        <a class="menu" href="dicionario">Dicionário</a>
+        <a class="menu" href="quiz.html">Quiz</a>
+        <a class="menu" href="simulador.html">Simulador</a>
+      </nav>
+    </header>
+
+    <h1 style="margin-bottom: 20px;" class="subtitle">Dicionário de Termos</h1>
+
+    <div class="toolbar">
+      <input id="filterInput" type="text" placeholder="Filtrar por termo ou descrição…"/>
+      <button id="clearBtn" class="buttonish" type="button">Limpar</button>
+    </div>
+    <div class="alphabet" id="alphabetBar">
+      <!-- Letras serão geradas via JS -->
+    </div>
+
+    <main class="dictionary" id="dictGrid">
+      <!-- Conteúdo gerado via JS -->
+    </main>
+
+    <script>
+      // Util: cria link seguro para a Wikipedia em PT
+      function wiki(term) {
+        const slug = term.replaceAll(' ', '_').replaceAll('–','-');
+        return 'https://pt.wikipedia.org/wiki/' + encodeURIComponent(slug);
+      }
+
+      // Banco de termos (fundamentais). Você pode adicionar mais livremente depois.
+      // Estrutura: { t: 'Termo', d: 'Descrição curta e clara', l: 'URL' (opcional), k: ['palavras-chave'] }
+      const TERMS = [
+        // A
+        {t:'Algoritmo', d:'Sequência finita de passos para resolver um problema ou executar uma tarefa.', k:['lógica','passos','procedimento']},
+        {t:'API', d:'Conjunto de regras e interfaces para que softwares se comuniquem entre si.', k:['integração','serviços','endpoints'], l: 'https://pt.wikipedia.org/wiki/Interface_de_programa%C3%A7%C3%A3o_de_aplica%C3%A7%C3%B5es'},
+        {t:'Aplicativo', d:'Programa criado para executar uma função específica para o usuário.', k:['app','software']},
+        {t:'Arduino', d:'Plataforma de prototipagem eletrônica baseada em hardware e software livres.', k:['eletrônica','microcontrolador']},
+        {t:'Arquitetura de Computadores', d:'Organização interna dos componentes de um computador e como se comunicam.', k:['hardware','cpu']},
+        {t:'ASCII', d:'Tabela de códigos que representa caracteres em formato numérico.', k:['texto','código']},
+        {t:'Assembly', d:'Linguagem de baixo nível próxima ao código de máquina.', k:['baixo nível','processador']},
+        {t:'Árvore (Estrutura de Dados)', d:'Estrutura hierárquica com nós conectados por arestas; base para buscas e organização.', k:['nós','grafo']},
+        {t:'Autenticação', d:'Processo de verificar a identidade de um usuário ou sistema.', k:['segurança','login']},
+        {t:'Autoriza\u00e7\u00e3o', d:'Processo de conceder permissões a um usuário autenticado.', k:['segurança','permissão'], l:'https://pt.wikipedia.org/wiki/Autoriza%C3%A7%C3%A3o'},
+        // B
+        {t:'Back-end', d:'Parte do sistema que roda no servidor e lida com regras de negócio e dados.', k:['servidor','API'], l: "https://www.alura.com.br/artigos/backend"},
+        {t:'Backup', d:'Cópia de segurança dos dados para recuperação em caso de perda.', k:['cópia','segurança']},
+        {t:'Banco de Dados', d:'Sistema para armazenar, organizar e consultar dados.', k:['SQL','NoSQL']},
+        {t:'Bash', d:'Shell popular em sistemas Linux/Unix para execução de comandos e scripts.', k:['terminal','shell']},
+        {t:'BIOS/UEFI', d:'Firmware que inicializa o hardware e inicia o sistema operacional.', k:['boot','firmware']},
+        {t:'Bit', d:'Menor unidade de informação: 0 ou 1.', k:['binário']},
+        {t:'Blockchain', d:'Livro-razão distribuído e imutável para registrar transações.', k:['distribuído','cripto']},
+        {t:'Boot', d:'Processo de inicialização do computador até carregar o sistema operacional.', k:['inicialização']},
+        {t:'Buffer', d:'Área temporária de memória para dados em trânsito.', k:['memória','I/O']},
+        // C
+        {t:'Cache', d:'Memória rápida que guarda dados usados com frequência para acelerar acessos.', k:['desempenho','memória']},
+        {t:'CPU', d:'Unidade Central de Processamento; executa instruções do sistema.', k:['processador','núcleos']},
+        {t:'CSS', d:'Linguagem de estilos para definir aparência de páginas web.', k:['front-end','estilos']},
+        {t:'CLI', d:'Interface de Linha de Comando para interagir via textos e comandos.', k:['terminal','shell']},
+        {t:'Cliente/Servidor', d:'Modelo de comunicação em que clientes solicitam serviços a um servidor.', k:['rede','web']},
+        {t:'Cloud Computing', d:'Entrega de recursos de computação (servidores, storage) via internet.', k:['nuvem','AWS','Azure','GCP']},
+        {t:'Compilador', d:'Programa que traduz código-fonte para código de máquina.', k:['tradução','linguagem']},
+        {t:'Container', d:'Pacote padronizado com app e dependências isoladas do sistema.', k:['Docker','implantação'], l: "https://www.ibm.com/br-pt/think/topics/containers"},
+        {t:'Criptografia', d:'Técnicas para proteger informações tornando-as ilegíveis a terceiros.', k:['segurança','chaves']},
+        // D
+        {t:'DNS', d:'Sistema que traduz nomes de domínio (site.com) para endereços IP.', k:['rede','internet']},
+        {t:'DOM', d:'Estrutura hierárquica que representa documentos HTML/XML na memória.', k:['web','navegador']},
+        {t:'DevOps', d:'Cultura que integra desenvolvimento e operações para entregar software mais rápido.', k:['CI/CD','automação']},
+        {
+          t: 'Disco Rígido (HDD)',
+          d: 'Dispositivo de armazenamento eletromecânico que utiliza pratos giratórios revestidos por material magnético e cabeças móveis para gravar e ler dados. É um tipo de memória não volátil de grande capacidade, mas com maior latência e componentes mecânicos que podem se desgastar com o tempo.',
+          k: ['armazenamento', 'HDD', 'HD', 'magnético'],
+          l: 'https://pt.wikipedia.org/wiki/Unidade_de_disco_rígido'
+        },
+        {t:'Driver', d:'Software que permite ao sistema operacional interagir com um hardware.', k:['dispositivo','kernel'], l: "https://canaltech.com.br/produtos/o-que-sao-drivers-195604/"},
+        {t:'Docker', d:'Plataforma para criar e rodar containers.', k:['container','devops']},
+        {t:'Download', d:'Transferir dados da internet para o seu dispositivo.', k:['rede','arquivo']},
+        // E
+        {t:'Edição de Texto', d:'Processo de manipulação e formatação de documentos com editores.', k:['word','editor'], l: "https://pt.wikipedia.org/wiki/Editor_de_texto"},
+        {t:'EEPROM/Flash', d:'Memória não volátil utilizada para armazenamento persistente.', k:['armazenamento'], l: "https://pt.wikipedia.org/wiki/Mem%C3%B3ria_flash"},
+        {t:'Encapsulamento', d:'Princípio OO que esconde detalhes internos e expõe interfaces.', k:['poo','classes']},
+        {t:'Endereço IP', d:'Identificador numérico de um dispositivo em uma rede (IPv4/IPv6).', k:['rede','internet']},
+        {t:'Engenharia de Software', d:'Disciplina que aplica princípios de engenharia ao desenvolvimento de software.', k:['processos','qualidade']},
+        {
+          t: 'Estrutura de Dados',
+          d: 'Forma de organizar e armazenar dados de modo que possam ser usados de forma eficiente, facilitando operações como busca, inserção, remoção e modificação. A escolha de uma estrutura adequada depende de critérios como rapidez de acesso, consumo de memória e simplicidade.',
+          k: ['dados', 'organização', 'eficiência', 'TAD'],
+          l: 'https://pm3.com.br/blog/estrutura-de-dados/'
+        },
+        {t:'Ethernet', d:'Tecnologia de rede local (LAN) padrão com cabos e switches.', k:['rede','lan']},
+        // F
+        {t:'Firewall', d:'Sistema que controla o tráfego de rede com base em regras.', k:['segurança','rede']},
+        {t:'Firmware', d:'Software embarcado que controla hardware de baixo nível.', k:['dispositivo','ROM']},
+        {t:'Framework', d:'Estrutura de suporte para construir aplicações de forma padronizada.', k:['biblioteca','padrões'], l: "https://pt.wikipedia.org/wiki/Framework"},
+        {t:'Front-end', d:'Parte do sistema que roda no navegador e interage com o usuário.', k:['UI','HTML','CSS','JS'], l: "https://www.totvs.com/blog/developers/front-end/"},
+        {t:'FTP/SFTP', d:'Protocolos para transferir arquivos entre computadores.', k:['rede','transferência']},
+        // G
+        {t:'Gateway', d:'Ponto que conecta redes diferentes e encaminha tráfego.', k:['roteador','rede']},
+        {t:'Git', d:'Sistema de controle de versão distribuído para código-fonte.', k:['repositório','branch']},
+        {t:'GPU', d:'Unidade de Processamento Gráfico; paraleliza operações de gráficos/cálculo.', k:['vídeo','paralelo']},
+        {t:'GUI', d:'Interface Gráfica com janelas, botões e ícones.', k:['interface','usuário']},
+        // H
+        {t:'Hardware', d:'Parte física do computador: CPU, memória, disco, periféricos.', k:['componentes']},
+        {t:'Hash', d:'Função que mapeia dados para um valor fixo; útil para integridade.', k:['resumo','segurança']},
+        {t:'HTML', d:'Linguagem de marcação que estrutura páginas web.', k:['web','markup']},
+        {t:'HTTP/HTTPS', d:'Protocolos de comunicação da Web; HTTPS é a versão segura.', k:['web','rede','TLS'], l: "https://pt.wikipedia.org/wiki/HTTP"},
+        // I
+        {t:'IDE', d:'Ambiente de Desenvolvimento Integrado com editor, depurador e ferramentas.', k:['programação','código']},
+        {t:'Índice (BD)', d:'Estrutura para acelerar consultas em banco de dados.', k:['sql','otimização'], l: "https://sae.unb.br/cae/conteudo/unbfga/lbd/banco2_indices.html"},
+        {t:'Inteligência Artificial', d:'Sistemas capazes de executar tarefas que exigem cognição humana.', k:['ML','IA']},
+        {t:'Internet', d:'Rede mundial de redes que interconecta bilhões de dispositivos.', k:['tcp/ip','web']},
+        {t:'IPv4/IPv6', d:'Versões do protocolo IP: 32 bits (IPv4) e 128 bits (IPv6).', k:['endereçamento']},
+        // J
+        {t:'JavaScript', d:'Linguagem de programação da Web para lógica no navegador.', k:['web','ecmascript']},
+        {t:'JSON', d:'Formato leve de troca de dados baseado em chave-valor.', k:['dados','API']},
+        // K
+        {t:'Kernel', d:'Núcleo do sistema operacional que gerencia recursos do hardware.', k:['s.o.','linux','windows']},
+        {t:'Kubernetes', d:'Orquestrador de containers para escalar e gerenciar serviços.', k:['devops','cluster']},
+        // L
+        {t:'Linguagem de Programação', d:'Sistema formal para escrever instruções que um computador executa.', k:['código','algoritmo']},
+        {t:'Linux', d:'Família de sistemas operacionais baseados no kernel Linux.', k:['gnu/linux','opensource']},
+        {t:'Log (Registro)', d:'Histórico de eventos de um sistema para auditoria e depuração.', k:['observabilidade']},
+        {t:'Loop', d:'Estrutura de repetição que executa um bloco de código várias vezes.', k:['for','while']},
+        // M
+        {t:'Malware', d:'Software malicioso projetado para causar danos ou roubar dados.', k:['vírus','ransomware']},
+        {t:'Memória RAM', d:'Memória volátil usada para dados temporários em execução.', k:['memória principal']},
+        {
+          t: 'Memória Virtual',
+          d: 'Técnica que permite utilizar memória secundária (como o disco) como extensão da memória principal, possibilitando que processos vejam um espaço de endereçamento maior, com mecanismos de realocação, proteção e paginação.',
+          k: ['memória', 'paginaçao', 'SO', 'swap'],
+          l: 'https://pt.wikipedia.org/wiki/Memória_virtual'
+        },
+        {t:'Microserviços', d:'Arquitetura que divide sistemas em serviços pequenos e independentes.', k:['devops','escala']},
+        {t:'Modelagem de Dados', d:'Processo de estruturar dados e relações para um domínio.', k:['bd','schema']},
+        {t:'Monitor', d:'Dispositivo de saída para exibir informações visuais.', k:['tela','vídeo'], l: "https://pt.wikipedia.org/wiki/Monitor_de_v%C3%ADdeo"},
+        {t:'Motherboard (Placa-mãe)', d:'Placa principal que conecta todos os componentes do computador.', k:['hardware']},
+        // N
+        {t:'Navegador (Browser)', d:'Programa para acessar e exibir páginas da Web.', k:['chrome','firefox']},
+        {t:'NTP', d:'Protocolo para sincronização de tempo em redes.', k:['hora','rede']},
+        // O
+        {t:'Open Source', d:'Software com código-fonte aberto para uso, estudo e modificação.', k:['licenças','comunidade']},
+        {t:'Ontologia (TI)', d:'Modelo formal que descreve conceitos e relações de um domínio.', k:['semântica','dados'], l: "https://pt.wikipedia.org/wiki/Ontologia_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)"},
+        {t:'Orientação a Objetos', d:'Paradigma baseado em classes, objetos, herança e polimorfismo.', k:['poo','abstração']},
+        {t:'Overclock', d:'Operar hardware acima das especificações para maior desempenho.', k:['cpu','gpu']},
+        // P
+        {t:'Pacote (Packet)', d:'Unidade de dados transmitida numa rede.', k:['rede','internet'], l: "https://pt.wikipedia.org/wiki/Pacote"},
+        {t:'Pipeline CI/CD', d:'Fluxo automatizado para integrar e entregar software.', k:['devops','build'], l: "https://pt.wikipedia.org/wiki/CI/CD"},
+        {t:'Pixel', d:'Menor elemento de uma imagem digital.', k:['tela','resolução']},
+        {t:'Placa de Rede (NIC)', d:'Hardware que conecta o computador à rede.', k:['ethernet','wifi']},
+        {t:'Polimorfismo', d:'Capacidade de objetos diferentes responderem à mesma interface.', k:['poo']},
+        {t:'Processo (SO)', d:'Programa em execução com memória e recursos próprios.', k:['sistema operacional']},
+        {t:'Protocolo', d:'Conjunto de regras para comunicação entre sistemas.', k:['rede','padronização']},
+        {t:'Proxy', d:'Intermediário que encaminha requisições entre cliente e servidor.', k:['cache','rede']},
+        // Q
+        {t:'Query (Consulta)', d:'Instrução para buscar/alterar dados em um banco ou API.', k:['sql','bd']},
+        {t:'QoS', d:'Qualidade de Serviço; técnicas para priorizar tráfego de rede.', k:['rede']},
+        // R
+        {t:'RAID', d:'Conjunto de técnicas para combinar discos visando desempenho e/ou redundância.', k:['armazenamento']},
+        {t:'RAM', d:'Ver Memória RAM.', k:['memória']},
+        {t:'Rede Neural', d:'Modelo de IA inspirado no cérebro, composto por camadas de nós.', k:['deep learning']},
+        {t:'Rede de Computadores', d:'Conjunto de dispositivos interconectados que trocam dados.', k:['lan','wan']},
+        {t:'Registro (CPU)', d:'Pequenas memórias internas da CPU para dados temporários.', k:['processador'], l: "https://entendendoti.blogspot.com/2011/06/registradores-da-cpu.html"},
+        {t:'Repositório', d:'Local para armazenar versões de código e artefatos.', k:['git','controle de versão'], l: "https://aws.amazon.com/pt/what-is/repo/"},
+        {t:'Rest API', d:'Estilo de API baseada em recursos e verbos HTTP.', k:['web','json']},
+        {t:'Roteador', d:'Dispositivo que encaminha pacotes entre redes diferentes.', k:['rede','internet']},
+        // S
+        {t:'SaaS', d:'Software como serviço; app acessado pela internet sem instalação local.', k:['nuvem']},
+        {t:'Script', d:'Programa simples para automatizar tarefas.', k:['bash','python']},
+        {t:'SDK', d:'Kit de Desenvolvimento com bibliotecas, exemplos e ferramentas.', k:['dev']},
+        {t:'Servidor', d:'Computador/serviço que atende requisições de clientes.', k:['backend','rede']},
+        {t:'Sistema Operacional', d:'Software que gerencia hardware, processos e arquivos.', k:['windows','linux','macos']},
+        {
+          t: 'Software',
+          d: 'Conjunto de instruções (programas), documentação e especificações que dizem ao computador como executar tarefas específicas, sendo distinguido do hardware, que realiza o trabalho físico. Engloba programas executáveis e seus componentes auxiliares.',
+          k: ['programa', 'instruções', 'documentação', 'aplicação'],
+          l: 'https://pt.wikipedia.org/wiki/Software'
+        },
+        {
+          t:'Software Stack',
+          d:'Conjunto de tecnologias, linguagens, frameworks e ferramentas utilizadas no desenvolvimento de um sistema.',
+          k:['tecnologias','backend','frontend'],
+          l:'https://pt.wikipedia.org/wiki/Conjunto_de_solu%C3%A7%C3%B5es_(computa%C3%A7%C3%A3o)'
+        },
+        {
+          t: 'SSD (Solid State Drive)',
+          d: 'Dispositivo de armazenamento não volátil que utiliza circuitos eletrônicos — geralmente memória flash NAND — para guardar dados, sem peças mecânicas móveis. É mais rápido, silencioso, resistente a choques e com menor latência que os discos rígidos tradicionais.',
+          k: ['armazenamento', 'não volátil', 'flash', 'SSD'],
+          l: 'https://pt.wikipedia.org/wiki/Unidade_de_estado_s%C3%B3lido'
+        },
+        {t:'SSH', d:'Protocolo seguro para acesso remoto a servidores.', k:['chave','terminal']},
+        {
+          t:'Stack (Pilha)',
+          d:'Estrutura de dados linear que segue o princípio LIFO (Last In, First Out), onde o último elemento inserido é o primeiro a ser removido.',
+          k:['estrutura de dados','LIFO','algoritmo'],
+          l:'https://pt.wikipedia.org/wiki/Pilha_(inform%C3%A1tica)'
+        },
+        {t:'Switch', d:'Dispositivo de rede que conecta dispositivos numa LAN, encaminhando quadros.', k:['ethernet']},
+        // T
+        {t:'TCP/IP', d:'Conjunto de protocolos de comunicação que sustenta a Internet, incluindo TCP e IP.', k:['rede'], l: "https://pt.wikipedia.org/wiki/TCP/IP"},
+        {t:'Terminal', d:'Ambiente de linha de comando para interagir com o sistema.', k:['CLI','shell']},
+        {t:'Thread', d:'Fluxo de execução leve dentro de um processo.', k:['concorrência']},
+        {t:'Token (Segurança)', d:'Credencial curta usada para autenticação/autorizações temporárias.', k:['jwt','oauth'], l: "https://pt.wikipedia.org/wiki/Token_(chave_eletr%C3%B4nica)"},
+        {t:'Topologia de Rede', d:'Como os dispositivos estão conectados (estrela, malha, barramento).', k:['rede']},
+        // U
+        {t:'UART/USB', d:'Padrões de comunicação serial; USB é amplamente usado em periféricos.', k:['comunicação','porta']},
+        { 
+          t:'UDP', 
+          d:'Protocolo de transporte simples, rápido e sem conexão, usado em streaming e jogos online.', 
+          k:['rede','transporte'], 
+          l:'https://pt.wikipedia.org/wiki/Protocolo_de_datagrama_do_usu%C3%A1rio' 
+        },
+        {t:'UI/UX', d:'Interface do Usuário e Experiência do Usuário.', k:['design','usabilidade'], l: "https://www.alura.com.br/artigos/ux-e-ui-conheca-as-semelhancas-e-diferencas-entre-ambos"},
+        {t:'Unicode', d:'Padrão universal de codificação de caracteres.', k:['texto','i18n']},
+        {t:'URL/URI', d:'Identificadores de recursos na Web; URL indica endereço localizável.', k:['web'], l: "https://pt.wikipedia.org/wiki/URL"},
+        // V
+        {t:'Virtualização', d:'Execução de sistemas em máquinas virtuais isoladas.', k:['hipervisor','vm']},
+        {t:'VLAN', d:'Rede local virtual que segmenta broadcast em switches.', k:['rede']},
+        {t:'VRAM', d:'Memória dedicada para a GPU.', k:['vídeo'], l: "https://pt.wikipedia.org/wiki/Dual-ported_video_RAM"},
+        {t:'VPN', d:'Rede privada virtual que cifra o tráfego até um servidor remoto.', k:['segurança','rede']},
+        // W
+        {t:'WAN/LAN/WLAN', d:'Redes de longa distância, local e local sem fio.', k:['rede'], l: "https://pt.wikipedia.org/wiki/Rede_de_computadores#Escala_geogr%C3%A1fica"},
+        {t:'Web', d:'Conjunto de páginas e serviços acessíveis via HTTP/HTTPS.', k:['internet']},
+        {t:'Wi‑Fi', d:'Tecnologia de rede sem fio baseada no padrão IEEE 802.11.', k:['rede']},
+        // X
+        {t:'XML', d:'Linguagem de marcação extensível para dados estruturados.', k:['dados','markup']},
+        // Y
+        {t:'YAML', d:'Formato de serialização de dados legível por humanos.', k:['config','devops']},
+        // Z
+        {t:'Zip (Compactação)', d:'Formato para compactar e agrupar arquivos.', k:['arquivos','compressão']},
+        {t:'Zettabyte', d:'Unidade de medida de dados equivalente a 10^21 bytes.', k:['tamanho','dados']}
+      ];
+
+      // Adiciona (ou corrige) links Wikipedia quando possível
+      const WIKI_OVERRIDE = {
+        'Algoritmo': wiki('Algoritmo'),
+        'API': wiki('API'),
+        'ASCII': wiki('ASCII'),
+        'Assembly': wiki('Assembly'),
+        'Árvore (Estrutura de Dados)': wiki('Árvore_(estrutura_de_dados)'),
+        'Back-end': wiki('Front-end_e_back-end'),
+        'Banco de Dados': wiki('Base_de_dados'),
+        'Bash': wiki('Bash'),
+        'BIOS/UEFI': wiki('UEFI'),
+        'Bit': wiki('Bit'),
+        'Blockchain': wiki('Blockchain'),
+        'Buffer': wiki('Buffer_(ciência_da_computação)'),
+        'Cache': wiki('Cache'),
+        'CPU': wiki('Unidade_central_de_processamento'),
+        'CSS': wiki('Cascading_Style_Sheets'),
+        'CLI': wiki('Interface_de_linha_de_comando'),
+        'Cliente/Servidor': wiki('Cliente-servidor'),
+        'Cloud Computing': wiki('Computação_em_nuvem'),
+        'Compilador': wiki('Compilador'),
+        'Container': wiki('Docker_(software)'),
+        'Criptografia': wiki('Criptografia'),
+        'DNS': wiki('Sistema_de_Nomes_de_Domínio'),
+        'DOM': wiki('Modelo_de_Objeto_de_Documentos'),
+        'DevOps': wiki('DevOps'),
+        'Driver': wiki('Controlador_de_dispositivo'),
+        'Docker': wiki('Docker_(software)'),
+        'Ethernet': wiki('Ethernet'),
+        'Firewall': wiki('Firewall'),
+        'Firmware': wiki('Firmware'),
+        'Framework': wiki('Framework'),
+        'Front-end': wiki('Front-end_e_back-end'),
+        'FTP/SFTP': wiki('Protocolo_de_Transferência_de_Arquivos'),
+        'Gateway': wiki('Gateway'),
+        'Git': wiki('Git'),
+        'GPU': wiki('Unidade_de_processamento_gráfico'),
+        'GUI': wiki('Interface_gráfica_do_utilizador'),
+        'Hardware': wiki('Hardware'),
+        'Hash': wiki('Função_hash'),
+        'HTML': wiki('HTML'),
+        'HTTP/HTTPS': wiki('Hypertext_Transfer_Protocol'),
+        'IDE': wiki('Ambiente_de_desenvolvimento_integrado'),
+        'Índice (BD)': wiki('Indice_(banco_de_dados)'),
+        'Inteligência Artificial': wiki('Inteligência_artificial'),
+        'Internet': wiki('Internet'),
+        'IPv4/IPv6': wiki('Internet_Protocol'),
+        'JavaScript': wiki('JavaScript'),
+        'JSON': wiki('JSON'),
+        'Kernel': wiki('Núcleo_(sistema_operacional)'),
+        'Kubernetes': wiki('Kubernetes'),
+        'Linguagem de Programação': wiki('Linguagem_de_programação'),
+        'Linux': wiki('Linux'),
+        'Log (Registro)': wiki('Log_de_dados'),
+        'Loop': wiki('Loop_(programação)'),
+        'Malware': wiki('Malware'),
+        'Memória RAM': wiki('Memória_de_acesso_aleatório'),
+        'Microserviços': wiki('Microsserviço'),
+        'Modelagem de Dados': wiki('Modelagem_de_dados'),
+        'Motherboard (Placa-mãe)': wiki('Placa-mãe'),
+        'Navegador (Browser)': wiki('Navegador_web'),
+        'NTP': wiki('Network_Time_Protocol'),
+        'Open Source': wiki('Código_aberto'),
+        'Orientação a Objetos': wiki('Programação_orientada_a_objetos'),
+        'Overclock': wiki('Overclocking'),
+        'Pacote (Packet)': wiki('Pacote_(computação)'),
+        'Pipeline CI/CD': wiki('Integração_Contínua'),
+        'Pixel': wiki('Pixel'),
+        'Placa de Rede (NIC)': wiki('Placa_de_rede'),
+        'Polimorfismo': wiki('Polimorfismo_(ciência_da_computação)'),
+        'Processo (SO)': wiki('Processo_(informática)'),
+        'Protocolo': wiki('Protocolo_(ciência_da_computação)'),
+        'Proxy': wiki('Proxy'),
+        'Query (Consulta)': wiki('Linguagem_de_consulta'),
+        'QoS': wiki('Qualidade_de_serviço_(telecomunicações)'),
+        'RAID': wiki('RAID'),
+        'Rede Neural': wiki('Rede_neural_artificial'),
+        'Rede (Computadores)': wiki('Rede_de_computadores'),
+        'Registro (CPU)': wiki('Registrador_(inform%C3%A1tica)'),
+        'Repositório': wiki('Reposit%C3%B3rio_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)'),
+        'Rest API': wiki('REST'),
+        'Roteador': wiki('Roteador'),
+        'SaaS': wiki('Software_como_serviço'),
+        'Script': wiki('Linguagem_de_script'),
+        'SDK': wiki('Kit_de_desenvolvimento_de_software'),
+        'Servidor': wiki('Servidor'),
+        'Sistema Operacional': wiki('Sistema_operacional'),
+        'SSH': wiki('Secure_Shell'),
+        'Switch': wiki('Comutador_de_rede'),
+        'TCP/UDP': wiki('TCP_e_UDP'),
+        'Terminal': wiki('Terminal_(informática)'),
+        'Thread': wiki('Thread_(computação)'),
+        'Token (Segurança)': wiki('Token_(segurança_da_informação)'),
+        'Topologia de Rede': wiki('Topologia_de_rede'),
+        'UART/USB': wiki('USB'),
+        'UI/UX': wiki('Experi%C3%AAncia_do_utilizador'),
+        'Unicode': wiki('Unicode'),
+        'URL/URI': wiki('Identificador_de_recursos_uniforme'),
+        'Virtualização': wiki('Virtualização'),
+        'VLAN': wiki('VLAN'),
+        'VRAM': wiki('VRAM'),
+        'VPN': wiki('Rede_privada_virtual'),
+        'WAN/LAN/WLAN': wiki('Rede_de_computadores'),
+        'Web': wiki('World_Wide_Web'),
+        'Wi‑Fi': wiki('Wi-Fi'),
+        'XML': wiki('XML'),
+        'YAML': wiki('YAML'),
+        'Zip (Compactação)': wiki('ZIP'),
+        'Zettabyte': wiki('Zettabyte')
+      };
+
+      // Index por letra
+      const GROUPS = {};
+      TERMS.forEach(x => {
+        if (!x.l) x.l = WIKI_OVERRIDE[x.t] || wiki(x.t);
+        const letter = (x.t[0] || '#').toUpperCase().normalize('NFD').replace(/[^A-Z#]/g,'');
+        GROUPS[letter] = GROUPS[letter] || [];
+        GROUPS[letter].push(x);
+      });
+      Object.keys(GROUPS).forEach(k => GROUPS[k].sort((a,b)=> a.t.localeCompare(b.t,'pt-BR')));
+
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      const alphabetBar = document.getElementById('alphabetBar');
+      const dictGrid = document.getElementById('dictGrid');
+      const filterInput = document.getElementById('filterInput');
+      const clearBtn = document.getElementById('clearBtn');
+
+      let activeLetter = null; // null = todas
+
+      function render() {
+        dictGrid.innerHTML = '';
+        const query = (filterInput.value || '').trim().toLowerCase();
+        const showLetters = activeLetter ? [activeLetter] : letters.filter(l => GROUPS[l]);
+        showLetters.forEach(letter => {
+          const bucket = (GROUPS[letter] || []).filter(item => {
+            if (!query) return true;
+            const hay = (item.t + ' ' + item.d + ' ' + (item.k||[]).join(' ')).toLowerCase();
+            return hay.includes(query);
+          });
+          if (bucket.length === 0) return;
+          // Cabeçalho da letra
+          const header = document.createElement('div');
+          header.className = 'letter-header';
+          header.innerHTML = `<h2>${letter}</h2>`;
+          dictGrid.appendChild(header);
+          // Itens
+          bucket.forEach(({t,d,l}) => {
+            const card = document.createElement('article');
+            card.className = 'term';
+            card.innerHTML = `
+              <h2>${t}</h2>
+              <hr>
+              <p>${d}</p>
+              <a class="dictBtn" href="${l}" target="_blank" rel="noopener noreferrer">Ler mais</a>
+            `;
+            dictGrid.appendChild(card);
+          });
+        });
+      }
+
+      // Monta a barra alfabética
+      const allBtn = document.createElement('button');
+      allBtn.textContent = 'Todos';
+      allBtn.classList.add('active');
+      allBtn.addEventListener('click', () => {
+        activeLetter = null;
+        document.querySelectorAll('.alphabet button').forEach(b => b.classList.remove('active'));
+        allBtn.classList.add('active');
+        render();
+        window.scrollTo({ top: document.querySelector('.subtitle').offsetTop, behavior: 'smooth' });
+      });
+      alphabetBar.appendChild(allBtn);
+
+      // Depois, as letras A-Z
+      letters.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.textContent = letter;
+        btn.dataset.letter = letter;
+        if (!GROUPS[letter]) { btn.disabled = true; btn.style.opacity = 0.4; }
+        btn.addEventListener('click', () => {
+          activeLetter = (activeLetter === letter) ? null : letter;
+          document.querySelectorAll('.alphabet button').forEach(b => b.classList.remove('active'));
+          if (activeLetter) btn.classList.add('active');
+          else allBtn.classList.add('active');
+          render();
+          window.scrollTo({ top: document.querySelector('.subtitle').offsetTop, behavior: 'smooth' });
+        });
+        alphabetBar.appendChild(btn);
+      });
+
+      // Filtro
+      filterInput.addEventListener('input', () => render());
+      clearBtn.addEventListener('click', () => { filterInput.value=''; render(); });
+
+      // Inicializa
+      render();
+    </script>
+  </body>
+</html>

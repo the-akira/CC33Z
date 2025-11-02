@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100%;
+  padding: 0;
+}
+
+header {
+  background-color: #5c6d82;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-bottom: solid 5.5px #273E74;
+}
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px;
+  margin-top: 8.5px;
+}
+
+h1 {
+  margin-top: 12px;
+  margin-bottom: 15px;
+  margin-right: 10px;
+  margin-left: 10px;
+  font-size: 3.2rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+h1.subtitle {
+  font-size: 2.4rem;
+  color: #273E74;
+  margin-top: 16.5px;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+article {
+  background-color: #f2f2f2;
+  border: 2.3px solid #273E74;
+  margin: 10px;
+  padding: 10px;
+  width: 350px;
+  text-align: center;
+}
+
+header > h2 {
+  font-size: 1.5em;
+  margin-bottom: 13px;
+}
+
+h2 {
+  font-size: 1.35em;
+  margin-bottom: 10px;
+  color: #273E74;
+}
+
+p {
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+
+#email {
+  color: white;
+  text-decoration: none;
+}
+
+a.button {
+  background-color: #5c6d82;
+  color: white;
+  display: inline-block;
+  padding: 13px 16px;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 10px;
+  font-size: 1.13rem;
+  border-right: 5px solid #273E74;
+  border-left: 5px solid #273E74;
+}
+
+a.button:hover {
+  background-color: #273E74;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 15px;
+  margin-top: 28px;
+  margin-left: 20px;
+  margin-right: 20px;
+  gap: 15px;
+}
+
+a.menu {
+  background-color: white;
+  color: #273E74;
+  display: inline-block;
+  padding: 9px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 3.3px solid #273E74;
+}
+
+a.menu:hover {
+  background-color: #273E74;
+  color: white;
+  border: 3.3px solid white;
+}
+
+.button, h2 {
+  margin-bottom: 10px;
+}
+
+.logo {
+  margin-top: 15px;
+  width: 60%;
+  height: auto;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+}
+
+.computer {
+  margin-top: 5px;
+  width: 110px;
+}
+
+.categories {
+  width: 100px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 13px;
+}
+
+@media only screen and (max-width: 900px) {
+  .logo {
+    width: 85%;
+    height: auto;
+  }
+}
+
+@media only screen and (max-width: 390px) {
+  h1 {
+    font-size: 2rem;
+  }
+  h1.subtitle {
+    font-size: 1.6rem;
+  }
+  header > h2 {
+    font-size: 1.08rem;
+  }
+  h2 {
+    font-size: 1.15rem;
+  }
+}

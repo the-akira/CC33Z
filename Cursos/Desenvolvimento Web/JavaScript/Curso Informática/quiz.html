@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de Informática - CEBRAC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100%;
+            padding: 0;
+            background-color: #F2F2F2;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            width: 90%;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px;
+            margin-bottom: 30px;
+            border: 2.3px solid #273E74;
+            box-sizing: border-box;
+            display: none;
+        }
+        
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #ecf0f1;
+            font-weight: bold;
+        }
+        
+        .question-container {
+            margin-bottom: 25px;
+        }
+        
+        .question {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            line-height: 1.4;
+            text-align: center;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 3px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .option.selected {
+            background-color: #5c6d82;
+            color: white;
+            border-color: #273E74;
+        }
+        
+        .option.correct {
+            background-color: #4caf50;
+            color: white;
+            border-color: #1a521d;
+        }
+        
+        .option.incorrect {
+            background-color: #f44336;
+            color: white;
+            border-color: #851010;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        #prev-btn {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        #prev-btn:hover:not(:disabled) {
+            background-color: #7f8c8d;
+        }
+        
+        #next-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        #next-btn:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+        
+        #submit-btn {
+            background-color: #2ecc71;
+            color: white;
+            display: none;
+        }
+        
+        #submit-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #confirm-btn {
+            background-color: #ff9800;
+            color: white;
+        }
+        #confirm-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        #confirm-btn:hover:not(:disabled) {
+            background-color: #e68900;
+        }
+                
+        .progress-container {
+            height: 12px;
+            background-color: #ecf0f1;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.4s ease;
+        }
+        
+        .results-container {
+            text-align: center;
+            padding: 30px;
+            display: none;
+            max-width: 800px;
+            width: 90%;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            border: 2.3px solid #273E74;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+        
+        .score {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin: 20px 0;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .score-text {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .restart-btn, #start-btn {
+            background-color: #5c6d82;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .restart-btn:hover, #start-btn:hover {
+            background-color: #273E74;
+        }
+        
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f1f8e9;
+            border-left: 4px solid #8bc34a;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .start-container {
+            text-align: center;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            border: 2.3px solid #273E74;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+
+        .start-container > h2,
+        .results-container > h2 {
+            margin-top: 0px;
+        }
+        
+        @media only screen and (max-width: 900px) {
+            .logo {
+                width: 85%;
+                height: auto;
+            }
+        }
+
+        @media only screen and (max-width: 515px) {
+            .navigation, .quiz-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+        
+        @media only screen and (max-width: 390px) {
+            h1 {
+                font-size: 2rem;
+            }
+            h1.subtitle {
+                font-size: 1.6rem;
+            }
+            header > h2 {
+                font-size: 1.08rem;
+            }
+            h2 {
+                font-size: 1.15rem;
+            }
+            
+            .question {
+                font-size: 1.2rem;
+            }
+            
+            .option {
+                padding: 12px;
+                font-size: 1rem;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+        <div class="icon">
+            <img class="computer" src="images/computer.png" alt="Computer">
+        </div>
+        <h1>Curso de Informática</h1>
+        <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+        <nav>
+            <a class="menu" href="index.html">Material</a>
+            <a class="menu" href="websites.html">Websites</a>
+            <a class="menu" href="ferramentas.html">Ferramentas</a>
+            <a class="menu" href="dicionario.html">Dicionário</a>
+            <a class="menu" href="quiz.html">Quiz</a>
+            <a class="menu" href="simulador.html">Simulador</a>
+        </nav>
+    </header>
+    
+    <h1 class="subtitle">Quiz de Informática</h1>
+
+    <div class="start-container" id="start-container">
+        <h2 style="margin-bottom: 20px;">Expansão da Compreensão</h2>
+        <p style="margin-bottom: 20px; font-size: 1.05rem;">Teste os seus conhecimentos sobre conceitos fundamentais da informática.</p>
+        <button id="start-btn">Iniciar</button>
+    </div>
+    
+    <div class="quiz-container">
+        <div class="quiz-info">
+            <div class="question-count">Pergunta: <span id="current">1</span>/<span id="total">20</span></div>
+            <div class="score-container">Pontuação: <span id="score">0</span></div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        
+        <div class="question-container">
+            <h2 class="question" id="question"></h2>
+            <div class="options-container" id="options-container"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="explanation" id="explanation"></div>
+        </div>
+        
+        <div class="navigation">
+            <button id="prev-btn" disabled>Anterior</button>
+            <button id="confirm-btn" disabled>Confirmar</button>
+            <button id="next-btn">Próxima</button>
+            <button id="submit-btn">Finalizar Quiz</button>
+        </div>
+    </div>
+    
+    <div class="results-container" id="results-container">
+        <h2>Quiz Finalizado!</h2>
+        <div class="score" id="final-score">0/20</div>
+        <p class="score-text" id="score-text">Sua pontuação</p>
+        <button class="restart-btn" id="restart-btn">Fazer Novamente</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "Qual destes é um dispositivo de entrada?",
+                options: ["Monitor", "Impressora", "Teclado", "Caixa de som"],
+                answer: 2,
+                explanation: "O teclado é um dispositivo de entrada, pois permite inserir dados no computador. Monitor, impressora e caixa de som são dispositivos de saída."
+            },
+            {
+                q: "Qual a função principal do processador (CPU)?",
+                options: ["Armazenar arquivos permanentemente", "Executar instruções e processar dados", "Gerar energia elétrica", "Exibir imagens na tela"],
+                answer: 1,
+                explanation: "A CPU (Unidade Central de Processamento) é responsável por executar instruções e processar dados. O armazenamento é feito por dispositivos como HD ou SSD."
+            },
+            {
+                q: "Qual formato de arquivo é ideal para imagens com fundo transparente?",
+                options: [".mp3", ".png", ".txt", ".exe"],
+                answer: 1,
+                explanation: "O formato PNG (Portable Network Graphics) suporta transparência e é ideal para imagens com fundo transparente. MP3 é para áudio, TXT para texto e EXE para executáveis."
+            },
+            {
+                q: "O que é RAM?",
+                options: ["Memória de armazenamento permanente", "Memória volátil usada durante a execução de programas", "Um tipo de placa de vídeo", "Disco rígido externo"],
+                answer: 1,
+                explanation: "RAM (Random Access Memory) é uma memória volátil usada para armazenar dados temporariamente durante a execução de programas."
+            },
+            {
+                q: "Qual destes é considerado software de sistema?",
+                options: ["Microsoft Word", "Sistema Operacional", "Google Chrome", "Adobe Photoshop"],
+                answer: 1,
+                explanation: "O sistema operacional (como Windows, Linux ou macOS) é software de sistema. Os outros são softwares aplicativos."
+            },
+            {
+                q: "Qual é a função principal de um firewall?",
+                options: ["Acelerar o computador", "Controlar o tráfego de rede com base em regras de segurança", "Armazenar arquivos", "Melhorar a qualidade do vídeo"],
+                answer: 1,
+                explanation: "Um firewall é um sistema de segurança que controla o tráfego de rede com base em regras predefinidas, protegendo contra acessos não autorizados."
+            },
+            {
+                q: "O que significa a sigla HTML?",
+                options: ["HyperText Markup Language", "High Transfer Machine Language", "Hyper Transfer Markup Language", "High Tech Modern Language"],
+                answer: 0,
+                explanation: "HTML significa HyperText Markup Language (Linguagem de Marcação de Hipertexto), usada para criar páginas web."
+            },
+            {
+                q: "Um SSD é:",
+                options: ["Disco rígido mecânico", "Unidade de estado sólido", "Um tipo de memória RAM", "Processador de última geração"],
+                answer: 1,
+                explanation: "SSD (Solid State Drive) é uma unidade de estado sólido, um dispositivo de armazenamento mais rápido e durável que os discos rígidos tradicionais (HDD)."
+            },
+            {
+                q: "Qual destes é um exemplo de software de aplicação?",
+                options: ["Windows 11", "Ubuntu", "Microsoft Excel", "Android"],
+                answer: 2,
+                explanation: "Microsoft Excel é um software aplicativo. Windows, Ubuntu e Android são sistemas operacionais (software de sistema)."
+            },
+            {
+                q: "Qual protocolo é usado principalmente para enviar e-mails?",
+                options: ["HTTP", "SMTP", "FTP", "TCP"],
+                answer: 1,
+                explanation: "SMTP (Simple Mail Transfer Protocol) é o protocolo usado para enviar e-mails. HTTP é para web, FTP para transferência de arquivos e TCP para comunicação em geral."
+            },
+            {
+                q: "O que significa a sigla URL?",
+                options: ["Universal Resource Locator", "Uniform Resource Locator", "Unified Reference Link", "Universal Reference Location"],
+                answer: 1,
+                explanation: "URL significa Uniform Resource Locator (Localizador Uniforme de Recursos), o endereço usado para acessar recursos na web."
+            },
+            {
+                q: "Qual destes NÃO é um navegador web?",
+                options: ["Google Chrome", "Mozilla Firefox", "Microsoft Excel", "Safari"],
+                answer: 2,
+                explanation: "Microsoft Excel é um software de planilhas, não um navegador web. Chrome, Firefox e Safari são navegadores."
+            },
+            {
+                q: "O que é um PDF?",
+                options: ["Um formato de documento portátil", "Um tipo de banco de dados", "Um programa de edição de texto", "Um protocolo de internet"],
+                answer: 0,
+                explanation: "PDF (Portable Document Format) é um formato de arquivo usado para apresentar documentos de forma independente do software, hardware ou sistema operacional."
+            },
+            {
+                q: "Qual destas extensões é de um arquivo de vídeo?",
+                options: [".mp3", ".jpg", ".mp4", ".docx"],
+                answer: 2,
+                explanation: "MP4 é um formato de arquivo de vídeo. MP3 é de áudio, JPG de imagem e DOCX documento do Word."
+            },
+            {
+                q: "O que é um software de código aberto?",
+                options: ["Software que não pode ser modificado", "Software com código fonte disponível para estudo e modificação", "Software que só funciona online", "Software com custo muito alto"],
+                answer: 1,
+                explanation: "Software de código aberto (open source) tem seu código fonte disponível para estudo, modificação e distribuição por qualquer pessoa."
+            },
+            {
+                q: "Qual destes serviços é de armazenamento em nuvem?",
+                options: ["Google Drive", "Adobe Photoshop", "Microsoft Word", "Windows Media Player"],
+                answer: 0,
+                explanation: "Google Drive é um serviço de armazenamento em nuvem. Os outros são softwares aplicativos para diferentes finalidades."
+            },
+            {
+                q: "Qual destes componentes é mais importante para processar jogos?",
+                options: ["Placa de vídeo", "Fonte de alimentação", "Monitor", "Teclado"],
+                answer: 0,
+                explanation: "A placa de vídeo (GPU) é crucial para jogos, pois processa gráficos complexos. Os outros componentes também são importantes, mas a GPU tem papel central na performance gráfica."
+            },
+            {
+                q: "O que é um backup?",
+                options: ["Cópia de segurança de dados", "Programa antivírus", "Tipo de memória RAM", "Dispositivo de entrada"],
+                answer: 0,
+                explanation: "Backup é uma cópia de segurança de dados importantes, para prevenir perdas em caso de falhas no sistema ou outros problemas."
+            },
+            {
+                q: "Qual destas é uma linguagem de programação?",
+                options: ["HTML", "CSS", "Python", "HTTP"],
+                answer: 2,
+                explanation: "Python é uma linguagem de programação. HTML e CSS são linguagens de marcação e estilo, respectivamente. HTTP é um protocolo."
+            },
+            {
+                q: "O que significa a sigla VPN?",
+                options: ["Virtual Private Network", "Visual Processing Node", "Video Production Network", "Virtual Protocol Number"],
+                answer: 0,
+                explanation: "VPN significa Virtual Private Network (Rede Privada Virtual), uma tecnologia que cria uma conexão segura e criptografada através de uma rede pública como a Internet."
+            }
+        ];
+
+        // Variáveis de estado do quiz
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = Array(questions.length).fill(null);
+        let answeredQuestions = Array(questions.length).fill(false);
+
+        // Elementos do DOM
+        const questionElement = document.getElementById('question');
+        const optionsContainer = document.getElementById('options-container');
+        const currentElement = document.getElementById('current');
+        const totalElement = document.getElementById('total');
+        const scoreElement = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const explanationElement = document.getElementById('explanation');
+        
+        const resultsContainer = document.getElementById('results-container');
+        const finalScoreElement = document.getElementById('final-score');
+        const scoreTextElement = document.getElementById('score-text');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Inicializar o quiz
+        function initQuiz() {
+            totalElement.textContent = questions.length;
+            loadQuestion();
+            updateProgressBar();
+            
+            // Adicionar event listeners aos botões
+            prevBtn.addEventListener('click', goToPreviousQuestion);
+            nextBtn.addEventListener('click', goToNextQuestion);
+            submitBtn.addEventListener('click', showResults);
+            restartBtn.addEventListener('click', restartQuiz);
+            confirmBtn.addEventListener('click', confirmAnswer);
+        }
+
+        // Carregar pergunta atual
+        function loadQuestion() {
+            const feedbackElement = document.getElementById('feedback');
+            feedbackElement.style.display = 'none';
+            const question = questions[currentQuestion];
+            questionElement.textContent = question.q;
+            
+            // Atualizar contador
+            currentElement.textContent = currentQuestion + 1;
+            scoreElement.textContent = score;
+            
+            // Limpar opções anteriores
+            optionsContainer.innerHTML = '';
+            
+            // Adicionar novas opções
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                
+                // Verificar se esta opção foi selecionada anteriormente
+                if (userAnswers[currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                    
+                    // Se já foi respondida, mostrar se está correta ou incorreta
+                    if (answeredQuestions[currentQuestion]) {
+                        if (index === questions[currentQuestion].answer) {
+                            optionElement.classList.add('correct');
+                        } else {
+                            optionElement.classList.add('incorrect');
+                        }
+                        
+                        // Adicionar cursor padrão para perguntas já respondidas
+                        optionElement.style.cursor = 'default';
+                    }
+                }
+                
+                // Para perguntas já respondidas, definir cursor como padrão
+                if (answeredQuestions[currentQuestion]) {
+                    optionElement.style.cursor = 'default';
+                    optionElement.style.pointerEvents = 'none';
+                } else {
+                    optionElement.style.cursor = 'pointer'; // Cursor de mão para perguntas não respondidas
+                }
+                
+                optionElement.textContent = option;
+                
+                // Só permitir clicar se ainda não foi respondida
+                if (!answeredQuestions[currentQuestion]) {
+                    optionElement.addEventListener('click', () => selectOption(index));
+                }
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Se já foi respondida, mostrar explicação
+            if (answeredQuestions[currentQuestion]) {
+                // Mostrar feedback para perguntas já respondidas
+                const feedbackElement = document.getElementById('feedback');
+                const isCorrect = userAnswers[currentQuestion] === questions[currentQuestion].answer;
+                const selectedOptionText = questions[currentQuestion].options[userAnswers[currentQuestion]];
+                
+                if (isCorrect) {
+                    feedbackElement.textContent = `Correto! Você escolheu a opção ${userAnswers[currentQuestion] + 1} (${selectedOptionText})`;
+                    feedbackElement.className = 'feedback correct';
+                } else {
+                    feedbackElement.textContent = `Incorreto! Você escolheu a opção ${userAnswers[currentQuestion] + 1} (${selectedOptionText})`;
+                    feedbackElement.className = 'feedback incorrect';
+                }
+                feedbackElement.style.display = 'block';
+
+                explanationElement.textContent = questions[currentQuestion].explanation;
+                explanationElement.style.display = 'block';
+                
+                // Destacar resposta correta
+                const options = document.querySelectorAll('.option');
+                options[questions[currentQuestion].answer].classList.add('correct');
+            } else {
+                explanationElement.style.display = 'none';
+            }
+            
+            // Atualizar estado dos botões
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+
+            if (answeredQuestions[currentQuestion]) {
+                confirmBtn.disabled = true; // Já foi confirmada, não pode confirmar de novo
+            } else if (userAnswers[currentQuestion] !== null) {
+                confirmBtn.disabled = false; // Já tem seleção, habilita o botão
+            } else {
+                confirmBtn.disabled = true;  // Nenhuma seleção, desabilita
+            }
+        }
+
+        // Selecionar uma opção
+        function selectOption(index) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            options[index].classList.add('selected');
+
+            userAnswers[currentQuestion] = index;
+
+            // Habilitar botão confirmar
+            confirmBtn.disabled = false;
+        }
+
+        function confirmAnswer() {
+            if (answeredQuestions[currentQuestion]) return; // já confirmada
+            
+            const index = userAnswers[currentQuestion];
+            if (index === null) return;
+
+            const options = document.querySelectorAll('.option');
+            const isCorrect = index === questions[currentQuestion].answer;
+            const feedbackElement = document.getElementById('feedback');
+            const selectedOptionText = questions[currentQuestion].options[index];
+
+            answeredQuestions[currentQuestion] = true;
+
+            if (isCorrect) {
+                feedbackElement.textContent = `Correto! Você escolheu a opção ${index + 1} (${selectedOptionText})`;
+                feedbackElement.className = 'feedback correct';
+                score++;
+                scoreElement.textContent = score;
+            } else {
+                feedbackElement.textContent = `Incorreto! Você escolheu a opção ${index + 1} (${selectedOptionText})`;
+                feedbackElement.className = 'feedback incorrect';
+            }
+            feedbackElement.style.display = 'block';
+
+            explanationElement.textContent = questions[currentQuestion].explanation;
+            explanationElement.style.display = 'block';
+
+            options.forEach((option, i) => {
+                option.style.pointerEvents = 'none';
+                option.style.cursor = 'default';
+                if (i === questions[currentQuestion].answer) {
+                    option.classList.add('correct');
+                } else if (i === index && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            confirmBtn.disabled = true;
+        }
+
+        // Ir para a próxima pergunta
+        function goToNextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+                updateProgressBar();
+            }
+        }
+
+        // Voltar para a pergunta anterior
+        function goToPreviousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+                updateProgressBar();
+            }
+        }
+
+        // Atualizar barra de progresso
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Mostrar resultados finais
+        function showResults() {
+            // Forçar correção de todas as perguntas não confirmadas
+            questions.forEach((q, i) => {
+                if (userAnswers[i] !== null && !answeredQuestions[i]) {
+                    answeredQuestions[i] = true;
+                    if (userAnswers[i] === q.answer) {
+                        score++;
+                    }
+                }
+            });
+
+            document.querySelector('.quiz-container').style.display = 'none';
+            resultsContainer.style.display = 'block';
+            
+            finalScoreElement.textContent = `${score}/${questions.length}`;
+            
+            // Mensagem personalizada baseada na pontuação
+            const percentage = (score / questions.length) * 100;
+            if (percentage >= 80) {
+                scoreTextElement.textContent = 'Excelente! Você é um expert em informática!';
+            } else if (percentage >= 60) {
+                scoreTextElement.textContent = 'Muito bom! Seu conhecimento é sólido.';
+            } else if (percentage >= 40) {
+                scoreTextElement.textContent = 'Bom! Mas ainda há espaço para melhorar.';
+            } else {
+                scoreTextElement.textContent = 'Continue estudando! Você vai melhorar.';
+            }
+        }
+
+        // Elementos
+        const startContainer = document.getElementById('start-container');
+        const startBtn = document.getElementById('start-btn');
+
+        // Iniciar quiz
+        startBtn.addEventListener('click', () => {
+            startContainer.style.display = 'none';
+            document.querySelector('.quiz-container').style.display = 'block';
+            initQuiz();
+            document.querySelector('.quiz-container').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Reiniciar o quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = Array(questions.length).fill(null);
+            answeredQuestions = Array(questions.length).fill(false);
+            
+            resultsContainer.style.display = 'none';
+            document.querySelector('.quiz-container').style.display = 'block';
+            
+            loadQuestion();
+            updateProgressBar();
+            document.querySelector('.quiz-container').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

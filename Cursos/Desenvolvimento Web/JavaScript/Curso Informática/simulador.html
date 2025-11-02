@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo base do corpo */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            color: #333;
+            height: 100%;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        textarea:focus, #program-name {
+            outline: none;
+        }
+
+        /* Cabeçalho com o novo esquema de cores */
+        .header {
+            background-color: #5c6d82;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-bottom: solid 5.5px #273E74;
+        }
+
+        .header h1 {
+            margin: 12px 10px 15px;
+            font-size: 3.2rem;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .header h2 {
+            font-size: 1.5em;
+            margin-bottom: 13px;
+        }
+
+        /* Layout principal responsivo */
+        .desktop {
+            min-height: calc(100vh - 150px);
+            background: white;
+            position: relative;
+            padding: 20px;
+        }
+
+        .window {
+            position: relative;
+            background: #f2f2f2;
+            border: 2.3px solid #273E74;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .titlebar {
+            background-color: #5c6d82;
+            color: white;
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2.3px solid #273E74;
+        }
+
+        .component {
+            border: 2.3px solid #273E74;
+            margin: 10px;
+            padding: 15px;
+            background: #f2f2f2;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cpu {
+            background: linear-gradient(135deg, #ffcccc, #ff9999);
+            position: relative;
+            min-height: 120px;
+        }
+
+        .ram {
+            background: linear-gradient(135deg, #ccffcc, #99ff99);
+            min-height: 150px;
+        }
+
+        .storage {
+            background: linear-gradient(135deg, #ccccff, #9999ff);
+            min-height: 100px;
+        }
+
+        .peripherals {
+            background: linear-gradient(135deg, #ffffcc, #ffff99);
+            min-height: 100px;
+        }
+
+        .component-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #273E74;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instruction {
+            background: white;
+            border: 1px solid #5c6d82;
+            padding: 5px 8px;
+            padding-top: 6px;
+            margin: 4px 0;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .instruction.active {
+            background: #ffff00;
+            border: 1px solid #273E74;
+        }
+
+        .instruction.processed {
+            background: rgb(224, 224, 255);
+            font-weight: bold;
+        }
+
+        .jump-target {
+            background-color: #ffc599 !important;
+            transition: background-color 0.8s ease;
+        }
+
+        .register {
+            background: #ffffff;
+            border: 1px solid #5c6d82;
+            padding: 5px 8px;
+            padding-top: 6px;
+            margin: 4px;
+            margin-left: 0px;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+            min-width: 70px;
+        }
+
+        .register.active {
+            background: #ffff00;
+            animation: blink 0.5s ease-in-out;
+        }
+
+        .memory-cell {
+            display: inline-block;
+            border: 1px solid #5c6d82;
+            background: white;
+            text-align: center;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            margin: 2px;
+            padding: 5px 7px;
+            padding-top: 6px;
+        }
+
+        .memory-cell.active {
+            background: #ffff00;
+            animation: blink 0.5s ease-in-out;
+        }
+
+        @keyframes blink {
+            0%, 100% { background: #ffff00; }
+            50% { background: #ffffff; }
+        }
+
+        .control-panel {
+            background: #f2f2f2;
+            padding: 15px;
+            border-top: 2.3px solid #273E74;
+        }
+
+        .btn {
+            background: #5c6d82;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background 0.3s;
+            border-right: 3px solid #273E74;
+            border-left: 3px solid #273E74;
+        }
+
+        .btn:hover {
+            background: #273E74;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn:disabled {
+            background: #595959;
+            cursor: not-allowed;
+        }
+
+        .btn:focus {
+            outline: none;
+        }
+
+        .status {
+            font-size: 1rem;
+            margin: 10px 0;
+            color: #273E74;
+            font-weight: bold;
+        }
+
+        .log {
+            background: #273E74;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            padding: 10px;
+            padding-top: 11px;
+            height: 100px;
+            overflow-y: auto;
+            border: 1px solid #5c6d82;
+            margin: 10px 0;
+            margin-bottom: 0px;
+        }
+
+        .log::-webkit-scrollbar,
+        textarea::-webkit-scrollbar {
+            width: 13px;
+        }
+
+        .log::-webkit-scrollbar-track,
+        textarea::-webkit-scrollbar-track {
+            background: white;
+        }
+         
+        .log::-webkit-scrollbar-thumb,
+        textarea::-webkit-scrollbar-thumb {
+            background: #5C6D82; 
+        }
+
+        .log::-webkit-scrollbar-thumb:hover,
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #9B9BFF;
+            cursor: initial;
+        }
+
+        .peripheral-item {
+            background: white;
+            border: 1px solid #5c6d82;
+            padding: 8px 10px;
+            margin: 5px 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .peripheral-item:hover {
+            background: rgb(224, 224, 255);
+        }
+
+        .peripheral-item.active {
+            background: #ffff00;
+        }
+
+        /* Layout responsivo com grid */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 0px;
+            padding: 15px;
+            position: relative;
+        }
+
+        #instructions-modal div[style*="background:white"] {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        #instructions-modal h3 {
+            font-size: 1.1rem;
+        }
+
+        #instructions-modal h4 {
+            font-size: 1rem;
+        }
+
+        #instructions-modal ul {
+            margin-left: 0px;
+            padding-left: 32.5px;
+        }
+
+        #instructions-modal li {
+            margin-bottom: 5px;
+        }
+
+        /* Scrollbar personalizada para o modal */
+        #instructions-modal div[style*="overflow-y:auto"]::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #instructions-modal div[style*="overflow-y:auto"]::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        #instructions-modal div[style*="overflow-y:auto"]::-webkit-scrollbar-thumb {
+            background: #5c6d82;
+        }
+
+        #instructions-modal div[style*="overflow-y:auto"]::-webkit-scrollbar-thumb:hover {
+            background: #9B9BFF;
+        }
+
+        .pipeline-stage {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid #273E74;
+            background: #ffffff;
+            text-align: center;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            transition: background 0.3s;
+        }
+
+        .pipeline-stage.active {
+            background: #ffff00 !important; /* destaque em amarelo */
+            font-weight: bold;
+        }
+
+        #cpu-activity {
+            width: 100%;
+            height: 60px; /* altura fixa ou proporcional */
+        }
+
+        #cpu-canvas {
+            margin-top: 15px;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Responsividade para o modal */
+        @media only screen and (max-width: 600px) {
+            #instructions-modal div[style*="width:600px"] {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            #instructions-modal h3 {
+                font-size: 1rem;
+            }
+            
+            #instructions-modal h4 {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media only screen and (max-height: 700px) {
+            #instructions-modal div[style*="max-height:80vh"] {
+                max-height: 90vh;
+            }
+        }
+
+        /* Responsividade */
+        @media only screen and (max-width: 1230px) {
+            .btn {
+                padding: 7px 14px;
+                font-size: 1rem;
+                margin: 2px;
+            }
+        }
+
+        @media only screen and (max-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, auto);
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .desktop {
+                padding: 10px;
+            }
+        }
+
+        @media only screen and (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .titlebar {
+                font-size: 1rem;
+                padding: 8px 10px;
+            }
+            
+            .component {
+                margin: 5px;
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+                margin: 2px;
+            }
+            
+            .control-panel {
+                padding: 10px;
+            }
+            
+            .grid-layout {
+                padding: 10px;
+                gap: 10px;
+            }
+        }
+
+        @media only screen and (max-width: 390px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header h2 {
+                font-size: 1rem;
+            }
+            
+            .component-title {
+                font-size: 1rem;
+            }
+            
+            .btn {
+                display: block;
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Simulador</h1>
+        <h2>Entenda como funciona um computador</h2>
+    </div>
+    
+    <div class="desktop">
+        <div class="window" id="main-window">
+            <div class="titlebar">
+                <span>Componentes do Computador</span>
+            </div>
+            
+            <div class="grid-layout">
+                <!-- CPU -->
+                <div class="component cpu" id="cpu-component">
+                    <div class="component-title">CPU (Processador)</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 8px;">Registradores:</div>
+                    <div>
+                        <span class="register" id="reg-a">A: 0</span>
+                        <span class="register" id="reg-b">B: 0</span>
+                        <span class="register" id="reg-pc">PC: 0</span>
+                    </div>
+                    <div class="flags" style="margin-top:8px;">
+                        <span>Flags:</span>
+                        <div id="flag-Z" style="display:inline-block; background: white; padding: 5px 8px; 
+                            border: 1px solid #5c6d82; padding-top: 6px; font-family: 'Courier New', monospace;">
+                            Z = 0
+                        </div>
+                    </div>
+                    <div style="font-size:0.9rem; margin-top:10px;">Pipeline:</div>
+                    <div id="pipeline-stages" style="display:flex; gap:10px; margin-top:5px; flex-wrap:wrap;">
+                        <div class="pipeline-stage" id="stage-fetch" style="flex:1; padding:6px; padding-top: 7px; border:1px solid #5c6d82; background:#ffffff; text-align:center; font-family:'Courier New';">Fetch</div>
+                        <div class="pipeline-stage" id="stage-decode" style="flex:1; padding:6px; padding-top: 7px; border:1px solid #5c6d82; background:#ffffff; text-align:center; font-family:'Courier New';">Decode</div>
+                        <div class="pipeline-stage" id="stage-execute" style="flex:1; padding:6px; padding-top: 7px; border:1px solid #5c6d82; background:#ffffff; text-align:center; font-family:'Courier New';">Execute</div>
+                    </div>
+                    <div style="font-size: 0.9rem; margin: 8px 0;">Instrução Atual:</div>
+                    <div id="current-instruction" style="background: white; border: 1px solid #5c6d82; padding: 8px; font-family: 'Courier New'; font-size: 0.9rem;">
+                        Aguardando...
+                    </div>
+                    <div style="font-size: 0.9rem; margin: 8px 0;">Status: <span id="cpu-status">IDLE</span></div>
+                    <div id="cpu-activity">
+                        <canvas id="cpu-canvas" width="200" height="60"></canvas>
+                    </div>
+                </div>
+
+                <!-- RAM -->
+                <div class="component ram" id="ram-component">
+                    <div class="component-title">RAM (Memória)</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 8px;">Instruções carregadas:</div>
+                    <div id="ram-instructions">
+                        <div class="instruction" data-addr="0">LOAD A, 5</div>
+                        <div class="instruction" data-addr="1">LOAD B, 3</div>
+                        <div class="instruction" data-addr="2">ADD A, B</div>
+                        <div class="instruction" data-addr="3">STORE A, 10</div>
+                        <div class="instruction" data-addr="4">INPUT KB</div>
+                        <div class="instruction" data-addr="5">OUTPUT MON</div>
+                    </div>
+                    <div style="font-size: 0.9rem; margin: 8px 0;">Dados (endereços 8-15):</div>
+                    <div id="memory-data">
+                        <span class="memory-cell" data-addr="8">0</span>
+                        <span class="memory-cell" data-addr="9">0</span>
+                        <span class="memory-cell" data-addr="10">0</span>
+                        <span class="memory-cell" data-addr="11">0</span>
+                        <span class="memory-cell" data-addr="12">0</span>
+                        <span class="memory-cell" data-addr="13">0</span>
+                        <span class="memory-cell" data-addr="14">0</span>
+                        <span class="memory-cell" data-addr="15">0</span>
+                    </div>
+                </div>
+
+                <!-- Armazenamento -->
+                <div class="component storage" id="storage-component">
+                    <div class="component-title">Armazenamento (HD)</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 8px;">Programas salvos:</div>
+                    <div id="storage-programs"></div>
+                    <div style="font-size: 0.9rem; margin: 8px 0;">Dados permanentes:</div>
+                    <div id="storage-data" style="font-family: 'Courier New'; font-size: 0.8rem;">
+                        config.txt: user=admin<br>
+                        dados.dat: 42, 13, 99<br>
+                        backup.bak: sistema_ok
+                    </div>
+                </div>
+
+                <!-- Periféricos -->
+                <div class="component peripherals" id="peripherals-component">
+                    <div class="component-title">Periféricos</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 8px;">Dispositivos:</div>
+                    <div class="peripheral-item" onclick="simulateInput('KB')" id="keyboard">Teclado: Pressione para simular</div>
+                    <div class="peripheral-item" onclick="simulateInput('MOUSE')" id="mouse">Mouse: Click detectado</div>
+                    <div class="peripheral-item" id="monitor">Monitor: <span id="monitor-output">Aguardando...</span></div>
+                    <div class="peripheral-item" id="speaker">Alto-falante: Silêncio</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <button class="btn" onclick="startSimulation()" id="start-btn">Iniciar</button>
+                <button class="btn" onclick="stepSimulation()" id="step-btn">Passo a Passo</button>
+                <button class="btn" onclick="resetSimulation()" id="reset-btn">Reiniciar</button>
+                <button class="btn" onclick="toggleSpeed()" id="speed-btn">Velocidade: Lenta</button>
+                <button class="btn" onclick="clearLogs()" id="clear-logs-btn">Limpar Logs</button>
+                <button class="btn" onclick="openEditor()">Editar Programa</button>
+                <button class="btn" onclick="openInstructions()">Instruções</button>
+                <button class="btn" onclick="openIndex()">Página Inicial</button>
+                
+                <div class="status" id="simulation-status">Sistema pronto. Clique em Iniciar para começar a simulação.</div>
+                
+                <div class="log" id="activity-log">
+                > Sistema inicializado<br>
+                > Preparando módulos essenciais<br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editor-modal" style="display:none; position:fixed; top:0; left:0; 
+        width:100%; height:100%; background:rgba(0,0,0,0.6); 
+        align-items:center; justify-content:center; z-index:1000;">
+        
+        <div style="background:white; padding:20px; width:500px; max-width:90%;">
+            <h2 style="margin-top: 0px; color: #273E74;">Editor de Programa</h2>
+            <input type="text" id="program-name" placeholder="Nome do programa" style="width:98%; font-family:'Courier New'; font-size:1rem;background: #F2F2F2; border: 1px solid #273E74; margin-bottom: 5px; height: 25px;">
+            <textarea id="program-editor" rows="10" style="width:98%; font-family:'Courier New'; font-size:0.9rem; resize: none;
+                background: #F2F2F2; border: 1px solid #273E74;"></textarea>
+            <div class="modal-btns" style="margin-top:10px; text-align:right;">
+                 <input type="file" id="import-file" style="display:none;" accept=".txt" onchange="importProgramToEditor(event)">
+                <button class="btn" onclick="saveProgramToHD()">Salvar</button>
+                <button class="btn" onclick="document.getElementById('import-file').click()">Importar</button>
+                <button class="btn" onclick="exportProgramFromEditor()">Exportar</button>
+                <button class="btn" onclick="closeEditor()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="instructions-modal" style="display:none; position:fixed; top:0; left:0; 
+        width:100%; height:100%; background:rgba(0,0,0,0.6); 
+        align-items:center; justify-content:center; z-index:1000;">
+        
+        <div style="background:white; padding:20px; width:600px; max-width:90%; max-height:80vh; overflow:hidden; display:flex; flex-direction:column;">
+            <h2 style="margin-top: 0px; color: #273E74; border-bottom: 2px solid #273E74; padding-bottom:10px;">Instruções do Simulador</h2>
+            
+            <div style="overflow-y:auto; padding-right:10px; flex:1;">
+                <h3 style="color:#5c6d82; margin-top:0px;">Como Usar o Simulador</h3>
+                <p>Este simulador demonstra o funcionamento básico de um computador com seus principais componentes.</p>
+                
+                <h3 style="color:#5c6d82; margin-top:15px;">Componentes do Computador</h3>
+                
+                <h4 style="color:#273E74; margin-top:10px;">CPU (Processador)</h4>
+                <p><strong>Função:</strong> É o "cérebro" do computador. Busca instruções na memória, interpreta e executa operações lógicas, aritméticas e de controle.</p>
+                <p><strong>Principais componentes:</strong></p>
+                <ul>
+                  <li><strong>A e B:</strong> Registradores de uso geral, usados para cálculos e manipulação de dados.</li>
+                  <li><strong>PC (Program Counter):</strong> Registrador que aponta para o endereço da próxima instrução a ser executada, controlando o fluxo do programa.</li>
+                  <li><strong>Flag Z:</strong> Indicador de condição (zero/igualdade). No uso da instrução <code>CMP</code> recebe valor 1 quando o registrador A é igual ao B; caso contrário, 0. É usado para decisões em instruções condicionais (ex.: <code>JEQ</code>, <code>JNE</code>).</li>
+                </ul>
+
+                <h4 style="color:#273E74; margin-top:10px;">RAM (Memória)</h4>
+                <p><strong>Função:</strong> Guardar temporariamente instruções e dados que o CPU está usando no momento.</p>
+                <p><strong>Características:</strong> É <em>volátil</em> (perde os dados ao desligar o computador), tem acesso rápido e capacidade limitada em comparação ao HD. Serve como "área de trabalho" do processador.</p>
+
+                <h4 style="color:#273E74; margin-top:10px;">Armazenamento (HD)</h4>
+                <p><strong>Função:</strong> Guardar programas e dados de forma permanente, mesmo quando o computador está desligado.</p>
+                <p><strong>Características:</strong> É <em>não volátil</em>, possui alta capacidade de armazenamento, mas tem acesso mais lento que a RAM. Serve como "biblioteca" de programas e arquivos que podem ser carregados para a RAM quando necessário.</p>
+                
+                <h4 style="color:#273E74; margin-top:10px;">Periféricos</h4>
+                <p><strong>Função:</strong> Dispositivos de entrada e saída.</p>
+                <ul>
+                    <li><strong>Teclado:</strong> Entrada de dados</li>
+                    <li><strong>Mouse:</strong> Entrada de comandos</li>
+                    <li><strong>Monitor:</strong> Saída de resultados</li>
+                    <li><strong>Alto-falante:</strong> Saída de áudio</li>
+                </ul>
+                
+                <h3 style="color:#5c6d82; margin-top:15px;">Controles</h3>
+                <ul>
+                    <li><strong>Iniciar:</strong> Executa o programa automaticamente</li>
+                    <li><strong>Passo a Passo:</strong> Executa uma instrução por vez</li>
+                    <li><strong>Reiniciar:</strong> Volta ao estado inicial</li>
+                    <li><strong>Velocidade:</strong> Alterna entre execução lenta e rápida</li>
+                    <li><strong>Limpar Logs:</strong> Limpa o histórico de atividades</li>
+                    <li><strong>Editar Programa:</strong> Permite criar programas personalizados</li>
+                </ul>
+                
+                <h3 style="color:#5c6d82; margin-top:15px;">Conjunto de Instruções</h3>
+                
+                <h4 style="color:#273E74; margin-top:10px;">Instruções Aritméticas</h4>
+                <div style="background:#f5f5f5; padding:10px; border-left:3px solid #273E74; font-family:'Courier New'; margin:5px 0;">
+                    <strong>LOAD A, 5</strong> - Carrega o valor 5 no registrador A<br>
+                    <strong>ADD A, B</strong> - Soma A + B e armazena em A<br>
+                    <strong>SUB A, B</strong> - Subtrai B de A e armazena em A<br>
+                    <strong>MUL A, B</strong> - Multiplica A × B e armazena em A<br>
+                    <strong>DIV A, B</strong> - Divide A por B e armazena em A
+                </div>
+                
+                <h4 style="color:#273E74; margin-top:17px;">Instruções de Memória</h4>
+                <div style="background:#f5f5f5; padding:10px; border-left:3px solid #273E74; font-family:'Courier New'; margin:5px 0;">
+                    <strong>STORE A, 10</strong> - Armazena valor de A no endereço 10 da memória<br>
+                    <strong>LOAD B, 15</strong> - Carrega valor 15 no registrador B
+                </div>
+
+                <h4 style="color:#273E74; margin-top:17px;">Instruções de Controle de Fluxo</h4>
+                <div style="background:#f5f5f5; padding:10px; border-left:3px solid #273E74; font-family:'Courier New'; margin:5px 0;">
+                    <strong>JMP 5</strong> - Salta para a instrução no endereço 5<br>
+                    <strong>CMP A, B</strong> - Compara A com B e define a flag Z<br>
+                    <strong>JEQ 8</strong> - Salta para endereço 8 se Z=1 (A igual a B)<br>
+                    <strong>JNE 8</strong> - Salta para endereço 8 se Z=0 (A diferente de B)<br>
+                    <strong>HALT</strong> - Para a execução do programa
+                </div>
+                
+                <h4 style="color:#273E74; margin-top:17px;">Instruções de E/S (Entrada/Saída)</h4>
+                <div style="background:#f5f5f5; padding:10px; border-left:3px solid #273E74; font-family:'Courier New'; margin:5px 0;">
+                    <strong>INPUT KB</strong> - Lê entrada do teclado para o registrador A<br>
+                    <strong>INPUT RAT</strong> - Lê entrada do mouse para o registrador A<br>
+                    <strong>OUTPUT MON</strong> - Exibe valor de A no monitor<br>
+                    <strong>OUTPUT SPK</strong> - Toca áudio no alto-falante
+                </div>
+                
+                <h3 style="color:#5c6d82; margin-top:15px;">Exemplo de Programa</h3>
+                <div style="background:#e8f4f8; padding:10px; border:1px solid #273E74; font-family:'Courier New'; margin:5px 0;">
+                    LOAD A, 5<br>
+                    LOAD B, 3<br>
+                    ADD A, B<br>
+                    STORE A, 10<br>
+                    OUTPUT MON<br>
+                    HALT
+                </div>
+                <p><strong>Resultado:</strong> Calcula 5 + 3 = 8 e exibe no monitor.</p>
+                
+                <h3 style="color:#5c6d82; margin-top:15px;">Dicas</h3>
+                <ul>
+                    <li>Use "Passo a Passo" para entender cada instrução</li>
+                    <li>Observe como os registradores e memória mudam</li>
+                    <li>Experimente criar programas no editor</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top:15px; text-align:right; border-top:1px solid #ddd; padding-top:10px;">
+                <button class="btn" onclick="closeInstructions()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ComputerSimulator {
+            constructor() {
+                this.registers = { A: 0, B: 0, PC: 0 };
+                this.flags = { Z: false }; // Z = Zero/Igualdade
+                this.memory = new Array(16).fill(0);
+                this.isRunning = false;
+                this.wasReset = false;
+                this.halted = false;
+                this.didJump = false;
+                this.speed = 1500; // ms entre instruções
+            }
+
+            reset() {
+                this.registers = { A: 0, B: 0, PC: 0 };
+                this.flags = { Z: false }; // Z = Zero/Igualdade
+                this.memory = new Array(16).fill(0);
+                this.isRunning = false;
+                this.wasReset = false;
+                this.halted = false;
+                this.didJump = false;
+                this.updateDisplay();
+                this.clearInstructionHighlights();                
+            }
+
+            log(message) {
+                const logEl = document.getElementById('activity-log');
+                logEl.innerHTML += `> ${message}<br>`;
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+
+            clearLogs() {
+                const logEl = document.getElementById('activity-log');
+                logEl.innerHTML = '> Logs limpos<br>> Sistema pronto<br>';
+                this.log('Logs do sistema limpos');
+            }
+
+            clearInstructionHighlights() {
+                document.querySelectorAll('.instruction').forEach(inst => {
+                    inst.classList.remove('active', 'processed', 'jump-target');
+                });
+            }
+
+            clearAllHighlights() {
+                // Instruções
+                document.querySelectorAll('.instruction').forEach(inst => {
+                    inst.classList.remove('active', 'processed', 'jump-target');
+                });
+
+                // Registradores
+                document.querySelectorAll('.register').forEach(reg => {
+                    reg.classList.remove('active');
+                });
+
+                // Memória
+                document.querySelectorAll('.memory-cell').forEach(cell => {
+                    cell.classList.remove('active');
+                });
+
+                // Periféricos (se quiser limpar também)
+                document.querySelectorAll('.peripheral-item').forEach(p => {
+                    p.classList.remove('active');
+                });
+            }
+
+            updateDisplay(mode = "start") {
+                document.getElementById('reg-a').textContent = `A: ${this.registers.A}`;
+                document.getElementById('reg-b').textContent = `B: ${this.registers.B}`;
+                document.getElementById('reg-pc').textContent = `PC: ${this.registers.PC}`;
+
+                const zFlagEl = document.getElementById('flag-Z');
+                if (this.flags.Z) {
+                    zFlagEl.textContent = "Z = 1";
+                    zFlagEl.style.background = "#c8f7c5"; // verde
+                } else {
+                    zFlagEl.textContent = "Z = 0";
+                    zFlagEl.style.background = "white"; // vermelho
+                }
+
+                // Atualizar células de memória
+                const memCells = document.querySelectorAll('.memory-cell');
+                memCells.forEach((cell, index) => {
+                    const addr = parseInt(cell.dataset.addr);
+                    cell.innerHTML = `<b>${addr}:</b>${this.memory[addr] || 0}`;
+                });
+
+                // Atualizar status
+                if (mode === "start") document.getElementById('cpu-status').textContent = this.isRunning ? 'EXECUTANDO' : 'IDLE';
+            }
+
+            highlightActive(index) {
+                const instructions = document.querySelectorAll('.instruction');
+                instructions.forEach((inst, i) => {
+                    inst.classList.remove('active');
+                    if (i === index) {
+                        inst.classList.add('active');
+                    }
+                });
+            }
+
+            markProcessed(index) {
+                const instructions = document.querySelectorAll('.instruction');
+                if (instructions[index]) {
+                    instructions[index].classList.remove('active');
+                    instructions[index].classList.add('processed');
+                }
+            }
+
+            highlightMemory(address) {
+                const cell = document.querySelector(`[data-addr="${address}"]`);
+                if (cell) {
+                    cell.classList.add('active');
+                    setTimeout(() => cell.classList.remove('active'), 1000);
+                }
+            }
+
+            highlightRegister(registerName) {
+                const registerEl = document.getElementById(`reg-${registerName.toLowerCase()}`);
+                if (registerEl) {
+                    registerEl.classList.add('active');
+                    setTimeout(() => registerEl.classList.remove('active'), 1000);
+                }
+            }
+
+            highlightJumpTarget(addr) {
+                const row = document.querySelector(`#ram-instructions div[data-addr="${addr}"]`);
+                if (row) {
+                    row.classList.add("jump-target");
+                    setTimeout(() => row.classList.remove("jump-target"), 800); 
+                }
+            }
+
+            async executeInstruction(instruction, mode) {
+                const parts = instruction.split(/[, ]+/);
+                const cmd = parts[0];
+
+                if (this.wasReset) return;
+
+                document.getElementById('current-instruction').textContent = instruction;
+                this.log(`Executando: ${instruction}`);
+
+                switch (cmd) {
+                    case 'LOAD':
+                        const reg = parts[1];
+                        const value = parseInt(parts[2]);
+                        this.registers[reg] = value;
+                        this.log(`Carregado ${value} no registrador ${reg}`);
+                        if (!this.wasReset) this.highlightRegister(reg); 
+                        break;
+
+                    case 'ADD':
+                        this.registers.A = this.registers.A + this.registers.B;
+                        this.log(`Soma: A = ${this.registers.A}`);
+                        if (!this.wasReset) this.highlightRegister('A'); 
+                        break;
+
+                    case 'MUL':
+                        this.registers.A = this.registers.A * this.registers.B;
+                        this.log(`Multiplicação: A = ${this.registers.A}`);
+                        if (!this.wasReset) this.highlightRegister('A'); 
+                        break;
+
+                    case 'SUB':
+                        this.registers.A = this.registers.A - this.registers.B;
+                        this.log(`Subtração: A = ${this.registers.A}`);
+                        if (!this.wasReset) this.highlightRegister('A');
+                        break;
+
+                    case 'DIV':
+                        if (this.registers.B === 0) {
+                            this.log("Erro: divisão por zero");
+                            this.isRunning = false;
+                            return false;
+                        }
+                        this.registers.A = parseFloat((this.registers.A / this.registers.B).toFixed(1));
+                        this.log(`Divisão: A = ${this.registers.A}`);
+                        if (!this.wasReset) this.highlightRegister('A');
+                        break;
+
+                    case 'CMP': // compara A com B
+                        this.flags.Z = (this.registers.A === this.registers.B);
+                        this.log(`Comparação: A=${this.registers.A}, B=${this.registers.B}, Z=${this.flags.Z}`);
+                        break;
+
+                    case 'JMP': // salto incondicional
+                        const addrJmp = parseInt(parts[1]);
+                        const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+                        const program = saved[this.currentProgram];
+                        if (isNaN(addrJmp) || addrJmp < 0 || addrJmp >= program.code.length) {
+                            this.log(`Endereço inválido no JMP: ${parts[1]}`);
+                            return false; // para execução
+                        }
+                        this.registers.PC = addrJmp;
+                        this.log(`Salto incondicional para ${addrJmp}`);
+                        this.didJump = true;
+                        return true;
+
+                    case 'JEQ': { // salto se Z = 1
+                        const addrJeq = parseInt(parts[1]);
+                        const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+                        const program = saved[this.currentProgram];
+                        if (isNaN(addrJeq) || addrJeq < 0 || addrJeq >= program.code.length) {
+                            this.log(`Endereço inválido no JEQ: ${parts[1]}`);
+                            return false;
+                        }
+                        if (this.flags.Z) {
+                            this.registers.PC = addrJeq;
+                            this.log(`Salto condicional (JEQ) para ${addrJeq}`);
+                            this.didJump = true;
+                        }
+                        return true;
+                    }
+
+                    case 'JNE': { // salto se Z = 0
+                        const addrJne = parseInt(parts[1]);
+                        const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+                        const program = saved[this.currentProgram];
+                        if (isNaN(addrJne) || addrJne < 0 || addrJne >= program.code.length) {
+                            this.log(`Endereço inválido no JNE: ${parts[1]}`);
+                            return false;
+                        }
+                        if (!this.flags.Z) {
+                            this.registers.PC = addrJne;
+                            this.log(`Salto condicional (JNE) para ${addrJne}`);
+                            this.didJump = true;
+                        }
+                        return true;
+                    }
+
+                    case 'STORE':
+                        const regStore = parts[1];
+                        const addrStore = parseInt(parts[2]);
+                        this.memory[addrStore] = this.registers[regStore];
+                        if (!this.wasReset) this.highlightMemory(addrStore);
+                        this.log(`Valor ${this.registers[regStore]} do registrador ${regStore} armazenado no endereço ${addrStore}`);
+                        break;
+
+                    case 'INPUT':
+                        const device = parts[1];
+                        if (device === 'KB') {
+                            this.registers.A = Math.floor(Math.random() * 10) + 1;
+                            this.log(`Entrada do teclado: ${this.registers.A}`);
+                            if (!this.wasReset) this.highlightRegister('A'); 
+                            document.getElementById('keyboard').classList.add('active');
+                            setTimeout(() => document.getElementById('keyboard').classList.remove('active'), 1000);
+                        } else if (device === 'RAT') {
+                            this.registers.A = Math.random() < 0.5 ? 0 : 1;
+                            this.log(`Entrada do mouse: ${this.registers.A}`);
+                            if (!this.wasReset) this.highlightRegister('A'); 
+                            document.getElementById('mouse').classList.add('active');
+                            setTimeout(() => document.getElementById('mouse').classList.remove('active'), 1000);                            
+                        }
+                        break;
+
+                    case 'OUTPUT':
+                        const outDevice = parts[1];
+                        if (outDevice === 'MON') {
+                            document.getElementById('monitor-output').textContent = `Resultado: ${this.registers.A}`;
+                            this.log(`Saída para monitor: ${this.registers.A}`);
+                            document.getElementById('monitor').classList.add('active');
+                            setTimeout(() => document.getElementById('monitor').classList.remove('active'), 1000);
+                        } else if (outDevice === 'SPK') {
+                            const rate = 0.5 + (this.registers.A / 10);
+                            playAudioSimple("beep.mp3", rate);
+                            this.log(`Alto-falante tocou beep externo (rate=${rate.toFixed(2)})`);
+                            const spk = document.getElementById('speaker');
+                            spk.textContent = "Alto-falante: Som!";
+                            spk.classList.add('active');
+                            setTimeout(() => {
+                                spk.textContent = "Alto-falante: Silêncio";
+                                spk.classList.remove('active');
+                            }, 400);
+                        }
+                        break;
+
+                    case 'HALT':
+                        this.halted = true;
+                        this.log('Programa finalizado');
+                        return false;
+                }
+
+                this.updateDisplay(mode);
+                return true;
+            }
+
+            setControlsRunning(isRunning) {
+                const startBtn = document.getElementById("start-btn");
+                const stepBtn = document.getElementById("step-btn");
+
+                if (startBtn) {
+                    startBtn.disabled = isRunning;
+                    startBtn.style.cursor = isRunning ? "not-allowed" : "pointer";
+                }
+                if (stepBtn) {
+                    stepBtn.disabled = isRunning;
+                    stepBtn.style.cursor = isRunning ? "not-allowed" : "pointer";
+                }
+            }
+
+            async start() {
+                if (this.isRunning || this.halted) return;
+                
+                this.updateDisplay();
+                this.setControlsRunning(true);
+                this.clearAllHighlights();
+
+                // buscar do localStorage
+                const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+                const program = saved[this.currentProgram];
+                if (!program) {
+                    this.log("Nenhum programa carregado");
+                    this.isRunning = false;
+                    this.setControlsRunning(false);
+                    return;
+                }
+
+                this.isRunning = true;
+                startCpuAnimation();
+
+                const instructions = program.code;
+
+                this.log(`Iniciando execução do programa "${program.name}"`);
+                document.getElementById('simulation-status').textContent = `Executando ${program.name}...`;
+                document.getElementById('cpu-status').textContent = 'EXECUTANDO';
+
+                while (this.registers.PC < instructions.length && this.isRunning) {
+                    const i = this.registers.PC;
+                    this.updateDisplay("start");
+                    this.highlightActive(i);
+
+                    const instruction = instructions[i];
+
+                    // --- FETCH ---
+                    showPipeline("fetch");
+                    this.log(`Fetch: buscando instrução no endereço ${i}`);
+                    document.getElementById('current-instruction').textContent = instruction;
+                    await new Promise(r => setTimeout(r, this.speed));
+                    if (!this.isRunning) { showPipeline(null); break; }
+
+                    // --- DECODE ---
+                    showPipeline("decode");
+                    const parts = instruction.split(/[, ]+/);
+                    this.log(`Decode: opcode=${parts[0]}, operandos=${parts.slice(1).join(', ')}`);
+                    await new Promise(r => setTimeout(r, this.speed));
+                    if (!this.isRunning) { showPipeline(null); break; }
+
+                    // --- EXECUTE ---
+                    showPipeline("execute");
+                    const shouldContinue = await this.executeInstruction(instruction, "start");
+                    await new Promise(r => setTimeout(r, this.speed));
+                    if (!this.isRunning) { showPipeline(null); break; }
+
+                    this.markProcessed(i);
+                    if (!this.wasReset && i === instructions.length - 1) {
+                        document.getElementById('cpu-status').textContent = 'CONCLUÍDO';
+                        stopCpuAnimation();
+                    }
+
+                    showPipeline(null);
+
+                    if (!shouldContinue) {
+                        this.isRunning = false;
+                        document.getElementById('cpu-status').textContent = 'INTERROMPIDO';
+                        stopCpuAnimation();
+                        break;
+                    }
+
+                    // só avança PC se a instrução não tiver alterado
+                    if (!this.didJump) {
+                        this.registers.PC++;
+                        this.updateDisplay("start");
+                    } else {
+                        startCpuAnimation();
+                        await new Promise(resolve => setTimeout(resolve, this.speed * 2));
+                        if (!(this.wasReset || !this.isRunning)) {
+                            this.highlightJumpTarget(this.registers.PC);
+                            this.updateDisplay("start");
+                            await new Promise(resolve => setTimeout(resolve, this.speed * 2));
+                            if (!(this.wasReset || !this.isRunning)) {
+                                this.clearInstructionHighlights();
+                            }
+                        }
+                        this.didJump = false;
+                    }
+
+                    await new Promise(resolve => setTimeout(resolve, this.speed));
+                }
+
+                // se quisermos saber se foi interrompido via reset, podemos checar wasReset signal (se usar)
+                this.isRunning = false;
+                this.setControlsRunning(false);
+
+                // se terminou naturalmente (PC == instructions.length), movemos PC ao fim para evitar reexecução no Step
+                if (!this.wasReset) {
+                    this.registers.PC = instructions.length;
+                    document.getElementById('simulation-status').textContent = 'Programa finalizado. Sistema em IDLE.';
+                    this.log('Execução completa');
+                } else {
+                    document.getElementById('simulation-status').textContent = 'Execução interrompida. Sistema em IDLE.';
+                    this.log('Execução interrompida');
+                    this.wasReset = false;
+                }
+            }
+
+            async step() {
+                const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+                const program = saved[this.currentProgram];
+
+                if (!program) {
+                    this.log("Nenhum programa carregado");
+                    return;
+                }
+
+                if (this.halted) {
+                    this.halted = false;     // libera execução
+                    this.registers.PC = 0;   // volta para o início
+                    document.querySelectorAll('.instruction').forEach(inst => inst.classList.remove('processed', 'active'));
+                    document.getElementById('current-instruction').textContent = 'Aguardando...';
+                    document.getElementById('simulation-status').textContent = `Pronto para executar ${program.name}.`;
+                    this.reset();
+                    this.updateDisplay();
+                    this.log('Programa terminou por HALT — voltando ao início para novo Passo.');
+                }
+
+                if (this.wasReset) {
+                    this.registers.PC = 0;   // volta ao início
+                    this.wasReset = false;   // limpa flag
+                }
+
+                const instructions = program.code;
+
+                if (this.registers.PC >= instructions.length) {
+                    this.registers.PC = 0;
+                    // limpa visualmente as instruções processadas/ativas para parecer um "reset" suave
+                    document.querySelectorAll('.instruction').forEach(inst => inst.classList.remove('processed', 'active'));
+                    document.getElementById('current-instruction').textContent = 'Aguardando...';
+                    document.getElementById('simulation-status').textContent = `Pronto para executar ${program.name}.`;
+                    this.reset();
+                    this.updateDisplay();
+                    this.log('Programa terminou — voltando ao início para novo Passo.');
+                    // não retorna: vamos prosseguir e executar a instrução 0 neste clique de "Passo a Passo"
+                }
+
+                this.setControlsRunning(true);
+
+                const i = this.registers.PC;
+                this.updateDisplay("step");
+                if (!this.wasReset) {
+                    this.highlightActive(i);
+                    document.getElementById('cpu-status').textContent = 'EXECUTANDO';
+                    startCpuAnimation();
+                }
+                const instruction = instructions[i];
+
+                // FETCH
+                if (!this.wasReset) showPipeline("fetch");
+                this.log(`Fetch (step): buscando instrução no endereço ${i}`);
+                document.getElementById('current-instruction').textContent = instruction;
+                await new Promise(r => setTimeout(r, this.speed));
+
+                if (this.wasReset || this.isRunning) {
+                    showPipeline(null);
+                    if (!this.isRunning) {
+                        this.setControlsRunning(false);
+                    } 
+                    return;
+                }
+
+                // DECODE
+                if (!this.wasReset) showPipeline("decode");
+                const parts = instruction.split(/[, ]+/);
+                this.log(`Decode (step): opcode=${parts[0]}, operandos=${parts.slice(1).join(', ')}`);
+                await new Promise(r => setTimeout(r, this.speed));
+
+                // EXECUTE
+                if (!this.wasReset) showPipeline("execute");
+                const shouldContinue = await this.executeInstruction(instruction, "step");
+                await new Promise(r => setTimeout(r, this.speed));
+
+                if (!this.wasReset) {
+                    this.markProcessed(i);
+                    if (i === instructions.length - 1) {
+                        document.getElementById('cpu-status').textContent = 'CONCLUÍDO';
+                        stopCpuAnimation();
+                    } else {
+                        document.getElementById('cpu-status').textContent = 'IDLE';
+                        stopCpuAnimation();
+                    }
+                }
+
+                showPipeline(null);
+
+                if (shouldContinue) {
+                    if (!this.wasReset) {
+                        if (!this.didJump) {
+                            this.registers.PC++;
+                            this.updateDisplay("step");
+                        } else {
+                            await new Promise(resolve => setTimeout(resolve, this.speed * 2));
+                            if (!(this.wasReset)) {
+                                this.highlightJumpTarget(this.registers.PC);
+                                this.updateDisplay("step");
+                                await new Promise(resolve => setTimeout(resolve, this.speed * 2));
+                                if (!(this.wasReset)) {
+                                    this.clearInstructionHighlights();
+                                }
+                            }
+                            this.didJump = false;
+                        }
+                    }
+                    document.getElementById('simulation-status').textContent = `Executando ${program.name}...`;
+                    this.setControlsRunning(false);
+                } else {
+                    this.isRunning = false;
+                    this.setControlsRunning(false);
+                    document.getElementById('simulation-status').textContent = `Execução interrompida.`;
+                    if (this.halted) {
+                        document.getElementById('cpu-status').textContent = 'INTERROMPIDO';
+                    }
+                    this.log('Execução interrompida');
+                    // mantemos PC no índice atual (útil para inspeção)
+                }
+
+                if (this.registers.PC >= instructions.length) {
+                    document.getElementById('simulation-status').textContent = `${program.name} finalizado.`;
+                    this.log('Execução completa');
+                    this.setControlsRunning(false);
+                }
+            }
+        }
+
+        const simulator = new ComputerSimulator();
+
+        function startSimulation() {
+            simulator.reset();
+            simulator.start();
+        }
+
+        function stepSimulation() {
+            simulator.step();
+        }
+
+        function resetSimulation() {
+            simulator.isRunning = false; // cancela qualquer execução
+            showPipeline(null);        // limpa destaques
+
+            simulator.reset();
+            simulator.log('Sistema reiniciado');
+            simulator.wasReset = true; // se usar a flag
+
+            document.getElementById('simulation-status').textContent = 'Sistema reiniciado. Pronto para executar.';
+            document.getElementById('current-instruction').textContent = 'Aguardando...';
+            document.getElementById('monitor-output').textContent = 'Aguardando...';
+
+            stopCpuAnimation();
+            
+            // Reset visual highlights
+            simulator.clearAllHighlights();
+        }
+
+        function toggleSpeed() {
+            const btn = document.getElementById('speed-btn');
+
+            if (simulator.speed === 1500) {
+                simulator.speed = 1000;
+                btn.textContent = 'Velocidade: Média';
+                simulator.log("Velocidade: Média");
+            } else if (simulator.speed === 1000) {
+                simulator.speed = 500;
+                btn.textContent = 'Velocidade: Rápida';
+                simulator.log("Velocidade: Rápida");
+            } else {
+                simulator.speed = 1500;
+                btn.textContent = 'Velocidade: Lenta';
+                simulator.log("Velocidade: Lenta");
+            }
+        }
+
+        function clearLogs() {
+            simulator.clearLogs();
+        }
+
+        function highlightStorageItem(element) {
+            document.querySelectorAll('#storage-programs .peripheral-item').forEach(item => {
+                item.style.background = 'white';
+                item.style.fontWeight = 'normal';
+            });
+
+            element.style.background = '#e0e0ff';
+            element.style.fontWeight = 'bold';
+        }
+
+        function showPipeline(stage) {
+            ["fetch", "decode", "execute"].forEach(s => {
+                const el = document.getElementById(`stage-${s}`);
+                if (el) el.classList.remove("active");
+            });
+            if (stage) {
+                const el = document.getElementById(`stage-${stage}`);
+                if (el) el.classList.add("active");
+            }
+        }
+
+        function simulateInput(device) {
+            let elementId;
+            if (device === 'KB') {
+                elementId = 'keyboard';
+                simulator.log('Teclado: Tecla pressionada detectada');
+            } else if (device === 'MOUSE') {
+                elementId = 'mouse';
+                simulator.log('Mouse: Movimento/click detectado');
+            }
+            
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.classList.add('active');
+                setTimeout(() => element.classList.remove('active'), 300);
+            }
+        }
+
+        function openEditor() {
+            const modal = document.getElementById('editor-modal');
+            modal.style.display = 'flex';
+
+            let currentCode = "";
+            let currentName = "";
+
+            const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+            if (simulator.currentProgram !== undefined && simulator.currentProgram >= 0) {
+                const program = saved[simulator.currentProgram];
+                currentCode = program?.code.join("\n") || "";
+                currentName = program?.name || "";
+            } else {
+                // fallback: pega o que está na RAM
+                currentCode = Array.from(document.querySelectorAll('#ram-instructions .instruction'))
+                                   .map(div => div.textContent)
+                                   .join("\n");
+            }
+
+            document.getElementById('program-editor').value = currentCode;
+            document.getElementById('program-name').value = currentName;
+
+            simulator.log('Editor de códigos aberto');
+        }
+
+        function closeEditor() {
+            document.getElementById('editor-modal').style.display = 'none';
+            simulator.log('Editor de códigos fechado');
+        }
+
+        function openInstructions() {
+            const modal = document.getElementById('instructions-modal');
+            modal.style.display = 'flex';
+            simulator.log('Manual de instruções aberto');
+        }
+
+        function closeInstructions() {
+            document.getElementById('instructions-modal').style.display = 'none';
+            simulator.log('Manual de instruções fechado');
+        }
+
+        // Exportar conteúdo da textarea como TXT
+        function exportProgramFromEditor() {
+            const code = document.getElementById('program-editor').value.trim();
+            if (!code) {
+                alert("Não há código para exportar!");
+                return;
+            }
+
+            const blob = new Blob([code], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "programa.txt";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        // Importar conteúdo de um TXT para a textarea
+        function importProgramToEditor(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('program-editor').value = e.target.result;
+                // limpa o value para permitir importar o mesmo arquivo novamente
+                event.target.value = "";
+            };
+            reader.readAsText(file);
+        }
+
+        function saveProgramToHD() {
+            const code = document.getElementById('program-editor').value.trim();
+            const name = document.getElementById('program-name').value.trim();
+
+            if (!code) {
+                alert("Digite um programa antes de salvar!");
+                return;
+            }
+            if (!name) {
+                alert("Digite um nome para o programa!");
+                return;
+            }
+
+            const instructions = code.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+
+            let programs = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+
+            const existingIndex = programs.findIndex(p => p.name === name);
+
+            if (existingIndex !== -1) {
+                // sobrescreve
+                programs[existingIndex].code = instructions;
+                simulator.log(`Programa "${name}" sobrescrito no HD`);
+            } else {
+                // cria novo
+                programs.push({ name, code: instructions });
+                simulator.log(`Programa "${name}" salvo no HD`);
+            }
+
+            localStorage.setItem("savedPrograms", JSON.stringify(programs));
+
+            const previousIndex = simulator.currentProgram;
+
+            renderSavedPrograms();
+
+            const items = document.querySelectorAll('#storage-programs .peripheral-item');
+            if (previousIndex !== undefined && items[previousIndex]) {
+                highlightStorageItem(items[previousIndex]);
+                loadSavedProgram(previousIndex, true, false);
+            }
+
+            closeEditor();
+        }
+
+        function renderSavedPrograms() {
+            const container = document.getElementById("storage-programs");
+            if (!container) return;
+
+            container.innerHTML = "";
+
+            const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+            saved.forEach((prog, idx) => {
+                const div = document.createElement("div");
+                div.className = "peripheral-item";
+                div.textContent = prog.name;
+                div.onclick = () => loadSavedProgram(idx, false, false);
+                container.appendChild(div);
+            });
+        }
+
+        function loadSavedProgram(index, reloading = false, firstLoad = false) {
+            const saved = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+            const program = saved[index];
+            if (!program) return;
+
+            simulator.currentProgram = index;
+            simulator.selectedProgramIndex = index;
+
+            const container = document.getElementById('ram-instructions');
+            container.innerHTML = '';
+            program.code.forEach((inst, i) => {
+                const div = document.createElement('div');
+                div.className = 'instruction';
+                div.dataset.addr = i;
+                div.textContent = inst;
+                container.appendChild(div);
+            });
+
+            if (!firstLoad) resetSimulation();
+
+            const items = document.querySelectorAll('#storage-programs .peripheral-item');
+            highlightStorageItem(items[index]); // <<< corrigido
+
+            if (!reloading) {
+                simulator.log(`Programa "${program.name}" carregado do HD`);
+                document.getElementById('simulation-status').textContent = `Programa "${program.name}" carregado. Clique em Iniciar.`;  
+            }
+        }
+
+        function deleteProgramFromHD(index) {
+            let programs = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+            if (!programs[index]) return;
+
+            const name = programs[index].name;
+            programs.splice(index, 1);
+            localStorage.setItem("savedPrograms", JSON.stringify(programs));
+
+            simulator.log(`Programa "${name}" deletado do HD`);
+            document.getElementById('simulation-status').textContent = `Programa "${name}" removido.`;
+
+            renderSavedPrograms();
+            simulator.currentProgram = undefined;
+            simulator.selectedProgramIndex = undefined;
+
+            document.getElementById('ram-instructions').innerHTML = "";
+            resetSimulation();
+        }
+
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Delete") {
+                if (simulator.selectedProgramIndex !== undefined) {
+                    deleteProgramFromHD(simulator.selectedProgramIndex);
+                    simulator.selectedProgramIndex = undefined; // limpa seleção
+                } else {
+                    simulator.log("Nenhum programa selecionado para deletar");
+                }
+            }
+        });
+
+        function initDefaultPrograms() {
+            let programs = JSON.parse(localStorage.getItem("savedPrograms")) || [];
+
+            if (programs.length === 0) {
+                programs = [
+                    { name: "programa1.exe", code: [
+                        'LOAD A, 5',
+                        'LOAD B, 3', 
+                        'ADD A, B',
+                        'STORE A, 10',
+                        'JMP 1'
+                    ]},
+                    { name: "programa2.exe", code: [
+                        'LOAD A, 10',
+                        'LOAD B, 2',
+                        'MUL A, B',
+                        'STORE A, 11',
+                        'OUTPUT MON',
+                        'HALT'
+                    ]}
+                ];
+                localStorage.setItem("savedPrograms", JSON.stringify(programs));
+            }
+        }
+
+        function openIndex() {
+            window.location.href = "/";
+        }
+
+        function playAudioSimple(file, playbackRate = 1.0) {
+            const audio = new Audio(file);
+            audio.playbackRate = playbackRate;
+            audio.volume = 0.3; // controla volume
+            audio.play().catch(err => console.warn("Erro ao tocar áudio:", err));
+        }
+
+        const cpuCanvas = document.getElementById("cpu-canvas");
+        const ctx = cpuCanvas.getContext("2d");
+
+        let t = 0;
+        let animationId = null;
+
+        function drawCpuWave() {
+            ctx.clearRect(0, 0, cpuCanvas.width, cpuCanvas.height);
+
+            // Cria gradiente
+            const gradient = ctx.createLinearGradient(0, 0, 0, cpuCanvas.height);
+            gradient.addColorStop(0, "#273E74");
+            gradient.addColorStop(1, "#A9A9FF");
+
+            ctx.beginPath();
+            
+            const baseAmplitude = 20;
+            const frequency = 0.15;
+            
+            // Começa abaixo da tela para entrada suave
+
+            for (let x = 0; x <= cpuCanvas.width; x += 2) {
+                // Aleatoriedade na amplitude
+                const randomAmplitude = baseAmplitude + Math.sin(x * 0.1 + t) * 5;
+                const y = Math.sin((x * frequency) + t) * randomAmplitude + cpuCanvas.height / 2;
+                ctx.lineTo(x, y);
+            }
+
+            // Fecha o path para preenchimento
+
+
+            // Preenchimento com transparência
+            ctx.fillStyle = "rgba(167, 167, 255, 0.5)";
+            ctx.fill();
+
+            // Linha principal
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            const graphSpeed = convertSimulatorSpeed(simulator.speed);
+            t += graphSpeed;
+
+            animationId = requestAnimationFrame(drawCpuWave);
+        }
+
+        function convertSimulatorSpeed(simSpeed) {
+            // Define faixas de velocidade
+            const speedRanges = {
+                500: 0.12,   // Rápido no simulador = rápido no gráfico
+                1000: 0.08,  // Médio no simulador = médio no gráfico  
+                1500: 0.04   // Lento no simulador = lento no gráfico
+            };
+            
+            // Encontra o valor mais próximo
+            const speeds = Object.keys(speedRanges).map(Number).sort((a, b) => a - b);
+            let closestSpeed = speeds[0];
+            
+            for (const speed of speeds) {
+                if (Math.abs(speed - simSpeed) < Math.abs(closestSpeed - simSpeed)) {
+                    closestSpeed = speed;
+                }
+            }
+            
+            return speedRanges[closestSpeed];
+        }
+
+        function startCpuAnimation() {
+            if (!animationId) {
+                drawCpuWave();
+            }
+        }
+
+        function stopCpuAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+
+                // limpa o canvas
+                ctx.clearRect(0, 0, cpuCanvas.width, cpuCanvas.height);
+            }
+        }
+
+        function resizeCpuCanvas() {
+            const dpr = 1 || window.devicePixelRatio;
+            cpuCanvas.width = cpuCanvas.clientWidth * dpr;
+            cpuCanvas.height = cpuCanvas.clientHeight * dpr;
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+            ctx.scale(dpr, dpr); // escala o desenho
+        }
+        window.addEventListener("resize", resizeCpuCanvas);
+        resizeCpuCanvas();
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            simulator.log('Sistema operacional carregado');
+            simulator.log('Todos os componentes inicializados');
+            simulator.log('Pronto para executar programas');
+
+            initDefaultPrograms();
+            renderSavedPrograms(); 
+            loadSavedProgram(0, false, true);
+            simulator.updateDisplay();
+        });
+    </script>
+</body>
+</html>
