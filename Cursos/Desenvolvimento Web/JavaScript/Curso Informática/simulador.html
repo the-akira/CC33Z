@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador</title>
+    <title>Simulador - Curso de Informática</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
     <style>
         /* Estilo base do corpo */
@@ -1144,6 +1144,7 @@
                     startCpuAnimation();
                 }
                 const instruction = instructions[i];
+                document.getElementById('simulation-status').textContent = `Executando ${program.name}...`;
 
                 // FETCH
                 if (!this.wasReset) showPipeline("fetch");
@@ -1201,7 +1202,6 @@
                             this.didJump = false;
                         }
                     }
-                    document.getElementById('simulation-status').textContent = `Executando ${program.name}...`;
                     this.setControlsRunning(false);
                 } else {
                     this.isRunning = false;

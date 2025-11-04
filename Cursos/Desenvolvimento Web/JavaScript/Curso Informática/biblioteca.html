@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Biblioteca - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 20px 0 20px;
+    }
+    .toolbar input {
+      padding: 10px 12px;
+      font-size: 1.025rem;
+      border: 2px solid #273E74;
+      min-width: 250px;
+    }
+    .toolbar select, .toolbar button {
+      padding: 10px 12px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .toolbar button:hover { background-color: #273E74; }
+    .toolbar input:focus {
+      border: 2px solid #5C6D82;
+      outline: none;
+    }
+    .toolbar select:focus {
+      outline: none;
+    }
+    .book-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px;
+      margin-top: 25px;
+    }
+    .book-card {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      width: 365px;
+      padding: 20px;
+      text-align: center;
+    }
+    .book-card img {
+      width: 100%;
+      height: 450px;
+      object-fit: cover;
+      border: 1px solid #5C6D82;
+    }
+    .book-card h3 { color: #273E74; margin: 8px 0; font-size: 17.5px; margin-top: 16px; }
+    .book-card p { font-size: 0.87rem; text-align: center; }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 25px;
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+    .pagination button {
+      padding: 8px 12px;
+      border: 2px solid #273E74;
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+      color: #273E74;
+    }
+    .pagination button.active, .pagination button:hover {
+      background-color: #5C6D82;
+      color: white;
+    }
+    .pagination span {
+      color: #273E74;
+      font-weight: bold;
+      user-select: none;
+    }
+    .pagination button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    @media only screen and (max-width: 390px) {
+        .toolbar input[type="text"] {
+            min-width: 180px;
+        }
+        .book-card img {
+          width: 100%;
+          height: auto;
+        }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">Biblioteca Digital</h1>
+
+  <div class="toolbar">
+    <input type="text" id="searchInput" placeholder="Buscar por título ou autor...">
+    <select id="filterSelect">
+      <option value="">Todas as categorias</option>
+      <option value="programacao">Programação</option>
+      <option value="datascience">Data Science</option>
+      <option value="sistemas">Sistemas</option>
+      <option value="hardware">Hardware</option>
+    </select>
+    <select id="sortSelect">
+      <option value="recentes">Mais recentes</option>
+      <option value="antigos">Mais antigos</option>
+      <option value="tituloAZ">Título (A–Z)</option>
+      <option value="tituloZA">Título (Z–A)</option>
+    </select>
+  </div>
+
+  <main class="book-grid" id="bookGrid"></main>
+  <div class="pagination" id="pagination"></div>
+
+  <script>
+    const BOOKS = [
+      {
+        titulo: "Algoritmos e Programação",
+        autor: "Adolfo José Gonçalves Stavaux Baudson",
+        capa: "livros/algoritmoseprogramacao.png",
+        descricao: "Guia introdutório aos algoritmos e programação.",
+        data: "2013",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/1pz3ffdVlSbTNyaNYLfAWT6O1U1PV-kXr/view?usp=sharing"
+      },
+      {
+        titulo: "Algoritmos: Teoria e Prática",
+        autor: "Clifford Stein",
+        capa: "livros/algoritmosteoriapratica.png",
+        descricao: "Livro com estudos aprofundados sobre algoritmos.",
+        data: "2009",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/18GMACpatQfC1ibW9niNmbAsiphByim7z/view?usp=sharing"
+      },
+      {
+        titulo: "Arquitetura de Computadores: Software",
+        autor: "Eduardo Bráulio Wanderley Netto",
+        capa: "livros/arquiteturacompsoft.png",
+        descricao: "Arquitetura de computadores na perspectiva de software.",
+        data: "2005",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/1ebPnNHdRBu8GaD-bSc5-ZLJInqm0q5pa/view?usp=sharing"
+      },
+      {
+        titulo: "Arquitetura Limpa",
+        autor: "Robert C. Martin",
+        capa: "livros/arquiteturalimpa.png",
+        descricao: "Guia do artesão para estrutura e design de software.",
+        data: "2020",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/1PoagO8qsPjxbn7Es_D3ld-MAJsAz5Jt4/view?usp=sharing"
+      },
+      {
+        titulo: "Automatize Tarefas Maçantes com Python",
+        autor: "Al Sweigart",
+        capa: "livros/automatizetarefaspython.png",
+        descricao: "Programação prática para verdadeiros iniciantes.",
+        data: "2015",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/1PDjp027uNJA6_uiksTuXYAIwnoOYAUnY/view?usp=sharing"
+      },
+      {
+        titulo: "Big Data: Técnicas e Tecnologias",
+        autor: "Rosangela Marquesone",
+        capa: "livros/bigdata.png",
+        descricao: "Técnicas e tecnologias para extração de valor dos dados.",
+        data: "2017",
+        categoria: "datascience",
+        link: "https://drive.google.com/file/d/1p7xBDzVRYhYl1WYv17wOeylBVtydmg65/view?usp=sharing"
+      },
+      {
+        titulo: "C: Completo e Total",
+        autor: "Herbert Schildt",
+        capa: "livros/ccompleto.png",
+        descricao: "Guia de referência completa sobre a linguagem C.",
+        data: "1996",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/1PV97QiNqSGjjhH4kQuU4JCJA3G2vlMbZ/view?usp=sharing"
+      },
+      {
+        titulo: "Código Limpo",
+        autor: "Robert C. Martin",
+        capa: "livros/codigolimpo.png",
+        descricao: "Habilidades práticas do Agile Software.",
+        data: "2008",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/1jxIlk8x9Ya9NWxGVc6uRQgP1PImM6X_6/view?usp=sharing"
+      },
+      {
+        titulo: "Entendendo Algoritmos",
+        autor: "Aditya Y. Bhargava",
+        capa: "livros/entendendoalgoritmos.png",
+        descricao: "Um guia ilustrado para programadores e outros curiosos.",
+        data: "2017",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/13GxJMq74TuYvyCfkyQET_oxM5uRGZZlx/view?usp=sharing"
+      },
+      {
+        titulo: "Introdução a Banco de Dados",
+        autor: "Joyce Aline de Oliveira Marins",
+        capa: "livros/bancodedados.png",
+        descricao: "Conceitos em sistemas de bancos de dados.",
+        data: "2019",
+        categoria: "datascience",
+        link: "https://drive.google.com/file/d/1aCCKcBuQ0r_aR59jtWGFFR2gAnqFAhSt/view?usp=sharing"
+      },
+      {
+        titulo: "Introdução a Algoritmos e Programação",
+        autor: "Fabricio Ferrari",
+        capa: "livros/introalgoritmosprogramacao.png",
+        descricao: "Conceitos fundamentais sobre algoritmos e programação.",
+        data: "2008",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/1_ySrKXFUmhdMqr63sQx8iZQGYqXbd-Wf/view?usp=sharing"
+      },
+      {
+        titulo: "Guia Arduino",
+        autor: "Filipe Flop",
+        capa: "livros/arduino.png",
+        descricao: "Material para iniciantes com a tecnologia Arduino.",
+        data: "2018",
+        categoria: "hardware",
+        link: "https://drive.google.com/file/d/1r92kv7ZpENxW8UWxHbcvqWCylOdvJpcU/view?usp=sharing"
+      },
+      {
+        titulo: "Guia da Computação em Nuvem",
+        autor: "Mariana Carvalho",
+        capa: "livros/cloud.png",
+        descricao: "Conceitos, Prática e Capacitação.",
+        data: "2020",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/1lK8o1JhfagNnuty3MQyUpxP9LGp8p_Rj/view?usp=sharing"
+      },
+      {
+        titulo: "Inteligência Artificial",
+        autor: "Hugo Neri",
+        capa: "livros/ia.png",
+        descricao: "Avanços e tendências da Inteligência Artificial.",
+        data: "2021",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/1QxcqyeFCRbEUBpqoD83iwJOapYYMkHEq/view?usp=sharing"
+      },
+      {
+        titulo: "Arquitetura e Design de Software",
+        autor: "Paulo Silveira",
+        capa: "livros/arquitetura.png",
+        descricao: "Uma visão sobre a plataforma Java.",
+        data: "2011",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/15GIcvhTAGU-adyYwJ4nq3D-Cjz8VJWeD/view?usp=sharing"
+      },
+      {
+        titulo: "Introdução a Data Science",
+        autor: "Tatiana Escovedo",
+        capa: "livros/datascience.png",
+        descricao: "Algoritmos de Machine Learning e métodos de análise.",
+        data: "2020",
+        categoria: "datascience",
+        link: "https://drive.google.com/file/d/1nVRa6ays9FzuWbMjagG2AEglsUaDHvxr/view?usp=sharing"
+      },
+      {
+        titulo: "Introdução à Informática",
+        autor: "Jorge Luís Costa",
+        capa: "livros/informatica.png",
+        descricao: "Hardware, Software e Sistema Operacional.",
+        data: "2024",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/1FcsibKXl57Y-jIWzZQKRpUBW1Cy2zCat/view?usp=sharing"
+      },
+      {
+        titulo: "Linux: A Bíblia",
+        autor: "Christopher Negus",
+        capa: "livros/linuxbible.png",
+        descricao: "O mais abrangente e definitivo guia sobre Linux.",
+        data: "2014",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/172Pityzeadcvjfa2fbtr3NeCYaDwwqnF/view?usp=sharing"
+      },
+      {
+        titulo: "Algoritmos e Estruturas de Dados 1",
+        autor: "Marcos Castilho",
+        capa: "livros/algoritmosestruturas.png",
+        descricao: "Livro para entender algoritmos e estruturas de dados.",
+        data: "2020",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/1-x-EKoVEvLM3i7PeE0XR0y5YudAqzjhV/view?usp=sharing"
+      },
+      {
+        titulo: "Matemática Discreta",
+        autor: "Raquel Montezuma Pinheiro Cabral",
+        capa: "livros/matematica.png",
+        descricao: "Fundamentos matemáticos para computação.",
+        data: "2017",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/17qyoWQuJ_5cIAsg0Bdgkk-l_L_ZU1iz8/view?usp=sharing"
+      },
+      {
+        titulo: "Linux Essentials",
+        autor: "Linux Professional Institute",
+        capa: "livros/linux.png",
+        descricao: "Conhecimentos essenciais sobre o sistema Linux.",
+        data: "2025",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/1Mcclumuw7fjT-jwzT3zUFLVbTYr42_Xn/view?usp=sharing"
+      },
+      {
+        titulo: "O Programador Pragmático",
+        autor: "Andrew Hunt",
+        capa: "livros/programadorpragmatico.png",
+        descricao: "De aprendiz a mestre na arte de programação.",
+        data: "2010",
+        categoria: "programacao",
+        link: "https://drive.google.com/file/d/1NsPzhmEdbol1HcMMKYGVGsMWVxvaCv0K/view?usp=sharing"
+      },
+      {
+        titulo: "Engenharia de Software",
+        autor: "Roger S. Pressman",
+        capa: "livros/engenhariasoftware.png",
+        descricao: "Uma abordagem profissional.",
+        data: "2016",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/17RKfXuIZczuUDcUDuN0HVWvx6GeVInJm/view?usp=sharing"
+      },
+      {
+        titulo: "Sistemas Operacionais",
+        autor: "Carlos A. Maziero",
+        capa: "livros/sistemasoperacionais.png",
+        descricao: "Conceitos e mecanismos dos Sistemas Operacionais.",
+        data: "2025",
+        categoria: "sistemas",
+        link: "https://drive.google.com/file/d/1qpuoICT869CKMC2SGduQM2Ui1lRshRyN/view?usp=sharing"
+      },
+    ];
+
+    const bookGrid = document.getElementById('bookGrid');
+    const searchInput = document.getElementById('searchInput');
+    const filterSelect = document.getElementById('filterSelect');
+    const sortSelect = document.getElementById('sortSelect');
+    const pagination = document.getElementById('pagination');
+
+    let currentPage = 1;
+    const perPage = 6;
+
+    function renderBooks() {
+      const query = searchInput.value.toLowerCase();
+      const category = filterSelect.value;
+      const sort = sortSelect.value;
+
+      // 🔍 Filtragem
+      let filtered = BOOKS.filter(b =>
+        (b.titulo.toLowerCase().includes(query) ||
+         b.autor.toLowerCase().includes(query)) &&
+        (!category || b.categoria === category)
+      );
+
+      // 🔄 Ordenação
+      filtered.sort((a, b) => {
+        if (sort === "recentes") return b.data.localeCompare(a.data);
+        if (sort === "antigos") return a.data.localeCompare(b.data);
+        if (sort === "tituloAZ") return a.titulo.localeCompare(b.titulo, 'pt-BR');
+        if (sort === "tituloZA") return b.titulo.localeCompare(a.titulo, 'pt-BR');
+        return 0;
+      });
+
+      // 📄 Paginação
+      const totalPages = Math.ceil(filtered.length / perPage);
+      currentPage = Math.min(currentPage, totalPages || 1);
+      const start = (currentPage - 1) * perPage;
+      const pageBooks = filtered.slice(start, start + perPage);
+
+      // 🧱 Renderização dos cards
+      bookGrid.innerHTML = pageBooks.map(b => `
+        <div class="book-card">
+          <img src="${b.capa}" alt="${b.titulo}">
+          <h3>${b.titulo}</h3>
+          <p><strong>Autor:</strong> ${b.autor}</p>
+          <p><strong>Publicado:</strong> ${b.data}</p>
+          <p>${b.descricao}</p>
+          <a style="margin-bottom: 0px;" class="button" href="${b.link}" target="_blank">Acessar</a>
+        </div>
+      `).join('');
+
+      // 🔢 Paginação compacta
+      pagination.innerHTML = '';
+
+      if (totalPages <= 1) return; // Sem paginação se não precisar
+
+      const maxVisible = 5; // quantos números mostrar no centro
+      const createButton = (text, page, disabled = false, active = false) => {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        if (disabled) btn.disabled = true;
+        if (active) btn.classList.add('active');
+        btn.addEventListener('click', () => { 
+          if (!disabled && page !== currentPage) {
+            currentPage = page;
+            renderBooks();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+        return btn;
+      };
+
+      // Botão Primeira Página
+      pagination.appendChild(createButton('« Primeira', 1, currentPage === 1));
+
+      // Botão Anterior
+      pagination.appendChild(createButton('‹', currentPage - 1, currentPage === 1));
+
+      // Números centrais
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+      if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
+
+      if (startPage > 1) {
+        pagination.appendChild(createButton('1', 1));
+        if (startPage > 2) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.style.padding = '6px';
+          pagination.appendChild(dots);
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pagination.appendChild(createButton(i, i, false, i === currentPage));
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.style.padding = '6px';
+          pagination.appendChild(dots);
+        }
+        pagination.appendChild(createButton(totalPages, totalPages));
+      }
+
+      // Botão Próxima
+      pagination.appendChild(createButton('›', currentPage + 1, currentPage === totalPages));
+
+      // Botão Última Página
+      pagination.appendChild(createButton('Última »', totalPages, currentPage === totalPages));
+    }
+
+    searchInput.addEventListener('input', renderBooks);
+    filterSelect.addEventListener('change', () => { currentPage = 1; renderBooks(); });
+    sortSelect.addEventListener('change', renderBooks);
+    renderBooks();
+  </script>
+</body>
+</html>
