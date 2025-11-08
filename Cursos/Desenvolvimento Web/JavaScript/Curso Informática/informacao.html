@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unidades de Informação - Curso de Informática</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #F2F2F2;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5px 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: #5c6d82;
+            border-bottom: 5.5px solid #273E74;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            border: 2.3px solid #273E74;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #273E74;
+            border-bottom: 2px solid #5c6d82;
+            padding-bottom: 10px;
+        }
+
+        .bit-demo {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            margin-bottom: 0px;
+            justify-content: center;
+        }
+
+        .bit {
+            width: 60px;
+            height: 60px;
+            background: #f2f2f2;
+            border: 2px solid #273E74;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .bit:hover {
+            background: #e0e0ff;
+        }
+
+        .bit.active {
+            background: #5c6d82;
+            color: white;
+            font-weight: bold;
+        }
+
+        .converter {
+            background: #f2f2f2;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #273E74;
+            margin-bottom: 0px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 2px solid #273E74;
+            color: #333;
+            font-family: Arial, sans-serif;
+            font-size: 1.1em;
+            margin: 10px 0;
+            margin-bottom: 0px;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #5c6d82;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .result-grid-bytes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border: 1px solid #273E74;
+            text-align: center;
+        }
+
+        .result-value, .result-value-byte {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #273E74;
+            margin-bottom: 0px;
+        }
+
+        .label {
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: #f2f2f2;
+            padding: 15px;
+            border-left: 4px solid #5c6d82;
+            margin: 15px 0;
+            margin-bottom: 0px;
+        }
+
+        .byte-visualizer {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .byte-group {
+            background: white;
+            padding: 15px;
+            border: 2px solid #273E74;
+        }
+
+        .byte-label {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #273E74;
+        }
+
+        button {
+            background: #5c6d82;
+            border: 2px solid #273E74;
+            color: white;
+            padding: 10px 20px;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #273E74;
+        }
+
+        .quiz {
+            margin: 20px 0;
+            margin-bottom: 0px;
+        }
+
+        .quiz-option {
+            background: #F2F2F2;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #273E74;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            background: #e0e0ff;
+        }
+
+        .quiz-option.selected {
+            background: #e0e0ff; 
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: #0f6b24;
+        }
+
+        .quiz-option.wrong {
+            background: #f8d7da; 
+            border-color: #6b0f0f;
+        }
+
+        .quiz-option.selected.correct {
+            background: #e0e0ff; 
+            border-color: #0f6b24; 
+        }
+
+        .quiz-option.selected.wrong {
+            background: #e0e0ff; 
+            border-color: #6b0f0f; 
+        }
+
+        .scale-group {
+            margin-top: 15px;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 2px solid #273E74;
+        }
+
+        .scale-group h3 {
+            color: #273E74;
+            margin-bottom: 5px;
+        }
+
+        .scale-group p {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .file-scale {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .file-item span {
+            font-weight: bold;
+            color: #273E74;
+        }
+
+        .bar {
+            height: 18px;
+            background: linear-gradient(90deg, #5c6d82, #273E74);
+            transition: width 0.5s ease;
+        }
+
+        /* Diferenciação visual por grupo */
+        .file-scale.small .bar { background: #6aa84f; }   /* KB → verde */
+        .file-scale.medium .bar { background: #f1c232; }  /* MB → amarelo */
+        .file-scale.large .bar { background: #cc4125; }   /* GB → vermelho */
+
+        .rgb-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            margin-bottom: 0px;
+        }
+
+        .color-byte {
+            border: 2px solid #273E74;
+            padding: 10px 15px;
+            background: #f9f9f9;
+            width: 300px;
+        }
+
+        .byte-label {
+            text-align: center;
+            font-weight: bold;
+            color: #273E74;
+            margin-bottom: 10px;
+        }
+
+        .bit-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .bit-row .bit {
+            width: 60px;
+            height: 60px;
+            font-size: 1.4em;
+            user-select: none;
+        }
+
+        .color-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        #colorBox {
+            width: 160px;
+            height: 160px;
+            border: 2px solid #273E74;
+            background: black;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .color-values p {
+            font-size: 1.1em;
+            margin: 6px 0;
+        }
+
+        .pixel-grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        #pixelGrid {
+            display: grid;
+            grid-template-columns: repeat(8, 30px);
+            grid-template-rows: repeat(8, 30px);
+            gap: 2px;
+            background: #ddd;
+            padding: 5px;
+            border: 2px solid #273E74;
+        }
+
+        .pixel {
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pixel-info {
+            background: #f9f9f9;
+            border: 2px dashed #273E74;
+            padding: 15px;
+            text-align: left;
+            min-width: 260px;
+            line-height: 1.6;
+        }
+
+        .pixel-info strong {
+            color: #273E74;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .controls label {
+            font-weight: bold;
+            color: #273E74;
+        }
+
+        #colorPicker {
+            width: 50px;
+            height: 30px;
+            border: none;
+            cursor: pointer;
+            background: none;
+        }
+
+        .cpu-simulation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .controls-cpu {
+            background: #f0f0f0;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+        }
+
+        .controls-cpu label {
+            font-weight: bold;
+            color: #273E74;
+        }
+
+        .cpu-area {
+            position: relative;
+            width: 500px;
+            height: 100px;
+            background: #e9eef5;
+            border: 2px solid #273E74;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+        }
+
+        .cpu-core {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 80px;
+            height: 80px;
+            background: #273E74;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+        }
+
+        .cpu-info {
+            background: #f9f9f9;
+            border: 2px dashed #273E74;
+            padding: 15px;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .cpu-info strong {
+            color: #273E74;
+        }
+
+        #clockSpeed {
+            margin-left: 6px;
+            margin-right: 6px;
+        }
+
+        #clockSpeed:hover {
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: #dce1eb;
+            outline: none;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        input[type="range"]:hover {
+            background: #c4ccda;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 8px;
+            background: linear-gradient(90deg, #5c6d82, #273E74);
+        }
+
+        input[type="range"]::-moz-range-track {
+            height: 8px;
+            background: linear-gradient(90deg, #5c6d82, #273E74);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #ffffff;
+            border: 2px solid #273E74;
+            margin-top: -5px;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #ffffff;
+            border: 2px solid #273E74;
+        }
+
+        /* Container */
+        #latencySection .sim-controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        #latencySection .sim-col {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        #latencySection .sim-info-grid {
+            margin-top: 18px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        #latencySection .sim-info-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 1px solid #273E74;
+            background: #f9f9f9;
+        }
+
+        #latencySection .sim-info-box strong {
+            color: #273E74;
+        }
+
+        #latencySection #linkArea {
+            margin-top: 20px;
+            position: relative;
+            height: 115px;
+            border: 2px solid #273E74;
+            background: #f2f2f2;
+            overflow: hidden;
+        }
+
+        #latencySection .sim-line {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            height: 18px;
+            background: #fff;
+            border: 1px dashed #c4c8d6;
+        }
+
+        #latencySection .sim-packet {
+            position: absolute;
+            height: 14px;
+            border-radius: 8px;
+            border: 2px solid #273E74;
+            background: linear-gradient(90deg,#5c6d82,#273E74);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            z-index: 5;
+            transition: box-shadow 0.12s, width 0.2s;
+        }
+
+        #latencySection .sim-packet:hover {
+            box-shadow: 0 6px 14px rgba(0,0,0,0.24);
+            transform: translateY(-2px);
+        }
+
+        #latencySection button {
+            font-weight: bold;
+        }
+
+        /* Slider */
+        #latencySection input[type="range"] {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        /* Special: reset button */
+        #resetSim {
+            background: #f2f2f2;
+            color: #273E74;
+            border: 2px solid #273E74;
+        }
+
+        .bit-weight-table {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            justify-content: center;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #273E74;
+        }
+
+        .bit-weight-cell {
+            background: #f3f4f7;
+            border: 1px solid #c4c8d6;
+            padding: 6px 10px;
+            padding-top: 9px;
+            text-align: center;
+            font-size: 0.9em;
+            width: 60px;
+            height: 60px;
+        }
+
+        .bit-weight-cell.active-weight {
+            background: white;
+            border-color: #1a2a4d;
+            box-shadow: 0 0 8px rgba(39,62,116,0.4);
+        }
+
+        .bit-power {
+            font-weight: bold;
+            color: #273E74;
+        }
+
+        .bit-value {
+            margin-top: 4px;
+        }
+
+        .hex-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #f3f4f7;
+            padding: 8px 10px;
+            border: 1px solid #c4c8d6;
+            margin-top: 10px;
+        }
+
+        .hex-row.active {
+            background: #5C6D82;
+            color: white;
+            border-color: #1a2a4d;
+            box-shadow: 0 0 8px rgba(39, 62, 116, 0.4);
+        }
+
+        .hex-label {
+            font-weight: bold;
+            width: 110px;
+        }
+
+        .hex-bits {
+            font-family: monospace;
+            letter-spacing: 4px;
+            font-size: 1.1em;
+        }
+
+        .hex-value {
+            margin-left: auto;
+            font-weight: bold;
+        }
+
+        .hex-calc-line {
+            padding-top: 6px;
+            font-family: monospace;
+        }
+
+        .hex-calc-highlight {
+            font-weight: bold;
+            color: #273E74;
+        }
+
+        #hexCalc {
+            padding-bottom: 12px;
+            border-bottom: 2px solid #273E74;
+        }
+
+        .octal-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: #f3f4f7;
+            padding: 8px 10px;
+            border: 1px solid #c4c8d6;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+
+        .octal-row.active {
+            background: #5C6D82;
+            color: white;
+            border-color: #1a2a4d;
+            box-shadow: 0 0 8px rgba(39, 62, 116, 0.4);
+        }
+
+        .octal-label {
+            font-weight: bold;
+            width: 110px;
+        }
+
+        .octal-bits {
+            letter-spacing: 4px;
+            font-size: 1.1em;
+        }
+
+        .octal-value {
+            margin-left: auto;
+            font-weight: bold;
+        }
+
+        .octal-calc-line {
+            padding-top: 6px;
+            font-family: monospace;
+        }
+
+        .octal-calc-highlight {
+            font-weight: bold;
+            color: #273E74;
+        }
+
+        .conversion-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .conversion-table th, .conversion-table td {
+            border: 2px solid #273E74;
+            padding: 10px;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .conversion-table th {
+            background: #5c6d82;
+            color: white;
+        }
+
+        .conversion-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .ascii-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .ascii-table th, .ascii-table td {
+            border: 2px solid #273E74;
+            padding: 8px;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .ascii-table th:hover {
+            cursor: not-allowed;
+        }
+
+        .ascii-table th {
+            background: #5c6d82;
+            color: white;
+        }
+
+        .ascii-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .ascii-table tr:hover {
+            background: #e0e0ff;
+            cursor: pointer;
+        }
+
+        .ascii-details {
+            background: #f9f9f9;
+            border: 2px solid #273E74;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .ascii-details h3 {
+            color: #273E74;
+            margin-bottom: 10px;
+        }
+
+        #asciiBits > .bit:hover {
+            cursor: not-allowed;
+        }
+
+        #indexBtn {
+            margin-top: 15px;
+            margin-bottom: 0px;
+            background: white;
+            color: #273E74;
+            border: 3.3px solid #273E74;
+            padding: 9px 12px;
+            font-size: 1.025rem;
+        }
+
+        #indexBtn:hover {
+            background-color: #273E74;
+            color: white;
+            border: 3.3px solid white;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.4em; }
+            .bit { width: 50px; height: 50px; font-size: 1.2em; }
+            .bit-weight-cell { width: 50px; height: 50px; font-size: 0.7em; }
+        }
+
+        @media (max-width: 580px) {
+            .cpu-area {
+                width: 400px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cpu-area {
+                width: 335px;
+            }
+        }
+
+        @media (max-width: 435px) {
+            #tableSection {
+                display: none;
+            }
+
+            #asciiSection {
+                display: none;
+            }
+        }
+
+        @media (max-width: 410px) {
+            .result-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .result-grid-bytes {
+                grid-template-columns: 1fr !important;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .result-item {
+                font-size: 0.9em;
+                padding: 12px;
+            }
+
+            .result-value {
+                font-size: 1rem;
+                word-wrap: break-word;
+            }
+
+            .result-value-byte {
+                font-size: 1.1rem;
+            }
+
+            .cpu-area {
+                width: 260px;
+            }
+
+            #latencySection .sim-col {
+                min-width: 95%;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .pixel-info {
+                min-width: 95%;
+            }
+
+            .cpu-info {
+                min-width: 95%;
+            }
+
+            #pixelGrid {
+                grid-template-columns: repeat(8, 25px);
+                grid-template-rows: repeat(8, 25px);
+            }
+
+            .pixel {
+                width: 25px;
+                height: 25px;
+            }
+
+            .cpu-area {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .result-item {
+                font-size: 0.75em;
+            }
+
+            .result-value {
+                font-size: 0.85rem;
+            }
+
+            #latencySection .sim-info-box {
+                min-width: 95%;
+            }
+        }
+
+        @media (max-width: 310px) {
+            #pixelGrid {
+                grid-template-columns: repeat(8, 20px);
+                grid-template-rows: repeat(8, 20px);
+            }
+
+            .pixel {
+                width: 20px;
+                height: 20px;
+            }
+
+            .cpu-area {
+                width: 170px;
+            }
+
+            .hex-label {
+                width: 100%;
+            }
+
+            .octal-label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Unidades de Informação</h1>
+        <p class="subtitle">Como o computador representa o mundo digital</p>
+        <button class="btn" id="indexBtn" onclick="openIndex()">Página Inicial</button>
+    </header>
+
+    <div class="container">
+        <!-- Seção 1: O que é um Bit -->
+        <div class="section">
+            <h2>01. O QUE É UM BIT?</h2>
+            <p>Um <strong>bit</strong> (binary digit) é a menor unidade de informação em computação. Pode ter apenas dois valores: <strong>0</strong> ou <strong>1</strong>.</p>
+            
+            <div class="info-box">
+                Pense no bit como um interruptor de luz: pode estar <b>LIGADO</b> (1) ou <b>DESLIGADO</b> (0).
+            </div>
+
+            <p style="margin: 15px 0;">Clique nos bits abaixo para alternar entre 0 e 1:</p>
+            <div class="bit-demo" id="bitDemo"></div>
+            <p style="text-align: center; margin-top: 15px;">Valor decimal: <strong id="bitValue">0</strong></p>
+        </div>
+
+        <!-- Seção 2: O que é um Byte -->
+        <div class="section">
+            <h2>02. O QUE É UM BYTE?</h2>
+            <p>Um <strong>byte</strong> é um conjunto de <strong>8 bits</strong>. Com 8 bits, podemos representar 256 valores diferentes (2⁸ = 256), de 0 a 255.</p>
+            
+            <div class="byte-visualizer">
+                <div class="byte-group">
+                    <div class="byte-label">1 BYTE = 8 BITS</div>
+                    <div class="bit-demo" id="byteDemo" style="margin-top: 10px;"></div>
+
+                    <div id="byteValues">
+                        <div class="result-grid-bytes">
+                            <div class="result-item">
+                                <div class="label">Decimal</div>
+                                <div class="result-value-byte" id="byteDecimal">0</div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="label">Octal</div>
+                                <div class="result-value-byte" id="byteOctal">0</div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="label">Hexadecimal</div>
+                                <div class="result-value-byte" id="byteHex">00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bit-weight-table" id="bitWeightTable"></div>
+                    <h4 style="margin-top: 13px; margin-bottom: 10px;">Hexadecimal (2 grupos de 4 bits)</h4>
+                    <div id="hexTable"></div>
+                    <div id="hexCalc"></div>
+                    <h4 style="margin-top: 13px; margin-bottom: 10px;">Octal (grupos de 3 bits)</h4>
+                    <div id="octalTable"></div>
+                    <div id="octalCalc"></div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Exemplo prático:</strong> Cada letra que você digita ocupa geralmente 1 byte de memória!
+            </div>
+        </div>
+
+        <!-- Seção 3: Unidades de Medida -->
+        <div class="section">
+            <h2>03. UNIDADES DE MEDIDA</h2>
+            <p>Assim como medimos distâncias em metros, quilômetros, etc., medimos dados digitais em diferentes escalas:</p>
+            
+            <div class="info-box">
+                <strong>Unidades de Armazenamento:</strong><br>
+                • 1 Byte = 8 bits<br>
+                • 1 Kilobyte (KB) = 1.024 bytes<br>
+                • 1 Megabyte (MB) = 1.024 KB = 1.048.576 bytes<br>
+                • 1 Gigabyte (GB) = 1.024 MB = 1.073.741.824 bytes<br>
+                • 1 Terabyte (TB) = 1.024 GB<br>
+                • 1 Petabyte (PB) = 1.024 TB
+            </div>
+
+            <div class="converter">
+                <h3 style="margin-bottom: 15px;">CONVERSOR INTERATIVO</h3>
+                <label>Digite um valor em Bytes:</label>
+                <input type="number" id="byteInput" placeholder="Ex: 1048576" value="1048576" min="0" max="1099511627776">
+                
+                <div class="result-grid" id="results"></div>
+            </div>
+        </div>
+
+        <!-- Seção 4: Exemplos do Mundo Real -->
+        <div class="section">
+            <h2>04. EXEMPLOS DO MUNDO REAL</h2>
+            <p>Veja abaixo alguns exemplos de tamanhos de arquivos em diferentes escalas. Observe como o salto entre KB, MB e GB cresce de forma exponencial!</p>
+
+            <!-- Grupo 1: Kilobytes -->
+            <div class="scale-group">
+                <h3>Arquivos pequenos (KB)</h3>
+                <p>Usados para textos simples e configurações.</p>
+                <div class="file-scale small">
+                    <div class="file-item"><span>1 página de texto (~3 KB)</span><div class="bar" style="width: 3%;"></div></div>
+                    <div class="file-item"><span>Documento simples (~100 KB)</span><div class="bar" style="width: 100%;"></div></div>
+                </div>
+            </div>
+
+            <!-- Grupo 2: Megabytes -->
+            <div class="scale-group">
+                <h3>Arquivos médios (MB)</h3>
+                <p>Usados em imagens, músicas e aplicativos pequenos.</p>
+                <div class="file-scale medium">
+                    <div class="file-item"><span>Música MP3 (3 min) (~5 MB)</span><div class="bar" style="width: 20%;"></div></div>
+                    <div class="file-item"><span>Foto HD (~8 MB)</span><div class="bar" style="width: 32%;"></div></div>
+                    <div class="file-item"><span>App leve (~20 MB)</span><div class="bar" style="width: 80%;"></div></div>
+                    <div class="file-item"><span>PDF grande (~25 MB)</span><div class="bar" style="width: 100%;"></div></div>
+                </div>
+            </div>
+
+            <!-- Grupo 3: Gigabytes -->
+            <div class="scale-group">
+                <h3>Arquivos grandes (GB)</h3>
+                <p>Usados para vídeos, sistemas e jogos.</p>
+                <div class="file-scale large">
+                    <div class="file-item"><span>Sistema Operacional (ISO) (~4.7 GB)</span><div class="bar" style="width: 5.2%;"></div></div>
+                    <div class="file-item"><span>Filme Full HD (2h) (~8 GB)</span><div class="bar" style="width: 8.8%;"></div></div>
+                    <div class="file-item"><span>Backup de dados (~50 GB)</span><div class="bar" style="width: 55.5%;"></div></div>
+                    <div class="file-item"><span>Jogo moderno (~90 GB)</span><div class="bar" style="width: 100%;"></div></div>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>Dica:</strong> Cada unidade é 1.024 vezes maior que a anterior — ou seja, 1 MB = 1.024 KB e 1 GB = 1.024 MB!
+            </div>
+        </div>
+
+        <!-- Seção 5: Velocidade de Download -->
+        <div class="section">
+            <h2>05. VELOCIDADE DE DOWNLOAD (BITS POR SEGUNDO)</h2>
+            <p>
+                Quando falamos de velocidade da internet, usamos <strong>bits por segundo (bps)</strong>.
+                Isso indica quantos bits são transmitidos a cada segundo. Por exemplo:
+                <strong>10 Mbps</strong> significa <strong>10 milhões de bits por segundo</strong>.
+            </p>
+
+            <div class="info-box">
+                <strong>Importante:</strong> Como 1 byte = 8 bits, uma conexão de <strong>8 Mbps</strong> 
+                consegue baixar aproximadamente <strong>1 megabyte por segundo (1 MB/s)</strong>.
+            </div>
+
+            <div id="download-simulator" style="margin-top: 20px; text-align: center;">
+                <p style="margin-bottom: 10px;"><strong>Simulação de Download:</strong></p>
+                <div style="position: relative; width: 100%; background: #f2f2f2; border: 2px solid #273E74; height: 40px; overflow: hidden;">
+                    <div id="download-bar" style="background: #5c6d82; width: 0%; height: 100%; transition: width 0.1s;"></div>
+                </div>
+                <p id="download-text" style="margin-top: 10px;">Iniciando download...</p>
+                <button id="startDownload" style="margin-top: 10px;">INICIAR SIMULAÇÃO</button>
+            </div>
+
+            <div class="info-box" style="margin-top: 15px;">
+                <strong>Explicação:</strong> 
+                Cada pedacinho que aparece na barra representa um pacote de dados — milhares de bits 
+                sendo transferidos por segundo. Em velocidades mais altas (como 100 Mbps), o mesmo arquivo 
+                chega muito mais rápido. Essa taxa de transferência é o que chamamos de <strong>largura de banda</strong>.
+            </div>
+        </div>
+
+        <!-- Seção 6: Representação das Cores -->
+        <div class="section">
+            <h2>06. REPRESENTAÇÃO DAS CORES</h2>
+            <p>
+                Em computadores, as cores são formadas combinando três componentes:
+                <strong>Vermelho (Red)</strong>, <strong>Verde (Green)</strong> e
+                <strong>Azul (Blue)</strong>. Cada componente é armazenado em um
+                <strong>byte</strong> (8 bits), podendo variar de <strong>0 a 255</strong>.  
+                Isso permite representar mais de <strong>16 milhões de cores</strong>
+                diferentes (256³ = 16.777.216).
+            </p>
+
+            <div class="info-box">
+                <strong>Exemplo:</strong> A cor branca é (255, 255, 255) e a preta é (0, 0, 0).  
+                O valor também pode ser expresso em hexadecimal, como
+                <code>#FFFFFF</code> ou <code>#000000</code>.
+            </div>
+
+            <p style="margin-top:15px;">Clique nos bits abaixo para alterar a intensidade de cada cor:</p>
+
+            <div class="rgb-container">
+                <div class="color-byte" id="byteR">
+                    <div class="byte-label">Vermelho (R)</div>
+                    <div class="bit-row" id="bitsR"></div>
+                </div>
+                <div class="color-byte" id="byteG">
+                    <div class="byte-label">Verde (G)</div>
+                    <div class="bit-row" id="bitsG"></div>
+                </div>
+                <div class="color-byte" id="byteB">
+                    <div class="byte-label">Azul (B)</div>
+                    <div class="bit-row" id="bitsB"></div>
+                </div>
+            </div>
+
+            <div class="color-display">
+                <div id="colorBox"></div>
+                <div class="color-values">
+                    <p><strong>Decimal:</strong> <span id="rgbValue">(0, 0, 0)</span></p>
+                    <p><strong>Hexadecimal:</strong> <span id="hexValue">#000000</span></p>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>Dica:</strong> Ao combinar os três bytes (R, G e B), formamos a cor final.  
+                Experimente ligar apenas o vermelho, ou misturar com verde e azul!
+            </div>
+        </div>
+
+        <!-- Seção 7: Representação de Imagens -->
+        <div class="section">
+            <h2>07. REPRESENTAÇÃO DE IMAGENS (Pixels e Resolução)</h2>
+            <p>
+                As imagens digitais são compostas por pequenos quadrados chamados <strong>pixels</strong>.
+                Cada pixel armazena uma cor formada por três bytes (um para <strong>vermelho</strong>,
+                <strong>verde</strong> e <strong>azul</strong>).
+                Quanto mais pixels uma imagem tem, maior é sua <strong>resolução</strong> e também o
+                <strong>tamanho do arquivo</strong>.
+            </p>
+
+            <div class="info-box">
+                <strong>Exemplo:</strong> Uma imagem de 1920×1080 (Full HD) tem mais de
+                <strong>2 milhões de pixels</strong>. Cada pixel pode conter até 16 milhões de cores!
+            </div>
+
+            <p style="margin-top: 15px;">
+                Escolha uma cor e clique nos quadrados abaixo para pintar os pixels.
+                Veja como o número total de pixels coloridos afeta o tamanho estimado do arquivo.
+            </p>
+
+            <div class="pixel-grid-container">
+                <div class="controls">
+                    <label for="colorPicker"><strong>Cor do pixel:</strong></label>
+                    <input type="color" id="colorPicker" value="#273E74">
+                </div>
+
+                <div id="pixelGrid"></div>
+
+                <div class="pixel-info">
+                    <p><strong>Pixels ativos:</strong> <span id="activePixels">0</span> / 64</p>
+                    <p><strong>Resolução:</strong> <span id="resolution">8 × 8</span></p>
+                    <p><strong>Tamanho estimado:</strong> <span id="fileSize">0 bytes</span></p>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>Dica:</strong> Cada pixel colorido ocupa 3 bytes (1 byte para R, G e B).
+                Mesmo uma imagem pequena pode gerar muitos dados quando ampliada!
+            </div>
+        </div>
+
+        <!-- Seção 8: Processamento e Clock -->
+        <div class="section">
+            <h2>08. PROCESSAMENTO E CLOCK</h2>
+            <p>
+                O <strong>processador</strong> (CPU) é o cérebro do computador. Ele executa milhões — ou até bilhões —
+                de instruções por segundo. A velocidade do processador é medida em <strong>Hertz (Hz)</strong>, que
+                indica quantos ciclos ele realiza a cada segundo.
+            </p>
+
+            <div class="info-box">
+                <strong>Exemplo:</strong> Um processador de <strong>3 GHz</strong> realiza aproximadamente
+                <strong>3 bilhões de ciclos por segundo</strong>.
+            </div>
+
+            <p style="margin-top: 15px;">
+                Ajuste a frequência abaixo e observe como o CPU processa mais dados conforme o clock aumenta:
+            </p>
+
+            <div class="cpu-simulation">
+                <div class="controls-cpu">
+                    <label for="clockSpeed"><strong>Frequência:</strong></label>
+                    <input type="range" id="clockSpeed" min="1" max="9" value="3" step="0.1">
+                    <span id="clockValue">3.0 GHz</span>
+                </div>
+
+                <div class="cpu-area">
+                    <canvas id="cpuCanvas" width="500" height="100"></canvas>
+                    <div class="cpu-core">
+                        <div class="cpu-label">CPU</div>
+                    </div>
+                </div>
+
+                <div class="cpu-info">
+                    <p><strong>Instruções por segundo:</strong> <span id="instructions">3.0 bilhões</span></p>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>Dica:</strong> Um clock maior significa mais instruções por segundo, mas também mais calor e
+                consumo de energia. Por isso, os processadores modernos equilibram desempenho e eficiência.
+            </div>
+        </div>
+
+        <!-- Seção 09: LATÊNCIA vs LARGURA DE BANDA (SIMULADOR) -->
+        <div class="section" id="latencySection">
+            <h2>09. LATÊNCIA vs LARGURA DE BANDA</h2>
+            <p>
+                Ajuste os sliders para ver como latência (tempo entre pacotes) e largura de banda
+                (tamanho e velocidade dos pacotes) influenciam a transmissão.
+            </p>
+
+            <div class="sim-controls">
+                <div class="sim-col">
+                    <label><strong>Latência (ms):</strong> <span id="latencyValue">100</span> ms</label>
+                    <input id="latencySlider" type="range" min="10" max="1000" step="10" value="100">
+                </div>
+
+                <div class="sim-col">
+                    <label><strong>Largura de banda (Mbps):</strong> <span id="bandwidthValue">8</span> Mbps</label>
+                    <input id="bandwidthSlider" type="range" min="0.1" max="1000" step="0.1" value="8">
+                </div>
+
+                <div class="sim-col">
+                    <button id="toggleSim">INICIAR SIMULAÇÃO</button>
+                    <button id="resetSim" style="margin-top:8px;">RESET</button>
+                </div>
+            </div>
+
+            <div class="sim-info-grid">
+                <div class="sim-info-box">
+                    <strong>Pacotes por segundo</strong>
+                    <div id="pps" style="font-size:1.4em;">10 /s</div>
+                </div>
+
+                <div class="sim-info-box">
+                    <strong>Throughput teórico</strong>
+                    <div id="throughput" style="font-size:1.2em;">1.00 MB/s</div>
+                </div>
+
+                <div class="sim-info-box">
+                    <strong>Pacotes vivos</strong>
+                    <div id="livePackets" style="font-size:1.4em;">0</div>
+                </div>
+            </div>
+
+            <div id="linkArea">
+                <div class="sim-line" style="top:12px;"></div>
+                <div class="sim-line" style="top:46px;"></div>
+                <div class="sim-line" style="top:80px;"></div>
+            </div>
+
+            <div class="info-box" style="margin-top:20px;">
+                <strong>Dica:</strong> aumentar a largura de banda aumenta o tamanho e a velocidade dos pacotes, mas latência alta
+                reduz quantos pacotes você consegue enviar por segundo.
+            </div>
+        </div>
+
+        <!-- Seção 9: Quiz -->
+        <div class="section">
+            <h2>10. TESTE SEUS CONHECIMENTOS</h2>
+            <div class="quiz" id="quiz"></div>
+            <button onclick="checkQuiz()" style="width: 100%; margin: 0px; font-size: 1.2em;">VERIFICAR RESPOSTAS</button>
+            <div id="quizResult" style="margin-top: 20px; text-align: center; font-size: 1.2em; display: none;"></div>
+        </div>
+
+        <!-- Seção X: Conversão entre Bases Numéricas -->
+        <div class="section" id="tableSection">
+            <h2>11. CONVERSÃO ENTRE BASES NUMÉRICAS</h2>
+            <p>Veja como o mesmo número pode ser representado em diferentes sistemas: decimal, hexadecimal, octal e binário.</p>
+
+            <table class="conversion-table">
+                <thead>
+                    <tr>
+                        <th>Decimal</th>
+                        <th>Hexadecimal</th>
+                        <th>Octal</th>
+                        <th>Binário</th>
+                    </tr>
+                </thead>
+                <tbody id="conversionBody">
+                    <!-- Linhas geradas dinamicamente via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Seção 12: Tabela ASCII Interativa -->
+        <div class="section" id="asciiSection">
+            <h2>12. TABELA ASCII INTERATIVA</h2>
+            <p>
+                A tabela ASCII (American Standard Code for Information Interchange) define como os números de 0 a 127 representam letras, números e símbolos no computador.
+            </p>
+
+            <div class="info-box">
+                <strong>Exemplo:</strong> o caractere <code>A</code> tem o valor decimal <strong>65</strong>, 
+                hexadecimal <strong>41</strong> e binário <strong>01000001</strong>.
+            </div>
+
+            <table class="ascii-table">
+                <thead>
+                    <tr>
+                        <th>Decimal</th>
+                        <th>Hex</th>
+                        <th>Binário</th>
+                        <th>Caractere</th>
+                    </tr>
+                </thead>
+                <tbody id="asciiBody"></tbody>
+            </table>
+
+            <div id="asciiDetails" class="ascii-details" style="display:none;">
+                <h3>Detalhes do Caractere Selecionado</h3>
+                <p><strong>Caractere:</strong> <span id="asciiChar"></span></p>
+                <p><strong>Decimal:</strong> <span id="asciiDec"></span></p>
+                <p><strong>Hexadecimal:</strong> <span id="asciiHex"></span></p>
+                <p><strong>Binário:</strong> <span id="asciiBin"></span></p>
+
+                <div id="asciiBits" class="bit-demo" style="margin-top:15px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo de Bits
+        const bitDemo = document.getElementById('bitDemo');
+        const bits = Array(8).fill(0);
+
+        function renderBits() {
+            bitDemo.innerHTML = '';
+            bits.forEach((bit, index) => {
+                const bitEl = document.createElement('div');
+                bitEl.className = 'bit' + (bit ? ' active' : '');
+                bitEl.textContent = bit;
+                bitEl.onclick = () => toggleBit(index);
+                bitDemo.appendChild(bitEl);
+            });
+            updateBitValue();
+        }
+
+        function toggleBit(index) {
+            bits[index] = bits[index] ? 0 : 1;
+            renderBits();
+        }
+
+        function updateBitValue() {
+            let value = 0;
+            bits.forEach((bit, index) => {
+                value += bit * Math.pow(2, 7 - index);
+            });
+            document.getElementById('bitValue').textContent = value;
+        }
+
+        renderBits();
+
+        // Demo de Byte
+        const byteDemo = document.getElementById('byteDemo');
+        const byteBits = Array(8).fill(0);
+
+        function renderByte() {
+            byteDemo.innerHTML = '';
+            byteBits.forEach((bit, index) => {
+                const bitEl = document.createElement('div');
+                bitEl.className = 'bit' + (bit ? ' active' : '');
+                bitEl.textContent = bit;
+                bitEl.onclick = () => toggleByteBit(index);
+                byteDemo.appendChild(bitEl);
+            });
+        }
+
+        function updateByteInfo() {
+            // Converter o array de bits em número
+            let decimal = 0;
+            byteBits.forEach((bit, i) => {
+                decimal += bit * Math.pow(2, 7 - i);
+            });
+
+            const octal = decimal.toString(8).toUpperCase();
+            const hex = decimal.toString(16).padStart(2, '0').toUpperCase();
+
+            document.getElementById('byteDecimal').textContent = decimal;
+            document.getElementById('byteOctal').textContent = octal;
+            document.getElementById('byteHex').textContent = hex;
+        }
+
+        function updateBitWeights() {
+            const container = document.getElementById('bitWeightTable');
+            container.innerHTML = "";
+
+            for (let i = 0; i < 8; i++) {
+                const power = 7 - i;
+                const value = Math.pow(2, power);
+
+                const cell = document.createElement('div');
+                cell.className = "bit-weight-cell";
+                cell.dataset.index = i;
+                cell.innerHTML = `
+                    <div class="bit-power">2<sup>${power}</sup></div>
+                    <div class="bit-value">${value}</div>
+                `;
+
+                container.appendChild(cell);
+            }
+        }
+
+        function highlightWeights() {
+            const cells = document.querySelectorAll('.bit-weight-cell');
+
+            cells.forEach(cell => {
+                const index = parseInt(cell.dataset.index);
+                const bitValue = byteBits[index];
+
+                if (bitValue === 1) {
+                    cell.classList.add('active-weight');
+                } else {
+                    cell.classList.remove('active-weight');
+                }
+            });
+        }
+
+        function updateHexTable() {
+            const container = document.getElementById('hexTable');
+            container.innerHTML = "";
+
+            const groups = [
+                { label: "HEX ALTO", bits: [0,1,2,3] },   // b7 b6 b5 b4
+                { label: "HEX BAIXO", bits: [4,5,6,7] }  // b3 b2 b1 b0
+            ];
+
+            groups.forEach(group => {
+                const row = document.createElement('div');
+                row.className = "hex-row";
+
+                // Mostrar bits (0 ou 1)
+                const bitString = group.bits.map(i => byteBits[i]).join('');
+
+                // Calcular o valor decimal do nibble
+                let decimal = 0;
+                for (let i = 0; i < 4; i++) {
+                    decimal += byteBits[group.bits[i]] * Math.pow(2, 3 - i);
+                }
+
+                // Converter para hex
+                const hex = decimal.toString(16).toUpperCase();
+
+                row.innerHTML = `
+                    <div class="hex-label">${group.label}</div>
+                    <div class="hex-bits">${bitString}</div>
+                    <div class="hex-value">${decimal} → ${hex}</div>
+                `;
+
+                // Acende se qualquer bit do grupo estiver 1
+                if (decimal > 0) row.classList.add("active");
+
+                container.appendChild(row);
+            });
+        }
+
+        function updateHexCalculation() {
+            const container = document.getElementById('hexCalc');
+            container.innerHTML = "";
+
+            const highBits = byteBits.slice(0, 4);
+            const lowBits = byteBits.slice(4, 8);
+
+            // Decimal do nibble alto
+            let highDec = 0;
+            for (let i = 0; i < 4; i++) {
+                highDec += highBits[i] * Math.pow(2, 3 - i);
+            }
+            const highHex = highDec.toString(16).toUpperCase();
+
+            // Decimal do nibble baixo
+            let lowDec = 0;
+            for (let i = 0; i < 4; i++) {
+                lowDec += lowBits[i] * Math.pow(2, 3 - i);
+            }
+            const lowHex = lowDec.toString(16).toUpperCase();
+
+            // Soma total
+            const total = highDec * 16 + lowDec;
+
+            container.innerHTML = `
+                <div class="hex-calc-line">
+                    HEX ALTO <span class="hex-calc-highlight">${highHex}</span>
+                    → ${highDec} × 16<sup>1</sup>
+                </div>
+
+                <div class="hex-calc-line">
+                    HEX BAIXO <span class="hex-calc-highlight">${lowHex}</span>
+                    → ${lowDec} × 16<sup>0</sup>
+                </div>
+
+                <div class="hex-calc-line">
+                    Soma: (${highDec} × 16<sup>1</sup>) + (${lowDec} × 16<sup>0</sup>)
+                </div>
+
+                <div class="hex-calc-line hex-calc-highlight">
+                    = ${highDec * 16} + ${lowDec}
+                </div>
+
+                <div class="hex-calc-line hex-calc-highlight">
+                    = ${total}
+                </div>
+            `;
+        }
+
+        function updateOctalTable() {
+            const container = document.getElementById('octalTable');
+            container.innerHTML = "";
+
+            // Grupos de 3 bits: G2 (alto), G1 (meio), G0 (baixo)
+            const groups = [
+                { label: "GRUPO 2", bits: [0, 1] },
+                { label: "GRUPO 1", bits: [2, 3, 4] },
+                { label: "GRUPO 0", bits: [5, 6, 7] }
+            ];
+
+            groups.forEach(group => {
+                const row = document.createElement('div');
+                row.className = "octal-row";
+
+                // Bits como string
+                const bitString = group.bits.map(i => byteBits[i]).join('');
+
+                // Decimal do grupo
+                let dec = 0;
+                for (let i = 0; i < group.bits.length; i++) {
+                    const pow = group.bits.length - 1 - i;
+                    dec += byteBits[group.bits[i]] * Math.pow(2, pow);
+                }
+
+                // Converter para octal
+                const oct = dec.toString(8);
+
+                row.innerHTML = `
+                    <div class="octal-label">${group.label}</div>
+                    <div class="octal-bits">${bitString}</div>
+                    <div class="octal-value">${dec} → ${oct}</div>
+                `;
+
+                if (dec > 0) row.classList.add("active");
+
+                container.appendChild(row);
+            });
+        }
+
+        function updateOctalCalculation() {
+            const container = document.getElementById('octalCalc');
+            container.innerHTML = "";
+
+            // Extrai cada grupo corretamente
+            const G2 = (byteBits[0] << 1) + (byteBits[1]);           // b7 b6  (2 bits)
+            const G1 = (byteBits[2] << 2) + (byteBits[3] << 1) + (byteBits[4]); // b5 b4 b3
+            const G0 = (byteBits[5] << 2) + (byteBits[6] << 1) + (byteBits[7]); // b2 b1 b0
+
+            const octString = `${G2.toString(8)}${G1.toString(8)}${G0.toString(8)}`;
+
+            const total =
+                G2 * Math.pow(8, 2) +
+                G1 * Math.pow(8, 1) +
+                G0 * Math.pow(8, 0);
+
+            container.innerHTML = `
+                <div class="octal-calc-line">
+                    G2 → ${G2} × 8<sup>2</sup>
+                </div>
+
+                <div class="octal-calc-line">
+                    G1 → ${G1} × 8<sup>1</sup>
+                </div>
+
+                <div class="octal-calc-line">
+                    G0 → ${G0} × 8<sup>0</sup>
+                </div>
+
+                <div class="octal-calc-line">
+                    Soma: (${G2} × 8<sup>2</sup>) + (${G1} × 8<sup>1</sup>) + (${G0} × 8<sup>0</sup>)
+                </div>
+
+                <div class="octal-calc-line octal-calc-highlight">
+                    = ${G2 * 64} + ${G1 * 8} + ${G0}
+                </div>
+
+                <div class="octal-calc-line octal-calc-highlight">
+                    = ${total}
+                </div>
+            `;
+        }
+
+        function toggleByteBit(index) {
+            byteBits[index] = byteBits[index] ? 0 : 1;
+            renderByte();
+            updateByteInfo();
+            updateBitWeights();
+            highlightWeights();
+            updateHexTable();
+            updateHexCalculation();
+            updateOctalTable();
+            updateOctalCalculation();
+        }
+
+        updateByteInfo();
+        updateBitWeights();
+        updateHexTable();
+        updateHexCalculation();
+        updateOctalTable();
+        updateOctalCalculation();
+        renderByte();
+
+        // Conversor
+        const byteInput = document.getElementById('byteInput');
+        const results = document.getElementById('results');
+
+        function convertBytes() {
+            let bytes = parseFloat(byteInput.value) || 0;
+            
+            // Limitar entre 0 e 1TB
+            const maxBytes = 1024 * 1024 * 1024 * 1024; // 1TB em bytes
+            if (bytes < 0) {
+                bytes = 0;
+                byteInput.value = 0;
+            }
+            if (bytes > maxBytes) {
+                bytes = maxBytes;
+                byteInput.value = maxBytes;
+            }
+            
+            const units = [
+                { name: 'Bits', value: bytes * 8 },
+                { name: 'Bytes', value: bytes },
+                { name: 'Kilobytes (KB)', value: bytes / 1024 },
+                { name: 'Megabytes (MB)', value: bytes / (1024 * 1024) },
+                { name: 'Gigabytes (GB)', value: bytes / (1024 * 1024 * 1024) },
+                { name: 'Terabytes (TB)', value: bytes / (1024 * 1024 * 1024 * 1024) }
+            ];
+
+            results.innerHTML = units.map(unit => `
+                <div class="result-item">
+                    <div class="label">${unit.name}</div>
+                    <div class="result-value">${unit.value.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        byteInput.addEventListener('input', convertBytes);
+        
+        // Prevenir entrada de números negativos e limitar durante a digitação
+        byteInput.addEventListener('keydown', (e) => {
+            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+                e.preventDefault();
+            }
+        });
+        
+        byteInput.addEventListener('blur', () => {
+            convertBytes();
+        });
+        
+        convertBytes();
+
+        // Assumindo que existem estas variáveis no escopo global:
+        const downloadBar = document.getElementById('download-bar');
+        const downloadText = document.getElementById('download-text');
+        const startDownload = document.getElementById('startDownload');
+
+        let downloadProgress = 0;
+        let downloadInterval;
+
+        function simulateDownload(speedMbps = 8, fileSizeMB = 10) {
+            // desativa o botão e altera o texto
+            startDownload.disabled = true;
+            startDownload.textContent = 'Baixando...';
+            startDownload.style.opacity = '0.7';
+            startDownload.style.cursor = 'not-allowed';
+
+            clearInterval(downloadInterval);
+            downloadProgress = 0;
+            downloadBar.style.transition = 'none';      // desativa animação
+            downloadBar.style.width = '0%';             // reseta instantaneamente
+            void downloadBar.offsetWidth;               // força reflow (garante aplicação imediata)
+            downloadBar.style.transition = 'width 0.1s'; // reativa animação
+
+            const bitsPerSecond = speedMbps * 1_000_000;
+            const bytesPerSecond = bitsPerSecond / 8;
+            const totalBytes = fileSizeMB * 1_000_000;
+            const totalSeconds = totalBytes / bytesPerSecond;
+            const step = 100 / (totalSeconds * 10); // atualiza 10x por segundo
+            const bytesPerStep = bytesPerSecond / 10;
+
+            let downloadedBytes = 0;
+
+            // Mantém a linha inicial fixa e cria o span de progresso
+            downloadText.innerHTML = `
+                <strong>Baixando arquivo de ${fileSizeMB} MB a ${speedMbps} Mbps...</strong>
+                <br><span id="progress-info">Progresso: 0% (0.00 MB de ${fileSizeMB} MB)</span>
+            `;
+
+            const progressInfo = document.getElementById('progress-info');
+
+            downloadInterval = setInterval(() => {
+                downloadProgress += step;
+                downloadedBytes += bytesPerStep;
+
+                if (downloadProgress >= 100 || downloadedBytes >= totalBytes) {
+                    downloadProgress = 100;
+                    downloadedBytes = totalBytes;
+                    clearInterval(downloadInterval);
+
+                    // atualiza texto final
+                    progressInfo.textContent = `Download concluído! (${fileSizeMB} MB de ${fileSizeMB} MB)`;
+                    downloadBar.style.width = `100%`;
+
+                    // reativa o botão e restaura texto/estilo
+                    startDownload.disabled = false;
+                    startDownload.textContent = 'INICIAR SIMULAÇÃO';
+                    startDownload.style.opacity = '';
+                    startDownload.style.cursor = '';
+                } else {
+                    const downloadedMB = (downloadedBytes / 1_000_000).toFixed(2);
+                    progressInfo.textContent = `Progresso: ${downloadProgress.toFixed(1)}% (${downloadedMB} MB de ${fileSizeMB} MB)`;
+                    downloadBar.style.width = `${downloadProgress}%`;
+                }
+            }, 100);
+        }
+
+        // listener do botão
+        startDownload.addEventListener('click', () => {
+            // aqui você pode ler controles (se existir) ou usar valores padrão
+            simulateDownload(); // usa valores padrão de speedMbps=8 e fileSizeMB=10
+        });
+
+        // Quiz
+        const questions = [
+            {
+                question: "Quantos bits formam 1 byte?",
+                options: ["4 bits", "8 bits", "16 bits", "32 bits"],
+                correct: 1
+            },
+            {
+                question: "Quantos bytes tem 1 Kilobyte (KB)?",
+                options: ["100 bytes", "1000 bytes", "1024 bytes", "2048 bytes"],
+                correct: 2
+            },
+            {
+                question: "Um bit pode ter quantos valores diferentes?",
+                options: ["1 valor", "2 valores", "8 valores", "256 valores"],
+                correct: 1
+            },
+            {
+                question: "Qual é maior?",
+                options: ["1 MB", "1 GB", "1 KB", "1 TB"],
+                correct: 3
+            },
+            {
+                question: "Se sua internet é de 8 Mbps, qual é aproximadamente a velocidade de download em megabytes por segundo (MB/s)?",
+                options: ["8 MB/s", "1 MB/s", "0.125 MB/s", "64 MB/s"],
+                correct: 1
+            },
+            {
+                question: "Em um sistema de cores RGB, cada componente (vermelho, verde e azul) é representado por quantos bits?",
+                options: ["4 bits", "8 bits", "16 bits", "24 bits"],
+                correct: 1
+            },
+            {
+                question: "Em uma imagem digital 8×8, quantos pixels ela possui no total?",
+                options: ["8 pixels", "16 pixels", "64 pixels", "128 pixels"],
+                correct: 2
+            },
+            {
+                question: "O que significa um processador ter 3 GHz de clock?",
+                options: [
+                    "Que ele possui 3 gigabytes de memória",
+                    "Que ele realiza cerca de 3 bilhões de ciclos por segundo",
+                    "Que ele pode processar apenas 3 instruções por segundo",
+                    "Que ele consome 3 watts de energia"
+                ],
+                correct: 1
+            },
+            {
+                question: "Qual das alternativas descreve corretamente a diferença entre latência e largura de banda?",
+                options: [
+                    "Latência é o tamanho dos pacotes e largura de banda é o tempo entre eles",
+                    "Latência é o tempo até um pacote começar a ser enviado e largura de banda é a quantidade de dados que pode ser enviada por segundo",
+                    "Largura de banda é medida em milissegundos e latência em megabits",
+                    "Latência e largura de banda são a mesma coisa"
+                ],
+                correct: 1
+            }
+        ];
+
+        const quiz = document.getElementById('quiz');
+        let selectedAnswers = {};
+
+        function renderQuiz() {
+            quiz.innerHTML = questions.map((q, qIndex) => `
+                <div style="margin-bottom: 30px;">
+                    <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>${qIndex + 1}. ${q.question}</strong></p>
+                    ${q.options.map((opt, oIndex) => `
+                        <div class="quiz-option" onclick="selectAnswer(${qIndex}, ${oIndex})" id="q${qIndex}o${oIndex}">
+                            ${opt}
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function selectAnswer(qIndex, oIndex) {
+            selectedAnswers[qIndex] = oIndex;
+            
+            questions[qIndex].options.forEach((_, i) => {
+                const el = document.getElementById(`q${qIndex}o${i}`);
+                el.classList.remove('selected');
+                if (i === oIndex) el.classList.add('selected');
+            });
+        }
+
+        function checkQuiz() {
+            let correct = 0;
+
+            questions.forEach((q, qIndex) => {
+                q.options.forEach((_, oIndex) => {
+                    const el = document.getElementById(`q${qIndex}o${oIndex}`);
+                    el.classList.remove('correct', 'wrong');
+
+                    // marca a correta
+                    if (oIndex === q.correct) {
+                        el.classList.add('correct');
+                    }
+
+                    // marca a errada escolhida
+                    if (selectedAnswers[qIndex] === oIndex && oIndex !== q.correct) {
+                        el.classList.add('wrong');
+                    }
+                });
+
+                if (selectedAnswers[qIndex] === q.correct) correct++;
+            });
+
+            const result = document.getElementById('quizResult');
+            result.style.display = "block";
+            result.innerHTML = `<strong>Você acertou ${correct} de ${questions.length} questões!</strong><br>` +
+                (correct === questions.length ? 'Perfeito! Você dominou o conteúdo!' :
+                 correct >= questions.length / 2 ? 'Bom trabalho! Continue estudando!' :
+                 'Revise o conteúdo e tente novamente!');
+        }
+
+        renderQuiz();
+
+        // ---------- Representação de Cores RGB ----------
+        const bitsR = Array(8).fill(0);
+        const bitsG = Array(8).fill(0);
+        const bitsB = Array(8).fill(0);
+
+        function renderColorBits(containerId, bitsArray, onClickFn) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            bitsArray.forEach((bit, i) => {
+                const el = document.createElement('div');
+                el.className = 'bit' + (bit ? ' active' : '');
+                el.textContent = bit;
+                el.onclick = () => { bitsArray[i] = bit ? 0 : 1; onClickFn(); };
+                container.appendChild(el);
+            });
+        }
+
+        function bitsToValue(bits) {
+            return bits.reduce((acc, bit, i) => acc + bit * Math.pow(2, 7 - i), 0);
+        }
+
+        function updateColor() {
+            renderColorBits('bitsR', bitsR, updateColor);
+            renderColorBits('bitsG', bitsG, updateColor);
+            renderColorBits('bitsB', bitsB, updateColor);
+
+            const r = bitsToValue(bitsR);
+            const g = bitsToValue(bitsG);
+            const b = bitsToValue(bitsB);
+
+            const rgbString = `rgb(${r}, ${g}, ${b})`;
+            const hex = `#${[r,g,b].map(v => v.toString(16).padStart(2,'0').toUpperCase()).join('')}`;
+
+            document.getElementById('colorBox').style.background = rgbString;
+            document.getElementById('rgbValue').textContent = `(${r}, ${g}, ${b})`;
+            document.getElementById('hexValue').textContent = hex;
+        }
+
+        updateColor();
+
+        // ---------- Representação de Imagens (Pixels e Resolução) ----------
+        const gridSize = 8;
+        const pixelGrid = document.getElementById('pixelGrid');
+        const activePixelsEl = document.getElementById('activePixels');
+        const fileSizeEl = document.getElementById('fileSize');
+        const colorPicker = document.getElementById('colorPicker');
+
+        // Cria o grid de pixels
+        const pixels = [];
+        for (let i = 0; i < gridSize * gridSize; i++) {
+            const pixel = document.createElement('div');
+            pixel.className = 'pixel';
+            pixel.dataset.active = 'false';
+            pixel.dataset.color = '#ffffff';
+            pixel.addEventListener('click', () => {
+                if (pixel.dataset.active === 'true' && pixel.dataset.color === colorPicker.value) {
+                    // Se clicar na mesma cor, apaga o pixel
+                    pixel.style.background = '#ffffff';
+                    pixel.dataset.active = 'false';
+                } else {
+                    // Pinta o pixel com a cor atual
+                    pixel.style.background = colorPicker.value;
+                    pixel.dataset.active = 'true';
+                    pixel.dataset.color = colorPicker.value;
+                }
+                updateInfo();
+            });
+            pixelGrid.appendChild(pixel);
+            pixels.push(pixel);
+        }
+
+        function updateInfo() {
+            const activeCount = pixels.filter(p => p.dataset.active === 'true').length;
+            activePixelsEl.textContent = activeCount;
+
+            // Cada pixel colorido ocupa 3 bytes (RGB)
+            const totalBytes = activeCount * 3;
+            let sizeLabel;
+
+            if (totalBytes < 1024) {
+                sizeLabel = totalBytes + ' bytes';
+            } else if (totalBytes < 1024 * 1024) {
+                sizeLabel = (totalBytes / 1024).toFixed(2) + ' KB';
+            } else {
+                sizeLabel = (totalBytes / (1024 * 1024)).toFixed(2) + ' MB';
+            }
+
+            fileSizeEl.textContent = sizeLabel;
+        }
+
+        updateInfo();
+
+        // ---------- Processamento e Clock (versão com espaçamento constante) ----------
+        const canvas = document.getElementById('cpuCanvas');
+        const ctx = canvas.getContext('2d');
+        const clockSpeed = document.getElementById('clockSpeed');
+        const clockValue = document.getElementById('clockValue');
+        const instructions = document.getElementById('instructions');
+
+        let ghz = 3.0;
+        let blocks = [];
+        const blockWidth = 20;
+        const streamY = 40;
+        const spacing = 60; // distância fixa entre blocos (em pixels)
+
+        let distanceAccumulator = 0; // controla quando criar o próximo bloco
+        let lastTime = 0;
+
+        function createBlock() {
+            blocks.push({ x: -blockWidth, y: streamY });
+        }
+
+        function updateBlocks(dt) {
+            const speed = ghz * 60; // pixels/segundo
+            const distanceMoved = speed * dt;
+            distanceAccumulator += distanceMoved;
+
+            // cria novo bloco sempre que percorrer a distância do espaçamento
+            if (distanceAccumulator >= spacing) {
+                distanceAccumulator = 0;
+                createBlock();
+            }
+
+            // move blocos
+            blocks.forEach(b => b.x += distanceMoved);
+
+            // remove blocos fora da tela
+            blocks = blocks.filter(b => b.x < canvas.width + blockWidth);
+        }
+
+        function drawBlocks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#5c6d82';
+            for (const b of blocks) {
+                ctx.fillRect(b.x, b.y, blockWidth, 20);
+            }
+        }
+
+        function loop(timestamp) {
+            const dt = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            updateBlocks(dt);
+            drawBlocks();
+
+            requestAnimationFrame(loop);
+        }
+
+        function updateClock() {
+            ghz = parseFloat(clockSpeed.value);
+            clockValue.textContent = ghz.toFixed(1) + ' GHz';
+            instructions.textContent = ghz.toFixed(1) + ' bilhões';
+        }
+
+        clockSpeed.addEventListener('input', updateClock);
+
+        // Inicializa
+        updateClock();
+        requestAnimationFrame(loop);
+
+        (function() {
+            const latencySlider = document.getElementById('latencySlider');
+            const bandwidthSlider = document.getElementById('bandwidthSlider');
+            const latencyValue = document.getElementById('latencyValue');
+            const bandwidthValue = document.getElementById('bandwidthValue');
+            const toggleSim = document.getElementById('toggleSim');
+            const resetSim = document.getElementById('resetSim');
+            const ppsEl = document.getElementById('pps');
+            const throughputEl = document.getElementById('throughput');
+            const linkArea = document.getElementById('linkArea');
+            const livePacketsEl = document.getElementById('livePackets');
+
+            let running = false;
+            let spawnTimer = null;
+            let packets = [];
+            let lastFrame = performance.now();
+
+            const MIN_PKT_PX = 8;
+            const MAX_PKT_PX = 120;
+            const SPEED_SCALE = 0.6;
+            const BANDWIDTH_FOR_MAX_PKT = 1000;
+
+            function updateDisplays() {
+                const latency = parseInt(latencySlider.value);
+                const bandwidth = parseFloat(bandwidthSlider.value);
+
+                latencyValue.textContent = latency;
+                bandwidthValue.textContent = bandwidth.toFixed(1);
+
+                const pps = 1000 / latency;
+                ppsEl.textContent = pps.toFixed(2) + " /s";
+
+                const throughputMBps = (bandwidth * 1_000_000 / 8) / 1_000_000;
+                throughputEl.textContent = throughputMBps.toFixed(2) + " MB/s";
+
+                livePacketsEl.textContent = packets.length;
+            }
+
+            function packetWidth() {
+                const bw = parseFloat(bandwidthSlider.value);
+                return Math.max(MIN_PKT_PX, Math.min(MAX_PKT_PX, (bw / BANDWIDTH_FOR_MAX_PKT) * MAX_PKT_PX));
+            }
+
+            function packetSpeed() {
+                return Math.max(10, parseFloat(bandwidthSlider.value) * SPEED_SCALE);
+            }
+
+            function createPacket() {
+                const el = document.createElement('div');
+                el.className = 'sim-packet';
+                el.style.top = (15 + Math.random() * 70) + 'px';
+                el.style.left = '10px';
+
+                const width = packetWidth();
+                const speed = packetSpeed();
+
+                el.style.width = width + 'px';
+
+                linkArea.appendChild(el);
+                packets.push({ el, x: 10, width, speed });
+                updateDisplays();
+            }
+
+            function startSpawning() {
+                stopSpawning();
+                const latency = parseInt(latencySlider.value);
+
+                createPacket();
+
+                spawnTimer = setInterval(() => {
+                    createPacket();
+                }, latency);
+            }
+
+            function stopSpawning() {
+                if (spawnTimer) {
+                    clearInterval(spawnTimer);
+                    spawnTimer = null;
+                }
+            }
+
+            function frame(now) {
+                const dt = (now - lastFrame) / 1000;
+                lastFrame = now;
+
+                const widthLimit = linkArea.clientWidth - 20;
+
+                for (let i = packets.length - 1; i >= 0; i--) {
+                    const p = packets[i];
+                    p.x += p.speed * dt;
+                    p.el.style.transform = `translateX(${p.x}px)`;
+
+                    if (p.x - p.width > widthLimit) {
+                        linkArea.removeChild(p.el);
+                        packets.splice(i, 1);
+                    }
+                }
+
+                livePacketsEl.textContent = packets.length;
+                requestAnimationFrame(frame);
+            }
+
+            // Atualiza TODOS os pacotes existentes para refletir o novo slider
+            function refreshExistingPackets() {
+                const newWidth = packetWidth();
+                const newSpeed = packetSpeed();
+
+                packets.forEach(p => {
+                    p.width = newWidth;
+                    p.speed = newSpeed;
+                    p.el.style.width = newWidth + 'px';
+                });
+            }
+
+            latencySlider.addEventListener('input', () => {
+                updateDisplays();
+                if (running) startSpawning();
+            });
+
+            bandwidthSlider.addEventListener('input', () => {
+                updateDisplays();
+                refreshExistingPackets(); // ✅ Agora funciona!
+            });
+
+            toggleSim.addEventListener('click', () => {
+                running = !running;
+
+                if (running) {
+                    toggleSim.textContent = "PARAR SIMULAÇÃO";
+                    lastFrame = performance.now();
+                    startSpawning();
+                    requestAnimationFrame(frame);
+                } else {
+                    toggleSim.textContent = "INICIAR SIMULAÇÃO";
+                    stopSpawning();
+                }
+            });
+
+            resetSim.addEventListener('click', () => {
+                running = false;
+                toggleSim.textContent = "INICIAR SIMULAÇÃO";
+                stopSpawning();
+
+                packets.forEach(p => linkArea.removeChild(p.el));
+                packets = [];
+
+                updateDisplays();
+            });
+
+            updateDisplays();
+        })();
+
+        function generateConversionTable() {
+            const tbody = document.getElementById('conversionBody');
+            tbody.innerHTML = '';
+            for (let i = 0; i <= 15; i++) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td>${i.toString(16).toUpperCase()}</td>
+                    <td>${i.toString(8)}</td>
+                    <td>${i.toString(2).padStart(4, '0')}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+        generateConversionTable();
+
+        // ---------- Tabela ASCII Interativa ----------
+        function generateAsciiTable() {
+            const tbody = document.getElementById('asciiBody');
+            tbody.innerHTML = '';
+
+            for (let i = 0; i < 128; i++) {
+                const hex = i.toString(16).toUpperCase().padStart(2, '0');
+                const bin = i.toString(2).padStart(8, '0');
+                let char = String.fromCharCode(i);
+
+                // Mostrar nomes especiais
+                if (i < 32 || i === 127) {
+                    const controlNames = [
+                        "NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL",
+                        "BS","TAB","LF","VT","FF","CR","SO","SI",
+                        "DLE","DC1","DC2","DC3","DC4","NAK","SYN","ETB",
+                        "CAN","EM","SUB","ESC","FS","GS","RS","US","DEL"
+                    ];
+                    char = i === 127 ? "DEL" : controlNames[i] || "CTRL";
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td>${hex}</td>
+                    <td>${bin}</td>
+                    <td>${char}</td>
+                `;
+                row.addEventListener('click', () => showAsciiDetails(i, hex, bin, char));
+                tbody.appendChild(row);
+            }
+        }
+
+        function showAsciiDetails(dec, hex, bin, char) {
+            document.getElementById('asciiDetails').style.display = 'block';
+            document.getElementById('asciiChar').textContent = char;
+            document.getElementById('asciiDec').textContent = dec;
+            document.getElementById('asciiHex').textContent = hex;
+            document.getElementById('asciiBin').textContent = bin;
+
+            const bitsContainer = document.getElementById('asciiBits');
+            bitsContainer.innerHTML = '';
+            bin.split('').forEach(b => {
+                const bitEl = document.createElement('div');
+                bitEl.className = 'bit' + (b === '1' ? ' active' : '');
+                bitEl.textContent = b;
+                bitsContainer.appendChild(bitEl);
+            });
+        }
+
+        generateAsciiTable();
+
+        function openIndex() {
+            window.location.href = "/";
+        }
+    </script>
+</body>
+</html>
