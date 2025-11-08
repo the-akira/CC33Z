@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tipos de Arquivos - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 20px 0 20px;
+    }
+    .toolbar input {
+      padding: 10px 12px;
+      font-size: 1.025rem;
+      border: 2px solid #273E74;
+      min-width: 250px;
+    }
+    .toolbar button {
+      height: 43px;
+    }
+    .toolbar select, .toolbar button {
+      padding: 10px 12px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .toolbar button:hover { background-color: #273E74; }
+    .toolbar input:focus {
+      border: 2px solid #5C6D82;
+      outline: none;
+    }
+    .toolbar select:focus {
+      outline: none;
+    }
+    .file-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px;
+      margin-top: 20px;
+    }
+    .file-card {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      width: 320px;
+      padding: 20px;
+      text-align: left;
+    }
+    .file-card .extension {
+      background: #273E74;
+      color: white;
+      padding: 8px 12px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: inline-block;
+      margin-bottom: 10px;
+      font-family: monospace;
+    }
+    .file-card .category-badge {
+      background: #5C6D82;
+      color: white;
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      display: inline-block;
+      margin-left: 8px;
+      float: right;
+    }
+    .file-card h3 { 
+      color: #273E74; 
+      margin: 8px 0; 
+      font-size: 17.5px; 
+    }
+    .file-card p { 
+      font-size: 0.87rem; 
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+    .file-card .info-row {
+      margin: 6px 0;
+      font-size: 0.87rem;
+      overflow-wrap: anywhere; 
+    }
+    .file-card .info-row strong {
+      color: #273E74;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 25px;
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+    .pagination button {
+      padding: 8px 12px;
+      border: 2px solid #273E74;
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+      color: #273E74;
+    }
+    .pagination button.active, .pagination button:hover {
+      background-color: #5C6D82;
+      color: white;
+    }
+    .pagination span {
+      color: #273E74;
+      font-weight: bold;
+      user-select: none;
+    }
+    .pagination button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .stats {
+      text-align: center;
+      margin: 15px 20px;
+      margin-bottom: 0px;
+      color: #273E74;
+      font-weight: bold;
+    }
+    @media only screen and (max-width: 390px) {
+      .toolbar input[type="text"] {
+        min-width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">Tipos de Arquivos</h1>
+
+  <div class="toolbar">
+    <input type="text" id="searchInput" placeholder="Buscar por extensão ou descrição...">
+    <select id="filterSelect">
+      <option value="">Todas as categorias</option>
+      <option value="documento">Documento</option>
+      <option value="imagem">Imagem</option>
+      <option value="video">Vídeo</option>
+      <option value="audio">Áudio</option>
+      <option value="compactado">Compactado</option>
+      <option value="executavel">Executável</option>
+      <option value="codigo">Código</option>
+      <option value="dados">Dados</option>
+      <option value="sistema">Sistema</option>
+    </select>
+    <select id="sortSelect">
+      <option value="extensaoAZ">Extensão (A–Z)</option>
+      <option value="extensaoZA">Extensão (Z–A)</option>
+      <option value="nomeAZ">Nome (A–Z)</option>
+      <option value="nomeZA">Nome (Z–A)</option>
+    </select>
+    <button id="clearBtn">Limpar Filtros</button>
+  </div>
+
+  <div class="stats" id="statsDiv"></div>
+
+  <main class="file-grid" id="fileGrid"></main>
+  <div class="pagination" id="pagination"></div>
+
+  <script>
+    const FILES = [
+      // DOCUMENTOS
+      {ext: '.pdf', nome: 'PDF', desc: 'Formato portátil de documento criado pela Adobe, mantém formatação em qualquer dispositivo.', categoria: 'documento', mime: 'application/pdf', uso: 'Documentos oficiais, e-books, formulários'},
+      {ext: '.doc', nome: 'Word Document', desc: 'Formato proprietário do Microsoft Word (versões antigas).', categoria: 'documento', mime: 'application/msword', uso: 'Documentos de texto formatados'},
+      {ext: '.docx', nome: 'Word Document', desc: 'Formato moderno do Microsoft Word baseado em XML.', categoria: 'documento', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', uso: 'Documentos de texto formatados'},
+      {ext: '.txt', nome: 'Text File', desc: 'Arquivo de texto simples sem formatação.', categoria: 'documento', mime: 'text/plain', uso: 'Notas, código-fonte, logs'},
+      {ext: '.rtf', nome: 'Rich Text Format', desc: 'Formato de texto com formatação básica compatível entre plataformas.', categoria: 'documento', mime: 'application/rtf', uso: 'Documentos com formatação simples'},
+      {ext: '.odt', nome: 'OpenDocument Text', desc: 'Formato aberto de documento de texto (LibreOffice, OpenOffice).', categoria: 'documento', mime: 'application/vnd.oasis.opendocument.text', uso: 'Documentos em software livre'},
+      {ext: '.xls', nome: 'Excel Spreadsheet', desc: 'Formato de planilha do Microsoft Excel (versões antigas).', categoria: 'documento', mime: 'application/vnd.ms-excel', uso: 'Planilhas e cálculos'},
+      {ext: '.xlsx', nome: 'Excel Spreadsheet', desc: 'Formato moderno de planilha do Microsoft Excel.', categoria: 'documento', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', uso: 'Planilhas e análise de dados'},
+      {ext: '.ppt', nome: 'PowerPoint', desc: 'Formato de apresentação do Microsoft PowerPoint (versões antigas).', categoria: 'documento', mime: 'application/vnd.ms-powerpoint', uso: 'Apresentações de slides'},
+      {ext: '.pptx', nome: 'PowerPoint', desc: 'Formato moderno de apresentação do Microsoft PowerPoint.', categoria: 'documento', mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', uso: 'Apresentações de slides'},
+      {ext: '.csv', nome: 'Comma-Separated Values', desc: 'Arquivo de valores separados por vírgula para dados tabulares.', categoria: 'documento', mime: 'text/csv', uso: 'Importação/exportação de dados'},
+      
+      // IMAGENS
+      {ext: '.jpg', nome: 'JPEG Image', desc: 'Formato de imagem com compressão com perda, ideal para fotografias.', categoria: 'imagem', mime: 'image/jpeg', uso: 'Fotografias, imagens web'},
+      {ext: '.jpeg', nome: 'JPEG Image', desc: 'Mesmo formato do JPG, apenas extensão diferente.', categoria: 'imagem', mime: 'image/jpeg', uso: 'Fotografias, imagens web'},
+      {ext: '.png', nome: 'PNG Image', desc: 'Formato de imagem com suporte a transparência e compressão sem perda.', categoria: 'imagem', mime: 'image/png', uso: 'Logotipos, gráficos, ícones'},
+      {ext: '.gif', nome: 'GIF Image', desc: 'Formato de imagem com suporte a animações e transparência simples.', categoria: 'imagem', mime: 'image/gif', uso: 'Animações simples, memes'},
+      {ext: '.bmp', nome: 'Bitmap Image', desc: 'Formato de imagem bitmap sem compressão do Windows.', categoria: 'imagem', mime: 'image/bmp', uso: 'Imagens sem compressão'},
+      {ext: '.svg', nome: 'SVG Image', desc: 'Formato de imagem vetorial escalável baseado em XML.', categoria: 'imagem', mime: 'image/svg+xml', uso: 'Gráficos vetoriais, ícones'},
+      {ext: '.webp', nome: 'WebP Image', desc: 'Formato moderno de imagem do Google com melhor compressão.', categoria: 'imagem', mime: 'image/webp', uso: 'Imagens web otimizadas'},
+      {ext: '.ico', nome: 'Icon File', desc: 'Formato de ícone usado em sistemas Windows.', categoria: 'imagem', mime: 'image/x-icon', uso: 'Ícones de aplicativos'},
+      {ext: '.tiff', nome: 'TIFF Image', desc: 'Formato de imagem de alta qualidade usado em fotografia profissional.', categoria: 'imagem', mime: 'image/tiff', uso: 'Fotografia profissional'},
+      {ext: '.psd', nome: 'Photoshop Document', desc: 'Formato nativo do Adobe Photoshop com suporte a camadas.', categoria: 'imagem', mime: 'image/vnd.adobe.photoshop', uso: 'Edição profissional de imagens'},
+      
+      // VÍDEOS
+      {ext: '.mp4', nome: 'MPEG-4 Video', desc: 'Formato de vídeo mais popular, com boa compressão e qualidade.', categoria: 'video', mime: 'video/mp4', uso: 'Vídeos em geral, streaming'},
+      {ext: '.avi', nome: 'Audio Video Interleave', desc: 'Formato de vídeo da Microsoft, sem compressão ou com várias opções.', categoria: 'video', mime: 'video/x-msvideo', uso: 'Vídeos em Windows'},
+      {ext: '.mkv', nome: 'Matroska Video', desc: 'Container de vídeo aberto que suporta múltiplos codecs.', categoria: 'video', mime: 'video/x-matroska', uso: 'Vídeos HD, múltiplas faixas'},
+      {ext: '.mov', nome: 'QuickTime Video', desc: 'Formato de vídeo da Apple.', categoria: 'video', mime: 'video/quicktime', uso: 'Vídeos em macOS/iOS'},
+      {ext: '.wmv', nome: 'Windows Media Video', desc: 'Formato de vídeo da Microsoft com compressão.', categoria: 'video', mime: 'video/x-ms-wmv', uso: 'Vídeos em Windows'},
+      {ext: '.flv', nome: 'Flash Video', desc: 'Formato usado para streaming na web (Flash Player).', categoria: 'video', mime: 'video/x-flv', uso: 'Vídeos online (legado)'},
+      {ext: '.webm', nome: 'WebM Video', desc: 'Formato de vídeo aberto otimizado para web.', categoria: 'video', mime: 'video/webm', uso: 'Vídeos HTML5'},
+      {ext: '.m4v', nome: 'MPEG-4 Video', desc: 'Variante do MP4 usado pela Apple.', categoria: 'video', mime: 'video/x-m4v', uso: 'Vídeos iTunes/Apple'},
+      
+      // ÁUDIO
+      {ext: '.mp3', nome: 'MP3 Audio', desc: 'Formato de áudio mais popular com compressão com perda.', categoria: 'audio', mime: 'audio/mpeg', uso: 'Música, podcasts'},
+      {ext: '.wav', nome: 'Wave Audio', desc: 'Formato de áudio sem compressão de alta qualidade.', categoria: 'audio', mime: 'audio/wav', uso: 'Áudio profissional'},
+      {ext: '.flac', nome: 'FLAC Audio', desc: 'Formato de áudio com compressão sem perda.', categoria: 'audio', mime: 'audio/flac', uso: 'Áudio de alta qualidade'},
+      {ext: '.aac', nome: 'AAC Audio', desc: 'Formato de áudio com melhor qualidade que MP3 no mesmo bitrate.', categoria: 'audio', mime: 'audio/aac', uso: 'Streaming, dispositivos móveis'},
+      {ext: '.ogg', nome: 'Ogg Vorbis', desc: 'Formato de áudio aberto com boa compressão.', categoria: 'audio', mime: 'audio/ogg', uso: 'Áudio open source'},
+      {ext: '.wma', nome: 'Windows Media Audio', desc: 'Formato de áudio da Microsoft.', categoria: 'audio', mime: 'audio/x-ms-wma', uso: 'Áudio em Windows'},
+      {ext: '.m4a', nome: 'MPEG-4 Audio', desc: 'Formato de áudio usado pela Apple (iTunes).', categoria: 'audio', mime: 'audio/mp4', uso: 'Música Apple/iTunes'},
+      {ext: '.midi', nome: 'MIDI Audio', desc: 'Formato de sequências musicais digitais.', categoria: 'audio', mime: 'audio/midi', uso: 'Música sintetizada'},
+      
+      // COMPACTADOS
+      {ext: '.zip', nome: 'ZIP Archive', desc: 'Formato de compactação mais popular e universal.', categoria: 'compactado', mime: 'application/zip', uso: 'Compactação geral de arquivos'},
+      {ext: '.rar', nome: 'RAR Archive', desc: 'Formato de compactação proprietário com alta taxa de compressão.', categoria: 'compactado', mime: 'application/vnd.rar', uso: 'Compactação eficiente'},
+      {ext: '.7z', nome: '7-Zip Archive', desc: 'Formato de compactação de código aberto com excelente taxa.', categoria: 'compactado', mime: 'application/x-7z-compressed', uso: 'Alta compactação'},
+      {ext: '.tar', nome: 'Tape Archive', desc: 'Formato de arquivamento sem compressão usado no Unix/Linux.', categoria: 'compactado', mime: 'application/x-tar', uso: 'Arquivamento Linux'},
+      {ext: '.gz', nome: 'Gzip Archive', desc: 'Formato de compressão usado no Unix/Linux.', categoria: 'compactado', mime: 'application/gzip', uso: 'Compressão Linux'},
+      {ext: '.tar.gz', nome: 'Tarball Gzip', desc: 'Arquivo TAR compactado com Gzip.', categoria: 'compactado', mime: 'application/gzip', uso: 'Pacotes Linux'},
+      {ext: '.iso', nome: 'ISO Image', desc: 'Imagem de disco ótico (CD/DVD).', categoria: 'compactado', mime: 'application/x-iso9660-image', uso: 'Imagens de CD/DVD'},
+      
+      // EXECUTÁVEIS
+      {ext: '.exe', nome: 'Windows Executable', desc: 'Arquivo executável do Windows.', categoria: 'executavel', mime: 'application/vnd.microsoft.portable-executable', uso: 'Programas Windows'},
+      {ext: '.msi', nome: 'Windows Installer', desc: 'Pacote de instalação do Windows.', categoria: 'executavel', mime: 'application/x-msi', uso: 'Instaladores Windows'},
+      {ext: '.apk', nome: 'Android Package', desc: 'Pacote de aplicativo Android.', categoria: 'executavel', mime: 'application/vnd.android.package-archive', uso: 'Apps Android'},
+      {ext: '.app', nome: 'macOS Application', desc: 'Aplicativo do macOS.', categoria: 'executavel', mime: 'application/x-apple-diskimage', uso: 'Apps macOS'},
+      {ext: '.deb', nome: 'Debian Package', desc: 'Pacote de instalação Debian/Ubuntu.', categoria: 'executavel', mime: 'application/vnd.debian.binary-package', uso: 'Pacotes Debian/Ubuntu'},
+      {ext: '.rpm', nome: 'RPM Package', desc: 'Pacote de instalação Red Hat/Fedora.', categoria: 'executavel', mime: 'application/x-rpm', uso: 'Pacotes Red Hat/Fedora'},
+      {ext: '.dmg', nome: 'Apple Disk Image', desc: 'Imagem de disco do macOS.', categoria: 'executavel', mime: 'application/x-apple-diskimage', uso: 'Instaladores macOS'},
+      {ext: '.bat', nome: 'Batch File', desc: 'Script em lote do Windows.', categoria: 'executavel', mime: 'application/x-bat', uso: 'Scripts Windows'},
+      {ext: '.sh', nome: 'Shell Script', desc: 'Script de shell Unix/Linux.', categoria: 'executavel', mime: 'application/x-sh', uso: 'Scripts Linux/Unix'},
+      
+      // CÓDIGO
+      {ext: '.html', nome: 'HTML File', desc: 'Documento de marcação para páginas web.', categoria: 'codigo', mime: 'text/html', uso: 'Páginas web'},
+      {ext: '.css', nome: 'CSS File', desc: 'Folha de estilos em cascata.', categoria: 'codigo', mime: 'text/css', uso: 'Estilos web'},
+      {ext: '.js', nome: 'JavaScript File', desc: 'Código JavaScript.', categoria: 'codigo', mime: 'text/javascript', uso: 'Scripts web'},
+      {ext: '.json', nome: 'JSON File', desc: 'Formato de dados JavaScript Object Notation.', categoria: 'codigo', mime: 'application/json', uso: 'Troca de dados, APIs'},
+      {ext: '.xml', nome: 'XML File', desc: 'Linguagem de marcação extensível.', categoria: 'codigo', mime: 'application/xml', uso: 'Dados estruturados'},
+      {ext: '.py', nome: 'Python File', desc: 'Código fonte Python.', categoria: 'codigo', mime: 'text/x-python', uso: 'Scripts Python'},
+      {ext: '.java', nome: 'Java File', desc: 'Código fonte Java.', categoria: 'codigo', mime: 'text/x-java-source', uso: 'Programas Java'},
+      {ext: '.cpp', nome: 'C++ File', desc: 'Código fonte C++.', categoria: 'codigo', mime: 'text/x-c++src', uso: 'Programas C++'},
+      {ext: '.c', nome: 'C File', desc: 'Código fonte C.', categoria: 'codigo', mime: 'text/x-csrc', uso: 'Programas C'},
+      {ext: '.php', nome: 'PHP File', desc: 'Código PHP para web.', categoria: 'codigo', mime: 'application/x-httpd-php', uso: 'Scripts web server-side'},
+      {ext: '.sql', nome: 'SQL File', desc: 'Código SQL para banco de dados.', categoria: 'codigo', mime: 'application/sql', uso: 'Consultas de banco de dados'},
+      {ext: '.md', nome: 'Markdown File', desc: 'Arquivo de texto formatado em Markdown.', categoria: 'codigo', mime: 'text/markdown', uso: 'Documentação, README'},
+      
+      // DADOS
+      {ext: '.db', nome: 'Database File', desc: 'Arquivo de banco de dados genérico.', categoria: 'dados', mime: 'application/x-sqlite3', uso: 'Bancos de dados'},
+      {ext: '.sqlite', nome: 'SQLite Database', desc: 'Banco de dados SQLite.', categoria: 'dados', mime: 'application/x-sqlite3', uso: 'Banco de dados leve'},
+      {ext: '.mdb', nome: 'Access Database', desc: 'Banco de dados Microsoft Access.', categoria: 'dados', mime: 'application/vnd.ms-access', uso: 'Banco de dados Access'},
+      {ext: '.log', nome: 'Log File', desc: 'Arquivo de registro de eventos.', categoria: 'dados', mime: 'text/plain', uso: 'Logs de sistema'},
+      {ext: '.dat', nome: 'Data File', desc: 'Arquivo de dados genérico.', categoria: 'dados', mime: 'application/octet-stream', uso: 'Dados diversos'},
+      {ext: '.bak', nome: 'Backup File', desc: 'Arquivo de backup.', categoria: 'dados', mime: 'application/octet-stream', uso: 'Cópias de segurança'},
+      
+      // SISTEMA
+      {ext: '.dll', nome: 'Dynamic Link Library', desc: 'Biblioteca de vínculo dinâmico do Windows.', categoria: 'sistema', mime: 'application/x-msdownload', uso: 'Bibliotecas Windows'},
+      {ext: '.sys', nome: 'System File', desc: 'Arquivo de sistema do Windows.', categoria: 'sistema', mime: 'application/octet-stream', uso: 'Drivers e sistema'},
+      {ext: '.ini', nome: 'Configuration File', desc: 'Arquivo de configuração.', categoria: 'sistema', mime: 'text/plain', uso: 'Configurações de sistema'},
+      {ext: '.cfg', nome: 'Configuration File', desc: 'Arquivo de configuração genérico.', categoria: 'sistema', mime: 'text/plain', uso: 'Configurações'},
+      {ext: '.tmp', nome: 'Temporary File', desc: 'Arquivo temporário.', categoria: 'sistema', mime: 'application/octet-stream', uso: 'Arquivos temporários'},
+      {ext: '.cache', nome: 'Cache File', desc: 'Arquivo de cache.', categoria: 'sistema', mime: 'application/octet-stream', uso: 'Cache do sistema'}
+    ];
+
+    const fileGrid = document.getElementById('fileGrid');
+    const searchInput = document.getElementById('searchInput');
+    const filterSelect = document.getElementById('filterSelect');
+    const sortSelect = document.getElementById('sortSelect');
+    const pagination = document.getElementById('pagination');
+    const clearBtn = document.getElementById('clearBtn');
+    const statsDiv = document.getElementById('statsDiv');
+
+    let currentPage = 1;
+    const perPage = 8;
+
+    const categoryNames = {
+      'documento': 'Documento',
+      'imagem': 'Imagem',
+      'video': 'Vídeo',
+      'audio': 'Áudio',
+      'compactado': 'Compactado',
+      'executavel': 'Executável',
+      'codigo': 'Código',
+      'dados': 'Dados',
+      'sistema': 'Sistema'
+    };
+
+    function renderFiles() {
+      const query = searchInput.value.toLowerCase();
+      const category = filterSelect.value;
+      const sort = sortSelect.value;
+
+      let filtered = FILES.filter(f =>
+        (f.ext.toLowerCase().includes(query) ||
+         f.nome.toLowerCase().includes(query) ||
+         f.desc.toLowerCase().includes(query) ||
+         f.mime.toLowerCase().includes(query) ||
+         f.uso.toLowerCase().includes(query)) &&
+        (!category || f.categoria === category)
+      );
+
+      filtered.sort((a, b) => {
+        if (sort === "extensaoAZ") return a.ext.localeCompare(b.ext, 'pt-BR');
+        if (sort === "extensaoZA") return b.ext.localeCompare(a.ext, 'pt-BR');
+        if (sort === "nomeAZ") return a.nome.localeCompare(b.nome, 'pt-BR');
+        if (sort === "nomeZA") return b.nome.localeCompare(a.nome, 'pt-BR');
+        return 0;
+      });
+
+      statsDiv.textContent = `Exibindo ${filtered.length} tipo${filtered.length !== 1 ? 's' : ''} de arquivo${filtered.length !== 1 ? 's' : ''}`;
+
+      const totalPages = Math.ceil(filtered.length / perPage);
+      currentPage = Math.min(currentPage, totalPages || 1);
+      const start = (currentPage - 1) * perPage;
+      const pageFiles = filtered.slice(start, start + perPage);
+
+      fileGrid.innerHTML = pageFiles.map(f => `
+        <div class="file-card">
+          <span class="extension">${f.ext}</span>
+          <span class="category-badge">${categoryNames[f.categoria]}</span>
+          <h3>${f.nome}</h3>
+          <p>${f.desc}</p>
+          <div class="info-row"><strong>MIME:</strong> ${f.mime}</div>
+          <div class="info-row" style="margin-bottom: 0px;"><strong>Uso comum:</strong> ${f.uso}</div>
+        </div>
+      `).join('');
+
+      pagination.innerHTML = '';
+
+      if (totalPages <= 1) return;
+
+      const maxVisible = 5;
+      const createButton = (text, page, disabled = false, active = false) => {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        if (disabled) btn.disabled = true;
+        if (active) btn.classList.add('active');
+        btn.addEventListener('click', () => { 
+          if (!disabled && page !== currentPage) {
+            currentPage = page;
+            renderFiles();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+        return btn;
+      };
+
+      pagination.appendChild(createButton('« Primeira', 1, currentPage === 1));
+      pagination.appendChild(createButton('‹', currentPage - 1, currentPage === 1));
+
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+      if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
+
+      if (startPage > 1) {
+        pagination.appendChild(createButton('1', 1));
+        if (startPage > 2) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.style.padding = '6px';
+          pagination.appendChild(dots);
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pagination.appendChild(createButton(i, i, false, i === currentPage));
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.style.padding = '6px';
+          pagination.appendChild(dots);
+        }
+        pagination.appendChild(createButton(totalPages, totalPages));
+      }
+
+      pagination.appendChild(createButton('›', currentPage + 1, currentPage === totalPages));
+      pagination.appendChild(createButton('Última »', totalPages, currentPage === totalPages));
+    }
+
+    searchInput.addEventListener('input', () => { currentPage = 1; renderFiles(); });
+    filterSelect.addEventListener('change', () => { currentPage = 1; renderFiles(); });
+    sortSelect.addEventListener('change', renderFiles);
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      filterSelect.value = '';
+      sortSelect.value = 'extensaoAZ';
+      currentPage = 1;
+      renderFiles();
+    });
+
+    renderFiles();
+  </script>
+</body>
+</html>

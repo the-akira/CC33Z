@@ -20,6 +20,9 @@
       border: 2px solid #273E74;
       min-width: 250px;
     }
+    .toolbar button {
+      height: 43px;
+    }
     .toolbar select, .toolbar button {
       padding: 10px 12px;
       border: 2px solid #273E74;
@@ -43,7 +46,7 @@
       justify-content: center;
       gap: 20px;
       margin: 20px;
-      margin-top: 25px;
+      margin-top: 20px;
     }
     .book-card {
       background: #f2f2f2;
@@ -90,6 +93,13 @@
       opacity: 0.4;
       cursor: not-allowed;
     }
+    .stats {
+      text-align: center;
+      margin: 15px 20px;
+      margin-bottom: 0px;
+      color: #273E74;
+      font-weight: bold;
+    }
     @media only screen and (max-width: 390px) {
         .toolbar input[type="text"] {
             min-width: 180px;
@@ -116,6 +126,7 @@
       <a class="menu" href="simulador.html">Simulador</a>
       <a class="menu" href="biblioteca.html">Biblioteca</a>
       <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
     </nav>
   </header>
 
@@ -136,7 +147,10 @@
       <option value="tituloAZ">Título (A–Z)</option>
       <option value="tituloZA">Título (Z–A)</option>
     </select>
+    <button id="clearBtn">Limpar Filtros</button>
   </div>
+
+  <div class="stats" id="statsDiv"></div>
 
   <main class="book-grid" id="bookGrid"></main>
   <div class="pagination" id="pagination"></div>
@@ -366,6 +380,8 @@
     const filterSelect = document.getElementById('filterSelect');
     const sortSelect = document.getElementById('sortSelect');
     const pagination = document.getElementById('pagination');
+    const clearBtn = document.getElementById('clearBtn');
+    const statsDiv = document.getElementById('statsDiv');
 
     let currentPage = 1;
     const perPage = 6;
@@ -378,7 +394,8 @@
       // 🔍 Filtragem
       let filtered = BOOKS.filter(b =>
         (b.titulo.toLowerCase().includes(query) ||
-         b.autor.toLowerCase().includes(query)) &&
+         b.autor.toLowerCase().includes(query) ||
+         b.descricao.toLowerCase().includes(query)) &&
         (!category || b.categoria === category)
       );
 
@@ -390,6 +407,8 @@
         if (sort === "tituloZA") return b.titulo.localeCompare(a.titulo, 'pt-BR');
         return 0;
       });
+
+      statsDiv.textContent = `Exibindo ${filtered.length} tipo${filtered.length !== 1 ? 's' : ''} de arquivo${filtered.length !== 1 ? 's' : ''}`;
 
       // 📄 Paginação
       const totalPages = Math.ceil(filtered.length / perPage);
@@ -478,6 +497,14 @@
     filterSelect.addEventListener('change', () => { currentPage = 1; renderBooks(); });
     sortSelect.addEventListener('change', renderBooks);
     renderBooks();
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      filterSelect.value = '';
+      sortSelect.value = 'recentes';
+      currentPage = 1;
+      renderBooks();
+    });
   </script>
 </body>
 </html>
