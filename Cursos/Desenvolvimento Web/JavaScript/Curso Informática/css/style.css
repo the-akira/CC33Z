@@ -11,6 +11,8 @@ header {
   background-color: #5c6d82;
   color: white;
   padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
   text-align: center;
   border-bottom: solid 5.5px #273E74;
 }
