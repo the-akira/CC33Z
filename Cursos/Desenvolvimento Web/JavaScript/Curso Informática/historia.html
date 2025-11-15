@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>História da Computação - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 20px 0 20px;
+    }
+    .toolbar button {
+      padding: 10px 12px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .toolbar button:hover { background-color: #273E74; }
+    .toolbar button.active { background-color: #273E74; }
+    
+    .timeline-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+      position: relative;
+    }
+    
+    .timeline-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(to bottom, #5C6D82, #273E74);
+      transform: translateX(-50%);
+      z-index: -1;
+    }
+    
+    .timeline-item {
+      display: flex;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    
+    .timeline-item.left {
+      flex-direction: row-reverse;
+      text-align: right;
+    }
+    
+    .timeline-item.right {
+      flex-direction: row;
+      text-align: left;
+    }
+    
+    .timeline-content {
+      width: calc(50% - 40px);
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 20px;
+      position: relative;
+    }
+    
+    .timeline-item.left .timeline-content {
+      margin-right: 40px;
+    }
+    
+    .timeline-item.right .timeline-content {
+      margin-left: 40px;
+    }
+    
+    .timeline-year {
+      display: inline-block;
+      background: #273E74;
+      color: white;
+      padding: 6px 14px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+    
+    .timeline-content h3 {
+      color: #273E74;
+      margin: 10px 0;
+      font-size: 1.4rem;
+    }
+    
+    .timeline-content p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 10px 0;
+    }
+    
+    .timeline-image {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border: 1px solid #5C6D82;
+      margin-top: 10px;
+    }
+    
+    .era-header {
+      text-align: center;
+      margin: 40px 0 30px 0;
+      padding: 15px;
+      background: linear-gradient(135deg, #273E74, #5C6D82);
+      color: white;
+      position: relative;
+      z-index: 5;
+    }
+    
+    .era-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: white;
+    }
+    
+    @media only screen and (max-width: 768px) {
+      .timeline-item.left,
+      .timeline-item.right {
+        flex-direction: row;
+        width: 100%;
+        text-align: left;
+      }
+      
+      .timeline-content {
+        width: 100%;
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">História da Computação</h1>
+
+  <div class="toolbar">
+    <button class="filter-btn active" data-era="all">Todas as Eras</button>
+    <button class="filter-btn" data-era="antiga">Era Antiga</button>
+    <button class="filter-btn" data-era="mecanica">Era Mecânica</button>
+    <button class="filter-btn" data-era="eletronica">Era Eletrônica</button>
+    <button class="filter-btn" data-era="moderna">Era Moderna</button>
+  </div>
+
+  <div class="timeline-container" id="timeline">
+    <!-- Conteúdo será gerado via JavaScript -->
+  </div>
+
+  <script>
+    const EVENTS = [
+      // Era Antiga
+      {
+        year: "3000 a.C.",
+        title: "Ábaco",
+        description: "Primeiro dispositivo de cálculo conhecido, usado para realizar operações aritméticas básicas. Utilizado por diversas civilizações antigas, incluindo babilônios, chineses e romanos.",
+        era: "antiga"
+      },
+      {
+        year: "1614",
+        title: "Logaritmos de Napier",
+        description: "John Napier inventa os logaritmos, simplificando cálculos complexos e abrindo caminho para réguas de cálculo e outros dispositivos matemáticos.",
+        era: "antiga"
+      },
+      {
+        year: "1642",
+        title: "Pascalina",
+        description: "Blaise Pascal desenvolve a Pascalina, uma das primeiras calculadoras mecânicas capazes de realizar adições e subtrações através de engrenagens.",
+        era: "mecanica"
+      },
+      {
+        year: "1673",
+        title: "Calculadora de Leibniz",
+        description: "Gottfried Wilhelm Leibniz aperfeiçoa a calculadora mecânica, criando um dispositivo capaz de realizar multiplicações e divisões além das operações básicas.",
+        era: "mecanica"
+      },
+      {
+        year: "1801",
+        title: "Tear de Jacquard",
+        description: "Primeira máquina programável usando cartões perfurados. Conceito que influenciaria toda computação posterior.",
+        era: "mecanica"
+      },
+      {
+        year: "1822",
+        title: "Máquina Diferencial",
+        description: "Charles Babbage projeta a Máquina Diferencial, um dispositivo mecânico para calcular tabelas de funções polinomiais automaticamente.",
+        era: "mecanica"
+      },
+      {
+        year: "1837",
+        title: "Máquina Analítica",
+        description: "Babbage concebe a Máquina Analítica, considerada o primeiro computador mecânico de propósito geral. Ada Lovelace escreve o que é considerado o primeiro algoritmo computacional.",
+        era: "mecanica"
+      },
+      {
+        year: "1843",
+        title: "Ada Lovelace",
+        description: "Escreve o primeiro algoritmo da história. Tornou-se a primeira programadora do mundo.",
+        era: "mecanica"
+      },
+      {
+        year: "1890",
+        title: "Máquina de Tabulação",
+        description: "Herman Hollerith desenvolve uma máquina de tabulação usando cartões perfurados para processar dados do censo americano, reduzindo o tempo de processamento de anos para meses.",
+        era: "mecanica"
+      },
+      {
+        year: "1936",
+        title: "Máquina de Turing",
+        description: "Alan Turing propõe o conceito teórico da Máquina de Turing, estabelecendo os fundamentos da ciência da computação e da computabilidade.",
+        era: "eletronica"
+      },
+      {
+        year: "1937",
+        title: "Computador ABC",
+        description: "John Atanasoff e Clifford Berry começam a desenvolver o Atanasoff-Berry Computer (ABC), um dos primeiros computadores eletrônicos digitais.",
+        era: "eletronica"
+      },
+      {
+        year: "1941",
+        title: "Z3",
+        description: "Konrad Zuse completa o Z3, o primeiro computador eletromecânico programável totalmente funcional do mundo, usando relés.",
+        era: "eletronica"
+      },
+      {
+        year: "1943",
+        title: "Colossus",
+        description: "Desenvolvido no Reino Unido para quebrar códigos alemães durante a Segunda Guerra Mundial, o Colossus foi o primeiro computador eletrônico programável digital.",
+        era: "eletronica"
+      },
+      {
+        year: "1945",
+        title: "ENIAC",
+        description: "Electronic Numerical Integrator and Computer, o primeiro computador eletrônico de propósito geral, pesando 30 toneladas e ocupando uma sala inteira.",
+        era: "eletronica"
+      },
+      {
+        year: "1945",
+        title: "Arquitetura de Von Neumann",
+        description: "John von Neumann propõe a arquitetura que se tornaria o padrão: programa armazenado na memória junto com os dados, unidade central de processamento, memória e dispositivos de entrada/saída.",
+        era: "eletronica"
+      },
+      {
+        year: "1947",
+        title: "Invenção do Transistor",
+        description: "John Bardeen, Walter Brattain e William Shockley inventam o transistor nos Laboratórios Bell, revolucionando a eletrônica e possibilitando computadores menores e mais eficientes.",
+        era: "eletronica"
+      },
+      {
+        year: "1951",
+        title: "UNIVAC I",
+        description: "Primeiro computador comercial produzido nos Estados Unidos, usado principalmente para processamento de dados empresariais e administrativos.",
+        era: "eletronica"
+      },
+      {
+        year: "1958",
+        title: "Circuito Integrado",
+        description: "Jack Kilby e Robert Noyce inventam independentemente o circuito integrado (chip), permitindo a miniaturização de componentes eletrônicos.",
+        era: "moderna"
+      },
+      {
+        year: "1964",
+        title: "IBM System/360",
+        description: "Família de computadores que introduziu a compatibilidade entre diferentes modelos, revolucionando a indústria de computadores mainframe.",
+        era: "moderna"
+      },
+      {
+        year: "1969",
+        title: "ARPANET",
+        description: "Criação da ARPANET, precursora da Internet, conectando quatro universidades americanas e estabelecendo os fundamentos das redes de computadores modernas.",
+        era: "moderna"
+      },
+      {
+        year: "1971",
+        title: "Intel 4004",
+        description: "Primeiro microprocessador comercial do mundo, contendo 2.300 transistores e inaugurando a era dos processadores em um único chip.",
+        era: "moderna"
+      },
+      {
+        year: "1975",
+        title: "Altair 8800",
+        description: "Primeiro computador pessoal de sucesso comercial, vendido em kit para entusiastas e marcando o início da revolução dos PCs.",
+        era: "moderna"
+      },
+      {
+        year: "1976",
+        title: "Apple I",
+        description: "Steve Wozniak e Steve Jobs lançam o Apple I, um dos primeiros computadores pessoais com placa única, inaugurando a Apple Computer.",
+        era: "moderna"
+      },
+      {
+        year: "1981",
+        title: "IBM PC",
+        description: "Lançamento do IBM Personal Computer, estabelecendo o padrão da arquitetura PC que domina até hoje. Utilizava o sistema operacional MS-DOS da Microsoft.",
+        era: "moderna"
+      },
+      {
+        year: "1984",
+        title: "Macintosh",
+        description: "Apple lança o Macintosh, popularizando a interface gráfica de usuário (GUI) e o mouse, tornando os computadores mais acessíveis ao público geral.",
+        era: "moderna"
+      },
+      {
+        year: "1989",
+        title: "World Wide Web",
+        description: "Tim Berners-Lee inventa a World Wide Web no CERN, criando o protocolo HTTP, HTML e o primeiro navegador web, revolucionando o acesso à informação.",
+        era: "moderna"
+      },
+      {
+        year: "1991",
+        title: "Linux",
+        description: "Linus Torvalds lança a primeira versão do kernel Linux, criando um sistema operacional de código aberto que se tornaria fundamental para servidores e dispositivos modernos.",
+        era: "moderna"
+      },
+      {
+        year: "1998",
+        title: "Google",
+        description: "Larry Page e Sergey Brin fundam o Google, revolucionando a busca na Internet e transformando-se em uma das maiores empresas de tecnologia do mundo.",
+        era: "moderna"
+      },
+      {
+        year: "2007",
+        title: "iPhone",
+        description: "Apple lança o iPhone, revolucionando a computação móvel ao combinar telefone, iPod e Internet em um dispositivo touchscreen intuitivo.",
+        era: "moderna"
+      },
+      {
+        year: "2010",
+        title: "Era da Computação em Nuvem",
+        description: "Consolidação dos serviços de cloud computing com Amazon AWS, Microsoft Azure e Google Cloud, mudando fundamentalmente como software e dados são armazenados e processados.",
+        era: "moderna"
+      },
+      {
+        year: "2012",
+        title: "Deep Learning Renaissance",
+        description: "AlexNet vence o ImageNet, marcando o ressurgimento das redes neurais profundas e inaugurando a era moderna da Inteligência Artificial.",
+        era: "moderna"
+      },
+      {
+        year: "2022",
+        title: "IA Generativa",
+        description: "Lançamento de modelos como ChatGPT, DALL-E e outros sistemas de IA generativa, democratizando o acesso à inteligência artificial e transformando diversas indústrias.",
+        era: "moderna"
+      }
+    ];
+
+    const timeline = document.getElementById('timeline');
+    let currentEra = 'all';
+
+    function renderTimeline() {
+      timeline.innerHTML = '';
+      let lastEra = null;
+      let side = 'left';
+
+      EVENTS.forEach((event, index) => {
+        if (currentEra !== 'all' && event.era !== currentEra) return;
+
+        // Adiciona cabeçalho de era se mudou
+        if (event.era !== lastEra) {
+          const eraNames = {
+            'antiga': 'Era Antiga (3000 a.C. - 1600)',
+            'mecanica': 'Era Mecânica (1600 - 1930)',
+            'eletronica': 'Era Eletrônica (1930 - 1970)',
+            'moderna': 'Era Moderna (1970 - Presente)'
+          };
+          
+          const header = document.createElement('div');
+          header.className = 'era-header';
+          header.innerHTML = `<h2>${eraNames[event.era]}</h2>`;
+          timeline.appendChild(header);
+          lastEra = event.era;
+        }
+
+        // Linha do tempo
+        const line = document.createElement('div');
+        line.className = 'timeline-line';
+        timeline.appendChild(line);
+
+        // Item da timeline
+        const item = document.createElement('div');
+        item.className = `timeline-item ${side}`;
+        
+        item.innerHTML = `
+          <div class="timeline-content">
+            <span class="timeline-year">${event.year}</span>
+            <h3>${event.title}</h3>
+            <p style="margin-bottom: 0px;">${event.description}</p>
+          </div>
+        `;
+        
+        timeline.appendChild(item);
+        side = side === 'left' ? 'right' : 'left';
+      });
+
+      // Re-adiciona a linha se necessário
+      if (currentEra === 'all' && timeline.children.length > 0) {
+        const line = document.createElement('div');
+        line.className = 'timeline-line';
+        timeline.insertBefore(line, timeline.firstChild);
+      }
+    }
+
+    // Filtros
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentEra = btn.dataset.era;
+        renderTimeline();
+        window.scrollTo({ top: document.querySelector('.subtitle').offsetTop, behavior: 'smooth' });
+      });
+    });
+
+    renderTimeline();
+  </script>
+</body>
+</html>
