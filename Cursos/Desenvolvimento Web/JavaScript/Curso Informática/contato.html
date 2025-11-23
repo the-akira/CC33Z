@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Contato - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .contact-container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    .contact-intro {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #273E74;
+    }
+    
+    .contact-intro p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin: 10px 0;
+    }
+    
+    .form-container {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #273E74;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #273E74;
+      font-size: 1rem;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+    }
+
+    .form-group select {
+      background-color: white;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: #5C6D82;
+      outline: none;
+    }
+    
+    .form-group textarea {
+      resize: none;
+      min-height: 150px;
+    }
+    
+    .form-group .char-counter {
+      text-align: right;
+      font-size: 0.9rem;
+      color: #5C6D82;
+      margin-top: 5px;
+    }
+    
+    .required {
+      color: #d32f2f;
+    }
+    
+    .submit-btn {
+      background-color: #5C6D82;
+      color: white;
+      padding: 12px 30px;
+      border: 2px solid #273E74;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    
+    .submit-btn:hover {
+      background-color: #273E74;
+    }
+    
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .message-box {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 2px solid;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+    
+    .message-box.success {
+      background-color: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+    
+    .message-box.error {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    
+    @media only screen and (max-width: 768px) {
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+      <a class="menu" href="contato.html">Contato</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">Entre em Contato</h1>
+
+  <div class="contact-container">
+    <div class="contact-intro">
+      <p>Tem dúvidas, sugestões ou críticas construtivas? Estou aqui para ajudar!</p>
+      <p>Preencha o formulário abaixo e entrarei em contato o mais breve possível.</p>
+    </div>
+
+    <div id="messageBox" class="message-box"></div>
+
+    <div class="form-container">
+      <form id="contactForm" method="POST" data-netlify="true">
+        <div class="form-group">
+          <label for="name">Nome Completo <span class="required">*</span></label>
+          <input type="text" id="name" name="name" required placeholder="Digite seu nome completo">
+        </div>
+
+        <div class="form-group">
+          <label for="email">E-mail <span class="required">*</span></label>
+          <input type="email" id="emailForm" name="email" required placeholder="email@exemplo.com">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Telefone (opcional)</label>
+          <input type="tel" id="phone" name="phone" placeholder="(00) 00000-0000">
+        </div>
+
+        <div class="form-group">
+          <label for="subject">Assunto <span class="required">*</span></label>
+          <select id="subject" name="subject" required>
+            <option value="">Selecione um assunto</option>
+            <option value="duvida">Dúvida sobre o conteúdo</option>
+            <option value="sugestao">Sugestão de melhoria</option>
+            <option value="critica">Crítica construtiva</option>
+            <option value="material">Solicitação de material</option>
+            <option value="tecnico">Problema técnico</option>
+            <option value="outro">Outro assunto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Mensagem <span class="required">*</span></label>
+          <textarea id="message" name="message" required placeholder="Escreva sua mensagem aqui..." maxlength="1000"></textarea>
+          <div class="char-counter">
+            <span id="charCount">0</span> / 1000 caracteres
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Enviar Mensagem</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('contactForm');
+    const messageBox = document.getElementById('messageBox');
+    const submitBtn = document.getElementById('submitBtn');
+    const messageTextarea = document.getElementById('message');
+    const charCount = document.getElementById('charCount');
+
+    // Contador de caracteres
+    messageTextarea.addEventListener('input', function() {
+      charCount.textContent = this.value.length;
+    });
+
+    // Formatar telefone
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length <= 11) {
+        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+      }
+      e.target.value = value;
+    });
+
+    // Função para mostrar mensagem
+    function showMessage(text, type) {
+      messageBox.textContent = text;
+      messageBox.className = `message-box ${type}`;
+      messageBox.style.display = 'block';
+      
+      setTimeout(() => {
+        messageBox.style.display = 'none';
+      }, 5000);
+    }
+
+    // Envio do formulário
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Validação básica
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('emailForm').value.trim();
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value.trim();
+
+      if (!name || !email || !subject || !message) {
+        showMessage('Por favor, preencha todos os campos obrigatórios.', 'error');
+        return;
+      }
+
+      // Validação de e-mail
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showMessage('Por favor, insira um e-mail válido.', 'error');
+        return;
+      }
+
+      // Desabilitar botão durante envio
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      // Enviar para Netlify Forms
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)).toString()
+      })
+      .then(() => {
+        showMessage('Mensagem enviada com sucesso! Retornarei em breve.', 'success');
+        form.reset();
+        charCount.textContent = '0';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar Mensagem';
+      })
+      .catch((error) => {
+        showMessage('Erro ao enviar mensagem. Tente novamente mais tarde.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar Mensagem';
+        console.error('Erro:', error);
+      });
+    });
+  </script>
+</body>
+</html>
