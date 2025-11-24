@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>FAQ - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .faq-container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    .faq-intro {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #273E74;
+    }
+    
+    .faq-intro p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .search-box {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    
+    .search-box input {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 2px solid #273E74;
+      box-sizing: border-box;
+    }
+    
+    .search-box input:focus {
+      border-color: #5C6D82;
+      outline: none;
+    }
+    
+    .category-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    
+    .category-btn {
+      padding: 10px 12px;
+      border: 2px solid #273E74;
+      background: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+    
+    .category-btn:hover,
+    .category-btn.active {
+      background-color: #273E74;
+      color: white;
+    }
+    
+    .faq-section {
+      margin-bottom: 30px;
+    }
+    
+    .faq-section h2 {
+      color: #273E74;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #5C6D82;
+    }
+    
+    .faq-item {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    
+    .faq-question {
+      padding: 18px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      color: #273E74;
+      font-size: 1.05rem;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    
+    .faq-question:hover {
+      background-color: #e6e6e6;
+    }
+    
+    .faq-question.active {
+      background-color: #5C6D82;
+      color: white;
+    }
+    
+    .faq-icon {
+      font-size: 1.5rem;
+      font-weight: normal;
+      transition: transform 0.3s;
+    }
+    
+    .faq-question.active .faq-icon {
+      transform: rotate(45deg);
+    }
+    
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: white;
+    }
+    
+    .faq-answer.open {
+      max-height: 1000px;
+    }
+    
+    .faq-answer-content {
+      padding: 20px;
+      line-height: 1.7;
+      color: #333;
+    }
+    
+    .faq-answer-content ul {
+      margin: 7px 0;
+      padding-left: 25px;
+    }
+
+    .faq-answer-content ol {
+      margin-top: 7px;
+      padding-left: 25px;
+    }
+    
+    .faq-answer-content li {
+      margin: 5px 0;
+    }
+
+    .faq-answer-content ul,
+    .faq-answer-content ol {
+      margin-bottom: 0px;
+    }
+    
+    .faq-answer-content strong {
+      color: #273E74;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 20px 20px;
+      color: #5C6D82;
+      font-size: 1.1rem;
+      display: none;
+    }
+    
+    .stats {
+      text-align: center;
+      color: #273E74;
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+    
+    @media only screen and (max-width: 768px) {
+      .faq-question {
+        font-size: 0.95rem;
+        padding: 15px;
+      }
+      
+      .category-btn {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+      <a class="menu" href="contato.html">Contato</a>
+      <a class="menu" href="faq.html">Perguntas Frequentes</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">Perguntas Frequentes</h1>
+
+  <div class="faq-container">
+    <div class="faq-intro">
+      <p>Encontre respostas rápidas para as dúvidas mais comuns sobre o curso!</p>
+      <p style="margin-top: 0px;">Use a busca ou navegue pelas categorias abaixo.</p>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Buscar perguntas...">
+    </div>
+
+    <div class="category-filters" id="categoryFilters">
+      <button class="category-btn active" data-category="all">Todas</button>
+      <button class="category-btn" data-category="curso">Sobre o Curso</button>
+      <button class="category-btn" data-category="windows">Windows</button>
+      <button class="category-btn" data-category="office">Microsoft Office</button>
+      <button class="category-btn" data-category="internet">Internet</button>
+      <button class="category-btn" data-category="tecnico">Problemas Técnicos</button>
+    </div>
+
+    <div class="stats" id="statsDiv"></div>
+
+    <div id="faqContent"></div>
+    <div class="no-results" id="noResults">
+      Nenhuma pergunta encontrada. Tente usar outros termos de busca ou <a href="contato.html" style="color: #273E74; font-weight: bold;">entre em contato</a>.
+    </div>
+  </div>
+
+  <script>
+    const FAQ_DATA = {
+      curso: {
+        title: "Sobre o Curso",
+        questions: [
+          {
+            q: "Qual é a duração do curso Informática Essencial?",
+            a: "Aproximadamente 8 meses."
+          },
+          {
+            q: "Qual é a duração do curso Informática Pro?",
+            a: "Aproximadamente 14 meses."
+          },
+          {
+            q: "Preciso ter conhecimento prévio em informática?",
+            a: "Não! Os cursos são projetados para iniciantes. Começamos do básico e avançamos gradualmente."
+          },
+          {
+            q: "Há certificado ao final do curso?",
+            a: "Sim! Ao concluir um curso com frequência mínima de 80%, você recebe um certificado de conclusão."
+          },
+          {
+            q: "Posso fazer aulas de reposição?",
+            a: "Sim! Caso você perca alguma aula, oferecemos aulas de reposição em outros horários, conforme disponibilidade e justificativa. Basta avisar com antecedência."
+          }
+        ]
+      },
+      windows: {
+        title: "Windows e Computadores",
+        questions: [
+          {
+            q: "Como faço para criar uma nova pasta no Windows?",
+            a: "Existem várias formas:<ul><li>Clique com o botão direito em um espaço vazio → Novo → Pasta</li><li>Use o atalho <strong>Ctrl + Shift + N</strong></li><li>No menu superior do Explorador de Arquivos, clique em 'Nova pasta'</li></ul>"
+          },
+          {
+            q: "Como faço para capturar a tela do computador?",
+            a: "Você pode usar:<ul><li><strong>Print Screen (PrtScn)</strong>: captura a tela inteira</li><li><strong>Alt + Print Screen</strong>: captura apenas a janela ativa</li><li><strong>Windows + Shift + S</strong>: abre a ferramenta de recorte</li><li><strong>Ferramenta de Captura</strong>: busque no menu iniciar</li></ul>"
+          },
+          {
+            q: "Como desinstalar um programa?",
+            a: "No Windows 10/11:<ol><li>Abra <strong>Configurações</strong> (Windows + I)</li><li>Vá em <strong>Aplicativos</strong></li><li>Encontre o programa na lista</li><li>Clique nele e selecione <strong>Desinstalar</strong></li></ol>"
+          },
+          {
+            q: "O que fazer quando o computador está lento?",
+            a: "Algumas soluções:<ul><li>Feche programas não utilizados</li><li>Limpe arquivos temporários (use o Limpeza de Disco)</li><li>Desative programas que iniciam com o Windows</li><li>Verifique se há vírus com um antivírus</li><li>Aumente a memória RAM se possível</li><li>Considere usar um SSD</li></ul>"
+          },
+          {
+            q: "Como atualizar o Windows?",
+            a: "Para atualizar:<ol><li>Abra <strong>Configurações</strong> (Windows + I)</li><li>Clique em <strong>Atualização e segurança</strong></li><li>Clique em <strong>Verificar atualizações</strong></li><li>Se houver atualizações, clique em <strong>Baixar e instalar</strong></li></ol>"
+          },
+          {
+            q: "Para que serve o Gerenciador de Tarefas e como abrir ele?",
+            a: "O Gerenciador de Tarefas é uma ferramenta do Windows usada para ver e controlar tudo o que está executando no computador.<br>Com ele você pode:<ul><li>Ver quais programas estão abertos</li><li>Encerrar programas que travaram</li><li>Ver o uso de CPU, memória e disco</li><li>Controlar programas que iniciam com o Windows</li><li>Analisar desempenho em tempo real</li></ul>Como abrir:<ol><li>Pressione <strong>Ctrl + Shift + Esc</strong> (atalho direto)</li><li>Ou pressione <strong>Ctrl + Alt + Delete</strong> e clique em <strong>Gerenciador de Tarefas</strong></li><li>Ou clique com o botão direito na barra de tarefas e selecione <strong>Gerenciador de Tarefas</strong></li></ol>"
+          }
+        ]
+      },
+      office: {
+        title: "Microsoft Office",
+        questions: [
+          {
+            q: "Como salvar um documento do Word em PDF?",
+            a: "No Word:<ol><li>Clique em <strong>Arquivo</strong> → <strong>Exportar</strong></li><li>Clique em <strong>Criar Documento PDF/XPS</strong></li><li>Escolha o local para salvar</li><li>Clique em <strong>Publicar</strong></li></ol>"
+          },
+          {
+            q: "Como fazer uma soma no Excel?",
+            a: "Existem duas formas principais:<ul><li><strong>Função SOMA</strong>: digite =SOMA(A1:A10) para somar células de A1 até A10</li><li><strong>AutoSoma</strong>: selecione as células e clique no botão Σ (Sigma) no menu Fórmulas</li><li><strong>Soma manual</strong>: digite =A1+A2+A3...</li></ul>"
+          },
+          {
+            q: "Como criar um gráfico no Excel?",
+            a: "Para criar um gráfico:<ol><li>Selecione os dados que deseja usar no gráfico</li><li>Vá na guia <strong>Inserir</strong></li><li>Escolha o tipo de gráfico (colunas, linhas, pizza, etc.)</li><li>Clique sobre o gráfico para personalizar títulos, cores e estilos</li></ol>"
+          },
+          {
+            q: "Como adicionar animações no PowerPoint?",
+            a: "Para adicionar animações:<ol><li>Selecione o objeto (texto, imagem, etc.)</li><li>Vá na guia <strong>Animações</strong></li><li>Escolha um efeito de animação</li><li>Configure as opções (duração, início, etc.)</li><li>Use o Painel de Animação para ajustar a ordem</li></ol>"
+          },
+          {
+            q: "Como adicionar transições no PowerPoint?",
+            a: "Para aplicar transições:<ol><li>Selecione o slide desejado</li><li>Vá na guia <strong>Transições</strong></li><li>Escolha um efeito</li><li>Ajuste a velocidade e o tipo</li></ol>"
+          }
+        ]
+      },
+      internet: {
+        title: "Internet e E-mail",
+        questions: [
+          {
+            q: "Como criar uma conta de e-mail?",
+            a: "Para criar um e-mail gratuito:<ol><li>Acesse <strong>Gmail.com</strong>, <strong>Outlook.com</strong> ou <strong>Proton.me</strong></li><li>Clique em <strong>Criar conta</strong></li><li>Preencha seus dados (nome, data de nascimento, etc.)</li><li>Escolha um endereço de e-mail disponível</li><li>Crie uma senha forte</li><li>Adicione um telefone para recuperação (recomendado)</li><li>Aceite os termos e finalize</li></ol>"
+          },
+          {
+            q: "Como identificar e-mails falsos (phishing)?",
+            a: "Fique atento a:<ul><li>Erros de português e gramática</li><li>Remetente suspeito ou desconhecido</li><li>Pedidos urgentes de dados pessoais ou senhas</li><li>Links estranhos (passe o mouse sobre eles sem clicar)</li><li>Anexos inesperados</li><li>Promoções boas demais para ser verdade</li></ul><strong>Nunca</strong> forneça senhas, dados bancários ou CPF por e-mail!"
+          },
+          {
+            q: "Como fazer uma busca mais eficiente no Google?",
+            a: "Dicas para buscar melhor:<ul><li>Use <strong>aspas</strong> para buscar frases exatas: \"curso de informática\"</li><li>Use <strong>-</strong> para excluir termos: notebook -usado</li><li>Use <strong>site:</strong> para buscar em um site específico: site:gov.br educação</li><li>Use <strong>filetype:</strong> para buscar tipos de arquivo: filetype:pdf algoritmos</li><li>Use <strong>OR</strong> para alternativas: laptop OR notebook</li></ul>"
+          },
+          {
+            q: "O que é navegação anônima?",
+            a: "A navegação anônima (ou privada):<ul><li>Não salva seu histórico de navegação</li><li>Não salva cookies após fechar</li><li>Não salva informações de formulários</li><li>Útil para usar computadores públicos</li></ul><strong>Atenção:</strong> Não te torna invisível! Seu provedor e sites ainda podem te rastrear. Para abrir: <strong>Ctrl + Shift + N</strong> (Chrome)"
+          },
+          {
+            q: "Como criar uma senha segura?",
+            a: "Uma senha segura deve ter:<ul><li>No mínimo 12 caracteres</li><li>Letras maiúsculas e minúsculas</li><li>Números</li><li>Caracteres especiais (@, #, !, etc.)</li><li>Não use informações pessoais óbvias</li><li>Não repita senhas entre sites</li><li>Considere usar um gerenciador de senhas</li></ul>Exemplo de senha forte: <strong>C0mp!ut@d0r#2025</strong>"
+          }
+        ]
+      },
+      tecnico: {
+        title: "Problemas Técnicos",
+        questions: [
+          {
+            q: "Esqueci minha senha do Windows, o que fazer?",
+            a: 'Se você usa conta Microsoft:<ol><li>Acesse <strong><a style="text-decoration: none; color: #273E74;" href="https://account.live.com/ResetPassword.aspx">account.live.com/ResetPassword.aspx</a></strong> em outro dispositivo</li><li>Siga as instruções para redefinir</li></ol>Se é conta local:<ul><li>Use um disco de redefinição (se criou antes)</li><li>Ou será necessário reinstalar o Windows</li></ul><strong>Dica:</strong> Sempre configure uma conta Microsoft para facilitar recuperação!'
+          },
+          {
+            q: "Como recuperar um arquivo excluído?",
+            a: "Opções para recuperar:<ol><li><strong>Lixeira</strong>: abra a Lixeira e restaure o arquivo</li><li><strong>Ctrl + Z</strong>: imediatamente após excluir</li><li><strong>Software de recuperação</strong>: Recuva, EaseUS (se os métodos acima falharem)</li></ol>"
+          },
+          {
+            q: "Meu computador não reconhece o pendrive, o que fazer?",
+            a: "Tente estas soluções:<ol><li>Teste o pendrive em outra porta USB</li><li>Teste em outro computador para verificar se o problema é no pendrive</li><li>Abra o Gerenciamento de Disco e veja se ele aparece</li><li>Atualize os drivers USB no Gerenciador de Dispositivos</li><li>Verifique se o pendrive não está com proteção contra gravação</li></ol>"
+          },
+          {
+            q: "Como limpar vírus do computador?",
+            a: "Passos para remover vírus:<ol><li>Instale um antivírus confiável (Windows Defender, Avast, AVG)</li><li>Atualize as definições de vírus</li><li>Execute uma varredura completa</li><li>Remova as ameaças encontradas</li><li>Use também o Malwarebytes (versão gratuita)</li><li>Limpe arquivos temporários</li><li>Considere restaurar o sistema para data anterior</li><li>Formatação do computador</li></ol><strong>Prevenção:</strong> Mantenha o Windows atualizado e não baixe arquivos suspeitos!"
+          },
+          {
+            q: "A Internet está lenta, como melhorar?",
+            a: "Soluções para Internet lenta:<ul><li>Reinicie o modem/roteador (desligue por 30 segundos)</li><li>Aproxime-se do roteador ou use cabo ethernet</li><li>Feche programas que usam muita Internet</li><li>Verifique quantos dispositivos estão conectados</li><li>Teste a velocidade em <strong>fast.com</strong></li><li>Limpe o cache do navegador</li><li>Atualize o firmware do roteador</li><li>Entre em contato com sua operadora se o problema persistir</li></ul>"
+          }
+        ]
+      }
+    };
+
+    const faqContent = document.getElementById('faqContent');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilters = document.getElementById('categoryFilters');
+    const noResults = document.getElementById('noResults');
+    const statsDiv = document.getElementById('statsDiv');
+    let activeCategory = 'all';
+    let openQuestions = {};
+
+    // Renderizar FAQs
+    function renderFAQs(filterText = '') {
+      faqContent.innerHTML = '';
+      let totalQuestions = 0;
+      let visibleQuestions = 0;
+
+      Object.keys(FAQ_DATA).forEach(categoryKey => {
+        if (activeCategory !== 'all' && activeCategory !== categoryKey) return;
+
+        const category = FAQ_DATA[categoryKey];
+        const filteredQuestions = category.questions.filter(item => {
+          const searchText = (item.q + ' ' + item.a).toLowerCase();
+          return searchText.includes(filterText.toLowerCase());
+        });
+
+        totalQuestions += category.questions.length;
+        visibleQuestions += filteredQuestions.length;
+
+        if (filteredQuestions.length === 0) return;
+
+        const section = document.createElement('div');
+        section.className = 'faq-section';
+        section.innerHTML = `<h2>${category.title}</h2>`;
+
+        filteredQuestions.forEach((item, index) => {
+          const originalIndex = category.questions.indexOf(item);
+          const questionId = categoryKey + '_' + originalIndex;
+          const faqItem = document.createElement('div');
+          const isOpen = openQuestions[questionId] === true;
+          faqItem.className = 'faq-item';
+          faqItem.innerHTML = `
+            <div class="faq-question ${isOpen ? 'active' : ''}" data-id="${questionId}">
+              <span>${item.q}</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-answer ${isOpen ? 'open' : ''}">
+              <div class="faq-answer-content">${item.a}</div>
+            </div>
+          `;
+          section.appendChild(faqItem);
+        });
+
+        faqContent.appendChild(section);
+      });
+
+      // Estatísticas
+      if (filterText || activeCategory !== 'all') {
+        statsDiv.textContent = `Mostrando ${visibleQuestions} de ${totalQuestions} perguntas`;
+      } else {
+        statsDiv.textContent = `Total de ${totalQuestions} perguntas`;
+      }
+
+      // Mostrar mensagem se não houver resultados
+      noResults.style.display = visibleQuestions === 0 ? 'block' : 'none';
+      faqContent.style.display = visibleQuestions === 0 ? 'none' : 'block';
+
+      // Adicionar eventos de clique
+      document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', function() {
+          const answer = this.nextElementSibling;
+          const id = this.dataset.id;
+          const isOpen = answer.classList.contains('open');
+
+          // Abrir/fechar a resposta clicada
+          if (isOpen) {
+            answer.classList.remove('open');
+            this.classList.remove('active');
+            openQuestions[id] = false;
+          } else {
+            answer.classList.add('open');
+            this.classList.add('active');
+            openQuestions[id] = true;
+          }
+        });
+      });
+    }
+
+    // Filtro de busca
+    searchInput.addEventListener('input', (e) => {
+      renderFAQs(e.target.value);
+    });
+
+    // Filtro de categorias
+    categoryFilters.addEventListener('click', (e) => {
+      if (e.target.classList.contains('category-btn')) {
+        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        activeCategory = e.target.dataset.category;
+        renderFAQs(searchInput.value);
+      }
+    });
+
+    // Renderizar inicialmente
+    renderFAQs();
+  </script>
+</body>
+</html>
