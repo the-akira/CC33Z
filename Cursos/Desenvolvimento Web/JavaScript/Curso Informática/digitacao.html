@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Treinamento de Digitação - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .typing-container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    .intro-section {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #273E74;
+    }
+    
+    .intro-section p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .difficulty-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    
+    .difficulty-btn {
+      padding: 10px 12px;
+      border: 2px solid #273E74;
+      background: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .difficulty-btn:hover,
+    .difficulty-btn.active {
+      background: #273E74;
+      color: white;
+    }
+
+    .difficulty-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    .steps {
+      text-align: left;
+    }
+    
+    .game-area {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 30px;
+      margin-bottom: 25px;
+      min-height: 400px;
+    }
+    
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding: 15px;
+      background: white;
+      border: 2px solid #5C6D82;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #5C6D82;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      color: #273E74;
+      font-weight: bold;
+    }
+    
+    .text-display {
+      background: white;
+      padding: 25px;
+      border: 2px solid #273E74;
+      font-size: 1.3rem;
+      line-height: 2;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 25px;
+      min-height: 150px;
+      user-select: none;
+    }
+    
+    .text-display span {
+      position: relative;
+    }
+    
+    .text-display .correct {
+      color: #28a745;
+      background-color: #d4edda;
+    }
+    
+    .text-display .incorrect {
+      color: #dc3545;
+      background-color: #f8d7da;
+    }
+    
+    .text-display .current {
+      background-color: #5C6D82;
+      color: white;
+      animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0.3; }
+    }
+    
+    .input-area {
+      margin-bottom: 20px;
+    }
+    
+    .input-area input {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.2rem;
+      border: 2px solid #273E74;
+      font-family: 'Courier New', monospace;
+      box-sizing: border-box;
+    }
+    
+    .input-area input:focus {
+      border-color: #5C6D82;
+      outline: none;
+    }
+    
+    .input-area input:disabled {
+      background-color: #e9ecef;
+      cursor: not-allowed;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 12px 14px;
+      border: 2px solid #273E74;
+      background: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .btn:hover:not(:disabled) {
+      background: #273E74;
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background: #5C6D82;
+      color: white;
+    }
+    
+    .btn-secondary:hover:not(:disabled) {
+      background: #273E74;
+    }
+    
+    .results-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .results-modal.show {
+      display: flex;
+    }
+    
+    .results-content {
+      background: white;
+      padding: 30px 40px;
+      border: 3px solid #273E74;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .results-content h2 {
+      color: #273E74;
+      margin-top: 0;
+      font-size: 2rem;
+    }
+    
+    .results-stats {
+      margin: 25px 0;
+    }
+    
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      margin: 10px 0;
+      background: #f2f2f2;
+      border-left: 4px solid #5C6D82;
+      font-size: 1.1rem;
+    }
+    
+    .result-label {
+      font-weight: bold;
+      color: #273E74;
+    }
+    
+    .result-value {
+      color: #5C6D82;
+      font-weight: bold;
+    }
+    
+    .accuracy-excellent {
+      border-left-color: #28a745;
+    }
+    
+    .accuracy-good {
+      border-left-color: #ffc107;
+    }
+    
+    .accuracy-poor {
+      border-left-color: #dc3545;
+    }
+    
+    .start-screen {
+      text-align: center;
+      padding: 25px 20px;
+      padding-top: 0px;
+    }
+    
+    .start-screen h3 {
+      color: #273E74;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    
+    .start-screen p {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      color: #333;
+    }
+    
+    .keyboard-hint {
+      margin-top: 25px;
+      padding: 15px;
+      background: white;
+      border: 2px solid #5C6D82;
+      font-size: 0.95rem;
+      color: #5C6D82;
+    }
+    
+    @media only screen and (max-width: 768px) {
+      .text-display {
+        font-size: 1.1rem;
+        padding: 15px;
+      }
+      
+      .input-area input {
+        font-size: 1rem;
+      }
+      
+      .stat-value {
+        font-size: 1.4rem;
+      }
+      
+      .results-content {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+      <a class="menu" href="contato.html">Contato</a>
+      <a class="menu" href="faq.html">Perguntas Frequentes</a>
+      <a class="menu" href="digitacao.html">Treinamento Digitação</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">Treinamento de Digitação</h1>
+
+  <div class="typing-container">
+    <div class="intro-section">
+      <p style="margin-bottom: 0px;">Melhore sua velocidade e precisão na digitação!</p>
+      <p style="margin-bottom: 5px; margin-top: 5px;">Escolha um nível de dificuldade e comece a treinar com textos educativos.</p>
+    </div>
+
+    <div class="difficulty-selector">
+      <button class="difficulty-btn active" data-level="facil">Fácil</button>
+      <button class="difficulty-btn" data-level="medio">Médio</button>
+      <button class="difficulty-btn" data-level="dificil">Difícil</button>
+      <button class="difficulty-btn" data-level="avancado">Avançado</button>
+    </div>
+
+    <div class="game-area">
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-label">TEMPO</div>
+          <div class="stat-value" id="timer">0s</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">PPM</div>
+          <div class="stat-value" id="wpm">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">PRECISÃO</div>
+          <div class="stat-value" id="accuracy">100%</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">ERROS</div>
+          <div class="stat-value" id="errors">0</div>
+        </div>
+      </div>
+
+      <div id="startScreen" class="start-screen">
+        <div class="steps">
+          <h3>Pronto para começar?</h3>
+          <p>1. Digite o texto que aparecerá na tela</p>
+          <p>2. Sua velocidade será medida em palavras por minuto (PPM)</p>
+          <p>3. Tente manter a precisão acima de 95%</p>
+          <p>4. Use todos os dedos para melhor desempenho</p>
+        </div>
+        <div class="keyboard-hint">
+          <strong>Dica:</strong> Posicione os dedos indicadores nas teclas F e J (você pode sentir as marcas de relevo nelas)
+        </div>
+      </div>
+
+      <div id="gameContent" style="display: none;">
+        <div class="text-display" id="textDisplay"></div>
+        
+        <div class="input-area">
+          <input 
+            type="text" 
+            id="typingInput" 
+            placeholder="Clique aqui e comece a digitar..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          >
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="startBtn">Iniciar Treino</button>
+        <button class="btn btn-secondary" id="resetBtn" style="display: none;">Reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-modal" id="resultsModal">
+    <div class="results-content">
+      <h2>Treino Concluído!</h2>
+      <div class="results-stats" id="resultsStats"></div>
+      <div class="controls">
+        <button class="btn" id="tryAgainBtn">Tentar Novamente</button>
+        <button class="btn btn-secondary" id="closeResultsBtn">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TEXTS = {
+      facil: [
+        "O computador é uma máquina que processa dados. Ele possui hardware e software. O hardware são as peças físicas. O software são os programas.",
+        "A Internet conecta milhões de computadores. Podemos enviar mensagens e buscar informações. É uma rede mundial de comunicação.",
+        "O teclado é um dispositivo de entrada. Usamos ele para digitar textos. Cada tecla tem uma função específica no computador.",
+        "O mouse ajuda a navegar na tela. Clicamos em ícones e menus. Podemos usar o botão direito e esquerdo do mouse."
+      ],
+      medio: [
+        "A memória RAM armazena dados temporários enquanto o computador está ligado. Quanto mais RAM, mais programas podem funcionar ao mesmo tempo sem travar o sistema.",
+        "Os arquivos são organizados em pastas no sistema operacional. É importante manter uma estrutura clara para encontrar documentos facilmente quando necessário.",
+        "O navegador web permite acessar sites na Internet. Podemos usar abas para visitar várias páginas ao mesmo tempo e salvar favoritos dos sites preferidos.",
+        "O processador é o cérebro do computador. Ele executa todas as instruções dos programas. A velocidade é medida em gigahertz e define o desempenho."
+      ],
+      dificil: [
+        "A arquitetura de computadores envolve a organização dos componentes internos como CPU, memória, barramentos e dispositivos de entrada e saída, seguindo padrões estabelecidos.",
+        "Os algoritmos são sequências lógicas de instruções para resolver problemas computacionais. Estruturas de dados organizam informações de forma eficiente na memória disponível.",
+        "A criptografia protege informações através de códigos matemáticos complexos. Garante a segurança na transmissão de dados sensíveis pela Internet e redes corporativas.",
+        "O sistema operacional gerencia recursos do hardware, coordena processos, controla arquivos e fornece interface para interação entre usuário e máquina de forma eficiente."
+      ],
+      avancado: [
+        "A programação orientada a objetos utiliza conceitos como encapsulamento, herança e polimorfismo para criar código reutilizável e modular, facilitando manutenção.",
+        "Bancos de dados relacionais organizam informações em tabelas conectadas através de chaves primárias e estrangeiras, permitindo consultas complexas via SQL estruturado.",
+        "Machine learning permite que sistemas computacionais aprendam padrões automaticamente através de análise estatística de grandes volumes de dados históricos disponíveis.",
+        "Cloud computing oferece recursos computacionais sob demanda através da Internet, com escalabilidade dinâmica, redundância geográfica e modelo de pagamento flexível."
+      ]
+    };
+
+    let currentLevel = 'facil';
+    let currentText = '';
+    let currentIndex = 0;
+    let startTime = null;
+    let timerInterval = null;
+    let totalErrors = 0;
+    let isTyping = false;
+    let permanentErrors = 0;
+    let totalTypedKeys = 0;
+    let isComposing = false;
+
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const startScreen = document.getElementById('startScreen');
+    const gameContent = document.getElementById('gameContent');
+    const textDisplay = document.getElementById('textDisplay');
+    const typingInput = document.getElementById('typingInput');
+    const timerEl = document.getElementById('timer');
+    const wpmEl = document.getElementById('wpm');
+    const accuracyEl = document.getElementById('accuracy');
+    const errorsEl = document.getElementById('errors');
+    const resultsModal = document.getElementById('resultsModal');
+    const resultsStats = document.getElementById('resultsStats');
+    const tryAgainBtn = document.getElementById('tryAgainBtn');
+    const closeResultsBtn = document.getElementById('closeResultsBtn');
+
+    // Seleção de dificuldade
+    difficultyBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (isTyping) return;
+        difficultyBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLevel = btn.dataset.level;
+      });
+    });
+
+    // Iniciar jogo
+    startBtn.addEventListener('click', startGame);
+
+    function setDifficultyButtonsEnabled(enabled) {
+      difficultyBtns.forEach(btn => {
+        btn.disabled = !enabled;
+      });
+    }
+
+    function startGame() {
+      currentText = TEXTS[currentLevel][Math.floor(Math.random() * TEXTS[currentLevel].length)];
+      currentIndex = 0;
+      totalErrors = 0;
+      permanentErrors = 0;
+      totalTypedKeys = 0;
+      isTyping = true;
+      startTime = null;
+
+      setDifficultyButtonsEnabled(false);
+
+      startScreen.style.display = 'none';
+      gameContent.style.display = 'block';
+      startBtn.style.display = 'none';
+      resetBtn.style.display = 'inline-block';
+
+      displayText();
+      typingInput.value = '';
+      typingInput.disabled = false;
+      typingInput.focus();
+
+      resetStats();
+    }
+
+    function displayText() {
+      textDisplay.innerHTML = currentText.split('').map((char, index) => {
+        let className = '';
+        if (index < currentIndex) {
+          className = 'correct';
+        } else if (index === currentIndex) {
+          className = 'current';
+        }
+        return `<span class="${className}">${char}</span>`;
+      }).join('');
+    }
+
+    function resetStats() {
+      timerEl.textContent = '0s';
+      wpmEl.textContent = '0';
+      accuracyEl.textContent = '100%';
+      errorsEl.textContent = '0';
+    }
+
+    // Input de digitação
+    typingInput.addEventListener('input', (e) => {
+      if (!startTime) {
+        startTime = Date.now();
+        startTimer();
+      }
+
+      updateCharacters();
+
+      const typed = typingInput.value;
+      const spans = textDisplay.querySelectorAll("span");
+
+      let liveErrors = 0;
+
+      for (let i = 0; i < typed.length; i++) {
+        if (typed[i] !== currentText[i]) {
+
+          liveErrors++;
+
+          // Marca erro permanente apenas 1 vez
+          if (!spans[i].classList.contains("counted")) {
+            permanentErrors++;
+            spans[i].classList.add("counted");
+          }
+
+        }
+      }
+
+      // Atualizar estatísticas em tempo real
+      updateStats(typed);
+
+      if (typed.length === currentText.length) finishGame();
+    });
+
+    typingInput.addEventListener('compositionstart', () => {
+      isComposing = true;
+    });
+    typingInput.addEventListener('compositionend', () => {
+      isComposing = false;
+    });
+
+    typingInput.addEventListener('keydown', (e) => {
+      if (isComposing) return; // não conta durante composição
+
+      const key = e.key;
+
+      // Filtrar teclas que NÃO queremos contar
+      const ignore = ['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown', 'Insert', 'Pause', 'ScrollLock', 'NumLock'];
+
+      if (ignore.includes(key)) return;
+
+      // Contar:
+      // - teclas imprimíveis (key.length === 1)
+      // - Backspace, Enter, Tab, Delete
+      if (key.length === 1 || key === 'Backspace' || key === 'Enter' || key === 'Tab' || key === 'Delete') {
+        totalTypedKeys++;
+      }
+    });
+
+    function updateCharacters() {
+      const typed = typingInput.value;
+      const spans = textDisplay.querySelectorAll("span");
+
+      spans.forEach((span, i) => {
+        const typedChar = typed[i];
+
+        // Reset classes
+        span.classList.remove("correct", "incorrect", "current");
+
+        if (typedChar == null) {
+          // Ainda não digitado
+          if (i === typed.length) {
+            span.classList.add("current"); // cursor visual
+          }
+        } else if (typedChar === currentText[i]) {
+          span.classList.add("correct");
+        } else {
+          span.classList.add("incorrect");
+        }
+      });
+
+      currentIndex = typed.length;
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        timerEl.textContent = elapsed + 's';
+      }, 1000);
+    }
+
+    function updateStats(typed) {
+      const elapsedMin = (Date.now() - startTime) / 1000 / 60;
+
+      // Evita divisão por zero
+      if (typed.length === 0) {
+        wpmEl.textContent = "0";
+        accuracyEl.textContent = "100%";
+        errorsEl.textContent = permanentErrors;
+        return;
+      }
+
+      const correctChars = Math.max(0, typed.length - permanentErrors);
+      const wpm = Math.round((correctChars / 5) / elapsedMin) || 0;
+
+      let accuracy = Math.round((correctChars / typed.length) * 100);
+      if (accuracy < 0) accuracy = 0; // evita negativar caso errors > typed
+
+      wpmEl.textContent = wpm;
+      accuracyEl.textContent = accuracy + '%';
+      errorsEl.textContent = permanentErrors;
+    }
+
+    function finishGame() {
+      clearInterval(timerInterval);
+      isTyping = false;
+      typingInput.disabled = true;
+
+      const typed = typingInput.value;
+
+      setDifficultyButtonsEnabled(true);
+
+      const correctChars = Math.max(0, typed.length - permanentErrors);
+
+      const elapsed = (Date.now() - startTime) / 1000; // segundos
+      const minutes = elapsed / 60;
+
+      // Palavras por minuto = caracteres corretos / 5 / minutos
+      const wpm = Math.round((correctChars / 5) / minutes);
+
+      // Precisão real
+      let accuracy = Math.round((correctChars / typed.length) * 100);
+      if (accuracy < 0) accuracy = 0; // evita negativar caso errors > typed
+
+      showResults(elapsed, wpm, accuracy, permanentErrors, totalTypedKeys);
+    }
+
+    function showResults(time, wpm, accuracy, errors, typedChars) {
+      let accuracyClass = 'accuracy-poor';
+      let accuracyMessage = 'Continue praticando!';
+      
+      if (accuracy >= 95) {
+        accuracyClass = 'accuracy-excellent';
+        accuracyMessage = 'Excelente precisão!';
+      } else if (accuracy >= 85) {
+        accuracyClass = 'accuracy-good';
+        accuracyMessage = 'Boa precisão!';
+      }
+
+      let wpmMessage = 'Continue treinando!';
+      if (wpm >= 60) wpmMessage = 'Velocidade profissional!';
+      else if (wpm >= 40) wpmMessage = 'Muito bom!';
+      else if (wpm >= 25) wpmMessage = 'Bom progresso!';
+
+      resultsStats.innerHTML = `
+        <div class="result-item">
+          <span class="result-label">Tempo Total:</span>
+          <span class="result-value">${time.toFixed(1)}s</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Velocidade (PPM):</span>
+          <span class="result-value">${wpm} PPM</span>
+        </div>
+        <div class="result-item ${accuracyClass}">
+          <span class="result-label">Precisão:</span>
+          <span class="result-value">${accuracy}%</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Total de Erros:</span>
+          <span class="result-value">${errors}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Caracteres Digitados:</span>
+          <span class="result-value">${typedChars}</span>
+        </div>
+        <p style="margin-top: 20px; color: #273E74; font-size: 1.1rem;">
+          <strong>${wpmMessage}</strong><br>
+          ${accuracyMessage}
+        </p>
+      `;
+
+      resultsModal.classList.add('show');
+    }
+
+    // Botão reiniciar
+    resetBtn.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      isTyping = false;
+      
+      startScreen.style.display = 'block';
+      gameContent.style.display = 'none';
+      startBtn.style.display = 'inline-block';
+      resetBtn.style.display = 'none';
+
+      setDifficultyButtonsEnabled(true);
+      
+      resetStats();
+    });
+
+    // Botões do modal
+    tryAgainBtn.addEventListener('click', () => {
+      resultsModal.classList.remove('show');
+      startGame();
+    });
+
+    closeResultsBtn.addEventListener('click', () => {
+      resultsModal.classList.remove('show');
+      resetBtn.click();
+    });
+
+    // Prevenir copiar/colar
+    typingInput.addEventListener('paste', (e) => {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>
