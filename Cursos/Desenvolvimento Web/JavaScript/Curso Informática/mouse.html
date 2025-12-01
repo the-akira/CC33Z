@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Treinamento de Mouse - Curso de Informática</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      overflow-x: hidden;
+    }
+
+    header {
+      background-color: #5c6d82;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      border-bottom: solid 5.5px #273E74;
+    }
+
+    h1 {
+      margin-top: 12px;
+      margin-bottom: 15px;
+      font-size: 2.5rem;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .computer {
+      width: 80px;
+      margin: 5px auto 10px;
+      display: block;
+    }
+
+    .menu-container {
+      max-width: 700px;
+      width: 90%;
+      margin: 30px auto;
+      padding: 30px;
+      background: white;
+      border: 3px solid #273E74;
+    }
+
+    .menu-title {
+      color: #273E74;
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    .config-group {
+      margin-bottom: 25px;
+    }
+
+    .config-group label {
+      display: block;
+      color: #273E74;
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .config-group select,
+    .config-group input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #273E74;
+      font-size: 1rem;
+      background: #f2f2f2;
+    }
+
+    .config-group select:focus,
+    .config-group input:focus {
+      outline: none;
+      border-color: #5c6d82;
+    }
+
+    .value-display {
+      text-align: center;
+      color: #5c6d82;
+      font-weight: bold;
+      margin-top: 8px;
+      font-size: 1.1rem;
+    }
+
+    .start-button {
+      width: 100%;
+      padding: 18px;
+      background-color: #5c6d82;
+      color: white;
+      border: 3px solid #273E74;
+      font-size: 1.4rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .start-button:hover {
+      background-color: #273E74;
+    }
+
+    .game-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff;
+      background-image: 
+        linear-gradient(rgba(39, 62, 116, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(39, 62, 116, 0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+      cursor: crosshair;
+    }
+
+    .game-container.disabled {
+      pointer-events: none;
+    }
+
+    .game-hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(39, 62, 116, 0.95);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      z-index: 1000;
+      border-bottom: 3px solid #273E74;
+      cursor: alias;
+      user-select: none;
+    }
+
+    .hud-item {
+      text-align: center;
+    }
+
+    .hud-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 3px;
+    }
+
+    .hud-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .target {
+      position: absolute;
+      border-radius: 50%;
+      cursor: cell;
+      transition: transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .target:hover {
+      transform: scale(1.05);
+    }
+
+    .target.left-click {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border: 3px solid #d63447;
+    }
+
+    .target.right-click {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border: 3px solid #0984e3;
+    }
+
+    .results-container {
+      display: none;
+      margin: 30px auto;
+      background: white;
+      border: 4px solid #273E74;
+      padding: 30px 40px;
+      max-width: 600px;
+      width: 90%;
+      z-index: 2000;
+    }
+
+    .results-title {
+      color: #273E74;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #f2f2f2;
+      border-left: 4px solid #5c6d82;
+    }
+
+    .result-label {
+      font-weight: bold;
+      color: #273E74;
+    }
+
+    .result-value {
+      color: #5c6d82;
+      font-weight: bold;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .button-group button {
+      flex: 1;
+      padding: 15px;
+      background-color: #5c6d82;
+      color: white;
+      border: 3px solid #273E74;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .button-group button:hover {
+      background-color: #273E74;
+    }
+
+    .instructions {
+      background: #e8f4f8;
+      border: 2px solid #273E74;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .instructions h3 {
+      color: #273E74;
+      margin-bottom: 15px;
+    }
+
+    .instructions ul {
+      margin-left: 20px;
+      color: #273E74;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .click-indicator {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      background: transparent;
+      animation: fadeCircle 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeCircle {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.1); /* leve expansão só para dar charme */
+      }
+    }
+
+    .click-mark {
+      position: fixed;
+      pointer-events: none;
+      width: 12px;
+      height: 12px;
+      z-index: 500;
+      animation: fadeOutMark 2s ease-out forwards;
+    }
+
+    @keyframes fadeOutMark {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      70% {
+        opacity: 0.8;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+    }
+
+    .click-mark.hit {
+      background-color: #4cd137;
+      border-radius: 50%;
+      border: 2px solid #27ae60;
+    }
+
+    .click-mark.miss {
+      width: 16px;
+      height: 16px;
+    }
+
+    .click-mark.miss::before,
+    .click-mark.miss::after {
+      content: '';
+      position: absolute;
+      background-color: #e74c3c;
+      width: 3px;
+      height: 16px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .click-mark.miss::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .countdown-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 1500;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .countdown-number {
+      font-size: 10rem;
+      color: rgba(39, 62, 116, 0.9);
+      text-shadow: 0 0 15px rgba(39,62,116,0.6);
+      animation: pulse 1s ease-in-out infinite;
+      user-select: none;
+    }
+
+    .countdown-message { 
+      font-size: clamp(1.5rem, 10vw, 4rem);
+      max-width: 90%;      
+      margin: 0 auto;      
+      padding: 0 20px;   
+      text-align: center;
+      color: #e74c3c;
+      text-shadow: 0 0 10px rgba(231,76,60,0.8);
+      user-select: none;
+    }
+
+    @keyframes pulse{
+      0%   { transform: scale(0.9); opacity: 0.8;}
+      50%  { transform: scale(1.05); opacity: 1;}
+      100% { transform: scale(0.9); opacity: 0.8;}
+    }
+
+    #indexBtn {
+      margin-bottom: 15px;
+      margin-top: 5px;
+      background: white;
+      color: #273E74;
+      border: 3.3px solid #273E74;
+      padding: 9px 12px;
+      font-size: 1.025rem;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    #indexBtn:hover {
+      background-color: #273E74;
+      color: white;
+      border: 3.3px solid white;
+      cursor: pointer;
+    }
+
+    @media only screen and (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      .menu-container {
+        padding: 20px;
+      }
+      .hud-value {
+        font-size: 1.2rem;
+      }
+      .hud-label {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="pageHeader">
+    <svg class="computer" viewBox="0 0 64 64" fill="white">
+      <rect x="8" y="12" width="48" height="32" rx="2" fill="white"/>
+      <rect x="12" y="16" width="40" height="24" fill="#273E74"/>
+      <rect x="20" y="44" width="24" height="3" fill="white"/>
+      <rect x="16" y="47" width="32" height="5" rx="1" fill="white"/>
+    </svg>
+    <h1>Treinamento de Mouse</h1>
+    <button class="btn" id="indexBtn" onclick="openIndex()">Página Inicial</button>
+  </header>
+
+  <div class="menu-container" id="menuContainer">
+    <h2 class="menu-title">Configurações do Jogo</h2>
+    
+    <div class="instructions">
+      <h3>Como Jogar:</h3>
+      <ul>
+        <li><strong>Alvos Rosa:</strong> Clique com o botão ESQUERDO</li>
+        <li><strong>Alvos Azuis:</strong> Clique com o botão DIREITO</li>
+        <li>Os alvos diminuem gradualmente até desaparecer</li>
+        <li>Clique antes que eles sumam para ganhar pontos!</li>
+        <li style="margin-bottom: 0px;">Alvos perdidos contam como erros</li>
+      </ul>
+    </div>
+
+    <div class="config-group">
+      <label for="difficulty">Dificuldade:</label>
+      <select id="difficulty">
+        <option value="easy">Fácil (Mais tempo)</option>
+        <option value="medium" selected>Médio</option>
+        <option value="hard">Difícil (Menos tempo)</option>
+        <option value="expert">Expert (Muito rápido)</option>
+        <option value="master">Mestre (Ultra rápido)</option>
+      </select>
+    </div>
+
+    <div class="config-group">
+      <label for="targetSize">Tamanho do Alvo:</label>
+      <select id="targetSize">
+        <option value="small">Pequeno (40px)</option>
+        <option value="medium" selected>Médio (60px)</option>
+        <option value="large">Grande (80px)</option>
+        <option value="xlarge">Extra Grande (100px)</option>
+      </select>
+    </div>
+
+    <div class="config-group">
+      <label for="duration">Duração da Partida (segundos):</label>
+      <input type="number" id="duration" min="30" max="300" value="60" step="10">
+      <div class="value-display" id="durationDisplay">60 segundos</div>
+    </div>
+
+    <div class="config-group">
+      <label for="targetCount">Alvos Simultâneos:</label>
+      <select id="targetCount">
+        <option value="1">1 alvo</option>
+        <option value="2" selected>2 alvos</option>
+        <option value="3">3 alvos</option>
+        <option value="4">4 alvos</option>
+        <option value="6">6 alvos</option>
+        <option value="8">8 alvos</option>
+        <option value="10">10 alvos</option>
+      </select>
+    </div>
+
+    <div class="config-group">
+      <label for="markDuration">Duração das Marcas (segundos):</label>
+      <input type="number" id="markDuration" min="0.5" max="10" value="2" step="0.5">
+      <div class="value-display" id="markDurationDisplay">2 segundos</div>
+    </div>
+
+    <div class="config-group">
+      <label for="showGrid">Mostrar Grade de Fundo:</label>
+      <select id="showGrid">
+        <option value="true" selected>Sim</option>
+        <option value="false">Não</option>
+      </select>
+    </div>
+
+    <button class="start-button" onclick="startGame()">Iniciar Jogo</button>
+  </div>
+
+  <div class="game-container" id="gameContainer">
+    <div class="game-hud">
+      <div class="hud-item">
+        <div class="hud-label">Tempo</div>
+        <div class="hud-value" id="timeDisplay">60</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Pontos</div>
+        <div class="hud-value" id="scoreDisplay">0</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Acertos</div>
+        <div class="hud-value" id="hitsDisplay">0</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Erros</div>
+        <div class="hud-value" id="missesDisplay">0</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Precisão</div>
+        <div class="hud-value" id="accuracyDisplay">100%</div>
+      </div>
+      <div class="hud-item">
+        <button onclick="manualEnd()" style="padding: 10px 20px; background-color: #e74c3c; color: white; border: 2px solid #e74c3c; font-weight: bold; cursor: pointer; font-size: 1rem;">
+          ENCERRAR
+        </button>
+      </div>
+    </div>
+    <div id="countdownOverlay" class="countdown-overlay" style="display:none;">
+      <div id="countdownText" class="countdown-number">5</div>
+    </div>
+  </div>
+
+  <div class="results-container" id="resultsContainer">
+    <h2 class="results-title">Resultados Finais</h2>
+    <div class="result-item">
+      <span class="result-label">Pontuação Total:</span>
+      <span class="result-value" id="finalScore">0</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Total de Acertos:</span>
+      <span class="result-value" id="finalHits">0</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Total de Erros:</span>
+      <span class="result-value" id="finalMisses">0</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Total de Cliques:</span>
+      <span class="result-value" id="finalClicks">0</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Acertos por Clique:</span>
+      <span class="result-value" id="finalHitsPerClick">0%</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Precisão Final:</span>
+      <span class="result-value" id="finalAccuracy">100%</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Cliques por Segundo:</span>
+      <span class="result-value" id="finalCPS">0</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Tempo de Reação Médio:</span>
+      <span class="result-value" id="finalAvgTime">0ms</span>
+    </div>
+    <div class="result-item">
+      <span class="result-label">Tempo Decorrido:</span>
+      <span class="result-value" id="finalTimeElapsed">0ms</span>
+    </div>
+    <div class="button-group">
+      <button onclick="restartGame()">Jogar Novamente</button>
+      <button onclick="backToMenu()">Configurações</button>
+    </div>
+  </div>
+
+  <script>
+    const durationInput = document.getElementById('duration');
+    const durationDisplay = document.getElementById('durationDisplay');
+    const markDurationInput = document.getElementById('markDuration');
+    const markDurationDisplay = document.getElementById('markDurationDisplay');
+
+    durationInput.addEventListener('input', (e) => {
+      durationDisplay.textContent = e.target.value + ' segundos';
+    });
+
+    markDurationInput.addEventListener('input', (e) => {
+      markDurationDisplay.textContent = e.target.value + ' segundos';
+    });
+
+    const difficultySettings = {
+      easy: { lifetime: 10000, spawnRate: 1200 },
+      medium: { lifetime: 8000, spawnRate: 1000 },
+      hard: { lifetime: 6000, spawnRate: 800 },
+      expert: { lifetime: 4000, spawnRate: 600 },
+      master: { lifetime: 2000, spawnRate: 400 },
+    };
+
+    const sizeSettings = {
+      small: 40,
+      medium: 60,
+      large: 80,
+      xlarge: 100
+    };
+
+    let gameRunning = false;
+
+    let gameState = {
+      score: 0,
+      hits: 0,
+      misses: 0,
+      timeLeft: 60,
+      isRunning: false,
+      targets: [],
+      reactionTimes: [],
+      totalClicks: 0,
+    };
+
+    let gameTimer;
+    let spawnTimer;
+
+    function setGridInteraction(enabled){
+      const container = document.getElementById("gameContainer");
+      const hud = document.querySelector('.game-hud');
+
+      if(enabled){
+        container.classList.remove("disabled");
+        hud.style.display = "flex";
+      } else {
+        container.classList.add("disabled");
+        hud.style.display = "none";
+      }
+    }
+
+    function startPreGameCountdown(seconds) {
+      const overlay = document.getElementById('countdownOverlay');
+      const display = document.getElementById('countdownText');
+
+      overlay.style.display = 'flex';
+      display.className = "countdown-number";
+      display.textContent = seconds;
+
+      setGridInteraction(false); // impede cliques durante o countdown
+
+      let counter = seconds;
+
+      const interval = setInterval(() => {
+        counter--;
+
+        if (counter >= 1) {
+          display.textContent = counter;
+        } else {
+          clearInterval(interval);
+
+          display.textContent = "Pronto!";
+          display.className = "countdown-message";
+
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            gameRunning = true;
+            setGridInteraction(true);
+            gameState.startTimestamp = Date.now();
+            startGameLoop();   // agora inicia o jogo de verdade
+          }, 900);
+        }
+
+      }, 1000);
+    }
+
+    function startGame() {
+      const difficulty = document.getElementById('difficulty').value;
+      const targetSize = document.getElementById('targetSize').value;
+      let duration = parseInt(document.getElementById('duration').value);
+      const targetCount = parseInt(document.getElementById('targetCount').value);
+      let markDuration = parseFloat(document.getElementById('markDuration').value);
+      const showGrid = document.getElementById('showGrid').value === 'true';
+
+      gameRunning = true;
+      setGridInteraction(true);
+
+      if (duration < durationInput.min) duration = durationInput.min
+      if (markDuration < markDurationInput.min) markDuration = markDurationInput.min
+
+      gameState = {
+        score: 0,
+        hits: 0,
+        misses: 0,
+        totalClicks: 0,
+        timeLeft: duration,
+        isRunning: true,
+        targets: [],
+        reactionTimes: [],
+        settings: {
+          ...difficultySettings[difficulty],
+          size: sizeSettings[targetSize],
+          duration: duration,
+          targetCount: targetCount,
+          markDuration: markDuration * 1000,
+          showGrid: showGrid
+        }
+      };
+
+      const gameContainer = document.getElementById('gameContainer');
+      if (showGrid) {
+        gameContainer.style.backgroundImage = `
+          linear-gradient(rgba(39, 62, 116, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(39, 62, 116, 0.1) 1px, transparent 1px)
+        `;
+      } else {
+        gameContainer.style.backgroundImage = 'none';
+      }
+
+      document.getElementById('menuContainer').style.display = 'none';
+      document.getElementById('gameContainer').style.display = 'block';
+      document.getElementById('resultsContainer').style.display = 'none';
+      document.getElementById('pageHeader').style.display = 'none';
+      
+      updateHUD();
+      startPreGameCountdown(3);
+    }
+
+    function clearAllTargets(){
+      gameState.targets.forEach(target => {
+        if(target.animInterval){
+          clearInterval(target.animInterval);
+        }
+
+        target.element.remove();
+      });
+
+      gameState.targets = [];
+      document.querySelectorAll('.click-mark, .hit-effect').forEach(mark => {
+        mark.remove();
+      });
+    }
+
+    let countdownInterval = null;
+    let countdownTimeout = null;
+
+    function showCountdown(seconds){
+      const overlay = document.getElementById('countdownOverlay');
+      const display = document.getElementById('countdownText');
+
+      // Limpa qualquer contagem antiga
+      clearInterval(countdownInterval);
+      clearTimeout(countdownTimeout);
+
+      overlay.style.display = 'flex';
+      display.className = "countdown-number";
+      display.textContent = seconds;
+
+      countdownInterval = setInterval(() => {
+
+        seconds--;
+
+        if(seconds >= 1){
+          display.textContent = seconds;
+        }
+        else {
+          clearInterval(countdownInterval);
+
+          gameRunning = false;
+          setGridInteraction(false);
+          clearAllTargets();
+
+          display.className = "countdown-message";
+          display.textContent = "Tempo esgotado!";
+
+          countdownTimeout = setTimeout(() => {
+            overlay.style.display = 'none';
+            endGame();
+          }, 3000);
+        }
+
+      }, 1000)
+    }
+
+    function startGameLoop() {
+      gameTimer = setInterval(() => {
+
+        gameState.timeLeft--;
+        updateHUD();
+
+        // DISPARA COUNTDOWN COM 5 SEGUNDOS RESTANTES
+        if(gameState.timeLeft === 5){
+          showCountdown(5);
+        }
+
+        // NÃO FINALIZA INSTANTE — deixa o countdown cuidar disso
+        if(gameState.timeLeft <= 0){
+          clearInterval(gameTimer);
+          gameState.endTimestamp = Date.now();
+        }
+
+      }, 1000);
+
+
+      spawnTimer = setInterval(() => {
+        if (!gameRunning) return;
+
+        if (gameState.targets.length < gameState.settings.targetCount) {
+          spawnTarget();
+        }
+      }, gameState.settings.spawnRate);
+    }
+
+    function spawnTarget() {
+      const container = document.getElementById('gameContainer');
+      const size = gameState.settings.size;
+      const hud = document.querySelector('.game-hud');
+      const hudHeight = hud.offsetHeight; // ALTURA REAL
+      
+      const maxX = window.innerWidth - size - 20;
+      const maxY = window.innerHeight - size - 20;
+      const minY = hudHeight + 10;
+
+      const x = Math.random() * maxX + 10;
+      const y = Math.random() * (maxY - minY) + minY;
+
+      const target = document.createElement('div');
+      target.className = 'target';
+      
+      const isLeftClick = Math.random() > 0.5;
+      target.classList.add(isLeftClick ? 'left-click' : 'right-click');
+      
+      target.style.width = size + 'px';
+      target.style.height = size + 'px';
+      target.style.left = x + 'px';
+      target.style.top = y + 'px';
+      // target.textContent = isLeftClick ? 'L' : 'R';
+
+      const spawnTime = Date.now();
+      const lifetime = gameState.settings.lifetime;
+      
+      // Começa bem pequeno
+      let minSize = size * 0.2;   // 20% do tamanho final
+      let maxSize = size;
+      let currentSize = minSize;
+
+      target.style.width = currentSize + 'px';
+      target.style.height = currentSize + 'px';
+
+      const holdTime = 800; // <-- TEMPO PARADO NO TAMANHO MÁXIMO (ms)
+      // coloque 0 para pular a pausa
+
+      // ===== FASES =====
+      const growTime = lifetime * 0.4;
+      const shrinkTime = lifetime * 0.6;
+      const intervalTime = 50;
+
+      // Velocidades
+      const growStep   = (maxSize - minSize) / (growTime / intervalTime);
+      const shrinkStep = maxSize / (shrinkTime / intervalTime);
+
+      let phase = "growing"; // growing | holding | shrinking
+      let holdTimer = 0;
+
+      const animInterval = setInterval(() => {
+
+        if (phase === "growing") {
+
+          currentSize += growStep;
+
+          if (currentSize >= maxSize) {
+            currentSize = maxSize;
+
+            if (holdTime > 0) {
+              phase = "holding";
+            } else {
+              phase = "shrinking";
+            }
+          }
+
+        } else if (phase === "holding") {
+
+          holdTimer += intervalTime;
+
+          if (holdTimer >= holdTime) {
+            phase = "shrinking";
+          }
+
+        } else if (phase === "shrinking") {
+
+          currentSize -= shrinkStep;
+
+          if (currentSize <= 0) {
+            clearInterval(animInterval);
+
+            if (target.parentElement) {
+              targetMissed(target);
+            }
+
+            return;
+          }
+        }
+
+        target.style.width  = currentSize + 'px';
+        target.style.height = currentSize + 'px';
+
+      }, intervalTime);
+
+      target.addEventListener('mousedown', (e) => {
+        if (e.button === 0) {
+          e.preventDefault();
+          const reactionTime = Date.now() - spawnTime;
+          targetHit(target, isLeftClick, true, reactionTime, e);
+          clearInterval(animInterval);
+        }
+      });
+
+      target.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const reactionTime = Date.now() - spawnTime;
+        targetHit(target, isLeftClick, false, reactionTime, e);
+        clearInterval(animInterval);
+      });
+
+      target.addEventListener("dragstart", (e) => e.preventDefault());
+
+      container.appendChild(target);
+      gameState.targets.push({ element: target, interval: animInterval });
+    }
+
+    function targetHit(target, isLeftClick, wasLeftClick, reactionTime, event) {
+      if (!target.parentElement) return;
+
+      const correct = isLeftClick === wasLeftClick;
+      
+      const rect = target.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      if (correct) {
+        gameState.hits++;
+        gameState.score += 10;
+        gameState.reactionTimes.push(reactionTime);
+        createClickEffect(target, '#4cd137');
+        createClickMark(event.clientX, event.clientY, true);
+      } else {
+        gameState.misses++;
+        gameState.score = Math.max(0, gameState.score - 5);
+        createClickEffect(target, '#e74c3c');
+        createClickMark(event.clientX, event.clientY, false);
+      }
+
+      target.remove();
+      gameState.targets = gameState.targets.filter(t => t.element !== target);
+      updateHUD();
+    }
+
+    function targetMissed(target) {
+      if (!target.parentElement) return;
+      
+      gameState.misses++;
+      createClickEffect(target, '#95a5a6');
+      target.remove();
+      gameState.targets = gameState.targets.filter(t => t.element !== target);
+      updateHUD();
+    }
+
+    function createClickEffect(target, color) {
+
+      const rect = target.getBoundingClientRect();
+
+      const effect = document.createElement('div');
+      effect.className = 'click-indicator';
+
+      // Tamanho EXATO do alvo no momento do clique
+      effect.style.width  = rect.width + 'px';
+      effect.style.height = rect.height + 'px';
+
+      // Centraliza perfeitamente sobre o alvo
+      effect.style.left = rect.left + 'px';
+      effect.style.top  = rect.top  + 'px';
+
+      effect.style.border = `3px solid ${color}`;
+
+      document.getElementById('gameContainer').appendChild(effect);
+
+      setTimeout(() => effect.remove(), 600);
+    }
+
+    function createClickMark(x, y, isHit) {
+      const mark = document.createElement('div');
+      mark.className = `click-mark ${isHit ? 'hit' : 'miss'}`;
+      mark.style.left = (x - (isHit ? 6 : 8)) + 'px';
+      mark.style.top = (y - (isHit ? 6 : 8)) + 'px';
+      mark.style.animationDuration = (gameState.settings.markDuration / 1000) + 's';
+      document.getElementById('gameContainer').appendChild(mark);
+      
+      setTimeout(() => mark.remove(), gameState.settings.markDuration);
+    }
+
+    function updateHUD() {
+      document.getElementById('timeDisplay').textContent = gameState.timeLeft;
+      document.getElementById('scoreDisplay').textContent = gameState.score;
+      document.getElementById('hitsDisplay').textContent = gameState.hits;
+      document.getElementById('missesDisplay').textContent = gameState.misses;
+      
+      const total = gameState.hits + gameState.misses;
+      const accuracy = total === 0 ? 100 : ((gameState.hits / total) * 100).toFixed(1);
+      document.getElementById('accuracyDisplay').textContent = accuracy + '%';
+    }
+
+    function showQuickMessage(text, duration = 1500) {
+      const overlay = document.getElementById('countdownOverlay');
+      const display = document.getElementById('countdownText');
+
+      overlay.style.display = 'flex';
+      display.className = "countdown-message";
+      display.textContent = text;
+
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        endGame(true); // chama o endGame dizendo que é encerramento manual
+      }, duration);
+    }
+
+    function manualEnd() {
+      // registra fim real da partida AGORA
+      gameState.endTimestamp = Date.now();
+
+      gameState.isRunning = false;
+      gameRunning = false;
+      clearAllTargets()
+      setGridInteraction(false);
+
+      // mostra mensagem antes de finalizar
+      showQuickMessage("ENCERRADO", 2000);
+    }
+
+    function endGame(fromManual = false) {
+      clearInterval(gameTimer);
+      clearInterval(spawnTimer);
+      clearInterval(countdownInterval);
+      clearTimeout(countdownTimeout);
+
+      const overlay = document.getElementById('countdownOverlay');
+      overlay.style.display = 'none';
+
+      gameState.isRunning = false;
+      gameRunning = false;
+      setGridInteraction(false);
+
+      gameState.targets.forEach(t => {
+        clearInterval(t.interval);
+        t.element.remove();
+      });
+
+      if (!fromManual) {
+        if (!gameState.endTimestamp) {
+          gameState.endTimestamp = Date.now();
+        }
+      }
+      const elapsedSeconds = (gameState.endTimestamp - gameState.startTimestamp) / 1000;
+
+      const total = gameState.hits + gameState.misses;
+      const accuracy = total === 0 ? 100 : ((gameState.hits / total) * 100).toFixed(1);
+      const cps = elapsedSeconds > 0 
+        ? (gameState.totalClicks / elapsedSeconds).toFixed(2)
+        : 0;
+      const avgTime = gameState.reactionTimes.length > 0 
+        ? Math.round(gameState.reactionTimes.reduce((a, b) => a + b, 0) / gameState.reactionTimes.length)
+        : 0;
+      const hitRatio = gameState.totalClicks === 0 
+        ? 0 
+        : ((gameState.hits / gameState.totalClicks) * 100).toFixed(1);
+
+      document.getElementById('finalScore').textContent = gameState.score;
+      document.getElementById('finalHits').textContent = gameState.hits;
+      document.getElementById('finalMisses').textContent = gameState.misses;
+      document.getElementById('finalClicks').textContent = gameState.totalClicks;
+      document.getElementById('finalHitsPerClick').textContent = `${hitRatio}% (${gameState.hits}/${gameState.totalClicks})`;
+      document.getElementById('finalAccuracy').textContent = `${accuracy}% (${gameState.hits}/${total})`;
+      document.getElementById('finalCPS').textContent = cps;
+      document.getElementById('finalAvgTime').textContent = avgTime + 'ms';
+      document.getElementById('finalTimeElapsed').textContent = elapsedSeconds.toFixed(2) + 's';
+
+      document.getElementById('gameContainer').style.display = 'none';
+      document.getElementById('resultsContainer').style.display = 'block';
+      document.getElementById('pageHeader').style.display = 'block';
+    }
+
+    function restartGame() {
+      startGame();
+    }
+
+    function backToMenu() {
+      document.getElementById('resultsContainer').style.display = 'none';
+      document.getElementById('menuContainer').style.display = 'block';
+    }
+
+    document.addEventListener('contextmenu', (e) => {
+      if (gameState.isRunning) {
+        e.preventDefault();
+      }
+    });
+
+    document.getElementById('gameContainer').addEventListener('mousedown', (e) => {
+      if (e.button === 0) { 
+        if (!gameState.isRunning) return;
+
+        if (e.target.closest('.game-hud')) return;
+
+        gameState.totalClicks++;
+        
+        // Verifica se o clique foi em um alvo
+        if (!e.target.classList.contains('target')) {
+          createClickMark(e.clientX, e.clientY, false);
+        }
+      }
+    });
+
+    document.getElementById('gameContainer').addEventListener('contextmenu', (e) => {
+      if (!gameState.isRunning) return;
+
+      if (e.target.closest('.game-hud')) return;
+
+      gameState.totalClicks++;
+      
+      // Verifica se o clique direito foi em um alvo
+      if (!e.target.classList.contains('target')) {
+        createClickMark(e.clientX, e.clientY, false);
+      }
+    });
+
+    function openIndex() {
+      window.location.href = "/";
+    }
+  </script>
+</body>
+</html>
