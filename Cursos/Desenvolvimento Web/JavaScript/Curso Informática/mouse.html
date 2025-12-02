@@ -178,7 +178,7 @@
     }
 
     .target:hover {
-      transform: scale(1.05);
+      opacity: 0.9;
     }
 
     .target.left-click {
@@ -799,7 +799,7 @@
         if (!gameRunning) return;
 
         if (gameState.targets.length < gameState.settings.targetCount) {
-          spawnTarget();
+          spawnTargetV2();
         }
       }, gameState.settings.spawnRate);
     }
@@ -898,6 +898,160 @@
         target.style.height = currentSize + 'px';
 
       }, intervalTime);
+
+      target.addEventListener('mousedown', (e) => {
+        if (e.button === 0) {
+          e.preventDefault();
+          const reactionTime = Date.now() - spawnTime;
+          targetHit(target, isLeftClick, true, reactionTime, e);
+          clearInterval(animInterval);
+        }
+      });
+
+      target.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const reactionTime = Date.now() - spawnTime;
+        targetHit(target, isLeftClick, false, reactionTime, e);
+        clearInterval(animInterval);
+      });
+
+      target.addEventListener("dragstart", (e) => e.preventDefault());
+
+      container.appendChild(target);
+      gameState.targets.push({ element: target, interval: animInterval });
+    }
+
+    // SpawnTarget versão 2 que simula o comportamento do app: mouseaccuracy.com
+    function spawnTargetV2() {
+      const container = document.getElementById('gameContainer');
+      const size = gameState.settings.size;
+      const hud = document.querySelector('.game-hud');
+      const hudHeight = hud.offsetHeight;
+
+      const maxX = window.innerWidth - size - 20;
+      const maxY = window.innerHeight - size - 20;
+      const minY = hudHeight + 10;
+
+      const x = Math.random() * maxX + 10;
+      const y = Math.random() * (maxY - minY) + minY;
+
+      const target = document.createElement('div');
+      target.className = 'target';
+
+      const isLeftClick = Math.random() > 0.5;
+      target.classList.add(isLeftClick ? 'left-click' : 'right-click');
+
+      // POSIÇÃO
+      target.style.left = x + 'px';
+      target.style.top = y + 'px';
+
+      // TEMPOS
+      const spawnTime = Date.now();
+      const lifetime = gameState.settings.lifetime;
+
+      // ============================
+      // CONFIGURAÇÕES DO TAMANHO
+      // ============================
+
+      const minSize = size * 0.2;       // tamanho inicial = 20%
+      const maxSize = size;             // tamanho final = 100%
+      const secondHoldThreshold = 0.5;  // segura quando chegar em 50%
+      const secondHoldTime = 850;       // tempo parado no tamanho crítico
+      const secondHoldSize = size * secondHoldThreshold;
+
+      let currentSize = minSize;
+      target.style.width = currentSize + 'px';
+      target.style.height = currentSize + 'px';
+
+      // Pausa no tamanho máximo
+      const holdTime = 800;
+
+      // ============================
+      // FASES
+      // ============================
+
+      const growTime = lifetime * 0.4;
+      const shrinkTime = lifetime * 0.6;
+      const intervalTime = 50;
+
+      const growStep   = (maxSize - minSize) / (growTime / intervalTime);
+      const shrinkStep = maxSize / (shrinkTime / intervalTime);
+
+      let phase = "growing";
+      let holdTimer = 0;
+      let secondHoldTimer = 0;
+
+      // ============================
+      // ANIMAÇÃO DO ALVO
+      // ============================
+
+      const animInterval = setInterval(() => {
+
+        if (phase === "growing") {
+
+          currentSize += growStep;
+
+          if (currentSize >= maxSize) {
+            currentSize = maxSize;
+
+            if (holdTime > 0) {
+              phase = "holding";
+            } else {
+              phase = "shrinking";
+            }
+          }
+
+        } else if (phase === "holding") {
+
+          holdTimer += intervalTime;
+
+          if (holdTimer >= holdTime) {
+            phase = "shrinking";
+          }
+
+        } else if (phase === "shrinking") {
+
+          currentSize -= shrinkStep;
+
+          // NOVA FASE: Pausa no tamanho crítico
+          if (currentSize <= secondHoldSize && secondHoldTime > 0) {
+            currentSize = secondHoldSize;
+            phase = "holdingSmall";
+          }
+
+          if (currentSize <= 0) {
+            clearInterval(animInterval);
+            if (target.parentElement) targetMissed(target);
+            return;
+          }
+
+        } else if (phase === "holdingSmall") {
+
+          secondHoldTimer += intervalTime;
+
+          if (secondHoldTimer >= secondHoldTime) {
+            phase = "shrinkingAgain";
+          }
+
+        } else if (phase === "shrinkingAgain") {
+
+          currentSize -= shrinkStep;
+
+          if (currentSize <= 0) {
+            clearInterval(animInterval);
+            if (target.parentElement) targetMissed(target);
+            return;
+          }
+        }
+
+        target.style.width  = currentSize + 'px';
+        target.style.height = currentSize + 'px';
+
+      }, intervalTime);
+
+      // ============================
+      // EVENTOS DE CLIQUE
+      // ============================
 
       target.addEventListener('mousedown', (e) => {
         if (e.button === 0) {
