@@ -1171,6 +1171,8 @@
     }
 
     function manualEnd() {
+      clearInterval(gameTimer);
+      clearInterval(spawnTimer);
       clearInterval(countdownInterval);
       clearTimeout(countdownTimeout);
       // registra fim real da partida AGORA
