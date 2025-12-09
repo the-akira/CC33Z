@@ -654,7 +654,9 @@
 
           display.textContent = "Pronto!";
           display.className = "countdown-message";
-          setGridInteraction(true);
+          setTimeout(() => {
+            setGridInteraction(true);
+          }, 250)
 
           setTimeout(() => {
             overlay.style.display = 'none';
