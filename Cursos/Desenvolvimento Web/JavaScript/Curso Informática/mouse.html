@@ -654,11 +654,11 @@
 
           display.textContent = "Pronto!";
           display.className = "countdown-message";
+          setGridInteraction(true);
 
           setTimeout(() => {
             overlay.style.display = 'none';
             gameRunning = true;
-            setGridInteraction(true);
             gameState.startTimestamp = Date.now();
             startGameLoop();   // agora inicia o jogo de verdade
           }, 900);
