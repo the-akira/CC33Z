@@ -632,6 +632,10 @@
       }
     }
 
+    let preCountdownInterval = null;
+    let preCountdownTimeout1 = null;
+    let preCountdownTimeout2 = null;
+
     function startPreGameCountdown(seconds) {
       const overlay = document.getElementById('countdownOverlay');
       const display = document.getElementById('countdownText');
@@ -640,32 +644,36 @@
       display.className = "countdown-number";
       display.textContent = seconds;
 
-      setGridInteraction(false); // impede cliques durante o countdown
+      setGridInteraction(false);
 
       let counter = seconds;
 
-      const interval = setInterval(() => {
+      clearInterval(preCountdownInterval);
+      clearTimeout(preCountdownTimeout1);
+      clearTimeout(preCountdownTimeout2);
+
+      preCountdownInterval = setInterval(() => {
         counter--;
 
         if (counter >= 1) {
           display.textContent = counter;
         } else {
-          clearInterval(interval);
+          clearInterval(preCountdownInterval);
 
           display.textContent = "Pronto!";
           display.className = "countdown-message";
-          setTimeout(() => {
+
+          preCountdownTimeout1 = setTimeout(() => {
             setGridInteraction(true);
           }, 250);
 
-          setTimeout(() => {
+          preCountdownTimeout2 = setTimeout(() => {
             overlay.style.display = 'none';
             gameRunning = true;
             gameState.startTimestamp = Date.now();
-            startGameLoop();   // agora inicia o jogo de verdade
+            startGameLoop();
           }, 900);
         }
-
       }, 1000);
     }
 
@@ -1176,6 +1184,11 @@
       clearInterval(spawnTimer);
       clearInterval(countdownInterval);
       clearTimeout(countdownTimeout);
+
+      clearInterval(preCountdownInterval);
+      clearTimeout(preCountdownTimeout1);
+      clearTimeout(preCountdownTimeout2);
+
       // registra fim real da partida AGORA
       gameState.endTimestamp = Date.now();
 
@@ -1193,6 +1206,10 @@
       clearInterval(spawnTimer);
       clearInterval(countdownInterval);
       clearTimeout(countdownTimeout);
+
+      clearInterval(preCountdownInterval);
+      clearTimeout(preCountdownTimeout1);
+      clearTimeout(preCountdownTimeout2);
 
       const overlay = document.getElementById('countdownOverlay');
       overlay.style.display = 'none';
