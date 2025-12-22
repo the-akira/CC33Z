@@ -295,9 +295,10 @@
 
         @media (max-width: 480px) {
             .controls { flex-direction: column; }
-            button { width: 100%; }
+            button:not(#removeSpecificWaveBtn) { width: 100%; }
             .array-bar { min-width: 20px; font-size: 0.7em; }
             select { width: 100%; }
+            #waveItem { flex-direction: column; }
         }
     </style>
 </head>
@@ -8586,6 +8587,7 @@
             
             fourierWaves.forEach((wave, index) => {
                 const waveDiv = document.createElement('div');
+                waveDiv.id = "waveItem";
                 waveDiv.style.cssText = 'display: flex; align-items: center; gap: 15px; padding: 10px; background: white; border: 2px solid #273E74; border-radius: 5px;';
                 
                 waveDiv.innerHTML = `
@@ -8600,7 +8602,7 @@
                         <input type="range" id="amp-slider-${index}" min="0.1" max="2" step="0.1" value="${wave.amplitude}" 
                             style="width: 100%;" onchange="updateWaveAmplitude(${index}, this.value)">
                     </div>
-                    <button onclick="removeSpecificWave(${index})" style="padding: 5px 10px; background: #f44336; color: white; border: none; cursor: pointer; border-radius: 3px;">✕</button>
+                    <button id="removeSpecificWaveBtn" onclick="removeSpecificWave(${index})" style="padding: 5px 10px; background: #f44336; color: white; border: none; cursor: pointer; border-radius: 3px;">✕</button>
                 `;
                 
                 list.appendChild(waveDiv);
