@@ -2977,6 +2977,58 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+function handleWindowResize() {
+    if (drawingMode) {
+        // MODO DESENHO: Canvas fixo 4000x4000
+        
+        // Recalcular limites do canvas de desenho
+        const canvasWidth = 4000 * scale;
+        const canvasHeight = 4000 * scale;
+        
+        const maxTranslateX = Math.min(0, container.offsetWidth - canvasWidth);
+        const maxTranslateY = Math.min(0, container.offsetHeight - canvasHeight);
+        
+        // Ajustar translateX e translateY para não ultrapassarem os novos limites
+        const minTranslateX = 0;
+        const minTranslateY = 0;
+        
+        translateX = Math.max(maxTranslateX, Math.min(minTranslateX, translateX));
+        translateY = Math.max(maxTranslateY, Math.min(minTranslateY, translateY));
+        
+        // Aplicar transformação à grid (que contém o canvas)
+        grid.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        
+        // Sincronizar posição do canvas
+        syncCanvasPosition();
+        
+    } else {
+        // MODO NORMAL: Grid dinâmica
+        
+        // Recalcular limites de translação para a grid
+        const maxTranslateX = Math.min(0, container.offsetWidth - grid.offsetWidth * scale);
+        const maxTranslateY = Math.min(0, container.offsetHeight - grid.offsetHeight * scale);
+        
+        // Ajustar translateX e translateY para não ultrapassarem os novos limites
+        translateX = Math.max(maxTranslateX, Math.min(0, translateX));
+        translateY = Math.max(maxTranslateY, Math.min(0, translateY));
+        
+        // Aplicar a transformação atualizada
+        grid.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+    
+    // Atualizar o minimapa
+    updateMiniMap(drawingMode);
+    
+    // Atualizar elementos do minimapa se não estiver no modo desenho
+    if (!drawingMode) {
+        updateMiniMapElements();
+    }
+    
+    // Atualizar indicador de zoom
+    updateZoomIndicator();
+}
+
 window.addEventListener('resize', function(event) {
     updateMiniMap();
+    handleWindowResize();
 }, true);
