@@ -171,6 +171,12 @@ table, th, td {
     }
 }
 
+@media only screen and (max-width: 850px) {
+    #gameCanvas {
+        width: 90%;
+    }
+}
+
 @media only screen and (max-width: 650px) {
     .modal-content {
         width: 75% !important;
@@ -180,5 +186,10 @@ table, th, td {
 @media only screen and (max-width: 400px) {
     .modal-content {
         width: 80% !important;
+    }
+
+    #avatar-container {
+        width: 200px;
+        height: 200px;
     }
 }
