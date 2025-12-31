@@ -651,7 +651,7 @@
 
                 <h4 style="color:#273E74; margin-top:17px;">Instruções de Controle de Fluxo</h4>
                 <div style="background:#f5f5f5; padding:10px; border-left:3px solid #273E74; font-family:'Courier New'; margin:5px 0;">
-                    <strong>JMP 5</strong> - Salta para a instrução no endereço 5<br>
+                    <strong>JMP 4</strong> - Salta para a instrução no endereço 5<br>
                     <strong>CMP A, B</strong> - Compara A com B e define a flag Z<br>
                     <strong>JEQ 8</strong> - Salta para endereço 8 se Z=1 (A igual a B)<br>
                     <strong>JNE 8</strong> - Salta para endereço 8 se Z=0 (A diferente de B)<br>
@@ -1044,7 +1044,7 @@
                     if (!this.isRunning) { showPipeline(null); break; }
 
                     this.markProcessed(i);
-                    if (!this.wasReset && i === instructions.length - 1) {
+                    if (!this.wasReset && i === instructions.length - 1 && !this.didJump) {
                         document.getElementById('cpu-status').textContent = 'CONCLUÍDO';
                         stopCpuAnimation();
                     }
@@ -1173,7 +1173,7 @@
 
                 if (!this.wasReset) {
                     this.markProcessed(i);
-                    if (i === instructions.length - 1) {
+                    if (i === instructions.length - 1 && !this.didJump) {
                         document.getElementById('cpu-status').textContent = 'CONCLUÍDO';
                         stopCpuAnimation();
                     } else {
