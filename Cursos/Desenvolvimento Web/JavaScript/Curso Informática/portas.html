@@ -1,0 +1,2872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portas Lógicas - Curso de Informática</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            overflow: hidden;
+        }
+
+        #toolbar {
+            background: #16213e;
+            padding: 15px;
+            border-bottom: 2px solid #0f3460;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #0f3460;
+            border: none;
+            border-radius: 5px;
+            color: #eee;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #533483;
+        }
+
+        .btn:focus {
+            outline: none;
+        }
+
+        .btn.active {
+            background: #e94560;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #1a1a2e;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+
+        .node {
+            position: absolute;
+            background: #16213e;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            min-width: 150px;
+            cursor: move;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .node:hover {
+            border-color: #533483;
+        }
+
+        .node.selected {
+            border-color: #e94560;
+        }
+
+        .node-header {
+            background: #0f3460;
+            padding: 8px 12px;
+            border-radius: 6px 6px 0 0;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .node-delete {
+            background: #e94560;
+            border: none;
+            color: white;
+            border-radius: 3px;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .node-body {
+            padding: 12px;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .node-input, .node-output {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .port {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #533483;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .port:hover {
+            transform: scale(1.3);
+            background: #e94560;
+        }
+
+        .port.input {
+            margin-right: auto;
+        }
+
+        .port.input.used {
+            background: #833476;
+            cursor: not-allowed;
+        }
+
+        .port.output {
+            margin-left: auto;
+        }
+
+        .port.connecting {
+            background: #e94560 !important;
+            box-shadow: 0 0 10px #e94560;
+        }
+
+        .port.active {
+            background: #4ecca3;
+            box-shadow: 0 0 8px #4ecca3;
+        }
+
+        /* Interruptor */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #e94560;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .switch.on {
+            background: #4ecca3;
+        }
+
+        .switch-toggle {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .switch.on .switch-toggle {
+            transform: translateX(30px);
+        }
+
+        /* Lâmpada */
+        .bulb-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .bulb {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #333;
+            border: 3px solid #555;
+            position: relative;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .bulb.on {
+            background: #ffeb3b;
+            border-color: #fdd835;
+            box-shadow: 0 0 20px #ffeb3b, 0 0 40px #ffeb3b, inset 0 0 10px #fff59d;
+        }
+
+        .bulb-base {
+            width: 20px;
+            height: 15px;
+            background: #666;
+            border-radius: 0 0 5px 5px;
+            margin-top: -5px;
+        }
+
+        .bulb-label {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #aaa;
+            font-weight: bold;
+        }
+
+        .bulb.on + .bulb-base + .bulb-label {
+            color: #4ecca3;
+        }
+
+        .digit-display {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            color: #f72585;
+            text-shadow: 0 0 10px rgba(247,37,133,0.8);
+        }
+
+        input[type="number"], input[type="text"] {
+            background: #0f3460;
+            border: 1px solid #533483;
+            color: #eee;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 80px;
+            font-size: 12px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+        }
+
+        strong {
+            color: #4ecca3;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        b {
+            color: #4ecca3;
+        }
+
+        #instructions-panel, #text-panel {
+            position: fixed;
+            inset: 50% auto auto 50%;
+            transform: translate(-50%, -50%);
+            background: #16213e;
+            border: 2px solid #4ecca3;
+            color: #eaeaea;
+            padding: 16px;
+            border-radius: 12px;
+            width: min(92vw, 380px);
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        #truth-table-panel {
+            position: fixed;
+            inset: 50% auto auto 50%;
+            transform: translate(-50%, -50%);
+            background: #16213e;
+            border: 2px solid #4ecca3;
+            color: #eaeaea;
+            padding: 16px;
+            border-radius: 12px;
+            width: min(92vw, 380px);
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        #truth-table-content {
+            margin-top: 10px;
+        }
+
+        .truth-table {
+            margin-top: 4px;
+            margin-bottom: 15px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .truth-table th,
+        .truth-table td {
+            border: 1px solid #ccc;
+            padding: 4px 6px;
+            text-align: center;
+        }
+
+        .truth-table th {
+            background: #0f3460;
+        }
+
+        #camera-position {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(22, 33, 62, 0.9);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 13px;
+            z-index: 100;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(22, 33, 62, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            background: #0f3460;
+            border: none;
+            border-radius: 5px;
+            color: #eee;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: #533483;
+        }
+
+        #zoom-level {
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            color: #4ecca3;
+        }
+
+        #minimap-container {
+            position: fixed;
+            bottom: 55px;
+            right: 10px;
+            width: 200px;
+            height: 150px;
+            background: rgba(22, 33, 62, 0.95);
+            border: 2px solid #4ecca3;
+            border-radius: 8px;
+            display: none;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        #minimap-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .connection-active {
+            stroke: #4ecca3 !important;
+            filter: drop-shadow(0 0 3px #4ecca3);
+        }
+
+        .connection-inactive {
+            stroke: #666 !important;
+        }
+
+        .note-textarea, #dsl-editor {
+            text-align: left;
+            direction: ltr;
+            background: #0f3460;
+            border: 2px solid #4ecca3;
+            color: white;
+            width: 400px;
+            height: 200px;
+            resize: none;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        #dsl-editor {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .note-textarea::placeholder,
+        #dsl-editor::placeholder {
+            color: white;
+        }
+
+        .note-textarea:focus,
+        #dsl-editor:focus {
+            outline: none;
+        }
+
+        #node-counter {
+            position: absolute;
+            bottom: 70px;
+            left: 10px;
+            background: rgba(22, 33, 62, 0.9);
+            padding: 8px 12px;
+            padding-bottom: 9px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        #node-counter i {
+            color: #4ecca3;
+        }
+
+        #node-count {
+            color: #4ecca3;
+        }
+
+        #node-counter.warning {
+            background: #9e6f02;
+        }
+
+        #node-counter.warning #node-count {
+            color: #fff;
+        }
+
+        #node-counter.warning i {
+            color: #fff;
+        }
+
+        #node-counter.critical {
+            background: #9e021b;
+        }
+
+        #node-counter.critical #node-count {
+            color: #fff;
+        }
+
+        #node-counter.critical i {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <button class="btn" title="INPUT" onclick="addNode('input')">Interruptor</button>
+        <button class="btn" title="CLOCK" onclick="addNode('clock')">Clock</button>
+        <button class="btn" title="BUFFER" onclick="addNode('buffer')">Buffer</button>
+        <button class="btn" title="AND" onclick="addNode('and')">AND</button>
+        <button class="btn" title="OR" onclick="addNode('or')">OR</button>
+        <button class="btn" title="NOT" onclick="addNode('not')">NOT</button>
+        <button class="btn" title="XOR" onclick="addNode('xor')">XOR</button>
+        <button class="btn" title="XNOR" onclick="addNode('xnor')">XNOR</button>
+        <button class="btn" title="NAND" onclick="addNode('nand')">NAND</button>
+        <button class="btn" title="NOR" onclick="addNode('nor')">NOR</button>
+        <button class="btn" title="DIGIT4" onclick="addNode('digit4')">4-Bit Digit</button>
+        <button class="btn" title="OUTPUT" onclick="addNode('output')">Lâmpada</button>
+        <button class="btn" title="NOTE" onclick="addNode('note')">Notas</button>
+        <button class="btn" title="Página Inicial" onclick="window.location.href='/'" style="margin-left: auto; background: #33a356;"><i class="fa-solid fa-house"></i></button>
+        <button class="btn" title="Salvar Projeto" onclick="saveProjectIndexedDB()" style="background: #33a39f;"><i class="fa-solid fa-floppy-disk"></i></button>
+        <button class="btn" title="Exportar Projeto" onclick="saveProject()" style="background: #87a333;"><i class="fa-solid fa-file-export"></i></button>
+        <input type="file" id="fileInput" accept=".json" style="display:none">
+        <button class="btn" title="Importar Projeto" onclick="loadProject()" style="background: #a38d33;"><i class="fa-solid fa-folder-open"></i></button>
+        <button class="btn" title="Remover Tudo" onclick="clearAll()" style="background: #e94560;"><i class="fa-solid fa-trash-can"></i></button>
+        <button class="btn" title="Instruções" onclick="toggleInstructions()" style="background: #3a86ff;"><i class="fa-solid fa-book"></i></button>
+        <button class="btn" title="Tabelas Verdade" onclick="toggleTruthTables()" style="background:#b03aff;"><i class="fa-solid fa-table"></i></button>
+        <button class="btn" title="Editor" style="background:#4a3aff;" onclick="toggleTextPanel()"><i class="fa-solid fa-file-code"></i></button>
+        <button id="minimap-toggle" title="Mapa" class="btn" onclick="toggleMinimap(event)" style="background: #783aff;"><i class="fa-solid fa-map"></i></button>
+        <button id="fullscreen-toggle" title="Tela Cheia" class="btn" onclick="toggleFullscreen()" style="background: #9c5419;"><i class="fa-solid fa-expand"></i></button>
+    </div>
+
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomOut()">−</button>
+        <span id="zoom-level">100%</span>
+        <button class="zoom-btn" onclick="zoomIn()">+</button>
+        <button class="btn" onclick="resetCamera()" style="margin-left: 10px;">⟲ Resetar Câmera</button>
+    </div>
+
+    <div id="instructions-panel">
+        <strong>Como usar:</strong><br>
+        • Clique nos botões para adicionar componentes<br>
+        • Arraste os componentes para posicioná-los<br>
+        • Clique nas bolinhas para conectar<br>
+        • Clique no interruptor para ligar/desligar<br>
+        <br>
+        <strong>Portas Lógicas:</strong><br>
+        • BUFFER: replica a entrada (saída = entrada)<br>
+        • AND: saída 1 se todas entradas = 1<br>
+        • OR: saída 1 se alguma entrada = 1<br>
+        • NOT: inverte a entrada<br>
+        • XOR: saída 1 se entradas diferentes<br>
+        • XNOR: saída 1 se as entradas forem iguais<br>
+        • NAND: inverso de AND<br>
+        • NOR: inverso de OR<br>
+        <br>
+        <strong>Navegação:</strong><br>
+        • Shift+Arraste ou Botão do meio: mover câmera<br>
+        • Scroll: zoom in/out<br>
+        <br>
+        <strong>Seleção:</strong><br>
+        • Arraste no canvas vazio para área de seleção<br>
+        • Ctrl+Clique: adicionar/remover da seleção<br>
+        • Ctrl+A: selecionar todos<br>
+        • Ctrl+Q: desselecionar<br>
+        • Delete: remover selecionados<br>
+        <br>
+        <strong>Ações:</strong><br>
+        • Ctrl+Z: desfazer ação<br>
+        • Ctrl+Y: refazer ação<br>
+        <br>
+        <strong>Copiar/Colar:</strong><br>
+        - Ctrl+C: copiar seleção<br>
+        - Ctrl+X: recortar seleção<br>
+        - Ctrl+V: colar<br>
+        - Ctrl+D: duplicar seleção<br>
+        <br>
+        <button class="btn" onclick="toggleInstructions()" style="width:100%;">
+            Fechar
+        </button>
+    </div>
+
+    <div id="truth-table-panel">
+        <strong>Tabelas Verdade — Portas Lógicas</strong>
+        <div id="truth-table-content"></div>
+
+        <button class="btn" onclick="toggleTruthTables()" style="width:100%; margin-top:10px;">
+            Fechar
+        </button>
+    </div>
+
+    <div id="text-panel">
+        <textarea id="dsl-editor" placeholder="A = INPUT&#10;B = INPUT&#10;C = AND(A,B)&#10;D = OUTPUT(C)"></textarea>
+        <button class="btn" style="width:100%" onclick="applyDSL()">Aplicar</button>
+        <button class="btn" onclick="toggleTextPanel()" style="width:100%; margin-top:10px;">
+            Fechar
+        </button>
+    </div>
+
+    <div id="camera-position">
+        <b>X:</b> <span id="cam-x"></span> | <b>Y:</b> <span id="cam-y"></span>
+    </div>
+
+    <div id="minimap-container">
+        <canvas id="minimap-canvas"></canvas>
+    </div>
+
+    <div id="node-counter">
+        <i class="fa-solid fa-microchip" style="margin-top: 2px;"></i>
+        <span id="node-count">0</span>/<span id="node-limit">200</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+
+        let nodes = [];
+        let connections = [];
+        let nodeIdCounter = 0;
+        let selectedNode = null;
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        let connectingFrom = null;
+
+        let selectedNodes = []; // Array de nós selecionados
+        let isBoxSelecting = false;
+        let justFinishedBoxSelect = false;
+        let boxSelectStart = { x: 0, y: 0 };
+        let boxSelectEnd = { x: 0, y: 0 };
+
+        const MAX_NODES = 120; // Limite padrão de nodes
+        const WARN_NODES = 100; // Aviso quando atingir este número
+        let hasShownWarning = false; // Controla se já mostrou aviso
+
+        let camera = {
+            x: 0,
+            y: 0,
+            zoom: 1,
+            minZoom: 0.5,
+            maxZoom: 2,
+            isDragging: false,
+            dragStartX: 0,
+            dragStartY: 0
+        };
+
+        const mapBounds = {
+            minX: 0,
+            minY: 0,
+            maxX: 6000,
+            maxY: 6000
+        };
+
+        const nodeTypes = {
+            input: { name: 'Interruptor', color: '#379174', inputs: 0, outputs: 1 },
+            clock: { name: 'Clock', color: '#379174', inputs: 0, outputs: 1 },
+            buffer: { name: 'Buffer', color: '#533483', inputs: 1, outputs: 1 },
+            and: { name: 'AND', color: '#533483', inputs: 2, outputs: 1 },
+            or: { name: 'OR', color: '#533483', inputs: 2, outputs: 1 },
+            not: { name: 'NOT', color: '#533483', inputs: 1, outputs: 1 },
+            xor: { name: 'XOR', color: '#533483', inputs: 2, outputs: 1 },
+            xnor: { name: 'XNOR', color: '#533483', inputs: 2, outputs: 1 },
+            nand: { name: 'NAND', color: '#533483', inputs: 2, outputs: 1 },
+            nor: { name: 'NOR', color: '#533483', inputs: 2, outputs: 1 },
+            digit4: { name: '4-Bit', color: '#702354', inputs: 4, outputs: 0 },
+            output: { name: 'Lâmpada', color: '#7a1b30', inputs: 1, outputs: 0 },
+            note: { name: 'Notas', color: '#704912', inputs: 0, outputs: 0 }
+        };
+
+        // Sistema de Undo/Redo
+        let history = [];
+        let historyIndex = -1;
+        const MAX_HISTORY = 50;
+        let isUndoRedo = false; // Flag para evitar registrar durante undo/redo
+
+        function saveState(action) {
+            if (isUndoRedo) return; // Não salva estado durante undo/redo
+            
+            // Remove todos os estados após o índice atual (quando faz nova ação após undo)
+            history = history.slice(0, historyIndex + 1);
+            
+            const state = {
+                action: action,
+                timestamp: Date.now(),
+                nodes: nodes.map(n => ({
+                    id: n.id,
+                    type: n.type,
+                    worldX: n.worldX,
+                    worldY: n.worldY,
+                    value: n.value ?? null,
+                    content: n.content ?? null,
+                    clockInterval: n.clockInterval ?? null
+                })),
+                connections: connections.map(c => ({
+                    from: c.from,
+                    fromPort: c.fromPort,
+                    to: c.to,
+                    toPort: c.toPort
+                })),
+                camera: {
+                    x: camera.x,
+                    y: camera.y,
+                    zoom: camera.zoom
+                }
+            };
+            
+            history.push(state);
+            historyIndex++;
+            
+            // Limita o tamanho do histórico
+            if (history.length > MAX_HISTORY) {
+                history.shift();
+                historyIndex--;
+            }
+        }
+
+        function undo() {
+            if (historyIndex <= 0) {
+                console.log('Nada para desfazer');
+                return;
+            }
+            
+            historyIndex--;
+            restoreState(history[historyIndex]);
+        }
+
+        function redo() {
+            if (historyIndex >= history.length - 1) {
+                console.log('Nada para refazer');
+                return;
+            }
+            
+            historyIndex++;
+            restoreState(history[historyIndex]);
+        }
+
+        function restoreState(state) {
+            isUndoRedo = true; // Ativa flag para não registrar no histórico
+            
+            // Para todos os clocks
+            nodes.forEach(n => {
+                if (n.clockTimer) {
+                    clearInterval(n.clockTimer);
+                }
+            });
+            
+            // Remove todos os nós atuais
+            nodes.forEach(n => n.element.remove());
+            
+            // Limpa arrays
+            nodes = [];
+            connections = [];
+            selectedNodes = [];
+            selectedNode = null;
+            connectingFrom = null;
+            
+            // Restaura câmera
+            camera.x = state.camera.x;
+            camera.y = state.camera.y;
+            camera.zoom = state.camera.zoom;
+            
+            // Restaura nós
+            state.nodes.forEach(nodeData => {
+                addNodeFromData(nodeData);
+            });
+            
+            // Restaura conexões
+            state.connections.forEach(conn => {
+                connections.push({ ...conn });
+            });
+            
+            // Atualiza nodeIdCounter
+            if (nodes.length > 0) {
+                nodeIdCounter = Math.max(...nodes.map(n => n.id)) + 1;
+            }
+            
+            // Atualiza visualização
+            clampCamera();
+            updateAllNodePositions();
+            executeGraph();
+            updateCoordsDisplay();
+            updateNodeCounter();
+            
+            isUndoRedo = false; // Desativa flag
+        }
+
+        const minimapCanvas = document.getElementById('minimap-canvas');
+        const minimapCtx = minimapCanvas.getContext('2d');
+        const minimapContainer = document.getElementById('minimap-container');
+
+        minimapCanvas.width = 180;
+        minimapCanvas.height = 150;
+
+        let minimapVisible = false;
+
+        function toggleMinimap(e) {
+            e.stopPropagation();
+            minimapVisible = !minimapVisible;
+            minimapContainer.style.display = minimapVisible ? 'block' : 'none';
+            if (minimapVisible) {
+                drawMinimap();
+            }
+        }
+
+        function drawMinimap() {
+            if (!minimapVisible) return;
+            
+            minimapCtx.clearRect(0, 0, minimapCanvas.width, minimapCanvas.height);
+            
+            const mapWidth = mapBounds.maxX - mapBounds.minX;
+            const mapHeight = mapBounds.maxY - mapBounds.minY;
+            const scaleX = minimapCanvas.width / mapWidth;
+            const scaleY = minimapCanvas.height / mapHeight;
+            
+            minimapCtx.fillStyle = '#1a1a2e';
+            minimapCtx.fillRect(0, 0, minimapCanvas.width, minimapCanvas.height);
+            
+            minimapCtx.strokeStyle = '#0f3460';
+            minimapCtx.lineWidth = 0.5;
+            const gridSize = 100;
+            
+            for (let x = mapBounds.minX; x <= mapBounds.maxX; x += gridSize) {
+                const screenX = (x - mapBounds.minX) * scaleX;
+                minimapCtx.beginPath();
+                minimapCtx.moveTo(screenX, 0);
+                minimapCtx.lineTo(screenX, minimapCanvas.height);
+                minimapCtx.stroke();
+            }
+            
+            for (let y = mapBounds.minY; y <= mapBounds.maxY; y += gridSize) {
+                const screenY = (y - mapBounds.minY) * scaleY;
+                minimapCtx.beginPath();
+                minimapCtx.moveTo(0, screenY);
+                minimapCtx.lineTo(minimapCanvas.width, screenY);
+                minimapCtx.stroke();
+            }
+            
+            minimapCtx.strokeStyle = '#4ecca3';
+            minimapCtx.lineWidth = 1;
+            
+            connections.forEach(conn => {
+                const fromNode = nodes.find(n => n.id === conn.from);
+                const toNode = nodes.find(n => n.id === conn.to);
+                
+                if (!fromNode || !toNode) return;
+                
+                const x1 = (fromNode.worldX - mapBounds.minX) * scaleX;
+                const y1 = (fromNode.worldY - mapBounds.minY) * scaleY;
+                const x2 = (toNode.worldX - mapBounds.minX) * scaleX;
+                const y2 = (toNode.worldY - mapBounds.minY) * scaleY;
+                
+                minimapCtx.beginPath();
+                minimapCtx.moveTo(x1, y1);
+                minimapCtx.lineTo(x2, y2);
+                minimapCtx.stroke();
+            });
+            
+            nodes.forEach(node => {
+                const x = (node.worldX - mapBounds.minX) * scaleX;
+                const y = (node.worldY - mapBounds.minY) * scaleY;
+                
+                const nodeType = nodeTypes[node.type];
+                minimapCtx.fillStyle = nodeType.color;
+                minimapCtx.fillRect(x - 2, y - 2, 4, 4);
+            });
+            
+            const viewWidth = canvas.width / camera.zoom;
+            const viewHeight = canvas.height / camera.zoom;
+            const centerWorld = screenToWorld(canvas.width / 2, canvas.height / 2);
+            
+            const viewX = (centerWorld.x - viewWidth / 2 - mapBounds.minX) * scaleX;
+            const viewY = (centerWorld.y - viewHeight / 2 - mapBounds.minY) * scaleY;
+            const viewW = viewWidth * scaleX;
+            const viewH = viewHeight * scaleY;
+            
+            minimapCtx.strokeStyle = '#e94560';
+            minimapCtx.lineWidth = 2;
+            minimapCtx.strokeRect(viewX, viewY, viewW, viewH);
+            
+            minimapCtx.fillStyle = 'rgba(233, 69, 96, 0.15)';
+            minimapCtx.fillRect(viewX, viewY, viewW, viewH);
+        }
+
+        minimapCanvas.addEventListener('click', (e) => {
+            const rect = minimapCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const mapWidth = mapBounds.maxX - mapBounds.minX;
+            const mapHeight = mapBounds.maxY - mapBounds.minY;
+            const scaleX = minimapCanvas.width / mapWidth;
+            const scaleY = minimapCanvas.height / mapHeight;
+            
+            const worldX = (x / scaleX) + mapBounds.minX;
+            const worldY = (y / scaleY) + mapBounds.minY;
+            
+            camera.x = canvas.width / 2 - worldX * camera.zoom;
+            camera.y = canvas.height / 2 - worldY * camera.zoom;
+            
+            clampCamera();
+            updateAllNodePositions();
+            drawConnections();
+            drawMinimap();
+            updateCoordsDisplay();
+        });
+
+        function toggleTextPanel() {
+            const panel = document.getElementById('text-panel');
+            const isHidden = window.getComputedStyle(panel).display === 'none';
+            panel.style.display = isHidden ? 'block' : 'none';
+        }
+
+        function parseDSL(code) {
+            const ast = {};
+            const lines = code.split('\n')
+                .map(l => l.trim())
+                .filter(l => l && !l.startsWith('#'));
+
+            for (const line of lines) {
+                const [left, right] = line.split('=').map(s => s.trim());
+
+                if (!left || !right) {
+                    throw new Error(`Linha inválida: ${line}`);
+                }
+
+                if (right === 'INPUT') {
+                    ast[left] = { type: 'input' };
+                }
+                else if (right === 'CLOCK') {
+                    ast[left] = { type: 'clock' };
+                }
+                else if (right === 'NOTE') {
+                    ast[left] = { type: 'note' };
+                } else {
+                    const m = right.match(/^(\w+)\((.*)\)$/);
+                    if (!m) throw new Error(`Sintaxe inválida: ${line}`);
+
+                    ast[left] = {
+                        type: m[1].toLowerCase(),
+                        inputs: m[2].split(',').map(s => s.trim())
+                    };
+                }
+            }
+            return ast;
+        }
+
+        function buildGraphFromAST(ast) {
+            const entries = Object.entries(ast);
+            
+            // Verifica limite antes de criar
+            if (nodes.length + entries.length > MAX_NODES) {
+                alert(`Não é possível aplicar!\n\nEste código criaria ${entries.length} componente(s), excedendo o limite de ${MAX_NODES}.\n\nAtual: ${nodes.length} componentes`);
+                return;
+            }
+
+            const map = {};
+
+            // cria nós
+            Object.entries(ast).forEach(([name, def], i) => {
+                const node = addNode(def.type);
+                node.label = name;
+
+                // layout simples em coluna
+                node.worldX = 200;
+                node.worldY = 100 + i * 120;
+                updateNodePosition(node);
+
+                map[name] = node;
+            });
+
+            // cria conexões
+            Object.entries(ast).forEach(([name, def]) => {
+                if (!def.inputs) return;
+
+                def.inputs.forEach((input, index) => {
+                    connections.push({
+                        from: map[input].id,
+                        fromPort: 0,
+                        to: map[name].id,
+                        toPort: index
+                    });
+                });
+            });
+
+            drawConnections();
+            executeGraph();
+        }
+
+        function applyDSL() {
+            try {
+                const code = document.getElementById('dsl-editor').value;
+                const ast = parseDSL(code);
+                buildGraphFromAST(ast);
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        function screenToWorld(screenX, screenY) {
+            return {
+                x: (screenX - camera.x) / camera.zoom,
+                y: (screenY - camera.y) / camera.zoom
+            };
+        }
+
+        function worldToScreen(worldX, worldY) {
+            return {
+                x: worldX * camera.zoom + camera.x,
+                y: worldY * camera.zoom + camera.y
+            };
+        }
+
+        function getCameraWorldPosition() {
+            return {
+                x: -camera.x / camera.zoom,
+                y: -camera.y / camera.zoom
+            };
+        }
+
+        function updateCoordsDisplay() {
+            const worldPos = getCameraWorldPosition();
+
+            document.getElementById('cam-x').textContent = `${worldPos.x.toFixed(1)}`;
+            document.getElementById('cam-y').textContent = `${worldPos.y.toFixed(1)}`;
+        }
+
+        function clampCamera() {
+            const viewWidth = canvas.width / camera.zoom;
+            const viewHeight = canvas.height / camera.zoom;
+            
+            const maxCameraX = -mapBounds.minX * camera.zoom;
+            const minCameraX = -mapBounds.maxX * camera.zoom + canvas.width;
+            const maxCameraY = -mapBounds.minY * camera.zoom;
+            const minCameraY = -mapBounds.maxY * camera.zoom + canvas.height;
+
+            camera.x = Math.max(minCameraX, Math.min(maxCameraX, camera.x));
+            camera.y = Math.max(minCameraY, Math.min(maxCameraY, camera.y));
+        }
+
+        function startClock(node) {
+            clearInterval(node.clockTimer);
+
+            node.clockTimer = setInterval(() => {
+                node.value = !node.value;
+                executeGraph();
+            }, node.clockInterval);
+        }
+
+        function clampWorldPosition(x, y, width, height) {
+            return {
+                x: Math.max(
+                    mapBounds.minX,
+                    Math.min(mapBounds.maxX - width, x)
+                ),
+                y: Math.max(
+                    mapBounds.minY,
+                    Math.min(mapBounds.maxY - height, y)
+                )
+            };
+        }
+
+        function addNode(type) {
+            // Verifica limite de nodes
+            if (nodes.length >= MAX_NODES) {
+                alert(`Limite máximo atingido!\n\nVocê atingiu o limite de ${MAX_NODES} componentes.\n\nPara evitar travamentos, não é possível adicionar mais componentes.\n\nDica: Remova componentes desnecessários ou divida seu projeto em partes menores.`);
+                return null; // Retorna null ao invés de criar o node
+            }
+            
+            // Aviso quando próximo do limite
+            if (nodes.length >= WARN_NODES && !hasShownWarning) {
+                hasShownWarning = true;
+                alert(`Atenção: Você está próximo do limite!\n\nVocê tem ${nodes.length} componentes de um máximo de ${MAX_NODES}.\n\nConsidere otimizar seu circuito para evitar problemas de desempenho.`);
+            }
+
+            const nodeType = nodeTypes[type];
+            const nodeId = nodeIdCounter++;
+            
+            const nodeEl = document.createElement('div');
+            nodeEl.className = 'node';
+            nodeEl.id = `node-${nodeId}`;
+            
+            const centerScreen = {
+                x: canvas.width / 2,
+                y: canvas.height / 2
+            };
+            let worldPos = screenToWorld(centerScreen.x, centerScreen.y);
+
+            let bodyContent = '';
+            
+            if (type === 'input') {
+                bodyContent = `
+                    <div class="switch-container">
+                        <div class="switch" id="switch-${nodeId}" onclick="toggleSwitch(${nodeId})">
+                            <div class="switch-toggle"></div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'output') {
+                bodyContent = `
+                    <div class="bulb-container">
+                        <div class="bulb" id="bulb-${nodeId}"></div>
+                        <div class="bulb-base"></div>
+                        <div class="bulb-label">OFF</div>
+                    </div>
+                `;
+            } else if (type === 'digit4') {
+                bodyContent = `
+                    <div class="digit-display" id="digit-${nodeId}">
+                        0
+                    </div>
+                `;
+            } else if (type === 'note') {
+                bodyContent = `
+                    <textarea class="note-textarea" id="note-${nodeId}" placeholder="Escreva sua anotação aqui..." oninput="updateNoteContent(${nodeId}, this.value)"></textarea>
+                `;
+            }
+
+            nodeEl.innerHTML = `
+                <div class="node-header" style="background: ${nodeType.color}">
+                    ${nodeType.name}
+                    <button class="node-delete" onclick="deleteNode(${nodeId})">×</button>
+                </div>
+                <div class="node-body">
+                    ${Array(nodeType.inputs).fill(0).map((_, i) => `
+                        <div class="node-input">
+                            <div class="port input"
+                                 data-node="${nodeId}"
+                                 data-port="${i}"
+                                 data-type="input"></div>
+                            <span>In ${i + 1}</span>
+                        </div>
+                    `).join('')}
+                    ${bodyContent}
+                    ${Array(nodeType.outputs).fill(0).map((_, i) => `
+                        <div class="node-output">
+                            <span>Out ${i + 1}</span>
+                            <div class="port output" data-node="${nodeId}" data-port="${i}" data-type="output"></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            container.appendChild(nodeEl);
+
+            const nodeWidth  = nodeEl.offsetWidth;
+            const nodeHeight = nodeEl.offsetHeight;
+
+            // clampa ANTES de criar o objeto node
+            const clamped = clampWorldPosition(
+                worldPos.x,
+                worldPos.y,
+                nodeWidth,
+                nodeHeight
+            );
+
+            worldPos.x = clamped.x;
+            worldPos.y = clamped.y;
+
+            const node = {
+                id: nodeId,
+                type: type,
+                element: nodeEl,
+                value: type === 'input' ? false : null,
+                result: null,
+                worldX: worldPos.x,
+                worldY: worldPos.y,
+                clockInterval: 500,
+                clockTimer: null,
+                running: true,
+                content: ''
+            };
+
+            if (type === 'clock') {
+                startClock(node);
+            }
+
+            nodes.push(node);
+            bindNodeEvents(node);
+            updateNodePosition(node);
+            drawMinimap();
+            clearSelection();
+            saveState('addNode');
+            updateNodeCounter();
+
+            return node;
+        }
+
+        function toggleSwitch(nodeId) {
+            const node = nodes.find(n => n.id === nodeId);
+            if (!node || node.type !== 'input') return;
+            
+            node.value = !node.value;
+            updateSwitchVisual(node);
+            executeGraph();
+        }
+
+        function updateSwitchVisual(node) {
+            const switchEl = document.getElementById(`switch-${node.id}`);
+            if (!switchEl) return;
+
+            switchEl.classList.toggle('on', node.value);
+        }
+
+        function updateNodePosition(node) {
+            const screenPos = worldToScreen(node.worldX, node.worldY);
+            node.element.style.left = `${screenPos.x}px`;
+            node.element.style.top = `${screenPos.y}px`;
+            node.element.style.transform = `scale(${camera.zoom})`;
+            node.element.style.transformOrigin = 'top left';
+        }
+
+        function updateAllNodePositions() {
+            nodes.forEach(node => updateNodePosition(node));
+        }
+
+        function updateNoteContent(id, text) {
+            const node = nodes.find(n => n.id === id);
+            if (!node) return;
+
+            node.content = text;
+        }
+
+        function startDragging(node, e) {
+            // Se Ctrl/Cmd estiver pressionado, adiciona à seleção múltipla
+            if (e.ctrlKey || e.metaKey) {
+                if (selectedNodes.includes(node)) {
+                    // Remove da seleção
+                    selectedNodes = selectedNodes.filter(n => n !== node);
+                    node.element.classList.remove('selected');
+                } else {
+                    // Adiciona à seleção
+                    selectedNodes.push(node);
+                    node.element.classList.add('selected');
+                }
+                selectedNode = node;
+                return; // Não inicia drag quando está apenas selecionando
+            }
+            
+            // Se o nó clicado já está na seleção múltipla (um ou vários), arrasta todos
+            if (selectedNodes.includes(node)) {
+                selectedNode = node;
+                isDragging = true;
+                const rect = container.getBoundingClientRect();
+                const worldPos = screenToWorld(
+                    e.clientX - rect.left,
+                    e.clientY - rect.top
+                );
+                
+                // ATUALIZA O DRAG OFFSET PARA TODOS OS NÓS SELECIONADOS
+                selectedNodes.forEach(n => {
+                    // Usa variável global para todos (consistente)
+                    n.startDragWorldX = n.worldX;
+                    n.startDragWorldY = n.worldY;
+                    n.dragOffsetX = worldPos.x - n.worldX;
+                    n.dragOffsetY = worldPos.y - n.worldY;
+                });
+                return;
+            }
+            
+            // Seleção única (nó não estava selecionado antes)
+            selectedNodes.forEach(n => n.element.classList.remove('selected'));
+            selectedNodes = [node];
+            selectedNode = node;
+            isDragging = true;
+            
+            node.element.classList.add('selected');
+
+            const rect = container.getBoundingClientRect();
+            const worldPos = screenToWorld(
+                e.clientX - rect.left,
+                e.clientY - rect.top
+            );
+            
+            // Usa a mesma estrutura para seleção única
+            node.startDragWorldX = node.worldX;
+            node.startDragWorldY = node.worldY;
+            node.dragOffsetX = worldPos.x - node.worldX;
+            node.dragOffsetY = worldPos.y - node.worldY;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
+                e.preventDefault();
+                camera.isDragging = true;
+                camera.dragStartX = e.clientX;
+                camera.dragStartY = e.clientY;
+                canvas.style.cursor = 'grabbing';
+            } else if (e.button === 0 && !e.shiftKey && !connectingFrom) {
+                // Verifica se clicou diretamente no canvas (não em um nó)
+                if (e.target === canvas) {
+                    const rect = container.getBoundingClientRect();
+                    isBoxSelecting = true;
+                    boxSelectStart = {
+                        x: e.clientX - rect.left,
+                        y: e.clientY - rect.top
+                    };
+                    boxSelectEnd = { ...boxSelectStart };
+                    
+                    // Se não está com Ctrl, limpa seleção ao iniciar novo box
+                    if (!e.ctrlKey && !e.metaKey) {
+                        selectedNodes.forEach(n => n.element.classList.remove('selected'));
+                        selectedNodes = [];
+                    }
+                }
+            }
+        });
+
+        function clampNodeToMap(node) {
+            const rect = node.element.getBoundingClientRect();
+
+            // converter tamanho do nó de screen → world
+            const nodeWidth = rect.width / camera.zoom;
+            const nodeHeight = rect.height / camera.zoom;
+
+            node.worldX = Math.max(
+                mapBounds.minX,
+                Math.min(mapBounds.maxX - nodeWidth, node.worldX)
+            );
+
+            node.worldY = Math.max(
+                mapBounds.minY,
+                Math.min(mapBounds.maxY - nodeHeight, node.worldY)
+            );
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (camera.isDragging) {
+                const dx = e.clientX - camera.dragStartX;
+                const dy = e.clientY - camera.dragStartY;
+                
+                camera.x += dx;
+                camera.y += dy;
+                
+                clampCamera();
+                
+                camera.dragStartX = e.clientX;
+                camera.dragStartY = e.clientY;
+                
+                updateAllNodePositions();
+                drawConnections();
+                updateCoordsDisplay();
+            } else if (isBoxSelecting) {
+                // Atualizar box selection
+                boxSelectEnd = {
+                    x: e.clientX - container.getBoundingClientRect().left,
+                    y: e.clientY - container.getBoundingClientRect().top
+                };
+                drawConnections(); // Redesenha com o box
+            } else if (isDragging && selectedNode) {
+                const rect = container.getBoundingClientRect();
+                const worldPos = screenToWorld(
+                    e.clientX - rect.left,
+                    e.clientY - rect.top
+                );
+                
+                // Move todos os nós selecionados (pode ser apenas um)
+                selectedNodes.forEach(node => {
+                    if (node.dragOffsetX !== undefined && node.dragOffsetY !== undefined) {
+                        node.worldX = worldPos.x - node.dragOffsetX;
+                        node.worldY = worldPos.y - node.dragOffsetY;
+                        
+                        // Limitar posição aos bounds
+                        clampNodeToMap(node);
+                        updateNodePosition(node);
+                    }
+                });
+                
+                drawConnections();
+            }
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (camera.isDragging) {
+                camera.isDragging = false;
+                canvas.style.cursor = 'pointer';
+            }
+            
+            if (isBoxSelecting) {
+                const minX = Math.min(boxSelectStart.x, boxSelectEnd.x);
+                const maxX = Math.max(boxSelectStart.x, boxSelectEnd.x);
+                const minY = Math.min(boxSelectStart.y, boxSelectEnd.y);
+                const maxY = Math.max(boxSelectStart.y, boxSelectEnd.y);
+                
+                const boxWidth = maxX - minX;
+                const boxHeight = maxY - minY;
+                
+                if (boxWidth > 5 || boxHeight > 5) {
+                    const worldMin = screenToWorld(minX, minY);
+                    const worldMax = screenToWorld(maxX, maxY);
+                    
+                    nodes.forEach(node => {
+                        const nodeCenterX = node.worldX + 75;
+                        const nodeCenterY = node.worldY + 50;
+                        
+                        const isInBox = nodeCenterX >= worldMin.x && 
+                                       nodeCenterX <= worldMax.x && 
+                                       nodeCenterY >= worldMin.y && 
+                                       nodeCenterY <= worldMax.y;
+                        
+                        if (isInBox) {
+                            if (!selectedNodes.includes(node)) {
+                                selectedNodes.push(node);
+                                node.element.classList.add('selected');
+                            }
+                        }
+                    });
+
+                    justFinishedBoxSelect = true;
+                }
+                
+                isBoxSelecting = false;
+                boxSelectStart = { x: 0, y: 0 };
+                boxSelectEnd = { x: 0, y: 0 };
+                drawConnections();
+            }
+
+            // ADICIONE ESTE BLOCO:
+            if (isDragging && selectedNode) {
+                // Verifica se houve movimento real
+                const movedNodes = selectedNodes.filter(n => 
+                    n.startDragWorldX !== undefined && 
+                    (n.startDragWorldX !== n.worldX || n.startDragWorldY !== n.worldY)
+                );
+                
+                if (movedNodes.length > 0) {
+                    saveState('moveNode');
+                }
+            }
+            
+            isDragging = false;
+            // LIMPA OS OFFSETS DE ARRASTE
+            selectedNodes.forEach(node => {
+                delete node.startDragWorldX;
+                delete node.startDragWorldY;
+                delete node.dragOffsetX;
+                delete node.dragOffsetY;
+            });
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            const worldPosBefore = screenToWorld(mouseX, mouseY);
+            
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            camera.zoom *= zoomFactor;
+            camera.zoom = Math.max(camera.minZoom, Math.min(camera.maxZoom, camera.zoom));
+            
+            const worldPosAfter = screenToWorld(mouseX, mouseY);
+            
+            camera.x += (worldPosAfter.x - worldPosBefore.x) * camera.zoom;
+            camera.y += (worldPosAfter.y - worldPosBefore.y) * camera.zoom;
+            
+            clampCamera();
+            updateAllNodePositions();
+            drawConnections();
+            updateCoordsDisplay();
+        }, { passive: false });
+
+        function hasCycle() {
+            const visited = new Set();
+            const stack = new Set();
+
+            function dfs(nodeId) {
+                if (stack.has(nodeId)) return true;
+                if (visited.has(nodeId)) return false;
+
+                visited.add(nodeId);
+                stack.add(nodeId);
+
+                const next = connections
+                    .filter(c => c.from === nodeId)
+                    .map(c => c.to);
+
+                for (const n of next) {
+                    if (dfs(n)) return true;
+                }
+
+                stack.delete(nodeId);
+                return false;
+            }
+
+            return nodes.some(n => dfs(n.id));
+        }
+
+        function wouldCreateCycle(testConn) {
+            connections.push(testConn);
+            const cycle = hasCycle();
+            connections.pop();
+            return cycle;
+        }
+
+        function clearSelection() {
+            selectedNodes.forEach(n => n.element.classList.remove('selected'));
+            selectedNodes = [];
+            selectedNode = null;
+        }
+
+        function handlePortClick(portEl) {
+            const nodeId = parseInt(portEl.dataset.node);
+            const portIndex = parseInt(portEl.dataset.port);
+            const portType = portEl.dataset.type;
+
+            if (selectedNode && selectedNode.id !== nodeId) {
+                nodes.forEach(n => n.element.classList.remove('selected'));
+                selectedNode = null;
+            }
+
+            if (!connectingFrom) {
+                if (portType === 'output') {
+                    connectingFrom = { nodeId, portIndex, portType, element: portEl };
+                    portEl.classList.add('connecting');
+                }
+            } else {
+                if (portType === 'input' && nodeId !== connectingFrom.nodeId) {
+
+                    const testConnection = {
+                        from: connectingFrom.nodeId,
+                        to: nodeId
+                    };
+
+                    if (wouldCreateCycle(testConnection)) {
+                        alert("Essa conexão criaria um loop no circuito!");
+                        cancelConnection();
+                        return;
+                    }
+
+                    const inputAlreadyUsed = connections.some(c =>
+                        c.to === nodeId && c.toPort === portIndex
+                    );
+
+                    if (inputAlreadyUsed) {
+                        cancelConnection();
+                        return;
+                    }
+
+                    connections.push({
+                        from: connectingFrom.nodeId,
+                        fromPort: connectingFrom.portIndex,
+                        to: nodeId,
+                        toPort: portIndex
+                    });
+                    saveState('connect');
+                    drawConnections();
+                    executeGraph();
+                    clearSelection();
+                }
+                connectingFrom.element.classList.remove('connecting');
+                connectingFrom = null;
+            }
+        }
+
+        function updateInputPortState() {
+            document.querySelectorAll('.port.input').forEach(p => {
+                const nodeId = parseInt(p.dataset.node);
+                const portIndex = parseInt(p.dataset.port);
+
+                const used = connections.some(c =>
+                    c.to === nodeId && c.toPort === portIndex
+                );
+
+                p.classList.toggle('used', used);
+            });
+        }
+
+        function drawConnections() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawGrid();
+            
+            ctx.lineWidth = 3;
+
+            connections.forEach((conn, index) => {
+                const fromNode = nodes.find(n => n.id === conn.from);
+                const toNode = nodes.find(n => n.id === conn.to);
+
+                if (!fromNode || !toNode) return;
+
+                const fromPort = fromNode.element.querySelector(`.port.output[data-port="${conn.fromPort}"]`);
+                const toPort = toNode.element.querySelector(`.port.input[data-port="${conn.toPort}"]`);
+
+                if (!fromPort || !toPort) return;
+
+                const fromRect = fromPort.getBoundingClientRect();
+                const toRect = toPort.getBoundingClientRect();
+
+                const x1 = fromRect.left + fromRect.width / 2 - container.getBoundingClientRect().left;
+                const y1 = fromRect.top + fromRect.height / 2 - container.getBoundingClientRect().top;
+                const x2 = toRect.left + toRect.width / 2 - container.getBoundingClientRect().left;
+                const y2 = toRect.top + toRect.height / 2 - container.getBoundingClientRect().top;
+
+                // Determinar se a conexão está ativa (valor = true)
+                const isActive = fromNode.result === true;
+                ctx.strokeStyle = isActive ? '#4ecca3' : '#666';
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                
+                const dx = x2 - x1;
+                const cp1x = x1 + dx * 0.5;
+                const cp2x = x2 - dx * 0.5;
+                
+                ctx.bezierCurveTo(cp1x, y1, cp2x, y2, x2, y2);
+                ctx.stroke();
+
+                conn.path = { x1, y1, x2, y2, cp1x, cp2x };
+            });
+
+            if (isBoxSelecting) {
+                ctx.strokeStyle = '#4ecca3';
+                ctx.fillStyle = 'rgba(78, 204, 163, 0.1)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                
+                const width = boxSelectEnd.x - boxSelectStart.x;
+                const height = boxSelectEnd.y - boxSelectStart.y;
+                
+                ctx.fillRect(boxSelectStart.x, boxSelectStart.y, width, height);
+                ctx.strokeRect(boxSelectStart.x, boxSelectStart.y, width, height);
+                
+                ctx.setLineDash([]);
+            }
+            
+            updateZoomDisplay();
+            drawMinimap();
+            updateInputPortState();
+            updatePortStates();
+        }
+
+        function updatePortStates() {
+            nodes.forEach(node => {
+                const outputPorts = node.element.querySelectorAll('.port.output');
+                outputPorts.forEach(port => {
+                    if (node.result === true) {
+                        port.classList.add('active');
+                    } else {
+                        port.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        function drawGrid() {
+            const gridSize = 20;
+            ctx.strokeStyle = '#0f3460';
+            ctx.lineWidth = 1;
+
+            const startX = Math.floor((-camera.x / camera.zoom) / gridSize) * gridSize;
+            const startY = Math.floor((-camera.y / camera.zoom) / gridSize) * gridSize;
+            const endX = startX + (canvas.width / camera.zoom) + gridSize;
+            const endY = startY + (canvas.height / camera.zoom) + gridSize;
+
+            for (let x = startX; x < endX; x += gridSize) {
+                const screenPos = worldToScreen(x, 0);
+                ctx.beginPath();
+                ctx.moveTo(screenPos.x, 0);
+                ctx.lineTo(screenPos.x, canvas.height);
+                ctx.stroke();
+            }
+
+            for (let y = startY; y < endY; y += gridSize) {
+                const screenPos = worldToScreen(0, y);
+                ctx.beginPath();
+                ctx.moveTo(0, screenPos.y);
+                ctx.lineTo(canvas.width, screenPos.y);
+                ctx.stroke();
+            }
+        }
+
+        function cancelConnection() {
+            if (connectingFrom) {
+                connectingFrom.element.classList.remove('connecting');
+                connectingFrom = null;
+            }
+        }
+
+        canvas.addEventListener('click', (e) => {
+            if (justFinishedBoxSelect) {
+                justFinishedBoxSelect = false;
+                return;
+            }
+            
+            // Não processar cliques se estava fazendo box selection
+            if (isBoxSelecting) {
+                return;
+            }
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            let clickedConnection = false;
+            for (let i = connections.length - 1; i >= 0; i--) {
+                const conn = connections[i];
+                if (conn.path && isPointNearCurve(x, y, conn.path)) {
+                    connections.splice(i, 1);
+                    saveState('disconnect');
+                    drawConnections();
+                    executeGraph();
+                    clickedConnection = true;
+                    break;
+                }
+            }
+
+            if (connectingFrom) {
+                cancelConnection();
+                return;
+            }
+
+            if (!clickedConnection && !e.ctrlKey && !e.metaKey) {
+                selectedNodes.forEach(n => n.element.classList.remove('selected'));
+                selectedNodes = [];
+                selectedNode = null;
+            }
+        });
+
+        container.addEventListener('mousedown', (e) => {
+            if (e.target === container || e.target === canvas) {
+                nodes.forEach(n => n.element.classList.remove('selected'));
+                selectedNode = null;
+            }
+        });
+
+        container.addEventListener('mousedown', (e) => {
+            if (!e.target.classList.contains('port')) {
+                cancelConnection();
+            }
+        });
+
+        function isPointNearCurve(px, py, path) {
+            // Largura da linha em pixels (3px) ajustada pelo zoom
+            const lineWidth = 3 * camera.zoom;
+            // Margem de tolerância adicional
+            const margin = 4 * camera.zoom;
+            const threshold = (lineWidth / 2) + margin;
+            
+            // Primeiro, verifica bounding box rápida para descartar claramente fora
+            const minX = Math.min(path.x1, path.x2, path.cp1x, path.cp2x) - threshold;
+            const maxX = Math.max(path.x1, path.x2, path.cp1x, path.cp2x) + threshold;
+            const minY = Math.min(path.y1, path.y2) - threshold;
+            const maxY = Math.max(path.y1, path.y2) + threshold;
+            
+            if (px < minX || px > maxX || py < minY || py > maxY) {
+                return false;
+            }
+            
+            // Calcula número de pontos baseado no comprimento da curva
+            const dx = path.x2 - path.x1;
+            const dy = path.y2 - path.y1;
+            const length = Math.hypot(dx, dy);
+            
+            // Mais pontos para curvas mais longas
+            const steps = Math.max(30, Math.floor(length / 5));
+            
+            // Otimização: divide em segmentos menores para detecção mais precisa
+            for (let i = 0; i < steps; i++) {
+                const t1 = i / steps;
+                const t2 = (i + 1) / steps;
+                
+                const p1 = bezierPoint(t1, path.x1, path.y1, path.cp1x, path.y1, path.cp2x, path.y2, path.x2, path.y2);
+                const p2 = bezierPoint(t2, path.x1, path.y1, path.cp1x, path.y1, path.cp2x, path.y2, path.x2, path.y2);
+                
+                // Verifica distância do ponto ao segmento de reta (aproximação)
+                if (distanceToSegment(px, py, p1.x, p1.y, p2.x, p2.y) < threshold) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // Função auxiliar: distância de ponto a segmento de reta
+        function distanceToSegment(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+            
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            
+            let param = -1;
+            if (lenSq !== 0) {
+                param = dot / lenSq;
+            }
+            
+            let xx, yy;
+            
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function bezierPoint(t, x0, y0, x1, y1, x2, y2, x3, y3) {
+            const mt = 1 - t;
+            const mt2 = mt * mt;
+            const mt3 = mt2 * mt;
+            const t2 = t * t;
+            const t3 = t2 * t;
+
+            return {
+                x: mt3 * x0 + 3 * mt2 * t * x1 + 3 * mt * t2 * x2 + t3 * x3,
+                y: mt3 * y0 + 3 * mt2 * t * y1 + 3 * mt * t2 * y2 + t3 * y3
+            };
+        }
+
+        function executeGraph() {
+            nodes.forEach(n => n.result = null);
+
+            function getValue(nodeId) {
+                const node = nodes.find(n => n.id === nodeId);
+                if (!node) return false;
+
+                if (node.result !== null) return node.result;
+
+                if (node.type === 'input' || node.type === 'clock') {
+                    node.result = node.value;
+                    return node.result;
+                }
+
+                const inputConnections = connections.filter(c => c.to === nodeId);
+                const inputs = inputConnections.map(c => getValue(c.from));
+
+                switch (node.type) {
+                    case 'and':
+                        node.result = inputs.length === 2 && inputs[0] && inputs[1];
+                        break;
+
+                    case 'or':
+                        node.result = inputs.length === 2 && (inputs[0] || inputs[1]);
+                        break;
+
+                    case 'not':
+                        node.result = inputs.length === 1 ? !inputs[0] : false;
+                        break;
+
+                    case 'xor':
+                        node.result = inputs.length === 2 ? inputs[0] !== inputs[1] : false;
+                        break;
+
+                    case 'xnor':
+                        node.result = inputs.length === 2 ? inputs[0] === inputs[1] : false;
+                        break;
+
+                    case 'nand':
+                        node.result = inputs.length === 2 ? !(inputs[0] && inputs[1]) : false;
+                        break;
+
+                    case 'nor':
+                        node.result = inputs.length === 2 ? !(inputs[0] || inputs[1]) : false;
+                        break;
+
+                    case 'buffer':
+                        node.result = inputs.length === 1 ? inputs[0] : false;
+                        break;
+
+                    case 'digit4':
+                        const bits = [0, 0, 0, 0];
+
+                        for (let i = 0; i < 4; i++) {
+                            const conn = connections.find(c => c.to === nodeId && c.toPort === i);
+                            if (conn) {
+                                bits[i] = getValue(conn.from) ? 1 : 0;
+                            }
+                        }
+
+                        // bits[0] = MSB, bits[3] = LSB
+                        const value =
+                            (bits[0] << 3) |
+                            (bits[1] << 2) |
+                            (bits[2] << 1) |
+                            bits[3];
+
+                        node.result = value;
+                        break;
+
+                    case 'output':
+                        node.result = inputs.length === 1 ? inputs[0] : false;
+                        break;
+                }
+
+                return node.result;
+            }
+
+            nodes.forEach(node => {
+                getValue(node.id);
+                
+                if (node.type === 'output') {
+                    const bulb = document.getElementById(`bulb-${node.id}`);
+                    const label = bulb.parentElement.querySelector('.bulb-label');
+                    
+                    if (node.result === true) {
+                        bulb.classList.add('on');
+                        label.textContent = 'ON';
+                    } else {
+                        bulb.classList.remove('on');
+                        label.textContent = 'OFF';
+                    }
+                }
+                if (node.type === 'digit4') {
+                    const el = document.getElementById(`digit-${node.id}`);
+                    if (el) {
+                        el.textContent = node.result.toString(16).toUpperCase();
+                    }
+                }
+            });
+
+            drawConnections();
+        }
+
+        function deleteNode(nodeId) {
+            connections = connections.filter(c => c.from !== nodeId && c.to !== nodeId);
+            const nodeIndex = nodes.findIndex(n => n.id === nodeId);
+            if (nodeIndex >= 0) {
+                nodes[nodeIndex].element.remove();
+                nodes.splice(nodeIndex, 1);
+            }
+            drawConnections();
+            executeGraph();
+            updateNodeCounter();
+        }
+
+        let clipboard = null;
+
+        function copySelection() {
+            if (selectedNodes.length === 0) {
+                console.log('Nenhum nó selecionado para copiar');
+                return;
+            }
+            
+            // Copia dados dos nós selecionados
+            clipboard = {
+                nodes: selectedNodes.map(node => ({
+                    type: node.type,
+                    worldX: node.worldX,
+                    worldY: node.worldY,
+                    value: node.value ?? null,
+                    content: node.content ?? null,
+                    clockInterval: node.clockInterval ?? null
+                })),
+                // Copia conexões entre os nós selecionados
+                connections: connections.filter(conn => {
+                    const fromSelected = selectedNodes.some(n => n.id === conn.from);
+                    const toSelected = selectedNodes.some(n => n.id === conn.to);
+                    return fromSelected && toSelected;
+                }).map(conn => {
+                    // Salva índices relativos ao invés de IDs absolutos
+                    const fromIndex = selectedNodes.findIndex(n => n.id === conn.from);
+                    const toIndex = selectedNodes.findIndex(n => n.id === conn.to);
+                    return {
+                        fromIndex,
+                        toIndex,
+                        fromPort: conn.fromPort,
+                        toPort: conn.toPort
+                    };
+                })
+            };
+            
+            console.log(`${selectedNodes.length} nó(s) copiado(s)`);
+        }
+
+        function pasteSelection() {
+            if (!clipboard || clipboard.nodes.length === 0) {
+                console.log('Clipboard vazio');
+                return;
+            }
+            
+            // Verifica se colar excederia o limite
+            if (nodes.length + clipboard.nodes.length > MAX_NODES) {
+                alert(`Não é possível colar!\n\nColar ${clipboard.nodes.length} componente(s) excederia o limite de ${MAX_NODES}.\n\nAtual: ${nodes.length} componentes\nApós colar: ${nodes.length + clipboard.nodes.length} componentes`);
+                return;
+            }
+
+            if (!clipboard || clipboard.nodes.length === 0) {
+                console.log('Clipboard vazio');
+                return;
+            }
+            
+            // Limpa seleção atual
+            selectedNodes.forEach(n => n.element.classList.remove('selected'));
+            selectedNodes = [];
+            
+            // Calcula centro da seleção copiada
+            const avgX = clipboard.nodes.reduce((sum, n) => sum + n.worldX, 0) / clipboard.nodes.length;
+            const avgY = clipboard.nodes.reduce((sum, n) => sum + n.worldY, 0) / clipboard.nodes.length;
+            
+            // Calcula posição do mouse no mundo (centro da tela se não houver mouse)
+            const centerScreen = {
+                x: canvas.width / 2,
+                y: canvas.height / 2
+            };
+            const pastePos = screenToWorld(centerScreen.x, centerScreen.y);
+            
+            // Offset para colar próximo ao original
+            const offsetX = pastePos.x - avgX + 50;
+            const offsetY = pastePos.y - avgY + 50;
+            
+            const newNodes = [];
+            
+            // Cria novos nós
+            clipboard.nodes.forEach(nodeData => {
+                const newNode = addNode(nodeData.type);
+                newNode.worldX = nodeData.worldX + offsetX;
+                newNode.worldY = nodeData.worldY + offsetY;
+                newNode.value = nodeData.value ?? false;
+                newNode.content = nodeData.content ?? '';
+                newNode.clockInterval = nodeData.clockInterval ?? 500;
+                
+                // Atualiza conteúdo de notas
+                if (newNode.type === 'note') {
+                    const textarea = document.getElementById(`note-${newNode.id}`);
+                    if (textarea) {
+                        textarea.value = newNode.content;
+                    }
+                }
+                
+                // Atualiza visual de switches
+                if (newNode.type === 'input') {
+                    updateSwitchVisual(newNode);
+                }
+                
+                // Reinicia clock se necessário
+                if (newNode.type === 'clock') {
+                    clearInterval(newNode.clockTimer);
+                    startClock(newNode);
+                }
+                
+                clampNodeToMap(newNode);
+                updateNodePosition(newNode);
+                newNodes.push(newNode);
+                
+                // Adiciona à seleção
+                selectedNodes.push(newNode);
+                newNode.element.classList.add('selected');
+            });
+
+            // LIMPA A SELEÇÃO que foi adicionada automaticamente pelo addNode
+            nodes.forEach(n => n.element.classList.remove('selected'));
+            selectedNodes = [];
+            selectedNode = null;
+            
+            // Agora adiciona TODOS os nós colados à seleção
+            newNodes.forEach(newNode => {
+                selectedNodes.push(newNode);
+                newNode.element.classList.add('selected');
+            });
+            
+            // Recria conexões usando os índices salvos
+            clipboard.connections.forEach(connData => {
+                const fromNode = newNodes[connData.fromIndex];
+                const toNode = newNodes[connData.toIndex];
+                
+                if (fromNode && toNode) {
+                    connections.push({
+                        from: fromNode.id,
+                        fromPort: connData.fromPort,
+                        to: toNode.id,
+                        toPort: connData.toPort
+                    });
+                }
+            });
+            
+            drawConnections();
+            executeGraph();
+            saveState('paste');
+            
+            console.log(`${newNodes.length} nó(s) colado(s)`);
+        }
+
+        function cutSelection() {
+            if (selectedNodes.length === 0) {
+                console.log('Nenhum nó selecionado para recortar');
+                return;
+            }
+            
+            copySelection();
+            
+            // Remove os nós selecionados
+            selectedNodes.forEach(node => {
+                deleteNode(node.id);
+            });
+            
+            selectedNodes = [];
+            selectedNode = null;
+            
+            saveState('cut');
+            console.log('Seleção recortada');
+        }
+
+        function duplicateSelection() {
+            if (selectedNodes.length === 0) {
+                console.log('Nenhum nó selecionado para duplicar');
+                return;
+            }
+            
+            copySelection();
+            pasteSelection();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const active = document.activeElement;
+
+            // Se está digitando, não delete nó
+            if (
+                active &&
+                (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')
+            ) {
+                return;
+            }
+
+            // Ctrl+C ou Cmd+C: Copiar
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                e.preventDefault();
+                copySelection();
+                return;
+            }
+            
+            // Ctrl+X ou Cmd+X: Recortar
+            if ((e.ctrlKey || e.metaKey) && e.key === 'x') {
+                e.preventDefault();
+                cutSelection();
+                return;
+            }
+            
+            // Ctrl+V ou Cmd+V: Colar
+            if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                e.preventDefault();
+                pasteSelection();
+                return;
+            }
+            
+            // Ctrl+D ou Cmd+D: Duplicar
+            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                e.preventDefault();
+                duplicateSelection();
+                return;
+            }
+
+            // Ctrl+Z ou Cmd+Z: Undo
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+                return;
+            }
+            
+            // Ctrl+Y ou Ctrl+Shift+Z ou Cmd+Shift+Z: Redo
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                redo();
+                return;
+            }
+
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (selectedNodes.length > 0) {
+                    e.preventDefault();
+                    
+                    // Deleta todos os nós selecionados
+                    selectedNodes.forEach(node => {
+                        deleteNode(node.id);
+                    });
+                    saveState('deleteNode');
+                    
+                    selectedNodes = [];
+                    selectedNode = null;
+                } else if (selectedNode) {
+                    e.preventDefault();
+                    deleteNode(selectedNode.id);
+                    saveState('deleteNode');
+                    selectedNode = null;
+                }
+            }
+            
+            // Ctrl/Cmd + A: selecionar todos
+            if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                e.preventDefault();
+                selectedNodes = [...nodes];
+                nodes.forEach(n => n.element.classList.add('selected'));
+            }
+            
+            // Escape: desselecionar todos
+            if ((e.ctrlKey || e.metaKey) && e.key === 'q') {
+                selectedNodes.forEach(n => n.element.classList.remove('selected'));
+                selectedNodes = [];
+                selectedNode = null;
+                cancelConnection();
+            }
+        });
+
+        function updateNodeCounter() {
+            const countElement = document.getElementById('node-count');
+            const counterElement = document.getElementById('node-counter');
+            const limitElement = document.getElementById('node-limit');
+            
+            if (!countElement || !counterElement) return;
+            
+            const count = nodes.length;
+            countElement.textContent = count;
+            limitElement.textContent = MAX_NODES;
+            
+            // Remove classes anteriores
+            counterElement.classList.remove('warning', 'critical');
+            
+            // Adiciona classe baseada na porcentagem
+            const percentage = (count / MAX_NODES) * 100;
+            
+            if (percentage >= 90) {
+                counterElement.classList.add('critical');
+            } else if (percentage >= 75) {
+                counterElement.classList.add('warning');
+            }
+            
+            // Atualiza tooltip
+            if (percentage >= 90) {
+                counterElement.title = `CRÍTICO: ${count} de ${MAX_NODES} componentes (${percentage.toFixed(0)}%)`;
+            } else if (percentage >= 75) {
+                counterElement.title = `AVISO: ${count} de ${MAX_NODES} componentes (${percentage.toFixed(0)}%)`;
+            } else {
+                counterElement.title = `${count} de ${MAX_NODES} componentes (${percentage.toFixed(0)}%)`;
+            }
+        }
+
+        function clearAll() {
+            nodes.forEach(n => n.element.remove());
+            nodes = [];
+            connections = [];
+            camera.x = 0;
+            camera.y = 0;
+            camera.zoom = 1;
+            updateZoomDisplay();
+            drawConnections();
+            updateNodeCounter();
+        }
+
+        function updateZoomDisplay() {
+            const zoomPercent = Math.round(camera.zoom * 100);
+            document.getElementById('zoom-level').textContent = `${zoomPercent}%`;
+        }
+
+        function zoomIn() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            const worldPosBefore = screenToWorld(centerX, centerY);
+            
+            camera.zoom = Math.min(camera.maxZoom, camera.zoom * 1.2);
+            
+            const worldPosAfter = screenToWorld(centerX, centerY);
+            
+            camera.x += (worldPosAfter.x - worldPosBefore.x) * camera.zoom;
+            camera.y += (worldPosAfter.y - worldPosBefore.y) * camera.zoom;
+            
+            clampCamera();
+            updateAllNodePositions();
+            drawConnections();
+            updateCoordsDisplay();
+        }
+
+        function zoomOut() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            const worldPosBefore = screenToWorld(centerX, centerY);
+            
+            camera.zoom = Math.max(camera.minZoom, camera.zoom / 1.2);
+            
+            const worldPosAfter = screenToWorld(centerX, centerY);
+            
+            camera.x += (worldPosAfter.x - worldPosBefore.x) * camera.zoom;
+            camera.y += (worldPosAfter.y - worldPosBefore.y) * camera.zoom;
+            
+            clampCamera();
+            updateAllNodePositions();
+            drawConnections();
+            updateCoordsDisplay();
+        }
+
+        function resetCamera() {
+            camera.x = 0;
+            camera.y = 0;
+            camera.zoom = 1;
+            
+            clampCamera();
+            updateAllNodePositions();
+            drawConnections();
+            updateCoordsDisplay();
+        }
+
+        function exportToJSON() {
+            const data = {
+                version: 1,
+                camera: {
+                    x: camera.x,
+                    y: camera.y,
+                    zoom: camera.zoom
+                },
+                nodes: nodes.map(n => ({
+                    id: n.id,
+                    type: n.type,
+                    worldX: n.worldX,
+                    worldY: n.worldY,
+                    value: n.value ?? null,
+                    content: n.content ?? null,
+                    clockInterval: n.clockInterval ?? null
+                })),
+                connections: connections.map(c => ({
+                    from: c.from,
+                    fromPort: c.fromPort,
+                    to: c.to,
+                    toPort: c.toPort
+                }))
+            };
+
+            return JSON.stringify(data, null, 2);
+        }
+
+        function saveProject() {
+            const json = exportToJSON();
+            const blob = new Blob([json], { type: 'application/json' });
+
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'circuit.json';
+            a.click();
+
+            URL.revokeObjectURL(a.href);
+        }
+
+        function loadProject() {
+            document.getElementById('fileInput').click();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const data = JSON.parse(reader.result);
+                importFromJSON(data);
+            };
+            reader.readAsText(file);
+
+            e.target.value = ''; // reset
+        });
+
+        function importFromJSON(data) {
+            clearAll();
+
+            // Segurança básica
+            if (!data.nodes || !data.connections) {
+                alert('Arquivo inválido');
+                return;
+            }
+
+            // Restaurar câmera
+            if (data.camera) {
+                camera.x = data.camera.x ?? 0;
+                camera.y = data.camera.y ?? 0;
+                camera.zoom = data.camera.zoom ?? 1;
+            }
+
+            nodeIdCounter = 0;
+
+            // Criar nós
+            data.nodes.forEach(n => {
+                addNodeFromData(n);
+                nodeIdCounter = Math.max(nodeIdCounter, n.id + 1);
+            });
+
+            // Criar conexões
+            data.connections.forEach(c => {
+                connections.push({ ...c });
+            });
+
+            clampCamera();
+            updateAllNodePositions();
+            executeGraph();
+            updateCoordsDisplay();
+            hasShownWarning = false; // Reset do aviso
+            updateNodeCounter();
+        }
+
+        function bindNodeEvents(node) {
+            const nodeEl = node.element;
+
+            nodeEl.addEventListener('mousedown', (e) => {
+
+                // Se clicou em elemento interativo → não arrasta
+                if (
+                    e.target.tagName === 'TEXTAREA' ||
+                    e.target.tagName === 'INPUT' ||
+                    e.target.isContentEditable
+                ) {
+                    e.stopPropagation();
+                    return;
+                }
+
+                if (e.target.classList.contains('port')) {
+                    handlePortClick(e.target);
+                    return;
+                }
+
+                if (!e.target.classList.contains('node-delete')) {
+                    startDragging(node, e);
+                }
+            });
+        }
+
+        function addNodeFromData(data) {
+            const nodeType = nodeTypes[data.type];
+            if (!nodeType) return;
+
+            const nodeEl = document.createElement('div');
+            nodeEl.className = 'node';
+            nodeEl.id = `node-${data.id}`;
+
+            nodeEl.innerHTML = createNodeHTML(data.id, data.type);
+
+            container.appendChild(nodeEl);
+
+            const node = {
+                id: data.id,
+                type: data.type,
+                element: nodeEl,
+                value: data.value ?? false,
+                result: null,
+                worldX: data.worldX,
+                worldY: data.worldY,
+                clockInterval: data.clockInterval ?? 500,
+                clockTimer: null,
+                content: data.content ?? '', 
+            };
+
+            if (node.type === 'clock') {
+                startClock(node);
+            }
+
+            if (node.type === 'input') {
+                updateSwitchVisual(node);
+            }
+
+            if (node.type === 'note') {
+                const textarea = document.getElementById(`note-${node.id}`);
+                if (textarea) {
+                    textarea.value = node.content;
+                }
+            }
+
+            nodes.push(node);
+            updateNodePosition(node);
+            bindNodeEvents(node);
+        }
+
+        function createNodeHTML(id, type) {
+            const nodeType = nodeTypes[type];
+
+            let bodyContent = '';
+
+            if (type === 'input') {
+                bodyContent = `
+                    <div class="switch-container">
+                        <div class="switch" id="switch-${id}" onclick="toggleSwitch(${id})">
+                            <div class="switch-toggle"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            else if (type === 'output') {
+                bodyContent = `
+                    <div class="bulb-container">
+                        <div class="bulb" id="bulb-${id}"></div>
+                        <div class="bulb-base"></div>
+                        <div class="bulb-label">OFF</div>
+                    </div>
+                `;
+            }
+            else if (type === 'digit4') {
+                bodyContent = `
+                    <div class="digit-display" id="digit-${id}">
+                        0
+                    </div>
+                `;
+            } else if (type === 'note') {
+                bodyContent = `
+                    <textarea class="note-textarea" id="note-${id}" placeholder="Escreva sua anotação aqui..." oninput="updateNoteContent(${id}, this.value)"></textarea>
+                `;
+            }
+
+            return `
+                <div class="node-header" style="background: ${nodeType.color}">
+                    ${nodeType.name}
+                    <button class="node-delete" onclick="deleteNode(${id})">×</button>
+                </div>
+                <div class="node-body">
+                    ${Array(nodeType.inputs).fill(0).map((_, i) => `
+                        <div class="node-input">
+                            <div class="port input"
+                                data-node="${id}"
+                                data-port="${i}"
+                                data-type="input"></div>
+                            <span>In ${i + 1}</span>
+                        </div>
+                    `).join('')}
+
+                    ${bodyContent}
+
+                    ${Array(nodeType.outputs).fill(0).map((_, i) => `
+                        <div class="node-output">
+                            <span>Out ${i + 1}</span>
+                            <div class="port output"
+                                data-node="${id}"
+                                data-port="${i}"
+                                data-type="output"></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function toggleInstructions() {
+            const panel = document.getElementById('instructions-panel');
+            const isHidden = window.getComputedStyle(panel).display === 'none';
+
+            panel.style.display = isHidden ? 'block' : 'none';
+        }
+
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('instructions-panel');
+            const button = e.target.closest('button');
+            const icon = e.target.closest('i');
+
+            // Verifica se clicou no botão ou no ícone dentro dele
+            const isInstructionsButton = 
+                button?.title === 'Instruções' || 
+                (icon && icon.closest('button')?.title === 'Instruções');
+
+            if (
+                panel.style.display === 'block' &&
+                !panel.contains(e.target) &&
+                !isInstructionsButton
+            ) {
+                panel.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('truth-table-panel');
+            const button = e.target.closest('button');
+            const icon = e.target.closest('i');
+
+            // Verifica se clicou no botão ou ícone da Tabela Verdade
+            const isTruthTableButton =
+                button?.title === 'Tabelas Verdade' ||
+                (icon && icon.closest('button')?.title === 'Tabelas Verdade');
+
+            if (
+                panel.style.display === 'block' &&
+                !panel.contains(e.target) &&
+                !isTruthTableButton
+            ) {
+                panel.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('text-panel');
+            const button = e.target.closest('button');
+            const icon = e.target.closest('i');
+
+            // Verifica se clicou no botão ou ícone da Tabela Verdade
+            const isTruthTableButton =
+                button?.title === 'Editor' ||
+                (icon && icon.closest('button')?.title === 'Editor');
+
+            if (
+                panel.style.display === 'block' &&
+                !panel.contains(e.target) &&
+                !isTruthTableButton
+            ) {
+                panel.style.display = 'none';
+            }
+        });
+
+        const truthTables = {
+            buffer: {
+                name: 'BUFFER',
+                inputs: ['A'],
+                rows: [
+                    [0, 0],
+                    [1, 1]
+                ]
+            },
+            not: {
+                name: 'NOT',
+                inputs: ['A'],
+                rows: [
+                    [0, 1],
+                    [1, 0]
+                ]
+            },
+            and: {
+                name: 'AND',
+                inputs: ['A', 'B'],
+                rows: [
+                    [0, 0, 0],
+                    [0, 1, 0],
+                    [1, 0, 0],
+                    [1, 1, 1]
+                ]
+            },
+            or: {
+                name: 'OR',
+                inputs: ['A', 'B'],
+                rows: [
+                    [0, 0, 0],
+                    [0, 1, 1],
+                    [1, 0, 1],
+                    [1, 1, 1]
+                ]
+            },
+            xor: {
+                name: 'XOR',
+                inputs: ['A', 'B'],
+                rows: [
+                    [0, 0, 0],
+                    [0, 1, 1],
+                    [1, 0, 1],
+                    [1, 1, 0]
+                ]
+            },
+            xnor: {
+                name: 'XNOR',
+                inputs: ['A', 'B'],
+                rows: [
+                    [0, 0, 1],
+                    [0, 1, 0],
+                    [1, 0, 0],
+                    [1, 1, 1]
+                ]
+            },
+            nand: {
+                name: 'NAND',
+                inputs: ['A', 'B'],
+                rows: [
+                    [0, 0, 1],
+                    [0, 1, 1],
+                    [1, 0, 1],
+                    [1, 1, 0]
+                ]
+            },
+            nor: {
+                name: 'NOR',
+                inputs: ['A', 'B'],
+                rows: [
+                    [0, 0, 1],
+                    [0, 1, 0],
+                    [1, 0, 0],
+                    [1, 1, 0]
+                ]
+            }
+        };
+
+        function renderTruthTables() {
+            const container = document.getElementById('truth-table-content');
+            container.innerHTML = '';
+
+            for (const key in truthTables) {
+                const gate = truthTables[key];
+
+                let html = `<strong>${gate.name}</strong>`;
+                html += `<table class="truth-table"><tr>`;
+
+                gate.inputs.forEach(i => html += `<th>${i}</th>`);
+                html += `<th>OUT</th></tr>`;
+
+                gate.rows.forEach(row => {
+                    html += '<tr>';
+                    row.forEach(v => html += `<td>${v}</td>`);
+                    html += '</tr>';
+                });
+
+                html += '</table>';
+                container.innerHTML += html;
+            }
+        }
+
+        function toggleTruthTables() {
+            const panel = document.getElementById('truth-table-panel');
+            const isHidden = window.getComputedStyle(panel).display === 'none';
+
+            if (isHidden) {
+                renderTruthTables();
+            }
+
+            panel.style.display = isHidden ? 'block' : 'none';
+        }
+
+        function getToolbarHeight() {
+            const toolbar = document.getElementById('toolbar');
+            return toolbar ? toolbar.offsetHeight : 0;
+        }
+
+        function resizeCanvas() {
+            const toolbarHeight = getToolbarHeight();
+
+            const availableHeight = window.innerHeight - toolbarHeight;
+
+            container.style.height = `${availableHeight}px`;
+
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            clampCamera();
+            updateAllNodePositions();
+            drawConnections();
+            updateCoordsDisplay();
+        });
+    
+        resizeCanvas();
+        drawConnections();
+
+        const DB_NAME = 'logic_editor_db';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'projects';
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, {
+                            keyPath: 'id'
+                        });
+                        store.createIndex('updatedAt', 'updatedAt');
+                    }
+                };
+
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function saveProjectIndexedDB(projectId = 'default') {
+            const db = await openDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+
+            const project = {
+                id: projectId,
+                data: JSON.parse(exportToJSON()),
+                updatedAt: Date.now()
+            };
+
+            store.put(project);
+
+            await tx.complete;
+            alert('Projeto salvo com sucesso!');
+        }
+
+        async function autoLoadProject() {
+            try {
+                const db = await openDB();
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+
+                // tenta carregar o projeto padrão
+                const request = store.get('default');
+
+                request.onsuccess = () => {
+                    if (request.result) {
+                        console.log('Projeto carregado automaticamente');
+                        importFromJSON(request.result.data);
+                    } else {
+                        console.log('Nenhum projeto salvo encontrado');
+                    }
+                };
+            } catch (err) {
+                console.error('Erro ao carregar projeto automaticamente:', err);
+            }
+        }
+
+        function toggleFullscreen() {
+            const button = document.getElementById('fullscreen-toggle');
+            const icon = button.querySelector('i');
+            
+            if (!document.fullscreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && 
+                !document.msFullscreenElement) {
+                
+                // Entrar em tela cheia
+                const elem = document.documentElement;
+                
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { // Safari
+                    elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) { // Firefox
+                    elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) { // IE/Edge
+                    elem.msRequestFullscreen();
+                }
+                
+            } else {
+                // Sair de tela cheia
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function updateFullscreenButton() {
+            const button = document.getElementById('fullscreen-toggle');
+            const icon = button.querySelector('i');
+            
+            if (document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement || 
+                document.msFullscreenElement) {
+                
+                // Está em tela cheia - mostra ícone de "comprimir"
+                icon.className = 'fa-solid fa-compress';
+                button.title = 'Sair da Tela Cheia (ESC)';
+            } else {
+                // Não está em tela cheia - mostra ícone de "expandir"
+                icon.className = 'fa-solid fa-expand';
+                button.title = 'Tela Cheia';
+            }
+        }
+
+        // Detecta mudanças no estado de tela cheia
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+
+        // Atualiza o botão na inicialização
+        updateFullscreenButton();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            autoLoadProject();
+            updateCoordsDisplay();
+            updateNodeCounter();
+            setTimeout(() => {
+                saveState('initial');
+            }, 100);
+        });
+    </script>
+</body>
+</html>
