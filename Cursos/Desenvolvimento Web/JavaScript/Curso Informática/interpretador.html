@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Interpretador Python - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/pyodide@0.29.0/pyodide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <style>
+    .python-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    .editor-section {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      margin-bottom: 20px;
+      padding: 20px;
+      display: none;
+    }
+    
+    .editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .editor-header h3 {
+      color: #273E74;
+      margin: 0;
+      font-size: 1.3rem;
+    }
+    
+    .editor-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .editor-controls button {
+      padding: 10px 20px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.95rem;
+      transition: background-color 0.3s;
+    }
+    
+    .editor-controls button:hover {
+      background-color: #273E74;
+    }
+    
+    .editor-controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .debug-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: #E3F2FD;
+      border: 2px solid #273E74;
+      display: none;
+    }
+    
+    .debug-controls button {
+      padding: 8px 16px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+    
+    .debug-controls button:hover:not(:disabled) {
+      background-color: #273E74;
+    }
+    
+    .debug-controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .debug-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      color: #273E74;
+      font-weight: bold;
+    }
+    
+    #codeEditor {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      padding: 15px 0px;
+      border: 2px solid #273E74;
+      background: white;
+      color: #000;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    
+    #codeEditor:focus {
+      outline: none;
+      border-color: #5C6D82;
+    }
+    
+    .output-section {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .output-header h3 {
+      color: #273E74;
+      margin: 0;
+      font-size: 1.3rem;
+    }
+    
+    .output-header button {
+      padding: 8px 16px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .output-header button:hover {
+      background-color: #273E74;
+    }
+    
+    #output {
+      min-height: 200px;
+      max-height: 400px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      padding: 15px;
+      background: #1e1e1e;
+      color: #00ff00;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .status-bar {
+      background: #273E74;
+      color: white;
+      padding: 12.5px 20px;
+      padding-left: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+    
+    .status-dot.ready {
+      background: #00ff00;
+      box-shadow: 0 0 8px #00ff00;
+    }
+    
+    .status-dot.running {
+      background: #ffaa00;
+      box-shadow: 0 0 8px #ffaa00;
+      animation: pulse 1s infinite;
+    }
+    
+    .status-dot.error {
+      background: #ff0000;
+      box-shadow: 0 0 8px #ff0000;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .examples-section {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .examples-section h3 {
+      color: #273E74;
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+    
+    .example-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .example-buttons button {
+      padding: 10px 16px;
+      border: 2px solid #273E74;
+      background-color: white;
+      color: #273E74;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .example-buttons button:hover {
+      background-color: #5C6D82;
+      color: white;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #273E74;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: #273E74;
+    }
+    
+    .info-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 99999;
+      cursor: wait;
+      display: none;
+    }
+
+    #loading-overlay.active {
+      display: block;
+    }
+    
+    @media only screen and (max-width: 768px) {
+      .editor-header, .output-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .editor-controls {
+        width: 100%;
+      }
+      
+      .editor-controls button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-overlay" class="active"></div>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+      <a class="menu" href="contato.html">Contato</a>
+      <a class="menu" href="faq.html">Perguntas Frequentes</a>
+      <a class="menu" href="digitacao.html">Treinamento Digitação</a>
+      <a class="menu" href="mouse.html">Treinamento Mouse</a>
+      <a class="menu" href="algoritmos.html">Algoritmos</a>
+      <a class="menu" href="games.html">Games</a>
+      <a class="menu" href="portas.html">Portas Lógicas</a>
+      <a class="menu" href="interpretador.html">Interpretador Python</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">Interpretador Python</h1>
+
+  <div class="python-container">
+    <div class="info-box">
+      <strong>Como usar:</strong>
+      Escreva seu código Python no editor abaixo e clique em "Executar" para ver o resultado. Use "Limpar" para começar um novo código e "Debug Passo a Passo" para executar linha por linha visualizando cada passo. O <code>input()</code> funciona através de pop-ups do navegador.
+      <br><br>
+      <strong>Atalhos:</strong> Ctrl+Enter (executar), → (próximo passo no debug), Esc (parar debug)
+    </div>
+
+    <div class="status-bar">
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Carregando Python...</span>
+      </div>
+      <span id="executionTime"></span>
+    </div>
+
+    <div class="examples-section">
+      <h3>Exemplos Rápidos</h3>
+      <div class="example-buttons">
+        <button onclick="loadExample('hello')">Hello World</button>
+        <button onclick="loadExample('input')">Input Interativo</button>
+        <button onclick="loadExample('conditionals')">Condicionais</button>
+        <button onclick="loadExample('for')">Loop For</button>
+        <button onclick="loadExample('while')">Loop While</button>
+        <button onclick="loadExample('list')">Listas</button>
+        <button onclick="loadExample('dictionary')">Dicionário</button>
+        <button onclick="loadExample('function')">Funções</button>
+        <button onclick="loadExample('calculator')">Calculadora</button>
+      </div>
+    </div>
+
+    <div class="editor-section">
+      <div class="editor-header">
+        <h3>Editor de Código</h3>
+        <div class="editor-controls">
+          <button onclick="runCode()" id="runBtn" disabled>Executar</button>
+          <button onclick="startDebug()" id="debugBtn" disabled>Debugar</button>
+          <button onclick="clearEditor()" id="clearBtn">Limpar</button>
+        </div>
+      </div>
+      <div class="debug-controls" id="debugControls">
+        <button onclick="debugStepNext()" id="stepBtn">Próximo Passo</button>
+        <button onclick="debugContinue()" id="continueBtn">Continuar Tudo</button>
+        <button onclick="debugStop()" id="stopBtn">Parar Debug</button>
+        <div class="debug-info" id="debugInfo">Aguardando início...</div>
+      </div>
+      <div id="codeEditor" style="height: 400px; border: 2px solid #273E74;"></div>
+    </div>
+
+    <div class="output-section">
+      <div class="output-header">
+        <h3>Saída</h3>
+        <button onclick="clearOutput()">Limpar Saída</button>
+      </div>
+      <div id="output"></div>
+    </div>
+  </div>
+
+  <script>
+    let editor;
+
+    require.config({
+      paths: {
+        vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs'
+      }
+    });
+
+    require(['vs/editor/editor.main'], function () {
+      editor = monaco.editor.create(document.getElementById('codeEditor'), {
+        value: `# Escreva seu código Python aqui
+print("Olá, mundo!")`,
+        language: 'python',
+        theme: 'vs-light',
+        automaticLayout: true,
+        fontSize: 14,
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+        lineNumbers: 'on'
+      });
+
+      // Detectar mudanças no editor durante o debug
+      editor.onDidChangeModelContent(function(e) {
+        if (debugState.active && e.changes.length > 0) {
+          // Se houver mudanças significativas (não apenas cursor), parar debug
+          const hasContentChange = e.changes.some(change => 
+            change.text !== '' || change.rangeLength > 0
+          );
+          if (hasContentChange) {
+            debugStop();
+            addOutput('\n⚠ Debug interrompido - código foi modificado', 'error');
+          }
+        }
+      });
+    });
+
+    let pyodide;
+    let debugDecorations = [];
+    let debugState = {
+      active: false,
+      lines: [],
+      currentIndex: 0,
+      paused: false,
+      autoMode: false
+    };
+
+    const examples = {
+      hello: `# Exemplo: Hello World
+print("Olá, mundo!")
+print("Bem-vindo ao Python!")
+print("Este interpretador suporta input() interativo!")
+
+# Experimente descomentar as linhas abaixo:
+# nome = input("Digite seu nome: ")
+# print(f"Prazer em conhecê-lo, {nome}!")`,
+
+      input: `# Exemplo: Input Interativo
+print("=== CADASTRO ===")
+
+nome = input("Digite seu nome: ")
+idade = input("Digite sua idade: ")
+cidade = input("Digite sua cidade: ")
+
+print("\\n--- Dados cadastrados ---")
+print(f"Nome: {nome}")
+print(f"Idade: {idade} anos")
+print(f"Cidade: {cidade}")
+
+# Calculando ano de nascimento
+ano_atual = 2026
+ano_nascimento = ano_atual - int(idade)
+print(f"\\nVocê nasceu aproximadamente em {ano_nascimento}")`,
+
+      calculator: `# Exemplo: Calculadora Simples
+def calculadora(a, b, operacao):
+    if operacao == '+':
+        return a + b
+    elif operacao == '-':
+        return a - b
+    elif operacao == '*':
+        return a * b
+    elif operacao == '/':
+        return a / b if b != 0 else "Erro: divisão por zero"
+    else:
+        return "Operação inválida"
+
+print("=== CALCULADORA ===")
+resultado = calculadora(10, 5, '+')
+print(f"10 + 5 = {resultado}")
+
+resultado = calculadora(10, 5, '-')
+print(f"10 - 5 = {resultado}")
+
+resultado = calculadora(10, 5, '*')
+print(f"10 * 5 = {resultado}")
+
+resultado = calculadora(10, 5, '/')
+print(f"10 / 5 = {resultado}")`,
+
+      for: `# Exemplo: Loop For
+print("Contando de 1 a 10:")
+for i in range(1, 11):
+    print(f"Número: {i}")
+
+print("\\nTabuada do 5:")
+for i in range(1, 11):
+    resultado = 5 * i
+    print(f"5 x {i} = {resultado}")
+
+print("\\nNúmeros pares de 0 a 20:")
+for i in range(0, 21, 2):
+    print(i, end=" ")`,
+
+      function: `# Exemplo: Funções
+def saudacao(nome, hora):
+    if hora < 12:
+        periodo = "Bom dia"
+    elif hora < 18:
+        periodo = "Boa tarde"
+    else:
+        periodo = "Boa noite"
+    return f"{periodo}, {nome}!"
+
+def calcular_media(notas):
+    if len(notas) == 0:
+        return 0
+    return sum(notas) / len(notas)
+
+print(saudacao("Maria", 9))
+print(saudacao("João", 14))
+print(saudacao("Ana", 20))
+
+notas_aluno = [8.5, 9.0, 7.5, 8.0]
+media = calcular_media(notas_aluno)
+print(f"\\nMédia das notas: {media:.2f}")`,
+
+      list: `# Exemplo: Trabalhando com Listas
+frutas = ["maçã", "banana", "laranja", "uva", "morango"]
+
+print("Lista de frutas:")
+print(frutas)
+
+print("\\nPrimeira fruta:", frutas[0])
+print("Última fruta:", frutas[-1])
+
+print("\\nAdicionando 'abacaxi'...")
+frutas.append("abacaxi")
+print(frutas)
+
+print("\\nIterando sobre a lista:")
+for i, fruta in enumerate(frutas, 1):
+    print(f"{i}. {fruta}")
+
+print("\\nFrutas em ordem alfabética:")
+frutas_ordenadas = sorted(frutas)
+print(frutas_ordenadas)`,
+
+      conditionals: `# Exemplo: Condicionais
+nota = int(input("Digite a nota do aluno: "))
+
+if nota >= 7:
+    print("Aluno aprovado!")
+elif nota >= 5:
+    print("Aluno em recuperação.")
+else:
+    print("Aluno reprovado.")
+
+print("Fim da verificação")`,
+
+      while: `# Exemplo: Loop While
+contador = 0
+
+while contador < 5:
+    print("Contador:", contador)
+    contador += 1
+
+print("Loop finalizado!")`,
+
+      dictionary: `# Exemplo: Dicionário
+aluno = {
+    "nome": "Lucas",
+    "idade": 17,
+    "nota": 8.5
+}
+
+print("Nome:", aluno["nome"])
+print("Idade:", aluno["idade"])
+print("Nota:", aluno["nota"])
+
+if aluno["nota"] >= 7:
+    print("Situação: Aprovado")
+else:
+    print("Situação: Reprovado")`,
+    };
+
+    function updateStatus(status, text) {
+      const dot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      
+      dot.className = 'status-dot ' + status;
+      statusText.textContent = text;
+    }
+
+    async function initPyodide() {
+      try {
+        updateStatus('running', 'Carregando interpretador Python...');
+        pyodide = await loadPyodide();
+        
+        // Redirecionar stdout e criar input customizado
+        pyodide.runPython(`
+import sys
+from io import StringIO
+sys.stdout = StringIO()
+sys.stderr = StringIO()
+
+# Substituir input() por uma versão que funciona no navegador
+def custom_input(prompt=""):
+    import js
+    if prompt:
+        print(prompt, end="")
+    return js.prompt(prompt)
+
+__builtins__.input = custom_input
+        `);
+        
+        await pyodide.runPythonAsync(`1 + 1`);
+        updateStatus('ready', 'Python pronto!');
+        document.getElementById('runBtn').disabled = false;
+        document.getElementById('debugBtn').disabled = false;
+        document.querySelector('.examples-section').style.display = 'block';
+        document.querySelector('.editor-section').style.display = 'block';
+        document.querySelector('.output-section').style.display = 'block';
+        document.getElementById('loading-overlay').classList.remove('active');
+      } catch (error) {
+        updateStatus('error', 'Erro ao carregar Python');
+        addOutput('Erro ao inicializar Python: ' + error.message, 'error');
+        document.getElementById('loading-overlay').classList.remove('active');
+      }
+    }
+
+    function addOutput(text, type = 'normal') {
+      const output = document.getElementById('output');
+      const line = document.createElement('div');
+      
+      if (type === 'error') {
+        line.style.color = '#ff6b6b';
+      } else if (type === 'debug') {
+        line.style.color = '#ffaa00';
+      } else if (type === 'success') {
+        line.style.color = '#00ff00';
+      }
+      
+      line.textContent = text;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearOutput() {
+      document.getElementById('output').innerHTML = '';
+    }
+
+    function clearEditor() {
+      // Parar debug se estiver ativo
+      if (debugState.active) {
+        debugStop();
+      }
+      editor.setValue('');
+      clearOutput();
+    }
+
+    function loadExample(exampleName) {
+      // Parar debug se estiver ativo
+      if (debugState.active) {
+        debugStop();
+      }
+      editor.setValue(examples[exampleName]);
+      clearOutput();
+      addOutput('Exemplo carregado! Clique em "Executar" para ver o resultado.', 'success');
+    }
+
+    async function runCode() {
+      const code = editor.getValue().trim();
+      
+      if (!code) {
+        addOutput('Por favor, escreva algum código antes de executar.', 'error');
+        return;
+      }
+
+      clearOutput();
+      updateStatus('running', 'Executando código...');
+      document.getElementById('runBtn').disabled = true;
+      document.getElementById('debugBtn').disabled = true;
+      document.getElementById('clearBtn').disabled = true;
+      
+      const startTime = performance.now();
+
+      try {
+        // Limpar buffers
+        pyodide.runPython(`
+sys.stdout = StringIO()
+sys.stderr = StringIO()
+        `);
+
+        // Executar código do usuário
+        await pyodide.runPythonAsync(code);
+
+        // Capturar saída
+        const stdout = pyodide.runPython('sys.stdout.getvalue()');
+        const stderr = pyodide.runPython('sys.stderr.getvalue()');
+
+        if (stdout) {
+          addOutput(stdout, 'normal');
+        }
+        
+        if (stderr) {
+          addOutput(stderr, 'error');
+        }
+
+        if (!stdout && !stderr) {
+          addOutput('Código executado com sucesso (sem saída)', 'success');
+        }
+
+        const endTime = performance.now();
+        const executionTime = ((endTime - startTime) / 1000).toFixed(3);
+        document.getElementById('executionTime').textContent = `Tempo: ${executionTime}s`;
+        
+        updateStatus('ready', 'Execução concluída');
+      } catch (error) {
+        addOutput('Erro na execução:', 'error');
+        
+        // Capturar traceback completo do Python
+        let errorMessage = error.message;
+        
+        // Se o erro tem traceback do Python, extrair
+        if (error.message && error.message.includes('Traceback')) {
+          errorMessage = error.message;
+        } else {
+          // Tentar capturar do stderr
+          try {
+            const stderr = pyodide.runPython('sys.stderr.getvalue()');
+            if (stderr) {
+              errorMessage = stderr;
+            }
+          } catch (e) {
+            // Se falhar, usar a mensagem do erro JS
+            errorMessage = error.message || 'Erro desconhecido';
+          }
+        }
+        
+        addOutput(errorMessage, 'error');
+        updateStatus('error', 'Erro na execução');
+      } finally {
+        document.getElementById('runBtn').disabled = false;
+        document.getElementById('debugBtn').disabled = false;
+        document.getElementById('clearBtn').disabled = false;
+      }
+    }
+
+    function parseCodeLines(code) {
+      const lines = code.split('\n');
+      const blocks = [];
+      let i = 0;
+      
+      while (i < lines.length) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        
+        // Pular linhas vazias e comentários puros
+        if (!trimmed || trimmed.startsWith('#')) {
+          i++;
+          continue;
+        }
+        
+        // Remover comentários inline para análise (mas manter na linha original)
+        const lineWithoutComment = trimmed.split('#')[0].trim();
+        
+        // Calcular indentação
+        const indentMatch = line.match(/^(\s*)/);
+        const currentIndent = indentMatch ? indentMatch[1].length : 0;
+        
+        // Verificar se é um decorador (@)
+        if (lineWithoutComment.startsWith('@')) {
+          const decoratorLines = [line];
+          const decoratorStartLine = i + 1;
+          i++;
+          
+          // Coletar decoradores adicionais (pode ter múltiplos @)
+          while (i < lines.length) {
+            const nextLine = lines[i];
+            const nextTrimmed = nextLine.trim();
+            const nextWithoutComment = nextTrimmed.split('#')[0].trim();
+            
+            if (!nextTrimmed || nextTrimmed.startsWith('#')) {
+              decoratorLines.push(nextLine);
+              i++;
+              continue;
+            }
+            
+            if (nextWithoutComment.startsWith('@')) {
+              decoratorLines.push(nextLine);
+              i++;
+            } else {
+              break;
+            }
+          }
+          
+          // Agora deve vir a definição da função
+          if (i < lines.length) {
+            const funcLine = lines[i];
+            const funcTrimmed = funcLine.trim();
+            const funcWithoutComment = funcTrimmed.split('#')[0].trim();
+            
+            if (funcWithoutComment.startsWith('def ') && funcWithoutComment.endsWith(':')) {
+              decoratorLines.push(funcLine);
+              const funcIndentMatch = funcLine.match(/^(\s*)/);
+              const funcIndent = funcIndentMatch ? funcIndentMatch[1].length : 0;
+              i++;
+              
+              // Coletar corpo da função
+              while (i < lines.length) {
+                const bodyLine = lines[i];
+                const bodyTrimmed = bodyLine.trim();
+                
+                if (!bodyTrimmed || bodyTrimmed.startsWith('#')) {
+                  decoratorLines.push(bodyLine);
+                  i++;
+                  continue;
+                }
+                
+                const bodyIndentMatch = bodyLine.match(/^(\s*)/);
+                const bodyIndent = bodyIndentMatch ? bodyIndentMatch[1].length : 0;
+                
+                if (bodyIndent > funcIndent) {
+                  decoratorLines.push(bodyLine);
+                  i++;
+                } else {
+                  break;
+                }
+              }
+              
+              blocks.push({
+                lineNumber: decoratorStartLine,
+                code: decoratorLines.join('\n'),
+                isBlock: false,
+                isDecorator: true,
+                displayLine: decoratorStartLine
+              });
+              continue;
+            }
+          }
+        }
+        
+        // Verificar se é uma string multi-linha (triple quotes)
+        if ((trimmed.includes('"""') || trimmed.includes("'''")) && 
+            (trimmed.match(/"""/g) || []).length === 1 || (trimmed.match(/'''/g) || []).length === 1) {
+          const stringLines = [line];
+          const stringStartLine = i + 1;
+          const quoteType = trimmed.includes('"""') ? '"""' : "'''";
+          i++;
+          
+          // Coletar linhas até fechar a string
+          let found = false;
+          while (i < lines.length && !found) {
+            const nextLine = lines[i];
+            stringLines.push(nextLine);
+            if (nextLine.includes(quoteType)) {
+              found = true;
+            }
+            i++;
+          }
+          
+          blocks.push({
+            lineNumber: stringStartLine,
+            code: stringLines.join('\n'),
+            isBlock: false,
+            isMultilineString: true,
+            displayLine: stringStartLine
+          });
+          continue;
+        }
+        
+        // Verificar se é uma atribuição de dicionário multi-linha
+        if (lineWithoutComment.includes('= {') && !lineWithoutComment.endsWith('}')) {
+          const dictLines = [line];
+          const dictStartLine = i + 1;
+          i++;
+          
+          // Coletar linhas até fechar o dicionário
+          let braceCount = (lineWithoutComment.match(/{/g) || []).length - (lineWithoutComment.match(/}/g) || []).length;
+          
+          while (i < lines.length && braceCount > 0) {
+            const nextLine = lines[i];
+            const nextWithoutComment = nextLine.trim().split('#')[0].trim();
+            dictLines.push(nextLine);
+            braceCount += (nextWithoutComment.match(/{/g) || []).length;
+            braceCount -= (nextWithoutComment.match(/}/g) || []).length;
+            i++;
+          }
+          
+          blocks.push({
+            lineNumber: dictStartLine,
+            code: dictLines.join('\n'),
+            isBlock: false,
+            isDictionary: true,
+            displayLine: dictStartLine
+          });
+          continue;
+        }
+        
+        // Verificar se é uma atribuição de lista multi-linha
+        if (lineWithoutComment.includes('= [') && !lineWithoutComment.endsWith(']')) {
+          const listLines = [line];
+          const listStartLine = i + 1;
+          i++;
+          
+          // Coletar linhas até fechar a lista
+          let bracketCount = (lineWithoutComment.match(/\[/g) || []).length - (lineWithoutComment.match(/\]/g) || []).length;
+          
+          while (i < lines.length && bracketCount > 0) {
+            const nextLine = lines[i];
+            const nextWithoutComment = nextLine.trim().split('#')[0].trim();
+            listLines.push(nextLine);
+            bracketCount += (nextWithoutComment.match(/\[/g) || []).length;
+            bracketCount -= (nextWithoutComment.match(/\]/g) || []).length;
+            i++;
+          }
+          
+          blocks.push({
+            lineNumber: listStartLine,
+            code: listLines.join('\n'),
+            isBlock: false,
+            isList: true,
+            displayLine: listStartLine
+          });
+          continue;
+        }
+        
+        // Verificar se é uma atribuição de tupla multi-linha
+        if (lineWithoutComment.includes('= (') && !lineWithoutComment.endsWith(')')) {
+          const tupleLines = [line];
+          const tupleStartLine = i + 1;
+          i++;
+          
+          // Coletar linhas até fechar a tupla
+          let parenCount = (lineWithoutComment.match(/\(/g) || []).length - (lineWithoutComment.match(/\)/g) || []).length;
+          
+          while (i < lines.length && parenCount > 0) {
+            const nextLine = lines[i];
+            const nextWithoutComment = nextLine.trim().split('#')[0].trim();
+            tupleLines.push(nextLine);
+            parenCount += (nextWithoutComment.match(/\(/g) || []).length;
+            parenCount -= (nextWithoutComment.match(/\)/g) || []).length;
+            i++;
+          }
+          
+          blocks.push({
+            lineNumber: tupleStartLine,
+            code: tupleLines.join('\n'),
+            isBlock: false,
+            isTuple: true,
+            displayLine: tupleStartLine
+          });
+          continue;
+        }
+        
+        // Se a linha termina com ':', é início de um bloco (def, for, if, while, etc)
+        // MAS não se for except/elif/else/finally (que são continuações)
+        if (lineWithoutComment.endsWith(':') && 
+            !lineWithoutComment.startsWith('except') && 
+            !lineWithoutComment.startsWith('elif ') && 
+            !lineWithoutComment.startsWith('else') &&
+            !lineWithoutComment.startsWith('finally')) {
+          const blockLines = [line];
+          const blockStartLine = i + 1;
+          const headerLine = i + 1;
+          i++;
+          
+          // Identificar tipo de bloco
+          const isLoop = lineWithoutComment.startsWith('for ') || lineWithoutComment.startsWith('while ');
+          const isFunction = lineWithoutComment.startsWith('def ');
+          const isIf = lineWithoutComment.startsWith('if ');
+          const isTry = lineWithoutComment.startsWith('try');
+          const isConditional = isIf || lineWithoutComment.startsWith('elif ') || lineWithoutComment.startsWith('else');
+          
+          // Coletar todas as linhas indentadas que pertencem ao bloco
+          const bodyLines = [];
+          while (i < lines.length) {
+            const nextLine = lines[i];
+            const nextTrimmed = nextLine.trim();
+            
+            // Se linha vazia ou comentário dentro do bloco, incluir
+            if (!nextTrimmed || nextTrimmed.startsWith('#')) {
+              blockLines.push(nextLine);
+              bodyLines.push(nextLine);
+              i++;
+              continue;
+            }
+            
+            const nextIndentMatch = nextLine.match(/^(\s*)/);
+            const nextIndent = nextIndentMatch ? nextIndentMatch[1].length : 0;
+            
+            // Se a próxima linha tem indentação maior, pertence ao bloco
+            if (nextIndent > currentIndent) {
+              blockLines.push(nextLine);
+              bodyLines.push(nextLine);
+              i++;
+            } else {
+              // Saiu do bloco
+              break;
+            }
+          }
+          
+          // Se for um if, verificar se tem elif/else continuando
+          if (isIf) {
+            while (i < lines.length) {
+              const nextLine = lines[i];
+              const nextTrimmed = nextLine.trim();
+              
+              // Pular linhas vazias e comentários
+              if (!nextTrimmed || nextTrimmed.startsWith('#')) {
+                blockLines.push(nextLine);
+                i++;
+                continue;
+              }
+              
+              const nextIndentMatch = nextLine.match(/^(\s*)/);
+              const nextIndent = nextIndentMatch ? nextIndentMatch[1].length : 0;
+              
+              // Verificar se é elif ou else na mesma indentação do if
+              if (nextIndent === currentIndent && 
+                  (nextTrimmed.startsWith('elif ') || nextTrimmed === 'else:')) {
+                blockLines.push(nextLine);
+                i++;
+                
+                // Coletar corpo do elif/else
+                while (i < lines.length) {
+                  const elifLine = lines[i];
+                  const elifTrimmed = elifLine.trim();
+                  
+                  if (!elifTrimmed || elifTrimmed.startsWith('#')) {
+                    blockLines.push(elifLine);
+                    i++;
+                    continue;
+                  }
+                  
+                  const elifIndentMatch = elifLine.match(/^(\s*)/);
+                  const elifIndent = elifIndentMatch ? elifIndentMatch[1].length : 0;
+                  
+                  if (elifIndent > currentIndent) {
+                    blockLines.push(elifLine);
+                    i++;
+                  } else {
+                    break;
+                  }
+                }
+              } else {
+                break;
+              }
+            }
+          }
+          
+          // Se for um try, verificar se tem except/finally continuando
+          if (isTry) {
+            while (i < lines.length) {
+              const nextLine = lines[i];
+              const nextTrimmed = nextLine.trim();
+              
+              // Pular linhas vazias e comentários
+              if (!nextTrimmed || nextTrimmed.startsWith('#')) {
+                blockLines.push(nextLine);
+                i++;
+                continue;
+              }
+              
+              const nextIndentMatch = nextLine.match(/^(\s*)/);
+              const nextIndent = nextIndentMatch ? nextIndentMatch[1].length : 0;
+              
+              // Verificar se é except ou finally na mesma indentação do try
+              if (nextIndent === currentIndent && 
+                  (nextTrimmed.startsWith('except') || nextTrimmed.startsWith('finally'))) {
+                blockLines.push(nextLine);
+                i++;
+                
+                // Coletar corpo do except/finally
+                while (i < lines.length) {
+                  const exceptLine = lines[i];
+                  const exceptTrimmed = exceptLine.trim();
+                  
+                  if (!exceptTrimmed || exceptTrimmed.startsWith('#')) {
+                    blockLines.push(exceptLine);
+                    i++;
+                    continue;
+                  }
+                  
+                  const exceptIndentMatch = exceptLine.match(/^(\s*)/);
+                  const exceptIndent = exceptIndentMatch ? exceptIndentMatch[1].length : 0;
+                  
+                  if (exceptIndent > currentIndent) {
+                    blockLines.push(exceptLine);
+                    i++;
+                  } else {
+                    break;
+                  }
+                }
+              } else {
+                break;
+              }
+            }
+          }
+          
+          blocks.push({
+            lineNumber: blockStartLine,
+            headerLine: headerLine,
+            code: blockLines.join('\n'),
+            bodyCode: bodyLines.join('\n'),
+            isBlock: true,
+            isLoop: isLoop,
+            isFunction: isFunction,
+            isConditional: isConditional,
+            isTryExcept: isTry,
+            displayLine: blockStartLine,
+            header: line
+          });
+        } else {
+          // Linha simples
+          blocks.push({
+            lineNumber: i + 1,
+            code: line,
+            isBlock: false,
+            displayLine: i + 1
+          });
+          i++;
+        }
+      }
+      
+      return blocks;
+    }
+
+    function highlightLine(lineNumber) {
+      // Remover highlight anterior
+      debugDecorations = editor.deltaDecorations(debugDecorations, []);
+      
+      // Adicionar novo highlight
+      debugDecorations = editor.deltaDecorations([], [
+        {
+          range: new monaco.Range(lineNumber, 1, lineNumber, 1),
+          options: {
+            isWholeLine: true,
+            className: 'debug-line-highlight',
+            glyphMarginClassName: 'debug-line-glyph'
+          }
+        }
+      ]);
+      
+      // Rolar para a linha
+      editor.revealLineInCenter(lineNumber);
+    }
+
+    function clearHighlight() {
+      debugDecorations = editor.deltaDecorations(debugDecorations, []);
+    }
+
+    async function startDebug() {
+      const code = editor.getValue().trim();
+      
+      if (!code) {
+        addOutput('Por favor, escreva algum código antes de debugar.', 'error');
+        return;
+      }
+
+      clearOutput();
+      clearHighlight();
+      
+      addOutput('Modo Debug Iniciado - Use os controles para avançar', 'debug');
+      addOutput('═'.repeat(60), 'debug');
+      
+      debugState.lines = parseCodeLines(code);
+      
+      if (debugState.lines.length === 0) {
+        addOutput('Nenhum código executável encontrado.', 'error');
+        return;
+      }
+      
+      debugState.active = true;
+      debugState.currentIndex = 0;
+      debugState.paused = true;
+      
+      // Preparar ambiente Python
+      pyodide.runPython(`
+sys.stdout = StringIO()
+sys.stderr = StringIO()
+      `);
+      
+      // Atualizar UI
+      document.getElementById('debugControls').style.display = 'flex';
+      document.getElementById('runBtn').disabled = true;
+      document.getElementById('debugBtn').disabled = true;
+      document.getElementById('stepBtn').disabled = false;
+      document.getElementById('continueBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = false;
+      
+      updateStatus('running', 'Debug ativo - Aguardando comando');
+      if (debugState.lines.length > 0) {
+        highlightLine(debugState.lines[0].displayLine);
+        updateDebugInfo();
+      }
+    }
+
+    function updateDebugInfo(start = false) {
+      const info = document.getElementById('debugInfo');
+      if (debugState.active) {
+        const total = debugState.lines.length;
+        const current = debugState.currentIndex;
+        
+        if (start) {
+          info.textContent = `Passo ${current} de ${total}`;
+        } else if (current < total) {
+          info.textContent = `Passo ${current + 1} de ${total}`;
+        } else {
+          info.textContent = `Finalizado (${total} passos)`;
+        }
+      }
+    }
+
+    async function debugStepNext() {
+      if (!debugState.active) {
+        return;
+      }
+
+      document.getElementById('stepBtn').disabled = true;
+      document.getElementById('continueBtn').disabled = true;
+      
+      const currentBlock = debugState.lines[debugState.currentIndex];
+      
+      // Destacar a linha atual ANTES de executar
+      highlightLine(currentBlock.displayLine);
+      
+      // Atualizar informação ANTES de executar
+      updateDebugInfo();
+      
+      try {
+        // Se for um loop, executar com instrumentação para ver cada iteração
+        if (currentBlock.isLoop) {
+          addOutput(`\n[Loop na linha ${currentBlock.lineNumber}] ${currentBlock.header}`, 'debug');
+          
+          // Criar código instrumentado que mostra cada iteração
+          const loopVar = currentBlock.header.match(/for\s+(\w+)\s+in/);
+          const varName = loopVar ? loopVar[1] : 'i';
+          
+          // Instalar callback Python para rastrear iterações
+          pyodide.runPython(`
+_debug_iteration = 0
+_debug_outputs = []
+          `);
+          
+          // Executar o loop
+          await pyodide.runPythonAsync(currentBlock.code);
+          
+          // Capturar toda a saída
+          const stdout = pyodide.runPython('sys.stdout.getvalue()');
+          
+          if (stdout) {
+            const lines = stdout.trim().split('\n');
+            lines.forEach((line, idx) => {
+              addOutput(`  Iteração ${idx + 1}: ${line}`, 'success');
+            });
+          } else {
+            addOutput(`  Loop executado (sem saída de print)`, 'success');
+          }
+          
+        } else if (currentBlock.isFunction) {
+          // Funções são apenas definidas, não executadas
+          addOutput(`\n[Definindo função na linha ${currentBlock.lineNumber}]`, 'debug');
+          const codeLines = currentBlock.code.split('\n');
+          codeLines.forEach(line => {
+            if (line.trim()) addOutput(`  ${line}`, 'debug');
+          });
+          
+          await pyodide.runPythonAsync(currentBlock.code);
+          addOutput(`  ✓ Função definida`, 'success');
+          
+        } else if (currentBlock.isBlock) {
+          // Outros blocos (if, elif, else)
+          addOutput(`\n[Bloco na linha ${currentBlock.lineNumber}] ${currentBlock.header}`, 'debug');
+          const codeLines = currentBlock.code.split('\n');
+          codeLines.forEach(line => {
+            if (line.trim()) addOutput(`  ${line}`, 'debug');
+          });
+          
+          await pyodide.runPythonAsync(currentBlock.code);
+          
+          const stdout = pyodide.runPython('sys.stdout.getvalue()');
+          if (stdout) {
+            stdout.trim().split('\n').forEach(out => {
+              if (out) addOutput(`  ↳ ${out}`, 'success');
+            });
+          }
+          
+        } else {
+          // Linha simples
+          addOutput(`\n[Linha ${currentBlock.lineNumber}] ${currentBlock.code}`, 'debug');
+          await pyodide.runPythonAsync(currentBlock.code);
+          
+          const stdout = pyodide.runPython('sys.stdout.getvalue()');
+          if (stdout) {
+            stdout.trim().split('\n').forEach(out => {
+              if (out) addOutput(`  ↳ ${out}`, 'success');
+            });
+          }
+        }
+        
+        // Capturar erros
+        const stderr = pyodide.runPython('sys.stderr.getvalue()');
+        if (stderr) {
+          addOutput(`  ⚠ ${stderr}`, 'error');
+        }
+        
+        // Limpar buffers
+        pyodide.runPython(`
+sys.stdout = StringIO()
+sys.stderr = StringIO()
+        `);
+        
+        debugState.currentIndex++;
+        
+        // Verificar se chegou ao fim
+        if (debugState.currentIndex < debugState.lines.length) {
+          highlightLine(debugState.lines[debugState.currentIndex].displayLine);
+          updateDebugInfo();
+          if (!debugState.autoMode) {
+            document.getElementById('stepBtn').disabled = false;
+            document.getElementById('continueBtn').disabled = false;
+            updateStatus('running', 'Debug ativo - Aguardando comando');
+          }
+        } else {
+          clearHighlight();
+          updateDebugInfo();
+          addOutput('\n' + '═'.repeat(60), 'debug');
+          addOutput('✓ Debug concluído!', 'success');
+          debugStop();
+          return;
+        }
+        
+      } catch (error) {
+        addOutput(`  ✗ Erro:`, 'error');
+        
+        // Capturar mensagem de erro completa
+        let errorMessage = error.message;
+        
+        if (error.message && error.message.includes('Traceback')) {
+          errorMessage = error.message;
+        } else {
+          try {
+            const stderr = pyodide.runPython('sys.stderr.getvalue()');
+            if (stderr) {
+              errorMessage = stderr;
+            }
+          } catch (e) {
+            errorMessage = error.message || 'Erro desconhecido';
+          }
+        }
+        
+        // Dividir em linhas e adicionar com indentação
+        errorMessage.split('\n').forEach(line => {
+          if (line.trim()) addOutput(`  ${line}`, 'error');
+        });
+        document.getElementById('stepBtn').disabled = false;
+        document.getElementById('continueBtn').disabled = false;
+        debugStop();
+      }
+    }
+
+    async function debugContinue() {
+      if (!debugState.active) return;
+      
+      debugState.autoMode = true;
+      document.getElementById('stepBtn').disabled = true;
+      document.getElementById('continueBtn').disabled = true;
+      updateStatus('running', 'Executando debug contínuo...');
+      
+      while (debugState.active && debugState.currentIndex < debugState.lines.length) {
+        await debugStepNext();
+        await new Promise(resolve => setTimeout(resolve, 800)); // Pausa de 300ms entre linhas
+      }
+      
+      debugState.autoMode = false;
+    }
+
+    function debugStop() {
+      debugState.active = false;
+      debugState.currentIndex = 0;
+      debugState.lines = [];
+      debugState.autoMode = false;
+      
+      clearHighlight();
+      
+      document.getElementById('debugControls').style.display = 'none';
+      document.getElementById('runBtn').disabled = false;
+      document.getElementById('debugBtn').disabled = false;
+      
+      updateStatus('ready', 'Python pronto!');
+    }
+
+    // Inicializar quando a página carregar
+    window.addEventListener('load', initPyodide);
+
+    // Atalhos de teclado
+    window.addEventListener('keydown', function(e) {
+      // Ctrl+Enter para executar
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        if (!debugState.active) {
+          runCode();
+        }
+      }
+      
+      // Seta direita para próximo passo no debug
+      if (e.key === 'ArrowRight' && debugState.active) {
+        e.preventDefault();
+        if (!document.getElementById('stepBtn').disabled) {
+          debugStepNext();
+        }
+      }
+      
+      // Escape para parar debug
+      if (e.key === 'Escape' && debugState.active) {
+        e.preventDefault();
+        debugStop();
+      }
+    });
+    
+    // Adicionar estilos CSS para highlight via JavaScript
+    const style = document.createElement('style');
+    style.textContent = `
+      .debug-line-highlight {
+        background-color: rgba(255, 200, 0, 0.3);
+        border-left: 3px solid #ff8800;
+      }
+      
+      .debug-line-glyph {
+        background-color: #ff8800;
+        width: 5px !important;
+        margin-left: 3px;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
