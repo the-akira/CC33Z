@@ -20,6 +20,7 @@ let commandQueue = [];
 let isExecuting = false;
 let isParsed = false;
 let isMoving = false; // Variável para controlar se Karel está em movimento
+let isTransitioningLevel = false;
 
 const availableColors = ['cyan', 'green', 'pink', 'yellow', 'purple'];
 
@@ -529,6 +530,8 @@ function checkLevelCompletion(level) {
   if (karel.x === level.target.x && karel.y === level.target.y 
       && collectedBeepers >= level.beepersRequired 
       && droppedBeepers >= level.beepersDropRequired) {
+    isTransitioningLevel = true; 
+    disableButtons();
     document.getElementById('feedback').innerHTML = 'Você completou o nível!';
 
     // Exibe a barra de carregamento e redefine o progresso
@@ -557,13 +560,19 @@ function checkLevelCompletion(level) {
 }
 
 function nextLevel() {
+  clearInterval(moveInterval); 
+  isMoving = false;  
   currentLevelIndex++;
+
   if (currentLevelIndex < levels.length) {
     loadLevel(levels[currentLevelIndex]);
   } else {
     alert('Parabéns! Você completou todos os níveis!');
     resetKarel();
   }
+
+  isTransitioningLevel = false;
+  enableButtons();
 }
 
 function resetLevel() {
@@ -668,7 +677,7 @@ function cornerColorIs(color) {
 canvas.addEventListener('contextmenu', function(event) {
   event.preventDefault();
 
-  if (isMoving) return;
+  if (isMoving || isTransitioningLevel) return;
 
   // Obtém a posição relativa ao canvas
   const rect = canvas.getBoundingClientRect();
@@ -770,6 +779,8 @@ function isBarrier({ x, y }) {
 let moveInterval; // Variável para armazenar a referência do setInterval
 
 function moveAlongPath(path) {
+  if (moveInterval) clearInterval(moveInterval); 
+
   if (path.length === 0 || !karel.active) return;
 
   // Indica que Karel está em movimento
