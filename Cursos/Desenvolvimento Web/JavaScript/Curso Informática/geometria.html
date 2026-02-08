@@ -293,11 +293,11 @@
           <button class="effect-btn" data-effect="gradient" onclick="toggleEffect('gradient', this)">
             Gradiente
           </button>
-          <button class="effect-btn" data-effect="pulse" onclick="toggleEffect('pulse', this)">
-            Pulsação
+          <button class="effect-btn" data-effect="hueShift" onclick="toggleEffect('hueShift', this)">
+            Matiz
           </button>
-          <button class="effect-btn" data-effect="rotate" onclick="toggleEffect('rotate', this)">
-            Rotação
+          <button class="effect-btn" data-effect="flow" onclick="toggleEffect('flow', this)">
+            Fluxo
           </button>
         </div>
       </div>
@@ -370,12 +370,14 @@
     let effects = {
       glow: true,
       gradient: false,
-      pulse: false,
-      rotate: false
+      hueShift: false,
+      flow: false
     };
-    let rotation = 0;
-    let pulsePhase = 0;
+    let baseHue = 210; // tom inicial (azul acinzentado)
+    let hueTime = 0;
+    let flowOffset = 0;
     let currentGeometry = 0;
+    let animationId = null;
 
     function setNodes(n) {
       numNodes = n;
@@ -388,6 +390,21 @@
     function toggleEffect(effect, button) {
       effects[effect] = !effects[effect];
       button.classList.toggle('active');
+
+      const needsAnimation =
+        effects.flow ||
+        effects.hueShift;
+
+      if (needsAnimation && !animationId) {
+        lastTime = 0;
+        animationId = requestAnimationFrame(animate);
+      }
+
+      if (!needsAnimation && animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+
       draw();
     }
 
@@ -406,11 +423,15 @@
       const radius = Math.min(centerX, centerY) - 100;
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const hueBase = effects.hueShift
+        ? (baseHue + hueTime * 0.2) % 360
+        : baseHue;
       
       // Calculate node positions
       const nodes = [];
       const angleStep = (2 * Math.PI) / numNodes;
-      const startAngle = -Math.PI / 2 + (effects.rotate ? rotation : 0);
+      const startAngle = -Math.PI / 2;
       
       for (let i = 0; i < numNodes; i++) {
         const angle = startAngle + i * angleStep;
@@ -419,10 +440,15 @@
           y: centerY + radius * Math.sin(angle)
         });
       }
+
+      if (effects.flow) {
+        ctx.setLineDash([8, 6]);
+        ctx.lineDashOffset = -flowOffset;
+      } else {
+        ctx.setLineDash([]);
+      }
       
       // Draw connections
-      const pulseIntensity = effects.pulse ? Math.sin(pulsePhase) * 0.3 + 0.7 : 1;
-      
       for (let i = 0; i < numNodes; i++) {
         for (let j = i + 1; j < numNodes; j++) {
           const lineProgress = (i + j) / (numNodes * 2);
@@ -436,22 +462,25 @@
               nodes[i].x, nodes[i].y,
               nodes[j].x, nodes[j].y
             );
-            const hue1 = (lineProgress * 360 + rotation * 50) % 360;
-            const hue2 = ((lineProgress + 0.3) * 360 + rotation * 50) % 360;
-            gradient.addColorStop(0, `hsla(${hue1}, 70%, 50%, ${0.65 * pulseIntensity})`);
-            gradient.addColorStop(1, `hsla(${hue2}, 70%, 50%, ${0.65 * pulseIntensity})`);
+
+            const h1 = (hueBase + lineProgress * 40) % 360;
+            const h2 = (hueBase + lineProgress * 40 + 30) % 360;
+
+            gradient.addColorStop(0, `hsla(${h1}, 70%, 50%, ${0.65})`);
+            gradient.addColorStop(1, `hsla(${h2}, 70%, 50%, ${0.65})`);
+
             ctx.strokeStyle = gradient;
           } else {
-            ctx.strokeStyle = `rgba(92, 109, 130, ${0.65 * pulseIntensity})`;
+            ctx.strokeStyle = `hsla(${hueBase}, 25%, 55%, ${0.95})`;
           }
-          
+
           ctx.lineWidth = 2;
-          
+
           if (effects.glow) {
-            ctx.shadowBlur = 12 * pulseIntensity;
-            ctx.shadowColor = effects.gradient ? 
-              `hsl(${(lineProgress * 360) % 360}, 70%, 50%)` : 
-              'rgba(92, 109, 130, 0.8)';
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = effects.gradient
+              ? `hsl(${(hueBase + lineProgress * 40) % 360}, 70%, 50%)`
+              : `hsla(${hueBase}, 30%, 60%, 0.8)`;
           } else {
             ctx.shadowBlur = 0;
           }
@@ -462,7 +491,7 @@
       
       // Draw nodes
       nodes.forEach((node, index) => {
-        const nodeHue = (index / numNodes * 360 + rotation * 50) % 360;
+        const nodeHue = (hueBase + index * 12) % 360;
         
         // Outer glow circle
         if (effects.glow) {
@@ -474,7 +503,7 @@
               node.x, node.y, 0,
               node.x, node.y, 12
             );
-            glowGradient.addColorStop(0, `hsla(${nodeHue}, 70%, 60%, ${0.6 * pulseIntensity})`);
+            glowGradient.addColorStop(0, `hsla(${nodeHue}, 70%, 60%, ${0.6})`);
             glowGradient.addColorStop(1, `hsla(${nodeHue}, 70%, 60%, 0)`);
             ctx.fillStyle = glowGradient;
           } else {
@@ -482,7 +511,7 @@
               node.x, node.y, 0,
               node.x, node.y, 12
             );
-            glowGradient.addColorStop(0, `rgba(92, 109, 130, ${0.6 * pulseIntensity})`);
+            glowGradient.addColorStop(0, `rgba(92, 109, 130, ${0.6})`);
             glowGradient.addColorStop(1, 'rgba(92, 109, 130, 0)');
             ctx.fillStyle = glowGradient;
           }
@@ -508,7 +537,7 @@
         }
         
         if (effects.glow) {
-          ctx.shadowBlur = 15 * pulseIntensity;
+          ctx.shadowBlur = 15;
           ctx.shadowColor = effects.gradient ? 
             `hsl(${nodeHue}, 70%, 50%)` : 
             'rgba(92, 109, 130, 0.8)';
@@ -533,14 +562,17 @@
     }
 
     function animate() {
-      if (effects.rotate) {
-        rotation += 0.005;
+      animationId = requestAnimationFrame(animate);
+
+      if (effects.hueShift) {
+        hueTime++;
       }
-      if (effects.pulse) {
-        pulsePhase += 0.05;
+
+      if (effects.flow) {
+        flowOffset += 0.6;
       }
+
       draw();
-      requestAnimationFrame(animate);
     }
 
     nodeSlider.addEventListener('input', (e) => {
@@ -556,7 +588,6 @@
     // Initial draw and start animation
     updateInfo();
     draw();
-    animate();
 
     // Sacred geometry patterns
     const patterns = [
