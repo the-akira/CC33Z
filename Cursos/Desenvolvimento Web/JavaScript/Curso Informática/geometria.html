@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Geometria - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .controls-container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    .control-panel {
+      background-color: #f2f2f2;
+      border: 2.3px solid #273E74;
+      margin: 10px auto;
+      padding: 25px;
+    }
+    
+    .control-group {
+      margin-bottom: 20px;
+    }
+    
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .control-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      color: #273E74;
+      font-weight: bold;
+    }
+    
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    input[type="range"] {
+      flex: 1;
+      min-width: 200px;
+      height: 8px;
+      background: #5c6d82;
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      background: #ffffff;
+      border: 2px solid #273E74;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      background: #273E74;
+      cursor: pointer;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    .value-display {
+      min-width: 80px;
+      text-align: center;
+      font-size: 1.3em;
+      color: white;
+      background: #5c6d82;
+      padding: 8px 15px;
+      font-weight: bold;
+      border: 3px solid #273E74;
+    }
+    
+    .quick-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .quick-btn {
+      background-color: #5c6d82;
+      color: white;
+      display: inline-block;
+      padding: 10px 16px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 1rem;
+      border: 3px solid #273E74;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    
+    .quick-btn:hover {
+      background-color: #273E74;
+    }
+    
+    .effect-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    
+    .effect-btn {
+      background-color: white;
+      color: #273E74;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: bold;
+      border: 3px solid #273E74;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .effect-btn:hover {
+      background-color: #e6e6e6;
+    }
+    
+    .effect-btn.active {
+      background-color: #5c6d82;
+      color: white;
+      border-color: #273E74;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 3px solid #273E74;
+      background-color: white;
+      color: #273E74;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    select:hover {
+      border-color: #5c6d82;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: #5c6d82;
+    }
+    
+    .canvas-wrapper {
+      background-color: #f2f2f2;
+      border: 2.3px solid #273E74;
+      margin: 20px auto;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    canvas {
+      max-width: 100%;
+      border: 2px solid #273E74;
+      background: white;
+    }
+    
+    .info-display {
+      text-align: center;
+      margin: 15px 20px;
+      color: #273E74;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    
+    .info-display .highlight {
+      color: #5c6d82;
+    }
+
+    .sacred-geometry-section {
+      margin-top: 30px;
+      border-top: 5px solid #273E74;
+    }
+    
+    .geometry-description {
+      text-align: center;
+      margin: 10px 20px;
+      margin-bottom: 25px;
+      color: #5c6d82;
+      font-size: 1.1em;
+    }
+    
+    @media only screen and (max-width: 768px) {
+      .effect-options {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+      
+      .quick-select {
+        gap: 8px;
+      }
+      
+      .quick-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+      }
+      
+      input[type="range"] {
+        min-width: 150px;
+      }
+    }
+    
+    @media only screen and (max-width: 390px) {
+      .value-display {
+        font-size: 1.1em;
+      }
+      
+      .effect-options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon">
+      <img class="computer" src="images/computer.png" alt="Computer">
+    </div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+      <a class="menu" href="contato.html">Contato</a>
+      <a class="menu" href="faq.html">Perguntas Frequentes</a>
+      <a class="menu" href="digitacao.html">Treinamento Digitação</a>
+      <a class="menu" href="mouse.html">Treinamento Mouse</a>
+      <a class="menu" href="algoritmos.html">Algoritmos</a>
+      <a class="menu" href="games.html">Games</a>
+      <a class="menu" href="portas.html">Portas Lógicas</a>
+      <a class="menu" href="interpretador.html">Interpretador Python</a>
+      <a class="menu" href="geometria.html">Geometria</a>
+    </nav>
+  </header>
+
+  <h1 class="subtitle">Geometria das Conexões</h1>
+
+  <div class="controls-container">
+    <div class="control-panel">
+      <div class="control-group">
+        <label>Número de Pontos (Nós):</label>
+        <div class="slider-container">
+          <input type="range" id="nodeSlider" min="3" max="14" value="6" step="1">
+          <div class="value-display" id="nodeValue">6</div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>Seleção Rápida:</label>
+        <div class="quick-select">
+          <button class="quick-btn" onclick="setNodes(3)">3 pontos</button>
+          <button class="quick-btn" onclick="setNodes(5)">5 pontos</button>
+          <button class="quick-btn" onclick="setNodes(7)">7 pontos</button>
+          <button class="quick-btn" onclick="setNodes(10)">10 pontos</button>
+          <button class="quick-btn" onclick="setNodes(12)">12 pontos</button>
+          <button class="quick-btn" onclick="setNodes(14)">14 pontos</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>Efeitos Visuais:</label>
+        <div class="effect-options">
+          <button class="effect-btn active" data-effect="glow" onclick="toggleEffect('glow', this)">
+            Brilho
+          </button>
+          <button class="effect-btn" data-effect="gradient" onclick="toggleEffect('gradient', this)">
+            Gradiente
+          </button>
+          <button class="effect-btn" data-effect="pulse" onclick="toggleEffect('pulse', this)">
+            Pulsação
+          </button>
+          <button class="effect-btn" data-effect="rotate" onclick="toggleEffect('rotate', this)">
+            Rotação
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="canvas" width="800" height="800"></canvas>
+    </div>
+
+    <div class="info-display">
+      <p id="infoText">
+        <span class="highlight">6</span> pontos conectadas por <span class="highlight">15</span> linhas
+      </p>
+    </div>
+  </div>
+
+  <div class="sacred-geometry-section">
+    <h1 class="subtitle">Geometria Sagrada</h1>
+    
+    <div class="controls-container">
+      <div class="control-panel">
+        <div class="control-group">
+          <label>Selecione um Padrão de Geometria Sagrada:</label>
+          <select id="geometrySelect" onchange="changeGeometry()">
+            <option value="0">Semente da Vida</option>
+            <option value="1">Vesica Piscis - Portal da Criação</option>
+            <option value="2">Torus - Campo Energético</option>
+            <option value="3">Lótus 8 Pétalas - Chakra do Coração</option>
+            <option value="4">Lótus 16 Pétalas - Expansão Radiante</option>
+            <option value="5">Hexagrama - Estrela de David</option>
+            <option value="6">Pentagrama - Estrela de 5 Pontas</option>
+            <option value="7">Heptagrama - Estrela de 7 Pontas</option>
+            <option value="8">Octograma - Estrela de 8 Pontas</option>
+            <option value="9">Mandala Circular - Círculos Concêntricos</option>
+            <option value="10">Mandala Floral - Padrão de Flores</option>
+            <option value="11">Hexágono Sagrado - Estrutura Cristalina</option>
+            <option value="12">Flor da Vida</option>
+            <option value="13">Estrela de Nove Pontas</option>
+            <option value="14">Cubo de Metatron - Geometria Universal</option>
+            <option value="15">Tetraktys - Sabedoria Pitagórica</option>
+            <option value="16">Torus Elíptico</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="geometryCanvas" class="main-canvas" width="800" height="800"></canvas>
+      </div>
+
+      <div class="geometry-description" id="geometryDescription">
+        A Semente da Vida consiste em 7 círculos dispostos em um padrão hexagonal. É considerada a base fundamental da criação e representa os 7 dias da criação. Contém as proporções matemáticas da criação.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const nodeSlider = document.getElementById('nodeSlider');
+    const nodeValue = document.getElementById('nodeValue');
+    const infoText = document.getElementById('infoText');
+
+    // Geometry Canvas
+    const geometryCanvas = document.getElementById('geometryCanvas');
+    const geometryCtx = geometryCanvas.getContext('2d');
+    const geometrySelect = document.getElementById('geometrySelect');
+    const geometryDescription = document.getElementById('geometryDescription');
+
+    let numNodes = 6;
+    let effects = {
+      glow: true,
+      gradient: false,
+      pulse: false,
+      rotate: false
+    };
+    let rotation = 0;
+    let pulsePhase = 0;
+    let currentGeometry = 0;
+
+    function setNodes(n) {
+      numNodes = n;
+      nodeSlider.value = n;
+      nodeValue.textContent = n;
+      updateInfo();
+      draw();
+    }
+
+    function toggleEffect(effect, button) {
+      effects[effect] = !effects[effect];
+      button.classList.toggle('active');
+      draw();
+    }
+
+    function calculateLines(n) {
+      return (n * (n - 1)) / 2;
+    }
+
+    function updateInfo() {
+      const numLines = calculateLines(numNodes);
+      infoText.innerHTML = `<span class="highlight">${numNodes}</span> pontos conectadas por <span class="highlight">${numLines}</span> linhas`;
+    }
+
+    function draw() {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(centerX, centerY) - 100;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Calculate node positions
+      const nodes = [];
+      const angleStep = (2 * Math.PI) / numNodes;
+      const startAngle = -Math.PI / 2 + (effects.rotate ? rotation : 0);
+      
+      for (let i = 0; i < numNodes; i++) {
+        const angle = startAngle + i * angleStep;
+        nodes.push({
+          x: centerX + radius * Math.cos(angle),
+          y: centerY + radius * Math.sin(angle)
+        });
+      }
+      
+      // Draw connections
+      const pulseIntensity = effects.pulse ? Math.sin(pulsePhase) * 0.3 + 0.7 : 1;
+      
+      for (let i = 0; i < numNodes; i++) {
+        for (let j = i + 1; j < numNodes; j++) {
+          const lineProgress = (i + j) / (numNodes * 2);
+          
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          
+          if (effects.gradient) {
+            const gradient = ctx.createLinearGradient(
+              nodes[i].x, nodes[i].y,
+              nodes[j].x, nodes[j].y
+            );
+            const hue1 = (lineProgress * 360 + rotation * 50) % 360;
+            const hue2 = ((lineProgress + 0.3) * 360 + rotation * 50) % 360;
+            gradient.addColorStop(0, `hsla(${hue1}, 70%, 50%, ${0.65 * pulseIntensity})`);
+            gradient.addColorStop(1, `hsla(${hue2}, 70%, 50%, ${0.65 * pulseIntensity})`);
+            ctx.strokeStyle = gradient;
+          } else {
+            ctx.strokeStyle = `rgba(92, 109, 130, ${0.65 * pulseIntensity})`;
+          }
+          
+          ctx.lineWidth = 2;
+          
+          if (effects.glow) {
+            ctx.shadowBlur = 12 * pulseIntensity;
+            ctx.shadowColor = effects.gradient ? 
+              `hsl(${(lineProgress * 360) % 360}, 70%, 50%)` : 
+              'rgba(92, 109, 130, 0.8)';
+          } else {
+            ctx.shadowBlur = 0;
+          }
+          
+          ctx.stroke();
+        }
+      }
+      
+      // Draw nodes
+      nodes.forEach((node, index) => {
+        const nodeHue = (index / numNodes * 360 + rotation * 50) % 360;
+        
+        // Outer glow circle
+        if (effects.glow) {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, 12, 0, 2 * Math.PI);
+          
+          if (effects.gradient) {
+            const glowGradient = ctx.createRadialGradient(
+              node.x, node.y, 0,
+              node.x, node.y, 12
+            );
+            glowGradient.addColorStop(0, `hsla(${nodeHue}, 70%, 60%, ${0.6 * pulseIntensity})`);
+            glowGradient.addColorStop(1, `hsla(${nodeHue}, 70%, 60%, 0)`);
+            ctx.fillStyle = glowGradient;
+          } else {
+            const glowGradient = ctx.createRadialGradient(
+              node.x, node.y, 0,
+              node.x, node.y, 12
+            );
+            glowGradient.addColorStop(0, `rgba(92, 109, 130, ${0.6 * pulseIntensity})`);
+            glowGradient.addColorStop(1, 'rgba(92, 109, 130, 0)');
+            ctx.fillStyle = glowGradient;
+          }
+          
+          ctx.shadowBlur = 0;
+          ctx.fill();
+        }
+        
+        // Main node circle
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 9, 0, 2 * Math.PI);
+        
+        if (effects.gradient) {
+          const gradient = ctx.createRadialGradient(
+            node.x, node.y, 0,
+            node.x, node.y, 9
+          );
+          gradient.addColorStop(0, `hsl(${nodeHue}, 70%, 70%)`);
+          gradient.addColorStop(1, `hsl(${nodeHue}, 70%, 45%)`);
+          ctx.fillStyle = gradient;
+        } else {
+          ctx.fillStyle = '#5c6d82';
+        }
+        
+        if (effects.glow) {
+          ctx.shadowBlur = 15 * pulseIntensity;
+          ctx.shadowColor = effects.gradient ? 
+            `hsl(${nodeHue}, 70%, 50%)` : 
+            'rgba(92, 109, 130, 0.8)';
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        
+        ctx.fill();
+        
+        // Border
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#273E74';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        // Inner white highlight
+        ctx.beginPath();
+        ctx.arc(node.x - 2, node.y - 2, 2.5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.fill();
+      });
+    }
+
+    function animate() {
+      if (effects.rotate) {
+        rotation += 0.005;
+      }
+      if (effects.pulse) {
+        pulsePhase += 0.05;
+      }
+      draw();
+      requestAnimationFrame(animate);
+    }
+
+    nodeSlider.addEventListener('input', (e) => {
+      numNodes = parseInt(e.target.value);
+      nodeValue.textContent = numNodes;
+      updateInfo();
+    });
+
+    nodeSlider.addEventListener('change', () => {
+      draw();
+    });
+
+    // Initial draw and start animation
+    updateInfo();
+    draw();
+    animate();
+
+    // Sacred geometry patterns
+    const patterns = [
+      { 
+        name: 'Semente da Vida',
+        desc: 'A Semente da Vida consiste em 7 círculos dispostos em um padrão hexagonal. É considerada a base fundamental da criação e representa os 7 dias da criação. Contém as proporções matemáticas da criação.',
+        draw: drawSeedOfLife 
+      },
+      { 
+        name: 'Vesica Piscis',
+        desc: 'A Vesica Piscis é formada pela interseção de dois círculos de mesmo tamanho, onde o centro de cada círculo toca a circunferência do outro. É o portal da criação, representando o momento do nascimento e da manifestação.',
+        draw: drawVesicaPiscis 
+      },
+      { 
+        name: 'Torus',
+        desc: 'O Torus é a forma fundamental do campo energético que permeia tudo no Universo. Representa o fluxo contínuo de energia e está presente desde átomos até galáxias. É o padrão de energia da vida.',
+        draw: drawTorus 
+      },
+      { 
+        name: 'Lótus 8 Pétalas',
+        desc: 'O Lótus de 8 pétalas representa o chakra do coração (Anahata) e simboliza amor, compaixão e equilíbrio. As 8 pétalas representam as 8 direções e os aspectos da consciência.',
+        draw: drawLotus8 
+      },
+      { 
+        name: 'Lótus 16 Pétalas',
+        desc: 'O Lótus de 16 pétalas está associado ao chakra laríngeo e representa a expansão da consciência. Simboliza pureza, iluminação e a capacidade de se elevar acima das águas turvas da existência material.',
+        draw: drawLotus16 
+      },
+      { 
+        name: 'Hexagrama',
+        desc: 'O Hexagrama, ou Estrela de David, é formado por dois triângulos equiláteros sobrepostos. Representa a união dos opostos: espírito e matéria, masculino e feminino, "como acima, assim abaixo".',
+        draw: drawHexagram 
+      },
+      { 
+        name: 'Pentagrama',
+        desc: 'O Pentagrama é uma estrela de cinco pontas que contém a proporção áurea em suas proporções. Representa os 5 elementos (terra, água, fogo, ar, espírito) e o ser humano com braços e pernas estendidos.',
+        draw: drawPentagram 
+      },
+      { 
+        name: 'Heptagrama',
+        desc: 'O Heptagrama é uma estrela de 7 pontas que representa os 7 dias da semana, os 7 planetas clássicos, os 7 chakras principais. É um símbolo de mistério e perfeição espiritual.',
+        draw: drawHeptagram 
+      },
+      { 
+        name: 'Octograma',
+        desc: 'O Octograma é uma estrela de 8 pontas que representa equilíbrio, renovação e regeneração. Simboliza as 4 direções cardeais e as 4 estações, representando a totalidade do cosmos.',
+        draw: drawOctagram 
+      },
+      { 
+        name: 'Mandala Circular',
+        desc: 'A Mandala Circular é um símbolo espiritual que representa o Universo. Com seus círculos concêntricos e divisões radiais, é usada para meditação e contemplação, ajudando a centralizar a mente.',
+        draw: drawCircularMandala 
+      },
+      { 
+        name: 'Mandala Floral',
+        desc: 'A Mandala Floral combina elementos botânicos em um padrão circular simétrico. Representa crescimento, beleza e a natureza cíclica da vida. É usada para relaxamento e foco mental.',
+        draw: drawFloralMandala 
+      },
+      { 
+        name: 'Hexágono Sagrado',
+        desc: 'O Hexágono Sagrado é a estrutura fundamental de muitos cristais e da própria vida. Com 6 lados iguais, representa equilíbrio perfeito e harmonia. É visto em colmeias de abelhas e estruturas moleculares.',
+        draw: drawSacredHexagon 
+      },
+      { 
+        name: 'Flor da Vida',
+        desc: 'A Flor da Vida é uma das geometrias sagradas mais importantes e antigas. Composta por 19 círculos sobrepostos, forma um padrão hexagonal perfeito. Representa a criação do Universo e a interconexão de toda vida.',
+        draw: drawFlowerOfLife 
+      },
+      { 
+        name: 'Estrela de 9 Pontas',
+        desc: 'A estrela de nove pontas simboliza a totalidade e os nove aspectos fundamentais da experiência humana. Associada ao Eneagrama, representa processos de transformação, equilíbrio interior e os ciclos de evolução da consciência.',
+        draw: drawNinePointedStar
+      },
+      {
+        name: 'Cubo de Metatron',
+        desc: 'O Cubo de Metatron contém todos os 5 Sólidos Platônicos, que são as formas fundamentais de toda a criação. É considerado o blueprint do Universo, contendo todos os padrões geométricos da existência.',
+        draw: drawMetatronCube
+      },
+      {
+        name: 'Tetraktys',
+        desc: 'O Tetraktys é um arranjo triangular de 10 pontos em 4 fileiras (1+2+3+4=10), sagrado para Pitágoras. Representa a fonte de toda criação, contendo os segredos da harmonia, música e proporções do Universo.',
+        draw: drawTetraktys
+      },
+      {
+        name: 'Torus Elíptico',
+        desc: 'O Torus Elíptico representa uma projeção simplificada do campo toroidal, forma associada a fluxos contínuos de energia e equilíbrio dinâmico. Simboliza ciclos de renovação e o movimento perpétuo presente em estruturas naturais e campos energéticos.',
+        draw: drawEllipticTorus
+      },
+    ];
+
+    function drawSeedOfLife(ctx, cx, cy, radius) {
+      ctx.save();
+
+      // Move origem para o centro
+      ctx.translate(cx, cy);
+
+      // Rotaciona 90 graus
+      ctx.rotate(Math.PI / 2);
+
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+
+      // círculo central
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.4, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // círculos ao redor
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3;
+        const x = radius * 0.4 * Math.cos(angle);
+        const y = radius * 0.4 * Math.sin(angle);
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius * 0.4, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawVesicaPiscis(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      const offset = radius * 0.35;
+      
+      ctx.beginPath();
+      ctx.arc(cx - offset, cy, radius * 0.5, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.arc(cx + offset, cy, radius * 0.5, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+
+    function drawTorus(ctx, cx, cy, radius) {
+      ctx.save();
+
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 1.5;
+
+      const bigR = radius * 0.65;   // raio principal
+      const smallR = radius * 0.65; // raio dos círculos
+      const steps = 36;              // quantidade de círculos
+
+      ctx.translate(cx, cy);
+
+      for (let i = 0; i < steps; i++) {
+        const angle = (i / steps) * Math.PI * 2;
+
+        ctx.save();
+        ctx.rotate(angle);
+
+        ctx.beginPath();
+        ctx.arc(0, smallR * 0.35, smallR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      // círculo externo
+      ctx.beginPath();
+      ctx.arc(0, 0, bigR + smallR * 0.35, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawLotus8(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      const petals = 8;
+      const petalRadius = radius * 0.35;
+      
+      for (let i = 0; i < petals; i++) {
+        const angle = i * 2 * Math.PI / petals;
+        const x = cx + radius * 0.3 * Math.cos(angle);
+        const y = cy + radius * 0.3 * Math.sin(angle);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, petalRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.2, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+
+    function drawLotus16(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 2;
+      
+      const petals = 16;
+      const petalRadius = radius * 0.22;
+      
+      for (let i = 0; i < petals; i++) {
+        const angle = i * 2 * Math.PI / petals;
+        const x = cx + radius * 0.35 * Math.cos(angle);
+        const y = cy + radius * 0.35 * Math.sin(angle);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, petalRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.18, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+
+    function drawHexagram(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      const size = radius * 0.5;
+      
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - size);
+      ctx.lineTo(cx - size * 0.866, cy + size * 0.5);
+      ctx.lineTo(cx + size * 0.866, cy + size * 0.5);
+      ctx.closePath();
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + size);
+      ctx.lineTo(cx - size * 0.866, cy - size * 0.5);
+      ctx.lineTo(cx + size * 0.866, cy - size * 0.5);
+      ctx.closePath();
+      ctx.stroke();
+    }
+
+    function drawPentagram(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      const points = [];
+      for (let i = 0; i < 5; i++) {
+        const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
+        points.push({
+          x: cx + radius * 0.6 * Math.cos(angle),
+          y: cy + radius * 0.6 * Math.sin(angle)
+        });
+      }
+      
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        ctx.moveTo(points[i].x, points[i].y);
+        ctx.lineTo(points[(i + 2) % 5].x, points[(i + 2) % 5].y);
+      }
+      ctx.stroke();
+    }
+
+    function drawHeptagram(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      const points = [];
+      for (let i = 0; i < 7; i++) {
+        const angle = (i * 2 * Math.PI / 7) - Math.PI / 2;
+        points.push({
+          x: cx + radius * 0.6 * Math.cos(angle),
+          y: cy + radius * 0.6 * Math.sin(angle)
+        });
+      }
+      
+      ctx.beginPath();
+      for (let i = 0; i < 7; i++) {
+        ctx.moveTo(points[i].x, points[i].y);
+        ctx.lineTo(points[(i + 3) % 7].x, points[(i + 3) % 7].y);
+      }
+      ctx.stroke();
+    }
+
+    function drawOctagram(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      const points = [];
+      for (let i = 0; i < 8; i++) {
+        const angle = (i * 2 * Math.PI / 8) - Math.PI / 2;
+        points.push({
+          x: cx + radius * 0.6 * Math.cos(angle),
+          y: cy + radius * 0.6 * Math.sin(angle)
+        });
+      }
+      
+      ctx.beginPath();
+      for (let i = 0; i < 8; i++) {
+        ctx.moveTo(points[i].x, points[i].y);
+        ctx.lineTo(points[(i + 3) % 8].x, points[(i + 3) % 8].y);
+      }
+      ctx.stroke();
+    }
+
+    function drawCircularMandala(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 2.5;
+      
+      for (let i = 1; i <= 6; i++) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius * 0.12 * i, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      
+      for (let i = 0; i < 16; i++) {
+        const angle = i * Math.PI / 8;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + radius * 0.72 * Math.cos(angle), cy + radius * 0.72 * Math.sin(angle));
+        ctx.stroke();
+      }
+    }
+
+    function drawFloralMandala(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 2;
+      
+      const layers = 3;
+      for (let layer = 0; layer < layers; layer++) {
+        const petals = 8 + layer * 4;
+        const r = radius * (0.2 + layer * 0.12);
+        const dist = radius * (0.15 + layer * 0.15);
+        
+        for (let i = 0; i < petals; i++) {
+          const angle = (i * 2 * Math.PI / petals) + (layer * 0.3);
+          const x = cx + dist * Math.cos(angle);
+          const y = cy + dist * Math.sin(angle);
+          
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, 2 * Math.PI);
+          ctx.stroke();
+        }
+      }
+    }
+
+    function drawSacredHexagon(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      for (let layer = 0; layer < 4; layer++) {
+        const r = radius * (0.2 + layer * 0.15);
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const angle = i * Math.PI / 3;
+          const x = cx + r * Math.cos(angle);
+          const y = cy + r * Math.sin(angle);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+      
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + radius * 0.65 * Math.cos(angle), cy + radius * 0.65 * Math.sin(angle));
+        ctx.stroke();
+      }
+    }
+
+    function drawFlowerOfLife(ctx, cx, cy, radius) {
+      ctx.save();
+      
+      // Move origem para o centro
+      ctx.translate(cx, cy);
+      
+      // Rotaciona 90 graus para alinhar corretamente
+      ctx.rotate(Math.PI / 2);
+      
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 2.5;
+      
+      const r = radius * 0.35; // Raio dos círculos
+      
+      // Círculo central
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      // Primeira camada - 6 círculos ao redor do centro
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3;
+        const x = r * Math.cos(angle);
+        const y = r * Math.sin(angle);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      
+      // Segunda camada - 12 círculos
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3;
+        
+        // Círculos na direção dos hexágonos
+        const x1 = 2 * r * Math.cos(angle);
+        const y1 = 2 * r * Math.sin(angle);
+        
+        ctx.beginPath();
+        ctx.arc(x1, y1, r, 0, 2 * Math.PI);
+        ctx.stroke();
+        
+        // Círculos nos espaços intermediários
+        const angle2 = angle + Math.PI / 6;
+        const x2 = r * Math.sqrt(3) * Math.cos(angle2);
+        const y2 = r * Math.sqrt(3) * Math.sin(angle2);
+        
+        ctx.beginPath();
+        ctx.arc(x2, y2, r, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      
+      // Círculo externo (opcional, para delimitar a flor)
+      ctx.beginPath();
+      ctx.arc(0, 0, 3 * r, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      ctx.restore();
+    }
+
+    function drawNinePointedStar(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 3;
+      
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.65, 0, 2 * Math.PI);
+      ctx.stroke();
+      
+      const points = [];
+      for (let i = 0; i < 9; i++) {
+        const angle = (i * 2 * Math.PI / 9) - Math.PI / 2;
+        points.push({
+          x: cx + radius * 0.65 * Math.cos(angle),
+          y: cy + radius * 0.65 * Math.sin(angle)
+        });
+      }
+      
+      const connections = [
+        [0, 3], [3, 6], [6, 0],
+        [1, 4], [4, 7], [7, 1],
+        [2, 5], [5, 8], [8, 2]
+      ];
+      
+      connections.forEach(conn => {
+        ctx.beginPath();
+        ctx.moveTo(points[conn[0]].x, points[conn[0]].y);
+        ctx.lineTo(points[conn[1]].x, points[conn[1]].y);
+        ctx.stroke();
+      });
+      
+      ctx.fillStyle = '#5c6d82';
+      points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    }
+
+    function drawMetatronCube(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.lineWidth = 2;
+      
+      // Primeiro desenha os 13 círculos da Fruta da Vida
+      const r = radius * 0.33;
+      const points = [{x: cx, y: cy}]; // Centro
+      
+      // 6 círculos ao redor
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3 - Math.PI / 2;
+        points.push({
+          x: cx + r * Math.cos(angle),
+          y: cy + r * Math.sin(angle)
+        });
+      }
+      
+      // 6 círculos externos
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3 + Math.PI / 6;
+        points.push({
+          x: cx + r * 2 * Math.cos(angle),
+          y: cy + r * 2 * Math.sin(angle)
+        });
+      }
+      
+      // Desenha os círculos
+      points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r * 0.5, 0, 2 * Math.PI);
+        ctx.stroke();
+      });
+      
+      // Conecta todos os pontos (Cubo de Metatron)
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#5c6d82';
+      for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+          ctx.beginPath();
+          ctx.moveTo(points[i].x, points[i].y);
+          ctx.lineTo(points[j].x, points[j].y);
+          ctx.globalAlpha = 0.4;
+          ctx.stroke();
+          ctx.globalAlpha = 1.0;
+        }
+      }
+    }
+
+    function drawTetraktys(ctx, cx, cy, radius) {
+      ctx.strokeStyle = '#5c6d82';
+      ctx.fillStyle = '#5c6d82';
+      ctx.lineWidth = 2;
+      
+      const dotRadius = 8;
+      const spacing = radius * 0.5;
+      const startY = cy - spacing * 1.5;
+      
+      // Array para armazenar todas as posições dos pontos
+      const dots = [];
+      
+      // 4 fileiras: 1, 2, 3, 4 pontos
+      for (let row = 0; row < 4; row++) {
+        const numDots = row + 1;
+        const rowY = startY + row * spacing;
+        const rowWidth = (numDots - 1) * spacing;
+        const startX = cx - rowWidth / 2;
+        
+        for (let dot = 0; dot < numDots; dot++) {
+          const dotX = startX + dot * spacing;
+          dots.push({x: dotX, y: rowY, row: row, col: dot});
+          
+          // Desenhar o ponto
+          ctx.beginPath();
+          ctx.arc(dotX, rowY, dotRadius, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+      
+      // Conexões VERTICAIS entre pontos adjacentes
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#5c6d82';
+      ctx.globalAlpha = 0.7;
+      
+      // Para cada ponto, conectar aos pontos diretamente abaixo
+      for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+        
+        // Se não for a última linha
+        if (dot.row < 3) {
+          // Conectar ao ponto diretamente abaixo (mesma coluna)
+          const belowIndex = dots.findIndex(d => 
+            d.row === dot.row + 1 && d.col === dot.col
+          );
+          if (belowIndex !== -1) {
+            ctx.beginPath();
+            ctx.moveTo(dot.x, dot.y);
+            ctx.lineTo(dots[belowIndex].x, dots[belowIndex].y);
+            ctx.stroke();
+          }
+          
+          // Conectar ao ponto abaixo e à direita (coluna + 1)
+          const belowRightIndex = dots.findIndex(d => 
+            d.row === dot.row + 1 && d.col === dot.col + 1
+          );
+          if (belowRightIndex !== -1) {
+            ctx.beginPath();
+            ctx.moveTo(dot.x, dot.y);
+            ctx.lineTo(dots[belowRightIndex].x, dots[belowRightIndex].y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      // Conexões HORIZONTAIS na mesma linha
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#5c6d82';
+      
+      // Para cada linha
+      for (let row = 0; row < 4; row++) {
+        const rowDots = dots.filter(d => d.row === row);
+        
+        // Conectar pontos adjacentes na mesma linha
+        for (let i = 0; i < rowDots.length - 1; i++) {
+          ctx.beginPath();
+          ctx.moveTo(rowDots[i].x, rowDots[i].y);
+          ctx.lineTo(rowDots[i + 1].x, rowDots[i + 1].y);
+          ctx.stroke();
+        }
+      }
+      
+      ctx.globalAlpha = 1.0;
+      
+      // Triângulo externo conectando os pontos extremos
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#5c6d82';
+      
+      // Encontrar os 3 pontos dos vértices
+      const top = dots.find(d => d.row === 0);
+      const bottomLeft = dots.find(d => d.row === 3 && d.col === 0);
+      const bottomRight = dots.find(d => d.row === 3 && d.col === 3);
+      
+      if (top && bottomLeft && bottomRight) {
+        ctx.beginPath();
+        ctx.moveTo(top.x, top.y);
+        ctx.lineTo(bottomLeft.x, bottomLeft.y);
+        ctx.lineTo(bottomRight.x, bottomRight.y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      
+      // Conexões DIAGONAIS (triângulos internos)
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = 'rgba(92, 109, 130, 0.4)';
+      
+      // Triângulos formados pelos pontos
+      // Triângulo superior (linhas 0-1-2)
+      if (dots.length >= 6) {
+        // Triângulo: ponto 0 -> ponto 2 -> ponto 5
+        ctx.beginPath();
+        ctx.moveTo(dots[0].x, dots[0].y);
+        ctx.lineTo(dots[2].x, dots[2].y);
+        ctx.lineTo(dots[5].x, dots[5].y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      
+      // Adicionar números pitagóricos (1, 2, 3, 4) nos pontos
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+    }
+
+    function drawEllipticTorus(ctx, cx, cy, radius) { 
+      ctx.strokeStyle = '#5c6d82'; ctx.lineWidth = 2; 
+      for (let i = 0; i < 20; i++) { 
+        const angle = i * Math.PI / 10; 
+        const r = radius * 0.6; 
+        ctx.beginPath(); 
+        ctx.ellipse(cx, cy, r, r * 0.3, angle, 0, 2 * Math.PI); 
+        ctx.stroke(); 
+      } 
+    }
+
+    function changeGeometry() {
+      currentGeometry = parseInt(geometrySelect.value);
+      geometryDescription.textContent = patterns[currentGeometry].desc;
+      drawGeometry();
+    }
+
+    function drawGeometry() {
+      const centerX = geometryCanvas.width / 2;
+      const centerY = geometryCanvas.height / 2;
+      const radius = Math.min(centerX, centerY) - 80;
+      
+      geometryCtx.clearRect(0, 0, geometryCanvas.width, geometryCanvas.height);
+      
+      patterns[currentGeometry].draw(geometryCtx, centerX, centerY, radius);
+    }
+
+    drawGeometry();
+  </script>
+</body>
+</html>
