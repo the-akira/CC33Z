@@ -373,7 +373,8 @@
       hueShift: false,
       flow: false
     };
-    let baseHue = 210; // tom inicial (azul acinzentado)
+    const originalHue = 210;
+    let baseHue = originalHue;
     let currentGeometry = 0;
 
     function setNodes(n) {
@@ -387,6 +388,15 @@
     function toggleEffect(effect, button) {
       effects[effect] = !effects[effect];
       button.classList.toggle('active');
+
+      if (effect === 'hueShift') {
+        if (effects.hueShift) {
+          baseHue = Math.random() * 360;
+        } else {
+          baseHue = originalHue;
+        }
+      }
+
       draw();
     }
 
@@ -406,9 +416,7 @@
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const hueBase = effects.hueShift
-        ? Math.random() * 360
-        : baseHue;
+      const hueBase = baseHue;
       
       // Calculate node positions
       const nodes = [];
