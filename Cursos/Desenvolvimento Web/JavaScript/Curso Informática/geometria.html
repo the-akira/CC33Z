@@ -297,7 +297,7 @@
             Matiz
           </button>
           <button class="effect-btn" data-effect="flow" onclick="toggleEffect('flow', this)">
-            Fluxo
+            Tracejado
           </button>
         </div>
       </div>
@@ -374,10 +374,7 @@
       flow: false
     };
     let baseHue = 210; // tom inicial (azul acinzentado)
-    let hueTime = 0;
-    let flowOffset = 0;
     let currentGeometry = 0;
-    let animationId = null;
 
     function setNodes(n) {
       numNodes = n;
@@ -390,21 +387,6 @@
     function toggleEffect(effect, button) {
       effects[effect] = !effects[effect];
       button.classList.toggle('active');
-
-      const needsAnimation =
-        effects.flow ||
-        effects.hueShift;
-
-      if (needsAnimation && !animationId) {
-        lastTime = 0;
-        animationId = requestAnimationFrame(animate);
-      }
-
-      if (!needsAnimation && animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-      }
-
       draw();
     }
 
@@ -425,7 +407,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const hueBase = effects.hueShift
-        ? (baseHue + hueTime * 0.2) % 360
+        ? Math.random() * 360
         : baseHue;
       
       // Calculate node positions
@@ -443,7 +425,6 @@
 
       if (effects.flow) {
         ctx.setLineDash([8, 6]);
-        ctx.lineDashOffset = -flowOffset;
       } else {
         ctx.setLineDash([]);
       }
@@ -559,20 +540,6 @@
         ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
         ctx.fill();
       });
-    }
-
-    function animate() {
-      animationId = requestAnimationFrame(animate);
-
-      if (effects.hueShift) {
-        hueTime++;
-      }
-
-      if (effects.flow) {
-        flowOffset += 0.6;
-      }
-
-      draw();
     }
 
     nodeSlider.addEventListener('input', (e) => {
