@@ -607,7 +607,9 @@ def custom_input(prompt=""):
     import js
     if prompt:
         print(prompt, end="")
-    return js.prompt(prompt)
+    value = js.prompt(prompt)
+    print(value)
+    return value
 
 __builtins__.input = custom_input
         `);
