@@ -620,6 +620,7 @@ __builtins__.input = custom_input
         document.querySelector('.editor-section').style.display = 'block';
         document.querySelector('.output-section').style.display = 'block';
         document.getElementById('loading-overlay').classList.remove('active');
+        addOutput('Exemplo carregado! Clique em "Executar" para ver o resultado.', 'success');
       } catch (error) {
         updateStatus('error', 'Erro ao carregar Python');
         addOutput('Erro ao inicializar Python: ' + error.message, 'error');
