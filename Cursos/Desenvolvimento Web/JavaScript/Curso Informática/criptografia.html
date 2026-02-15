@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Criptografia - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .crypto-container { 
+      max-width: 1200px; 
+      margin: 20px auto; 
+      padding: 0 20px; 
+    }
+    .cipher-selector { 
+      background: #f2f2f2; 
+      border: 2px solid #273E74; 
+      padding: 20px; 
+      margin-bottom: 20px; 
+      text-align: center; 
+    }
+    .cipher-selector h3 { 
+      color: #273E74; 
+      margin-bottom: 15px; 
+    }
+    .cipher-buttons { 
+      display: flex; 
+      gap: 10px; 
+      justify-content: center; 
+      flex-wrap: wrap; 
+    }
+    .cipher-btn { 
+      background-color: #5C6D82; 
+      color: white; 
+      padding: 10px 20px; 
+      border: 2px solid #273E74; 
+      font-size: 1rem; 
+      font-weight: bold; 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
+    }
+    .cipher-btn:hover { 
+      background-color: #273E74; 
+    }
+    .cipher-btn.active { 
+      background-color: #273E74; 
+    }
+    .input-section { 
+      background: #f2f2f2; 
+      border: 2px solid #273E74; 
+      padding: 25px; 
+      margin-bottom: 20px; 
+    }
+    .input-group { 
+      margin-bottom: 20px; 
+    }
+    .input-group label { 
+      display: block; 
+      color: #273E74; 
+      font-weight: bold; 
+      margin-bottom: 8px; 
+      font-size: 1.1rem; 
+    }
+    .input-group input { 
+      width: 100%; 
+      padding: 12px; 
+      border: 2px solid #273E74; 
+      font-size: 1rem; 
+      font-family: 'Courier New', monospace; 
+      box-sizing: border-box; 
+      text-transform: uppercase; 
+    }
+    .input-group input[type="number"] { 
+      text-transform: none; 
+    }
+    .input-group input:focus { 
+      border-color: #5C6D82; 
+      outline: none; 
+    }
+    .mode-selector { 
+      display: flex; 
+      gap: 10px; 
+      margin-bottom: 20px; 
+    }
+    .mode-btn { 
+      flex: 1; 
+      background-color: #5C6D82; 
+      color: white; 
+      padding: 12px; 
+      border: 2px solid #273E74; 
+      font-size: 1rem; 
+      font-weight: bold; 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
+    }
+    .mode-btn:hover { 
+      background-color: #273E74; 
+    }
+    .mode-btn.active { 
+      background-color: #273E74; 
+    }
+    .controls { 
+      background: #f2f2f2; 
+      border: 2px solid #273E74; 
+      padding: 20px; 
+      margin-bottom: 20px; 
+      display: flex; 
+      gap: 10px; 
+      justify-content: center; 
+      flex-wrap: wrap; 
+      align-items: center; 
+    }
+    .control-btn { 
+      background-color: #5C6D82; 
+      color: white; 
+      padding: 12px 25px; 
+      border: 2px solid #273E74; 
+      font-size: 1rem; 
+      font-weight: bold; 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
+      min-width: 120px; 
+    }
+    .control-btn:hover:not(:disabled) { 
+      background-color: #273E74; 
+    }
+    .control-btn:disabled { 
+      opacity: 0.5; cursor: not-allowed; 
+    }
+    .speed-control { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+    }
+    .speed-control label { 
+      color: #273E74; 
+      font-weight: bold; 
+    }
+    .speed-control select { 
+      padding: 8px; 
+      border: 2px solid #273E74; 
+      background-color: white; 
+      font-size: 1rem; 
+    }
+    .speed-control select:focus { 
+      outline: none; 
+    }
+    .speed-control select:hover { 
+      border-color: #5C6D82; 
+    }
+    .visualization { 
+      background: white; 
+      border: 2px solid #273E74; 
+      padding: 25px; 
+      margin-bottom: 20px; 
+      display: none; 
+    }
+    .visualization.show { 
+      display: block; 
+    }
+    .step-info { 
+      background: #e8f0fe; 
+      border: 2px solid #273E74; 
+      padding: 15px; 
+      margin-bottom: 20px; 
+      text-align: center; 
+      color: #273E74; 
+      font-weight: bold; 
+      font-size: 1.1rem; 
+      display: none; 
+    }
+    .step-info.show { 
+      display: block; 
+    }
+    .process-display { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 20px; 
+      margin-bottom: 20px; 
+    }
+    .text-row { 
+      display: flex; 
+      gap: 5px; 
+      justify-content: center; 
+      flex-wrap: wrap; 
+    }
+    .char-box { 
+      width: 40px; 
+      height: 40px; 
+      border: 2px solid #273E74; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-family: 'Courier New', monospace; 
+      font-size: 1.2rem; 
+      font-weight: bold; 
+      background-color: white; 
+      transition: all 0.3s; 
+    }
+    .char-box.highlight { 
+      background-color: #ffd54f; 
+      border-color: #ff9800; 
+    }
+    .char-box.processed { 
+      background-color: #a5d6a7; 
+      border-color: #4caf50; 
+    }
+    .char-box.key { 
+      background-color: #90caf9; 
+      border-color: #2196f3; 
+    }
+    .row-label { 
+      color: #273E74; 
+      font-weight: bold; 
+      margin-bottom: 8px; 
+      font-size: 1.1rem; 
+      text-align: center; 
+    }
+    .vigenere-table { 
+      overflow-x: auto; 
+      margin-top: 20px; 
+      display: none; 
+    }
+    .vigenere-table.show { 
+      display: block; 
+    }
+    .cesar-wheel { 
+      overflow-x: auto; 
+      margin-top: 20px; 
+      display: none; 
+    }
+    .cesar-wheel.show { 
+      display: block; 
+    }
+    .play-fair-matrix { 
+      overflow-x: auto; 
+      margin-top: 20px; 
+      display: none; 
+    }
+    .rail-fence-grid { 
+      overflow-x: auto; 
+      margin-top: 20px; 
+      display: none; 
+    }
+    .play-fair-matrix.show { 
+      display: block; 
+    }
+    .rail-fence-grid.show { 
+      display: block; 
+    }
+    .alphabet-strip { 
+      display: flex; 
+      gap: 2px; 
+      justify-content: center; 
+      margin: 15px 0; 
+      flex-wrap: wrap; 
+      margin-bottom: 0px; 
+    }
+    .strip-cell { 
+      min-width: 30px; 
+      height: 40px; 
+      border: 2px solid #273E74; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-family: 'Courier New', monospace; 
+      font-size: 1rem; 
+      font-weight: bold; 
+      background-color: white; 
+    }
+    .strip-cell.original { 
+      background-color: #e8f0fe; 
+    }
+    .strip-cell.shifted { 
+      background-color: #fff3cd; 
+    }
+    .strip-cell.highlight-original { 
+      background-color: #4a90e2; 
+      color: white; 
+      z-index: 1; 
+    }
+    .strip-cell.highlight-shifted { 
+      background-color: #28a745; 
+      color: white; 
+      z-index: 1; 
+    }
+    .shift-arrow { 
+      text-align: center; 
+      color: #273E74; 
+      font-size: 2rem; 
+      font-weight: bold; 
+      margin: 5px 0; 
+      margin-top: 15px; 
+    }
+    .grid-table { 
+      border-collapse: collapse; 
+      margin: 0 auto; 
+      font-family: 'Courier New', monospace; 
+      font-size: 0.85rem; 
+    }
+    .grid-table td { 
+      border: 1px solid #ddd; 
+      padding: 6px; 
+      text-align: center; 
+      min-width: 25px; 
+      height: 25px; 
+    }
+    .grid-table td.header { 
+      background-color: #273E74; 
+      color: white; 
+      font-weight: bold; 
+    }
+    .grid-table td.highlight-row { 
+      background-color: #ffe6cc; 
+      font-weight: bold; 
+    }
+    .grid-table td.highlight-col { 
+      background-color: #cce5ff; 
+      font-weight: bold; 
+    }
+    .grid-table td.header.highlight-row { 
+      background-color: #ff8c42 !important; 
+      color: white !important; 
+      font-weight: bold; 
+    }
+    .grid-table td.header.highlight-col { 
+      background-color: #4a90e2 !important; 
+      color: white !important; 
+      font-weight: bold; 
+    }
+    .grid-table td.highlight-cell { 
+      background-color: #28a745; 
+      color: white; font-weight: bold; 
+      font-size: 1.1rem; 
+    }
+    .playfair-grid { 
+      border-collapse: collapse; 
+      margin: 0 auto; 
+      font-family: 'Courier New', monospace; 
+    }
+    .playfair-grid td { 
+      border: 2px solid #273E74; 
+      padding: 12px; 
+      text-align: center; 
+      min-width: 45px; 
+      height: 45px; 
+      font-size: 1.2rem; 
+      font-weight: bold; 
+      background-color: white; 
+      transition: all 0.3s; 
+    }
+    .playfair-grid td.highlight-pair1 { 
+      background-color: #4a90e2; 
+      color: white; 
+      z-index: 1; 
+    }
+    .playfair-grid td.highlight-pair2 { 
+      background-color: #e2a04a; 
+      color: white; 
+      z-index: 1; 
+    }
+    .playfair-grid td.highlight-result1 { 
+      background-color: #28a745; 
+      color: white; 
+      z-index: 1; 
+    }
+    .playfair-grid td.highlight-result2 { 
+      background-color: #28a745; 
+      color: white; 
+      z-index: 1; 
+    }
+    .playfair-grid td.same-row { 
+      background-color: #e2a04a; 
+      color: white; 
+    }
+    .playfair-grid td.same-col { 
+      background-color: #4a90e2; 
+      color: white; 
+    }
+    .digram-info { 
+      background: #f8f9fa; 
+      border: 2px solid #273E74; 
+      padding: 15px; 
+      margin: 0px 0px; 
+    }
+    .digram-info h4 { 
+      color: #273E74; 
+      margin-bottom: 10px; 
+      font-size: 1rem; 
+      margin-top: 0px 
+    }
+    .digram-info p { 
+      color: #333; 
+      margin: 5px 0; 
+      font-family: 'Courier New', monospace; 
+    }
+    .digram-pair { 
+      display: inline-block; 
+      background: #e8f0fe; 
+      padding: 5px 15px; 
+      border: 2px solid #273E74; 
+      margin: 0 5px; 
+      font-weight: bold; 
+    }
+    .rail-grid { 
+      border-collapse: separate; 
+      margin: 0 auto; 
+      font-family: 'Courier New', monospace; 
+    }
+    .rail-grid td { 
+      border: 2px solid #ddd; 
+      padding: 8px; 
+      text-align: center; 
+      min-width: 35px; 
+      height: 35px; 
+      font-size: 1.1rem; 
+      font-weight: bold; 
+      background-color: white; 
+      transition: all 0.3s; 
+      position: relative; 
+    }
+    .rail-grid td.empty { 
+      background-color: #f5f5f5; 
+      color: #ccc; 
+    }
+    .rail-grid td.filled { 
+      background-color: white; 
+      color: #273E74; 
+    }
+    .rail-grid td.highlight-char { 
+      background-color: #ffd54f !important; 
+      border: 2px solid #ff9800 !important; 
+      z-index: 1; 
+    }
+    .rail-grid td.processed { 
+      background-color: #a5d6a7; 
+      border-color: #4caf50; 
+    }
+    .rail-grid td.current-rail { 
+      background-color: #e3f2fd; 
+    }
+    .rail-arrow { 
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      font-size: 1.5rem; 
+      color: #ff9800; 
+    }
+    .result-section { 
+      background: #e8f0fe; 
+      border: 2px solid #273E74; 
+      padding: 20px; 
+      margin-top: 20px; 
+      display: none; 
+    }
+    .result-section.show { 
+      display: block; 
+    }
+    .result-section h3 { 
+      color: #273E74; 
+      margin-bottom: 15px; 
+      margin-top: 0px; 
+    }
+    .result-text { 
+      background: white; 
+      border: 2px solid #273E74; 
+      padding: 15px; 
+      font-family: 'Courier New', monospace; 
+      font-size: 1.2rem; 
+      word-wrap: break-word; 
+      text-align: center; 
+      font-weight: bold; 
+      color: #273E74; 
+    }
+    .explanation { 
+      background: #f2f2f2; 
+      border: 2px solid #273E74; 
+      padding: 20px; 
+      margin-bottom: 20px; 
+    }
+    .explanation h3 { 
+      color: #273E74; 
+      margin-bottom: 15px; 
+    }
+    .explanation p { 
+      color: #333; 
+      line-height: 1.6; 
+      margin-bottom: 10px; 
+      margin-top: 0px; 
+    }
+    .explanation ul { 
+      color: #333; 
+      line-height: 1.8; 
+      margin: 5px 0px; 
+      margin-bottom: 0px; 
+    }
+    .toggle-table-btn { 
+      background-color: #5C6D82; 
+      color: white; 
+      padding: 10px 20px; 
+      border: 2px solid #273E74; 
+      font-size: 1rem; 
+      font-weight: bold; 
+      cursor: pointer; 
+      margin-top: 10px; 
+      transition: background-color 0.3s; 
+    }
+    .toggle-table-btn:hover { 
+      background-color: #273E74; 
+    }
+    @media only screen and (max-width: 768px) {
+      .char-box { 
+        width: 35px; 
+        height: 35px; 
+        font-size: 1rem; 
+      }
+      .grid-table td { 
+        min-width: 20px; 
+        height: 20px; 
+        font-size: 0.7rem; 
+        padding: 4px; 
+      }
+      .strip-cell { 
+        min-width: 25px; 
+        height: 35px; 
+        font-size: 0.9rem; 
+      }
+      .control-btn { 
+        min-width: 100px; 
+        padding: 10px 15px; 
+      }
+      .mode-selector { 
+        flex-wrap: wrap; 
+      }
+      .speed-control { 
+        flex-wrap: wrap; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+      <a class="menu" href="contato.html">Contato</a>
+      <a class="menu" href="faq.html">Perguntas Frequentes</a>
+      <a class="menu" href="digitacao.html">Treinamento Digitação</a>
+      <a class="menu" href="mouse.html">Treinamento Mouse</a>
+      <a class="menu" href="algoritmos.html">Algoritmos</a>
+      <a class="menu" href="games.html">Games</a>
+      <a class="menu" href="portas.html">Portas Lógicas</a>
+      <a class="menu" href="interpretador.html">Interpretador Python</a>
+      <a class="menu" href="geometria.html">Geometria</a>
+      <a class="menu" href="criptografia.html">Criptografia</a>
+    </nav>
+  </header>
+
+  <h1 style="margin-bottom: 20px;" class="subtitle">Visualizador de Criptografias</h1>
+
+  <div class="crypto-container">
+    <div class="explanation">
+      <h3 style="margin-top: 0px;">O que é Criptografia?</h3>
+      <p>A <strong>criptografia</strong> é a ciência de proteger informações através da transformação de mensagens legíveis em códigos secretos. Ela é fundamental para a segurança digital moderna, protegendo desde mensagens de WhatsApp até transações bancárias.</p>
+      <p style="margin-bottom: 0px;"><strong>Como funciona?</strong> A criptografia usa algoritmos matemáticos para:</p>
+      <ul style="margin-bottom: 5px;">
+        <li><strong>Criptografar:</strong> Transformar uma mensagem original (texto claro) em uma mensagem codificada (texto cifrado)</li>
+        <li><strong>Descriptografar:</strong> Reverter o processo, transformando o texto cifrado de volta ao texto original</li>
+      </ul>
+      <p style="margin-bottom: 0px;">Neste visualizador, você pode experimentar diferentes técnicas de criptografia clássicas, acompanhando passo a passo como cada algoritmo transforma as mensagens. Escolha uma cifra abaixo para começar!</p>
+    </div>
+
+    <div class="cipher-selector">
+      <h3 style="margin-top: 0px;">Escolha uma Cifra</h3>
+      <div class="cipher-buttons">
+        <button class="cipher-btn active" data-cipher="vigenere">Cifra de Vigenère</button>
+        <button class="cipher-btn" data-cipher="cesar">Cifra de César</button>
+        <button class="cipher-btn" data-cipher="playfair">Cifra de Playfair</button>
+        <button class="cipher-btn" data-cipher="rail-fence">Cifra Rail Fence</button>
+      </div>
+    </div>
+
+    <div class="explanation" id="vigenereExplanation">
+      <h3 style="margin-top: 0px;">Sobre a Cifra de Vigenère</h3>
+      <p>A Cifra de Vigenère é um método de criptografia que usa uma série de diferentes cifras de César baseadas nas letras de uma palavra-chave. Foi inventada no século XVI e é considerada uma "cifra polialfabética".</p>
+      <p style="margin-bottom: 0px;"><strong>Como funciona:</strong></p>
+      <ul>
+        <li>Cada letra da mensagem é deslocada de acordo com a letra correspondente da chave</li>
+        <li>A chave se repete para cobrir toda a mensagem</li>
+        <li>A = 0, B = 1, C = 2, ... Z = 25</li>
+        <li>Para criptografar: (Texto + Chave) mod 26</li>
+        <li>Para descriptografar: (Texto - Chave) mod 26</li>
+      </ul>
+    </div>
+
+    <div class="explanation" id="cesarExplanation" style="display: none;">
+      <h3 style="margin-top: 0px;">Sobre a Cifra de César</h3>
+      <p>A Cifra de César é uma das técnicas de criptografia mais antigas e simples. Foi usada por Júlio César para proteger mensagens militares, deslocando cada letra do alfabeto um número fixo de posições.</p>
+      <p style="margin-bottom: 0px;"><strong>Como funciona:</strong></p>
+      <ul>
+        <li>Escolha um número de deslocamento (chave) de 1 a 25</li>
+        <li>Cada letra é substituída pela letra que está N posições à frente (ou atrás para descriptografar)</li>
+        <li>Exemplo: com chave 3, A→D, B→E, C→F, ..., X→A, Y→B, Z→C</li>
+        <li>Para criptografar: (Letra + Chave) mod 26</li>
+        <li>Para descriptografar: (Letra - Chave + 26) mod 26</li>
+      </ul>
+    </div>
+
+    <div class="explanation" id="playfairExplanation" style="display: none;">
+      <h3 style="margin-top: 0px;">Sobre a Cifra de Playfair</h3>
+      <p>A Cifra de Playfair foi criada em 1854 por Charles Wheatstone, mas leva o nome de Lord Playfair que a promoveu. Foi a primeira cifra de substituição de digramas (pares de letras) e foi usada extensivamente em guerras.</p>
+      <p style="margin-bottom: 0px;"><strong>Como funciona:</strong></p>
+      <ul>
+        <li>Cria uma matriz 5×5 usando uma palavra-chave (letras I e J compartilham a mesma posição)</li>
+        <li>O texto é dividido em pares de letras (digramas)</li>
+        <li>Se duas letras iguais ficam juntas, insere-se um X entre elas</li>
+        <li>Se o texto tiver número ímpar de letras, adiciona-se X no final</li>
+        <li><strong>Regra 1:</strong> Se as letras estão na mesma linha → desloca cada uma para direita (circular)</li>
+        <li><strong>Regra 2:</strong> Se as letras estão na mesma coluna → desloca cada uma para baixo (circular)</li>
+        <li><strong>Regra 3:</strong> Se formam um retângulo → troca pelas letras nos cantos opostos da mesma linha</li>
+      </ul>
+    </div>
+
+    <div class="explanation" id="railFenceExplanation" style="display: none;">
+      <h3 style="margin-top: 0px;">Sobre a Cifra Rail Fence (Cerca de Trilhos)</h3>
+      <p>A Cifra Rail Fence, também conhecida como Zigzag Cipher, é um método de transposição simples onde o texto é escrito em um padrão de zigzag através de múltiplas linhas (trilhos) e depois lido linha por linha.</p>
+      <p style="margin-bottom: 0px;"><strong>Como funciona:</strong></p>
+      <ul>
+        <li>Escolha um número de trilhos (linhas) de 2 a 10</li>
+        <li>Escreva o texto em zigzag descendo e subindo pelos trilhos</li>
+        <li>Para criptografar: leia cada trilho da esquerda para direita</li>
+        <li>Para descriptografar: reconstrua o padrão zigzag e leia na ordem original</li>
+        <li>Exemplo com 3 trilhos e "HELLO": H...O → .E.L. → ..L.. = "HOELL"</li>
+      </ul>
+    </div>
+
+    <div class="input-section">
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="encrypt">Criptografar</button>
+        <button class="mode-btn" data-mode="decrypt">Descriptografar</button>
+      </div>
+
+      <div class="input-group">
+        <label for="plaintext" id="textLabel">Texto (apenas letras):</label>
+        <input type="text" id="plaintext" placeholder="Digite o texto aqui" maxlength="20">
+      </div>
+
+      <div class="input-group" id="vigenereKeyGroup" style="margin-bottom: 0px;">
+        <label for="key">Chave (apenas letras):</label>
+        <input type="text" id="key" placeholder="Digite a chave" maxlength="10">
+      </div>
+
+      <div class="input-group" id="cesarKeyGroup" style="display: none; margin-bottom: 0px;">
+        <label for="cesarShift">Deslocamento (chave numérica de 1 a 25):</label>
+        <input type="number" id="cesarShift" placeholder="Digite um número de 1 a 25" min="1" max="25">
+      </div>
+
+      <div class="input-group" id="playfairKeyGroup" style="display: none; margin-bottom: 0px;">
+        <label for="playfairKey">Chave (apenas letras, sem J):</label>
+        <input type="text" id="playfairKey" placeholder="Digite a chave" maxlength="15">
+      </div>
+
+      <div class="input-group" id="railFenceKeyGroup" style="display: none; margin-bottom: 0px;">
+        <label for="railFenceRails">Número de Trilhos (2 a 10):</label>
+        <input type="number" id="railFenceRails" placeholder="Digite o número de trilhos" min="2" max="10" value="3">
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn" id="resetBtn">Reiniciar</button>
+      <button class="control-btn" id="prevBtn" disabled>Anterior</button>
+      <button class="control-btn" id="playBtn" disabled>Play</button>
+      <button class="control-btn" id="nextBtn" disabled>Próximo</button>
+      <div class="speed-control">
+        <label>Velocidade:</label>
+        <select id="speedSelect">
+          <option value="2000">Lenta</option>
+          <option value="1000" selected>Normal</option>
+          <option value="500">Rápida</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="step-info" id="stepInfo">Configure o texto e a chave para começar</div>
+
+    <div class="visualization">
+      <div class="process-display">
+        <div>
+          <div class="row-label" id="textRowLabel">Texto:</div>
+          <div class="text-row" id="textRow"></div>
+        </div>
+        <div id="keyRowContainer">
+          <div class="row-label">Chave:</div>
+          <div class="text-row" id="keyRow"></div>
+        </div>
+        <div>
+          <div class="row-label">Resultado:</div>
+          <div class="text-row" id="resultRow"></div>
+        </div>
+      </div>
+
+      <div class="vigenere-table" id="vigenereTable">
+        <h3 style="text-align: center; color: #273E74; margin-bottom: 15px; margin-top: 0px;">Tabela de Vigenère</h3>
+        <div id="tableContent"></div>
+      </div>
+
+      <div class="cesar-wheel" id="cesarWheel">
+        <h3 style="text-align: center; color: #273E74; margin-bottom: 15px; margin-top: 0px;">Disco de César</h3>
+        <div class="alphabet-strip original" id="originalStrip"></div>
+        <div class="shift-arrow" id="shiftArrow">↓ Deslocamento ↓</div>
+        <div class="alphabet-strip shifted" id="shiftedStrip"></div>
+      </div>
+
+      <div class="play-fair-matrix" id="playfairMatrix">
+        <h3 style="text-align: center; color: #273E74; margin-bottom: 15px; margin-top: 0px;">Matriz Playfair 5×5</h3>
+        <div id="playfairMatrixContent" style="display: flex;"></div>
+      </div>
+
+      <div class="rail-fence-grid" id="railFenceGrid">
+        <h3 style="text-align: center; color: #273E74; margin-bottom: 15px; margin-top: 0px;">Padrão Zigzag Rail Fence</h3>
+        <div id="railFenceGridContent" style="overflow-x: auto;"></div>
+      </div>
+    </div>
+
+    <div class="result-section">
+      <h3 id="resultTitle">Resultado:</h3>
+      <div class="result-text" id="finalResult">-</div>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = -1, isPlaying = false, playInterval = null, mode = 'encrypt';
+    let processedText = '', processedKey = '', steps = [], activeCipher = 'vigenere';
+
+    const textInput = document.getElementById('plaintext'), keyInput = document.getElementById('key');
+    const cesarShiftInput = document.getElementById('cesarShift');
+    const textRow = document.getElementById('textRow'), keyRow = document.getElementById('keyRow');
+    const resultRow = document.getElementById('resultRow'), stepInfo = document.getElementById('stepInfo');
+    const finalResult = document.getElementById('finalResult'), resultTitle = document.getElementById('resultTitle');
+    const playBtn = document.getElementById('playBtn'), prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn'), resetBtn = document.getElementById('resetBtn');
+    const speedSelect = document.getElementById('speedSelect');
+    const vigenereTable = document.getElementById('vigenereTable'), tableContent = document.getElementById('tableContent');
+    const cesarWheel = document.getElementById('cesarWheel');
+    const originalStrip = document.getElementById('originalStrip'), shiftedStrip = document.getElementById('shiftedStrip');
+    const visualization = document.querySelector('.visualization'), resultSection = document.querySelector('.result-section');
+    const vigenereExplanation = document.getElementById('vigenereExplanation');
+    const cesarExplanation = document.getElementById('cesarExplanation');
+    const playfairExplanation = document.getElementById('playfairExplanation');
+    const railFenceExplanation = document.getElementById('railFenceExplanation');
+    const vigenereKeyGroup = document.getElementById('vigenereKeyGroup');
+    const cesarKeyGroup = document.getElementById('cesarKeyGroup');
+    const playfairKeyGroup = document.getElementById('playfairKeyGroup');
+    const railFenceKeyGroup = document.getElementById('railFenceKeyGroup');
+    const playfairKeyInput = document.getElementById('playfairKey');
+    const railFenceRailsInput = document.getElementById('railFenceRails');
+    const playfairMatrix = document.getElementById('playfairMatrix');
+    const playfairMatrixContent = document.getElementById('playfairMatrixContent');
+    const railFenceGrid = document.getElementById('railFenceGrid');
+    const railFenceGridContent = document.getElementById('railFenceGridContent');
+    const keyRowContainer = document.getElementById('keyRowContainer');
+    let playfairGrid = [];
+    let railFencePattern = [];
+
+    // Seletor de cifra
+    document.querySelectorAll('.cipher-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        document.querySelectorAll('.cipher-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCipher = btn.dataset.cipher;
+        switchCipher(activeCipher);
+      });
+    });
+
+    function switchCipher(cipher) {
+      if (cipher === 'vigenere') {
+        vigenereExplanation.style.display = 'block';
+        cesarExplanation.style.display = 'none';
+        playfairExplanation.style.display = 'none';
+        railFenceExplanation.style.display = 'none';
+        vigenereKeyGroup.style.display = 'block';
+        cesarKeyGroup.style.display = 'none';
+        playfairKeyGroup.style.display = 'none';
+        railFenceKeyGroup.style.display = 'none';
+        keyRowContainer.style.display = 'block';
+      } else if (cipher === 'cesar') {
+        vigenereExplanation.style.display = 'none';
+        cesarExplanation.style.display = 'block';
+        playfairExplanation.style.display = 'none';
+        railFenceExplanation.style.display = 'none';
+        vigenereKeyGroup.style.display = 'none';
+        cesarKeyGroup.style.display = 'block';
+        playfairKeyGroup.style.display = 'none';
+        railFenceKeyGroup.style.display = 'none';
+        keyRowContainer.style.display = 'none';
+      } else if (cipher === 'playfair') {
+        vigenereExplanation.style.display = 'none';
+        cesarExplanation.style.display = 'none';
+        playfairExplanation.style.display = 'block';
+        railFenceExplanation.style.display = 'none';
+        vigenereKeyGroup.style.display = 'none';
+        cesarKeyGroup.style.display = 'none';
+        playfairKeyGroup.style.display = 'block';
+        railFenceKeyGroup.style.display = 'none';
+        keyRowContainer.style.display = 'none';
+      } else if (cipher === 'rail-fence') {
+        vigenereExplanation.style.display = 'none';
+        cesarExplanation.style.display = 'none';
+        playfairExplanation.style.display = 'none';
+        railFenceExplanation.style.display = 'block';
+        vigenereKeyGroup.style.display = 'none';
+        cesarKeyGroup.style.display = 'none';
+        playfairKeyGroup.style.display = 'none';
+        railFenceKeyGroup.style.display = 'block';
+        keyRowContainer.style.display = 'none';
+      }
+      reset();
+    }
+
+    // Botões de modo
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mode = btn.dataset.mode;
+        resultTitle.textContent = mode === 'encrypt' ? 'Texto Criptografado:' : 'Texto Descriptografado:';
+        reset();
+      });
+    });
+
+    // Inputs
+    textInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+      reset();
+    });
+
+    keyInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+      reset();
+    });
+
+    cesarShiftInput.addEventListener('input', () => reset());
+
+    playfairKeyInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^a-zA-Z]/g, '').replace(/[jJ]/g, 'I').toUpperCase();
+      reset();
+    });
+
+    railFenceRailsInput.addEventListener('input', () => reset());
+
+    // Criar tabela de Vigenère
+    function createVigenereTable() {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let html = '<table class="grid-table"><tr><td class="header"></td>';
+      for (let i = 0; i < 26; i++) html += `<td class="header" id="header-col-${i}">${alphabet[i]}</td>`;
+      html += '</tr>';
+      for (let row = 0; row < 26; row++) {
+        html += `<tr><td class="header" id="header-row-${row}">${alphabet[row]}</td>`;
+        for (let col = 0; col < 26; col++) {
+          const char = alphabet[(row + col) % 26];
+          html += `<td id="cell-${row}-${col}">${char}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</table>';
+      tableContent.innerHTML = html;
+    }
+
+    // Criar disco de César
+    function createCesarWheel(shift) {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let originalHTML = '', shiftedHTML = '';
+      
+      for (let i = 0; i < 26; i++) {
+        originalHTML += `<div class="strip-cell original" id="orig-${i}">${alphabet[i]}</div>`;
+        const shiftedIndex = ((i + shift) % 26 + 26) % 26;
+        shiftedHTML += `<div class="strip-cell shifted" id="shift-${i}">${alphabet[shiftedIndex]}</div>`;
+      }
+      
+      originalStrip.innerHTML = originalHTML;
+      shiftedStrip.innerHTML = shiftedHTML;
+    }
+
+    // Criar grade Rail Fence
+    function createRailFenceGrid(text, rails) {
+      const len = text.length;
+      railFencePattern = Array(rails).fill(null).map(() => Array(len).fill(''));
+      
+      let row = 0;
+      let down = true;
+      
+      for (let col = 0; col < len; col++) {
+        railFencePattern[row][col] = text[col];
+        
+        if (row === 0) down = true;
+        else if (row === rails - 1) down = false;
+        
+        row += down ? 1 : -1;
+      }
+      
+      renderRailFenceGrid();
+      return railFencePattern;
+    }
+
+    // Renderizar grade Rail Fence
+    function renderRailFenceGrid() {
+      let html = '<table class="rail-grid">';
+      
+      for (let i = 0; i < railFencePattern.length; i++) {
+        html += '<tr>';
+        for (let j = 0; j < railFencePattern[i].length; j++) {
+          const char = railFencePattern[i][j];
+          const cssClass = char ? 'filled' : 'empty';
+          const display = char || '·';
+          html += `<td class="${cssClass}" id="rail-${i}-${j}">${display}</td>`;
+        }
+        html += '</tr>';
+      }
+      
+      html += '</table>';
+      railFenceGridContent.innerHTML = html;
+    }
+
+    // Destacar célula na grade Rail Fence
+    function highlightRailFenceCell(row, col, isReading = false, markProcessed = true) {
+      // Apenas remover highlights temporários, não remover 'processed'
+      document.querySelectorAll('.rail-grid td').forEach(cell => {
+        cell.classList.remove('highlight-char', 'current-rail');
+      });
+      
+      if (row !== null && col !== null) {
+        const cell = document.getElementById(`rail-${row}-${col}`);
+        if (cell && railFencePattern[row][col]) {
+          cell.classList.add('highlight-char');
+          
+          // Destacar trilho atual se estiver lendo
+          if (isReading) {
+            for (let c = 0; c < railFencePattern[row].length; c++) {
+              const railCell = document.getElementById(`rail-${row}-${c}`);
+              if (railCell && railFencePattern[row][c]) {
+                railCell.classList.add('current-rail');
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    function markRailFenceCellsProcessed(currentStep) {
+      // Marcar células anteriores como processadas
+      for (let i = 0; i <= currentStep; i++) {
+        const step = steps[i];
+        const cell = document.getElementById(`rail-${step.row}-${step.col}`);
+        if (cell) {
+          cell.classList.add('processed');
+        }
+      }
+    }
+
+    // Cifra Rail Fence - Criptografar
+    function railFenceEncrypt(text, rails) {
+      createRailFenceGrid(text, rails);
+      
+      let result = '';
+      steps = [];
+      let stepIndex = 0;
+      
+      // Ler cada trilho da esquerda para direita
+      for (let row = 0; row < rails; row++) {
+        for (let col = 0; col < text.length; col++) {
+          if (railFencePattern[row][col]) {
+            const char = railFencePattern[row][col];
+            result += char;
+            steps.push({
+              index: stepIndex++,
+              char: char,
+              row: row,
+              col: col,
+              rail: row + 1,
+              position: col + 1,
+              action: 'reading'
+            });
+          }
+        }
+      }
+      
+      processedText = text;
+      return result;
+    }
+
+    // Cifra Rail Fence - Descriptografar
+    function railFenceDecrypt(text, rails) {
+      const len = text.length;
+      railFencePattern = Array(rails).fill(null).map(() => Array(len).fill(''));
+      
+      // Primeiro, marcar as posições do zigzag
+      let row = 0;
+      let down = true;
+      for (let col = 0; col < len; col++) {
+        railFencePattern[row][col] = '*';
+        if (row === 0) down = true;
+        else if (row === rails - 1) down = false;
+        row += down ? 1 : -1;
+      }
+      
+      // Preencher com o texto cifrado
+      let index = 0;
+      for (let r = 0; r < rails; r++) {
+        for (let c = 0; c < len; c++) {
+          if (railFencePattern[r][c] === '*') {
+            railFencePattern[r][c] = text[index++];
+          }
+        }
+      }
+      
+      renderRailFenceGrid();
+      
+      // Ler em zigzag
+      let result = '';
+      steps = [];
+      row = 0;
+      down = true;
+      
+      for (let col = 0; col < len; col++) {
+        const char = railFencePattern[row][col];
+        result += char;
+        steps.push({
+          index: col,
+          char: char,
+          row: row,
+          col: col,
+          rail: row + 1,
+          position: col + 1,
+          action: 'reconstructing'
+        });
+        
+        if (row === 0) down = true;
+        else if (row === rails - 1) down = false;
+        row += down ? 1 : -1;
+      }
+      
+      processedText = text;
+      return result;
+    }
+
+    // Rail Fence principal
+    function railFence(text, rails, encrypt = true) {
+      if (encrypt) {
+        return railFenceEncrypt(text, rails);
+      } else {
+        return railFenceDecrypt(text, rails);
+      }
+    }
+
+    // Criar matriz Playfair 5x5
+    function createPlayfairMatrix(key) {
+      const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'; // Sem J
+      key = key.replace(/J/g, 'I').toUpperCase();
+      
+      // Remover duplicatas da chave
+      let uniqueKey = '';
+      for (let char of key) {
+        if (!uniqueKey.includes(char) && alphabet.includes(char)) {
+          uniqueKey += char;
+        }
+      }
+      
+      // Adicionar resto do alfabeto
+      let matrixString = uniqueKey;
+      for (let char of alphabet) {
+        if (!matrixString.includes(char)) {
+          matrixString += char;
+        }
+      }
+      
+      // Criar matriz 5x5
+      playfairGrid = [];
+      for (let i = 0; i < 5; i++) {
+        playfairGrid[i] = [];
+        for (let j = 0; j < 5; j++) {
+          playfairGrid[i][j] = matrixString[i * 5 + j];
+        }
+      }
+      
+      // Renderizar matriz
+      let html = '<table class="playfair-grid">';
+      for (let i = 0; i < 5; i++) {
+        html += '<tr>';
+        for (let j = 0; j < 5; j++) {
+          html += `<td id="pf-${i}-${j}">${playfairGrid[i][j]}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</table>';
+      playfairMatrixContent.innerHTML = html;
+      
+      return playfairGrid;
+    }
+
+    // Encontrar posição de uma letra na matriz
+    function findPosition(char) {
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          if (playfairGrid[i][j] === char) {
+            return { row: i, col: j };
+          }
+        }
+      }
+      return null;
+    }
+
+    // Preparar texto para Playfair
+    function preparePlayfairText(text) {
+      text = text.replace(/J/g, 'I').toUpperCase();
+      let prepared = '';
+      
+      for (let i = 0; i < text.length; i++) {
+        prepared += text[i];
+        if (i < text.length - 1 && text[i] === text[i + 1]) {
+          prepared += 'X';
+        }
+      }
+      
+      if (prepared.length % 2 !== 0) {
+        prepared += 'X';
+      }
+      
+      return prepared;
+    }
+
+    // Cifra Playfair
+    function playfair(text, key, encrypt = true) {
+      createPlayfairMatrix(key);
+      text = preparePlayfairText(text);
+      
+      let result = '';
+      steps = [];
+      
+      for (let i = 0; i < text.length; i += 2) {
+        const char1 = text[i];
+        const char2 = text[i + 1];
+        const pos1 = findPosition(char1);
+        const pos2 = findPosition(char2);
+        
+        let resultChar1, resultChar2, rule;
+        
+        if (pos1.row === pos2.row) {
+          // Mesma linha - desloca para direita (ou esquerda se decrypt)
+          rule = 'Mesma linha';
+          if (encrypt) {
+            resultChar1 = playfairGrid[pos1.row][(pos1.col + 1) % 5];
+            resultChar2 = playfairGrid[pos2.row][(pos2.col + 1) % 5];
+          } else {
+            resultChar1 = playfairGrid[pos1.row][(pos1.col + 4) % 5];
+            resultChar2 = playfairGrid[pos2.row][(pos2.col + 4) % 5];
+          }
+        } else if (pos1.col === pos2.col) {
+          // Mesma coluna - desloca para baixo (ou cima se decrypt)
+          rule = 'Mesma coluna';
+          if (encrypt) {
+            resultChar1 = playfairGrid[(pos1.row + 1) % 5][pos1.col];
+            resultChar2 = playfairGrid[(pos2.row + 1) % 5][pos2.col];
+          } else {
+            resultChar1 = playfairGrid[(pos1.row + 4) % 5][pos1.col];
+            resultChar2 = playfairGrid[(pos2.row + 4) % 5][pos2.col];
+          }
+        } else {
+          // Retângulo - troca pelos cantos opostos
+          rule = 'Retângulo';
+          resultChar1 = playfairGrid[pos1.row][pos2.col];
+          resultChar2 = playfairGrid[pos2.row][pos1.col];
+        }
+        
+        result += resultChar1 + resultChar2;
+        
+        steps.push({
+          index: i / 2,
+          char1, char2,
+          pos1, pos2,
+          resultChar1, resultChar2,
+          rule
+        });
+      }
+      
+      processedText = text;
+      return result;
+    }
+
+    // Destacar células na matriz Playfair
+    function highlightPlayfairCells(step) {
+      document.querySelectorAll('.playfair-grid td').forEach(cell => {
+        cell.classList.remove('highlight-pair1', 'highlight-pair2', 'highlight-result1', 'highlight-result2', 'same-row', 'same-col');
+      });
+      
+      if (!step) return;
+      
+      const { pos1, pos2, rule } = step;
+      
+      // Destacar células do par original
+      const cell1 = document.getElementById(`pf-${pos1.row}-${pos1.col}`);
+      const cell2 = document.getElementById(`pf-${pos2.row}-${pos2.col}`);
+      if (cell1) cell1.classList.add('highlight-pair1');
+      if (cell2) cell2.classList.add('highlight-pair2');
+      
+      // Destacar linha/coluna ou resultado
+      if (rule === 'Mesma linha') {
+        for (let j = 0; j < 5; j++) {
+          const cell = document.getElementById(`pf-${pos1.row}-${j}`);
+          if (cell) cell.classList.add('same-row');
+        }
+      } else if (rule === 'Mesma coluna') {
+        for (let i = 0; i < 5; i++) {
+          const cell = document.getElementById(`pf-${i}-${pos1.col}`);
+          if (cell) cell.classList.add('same-col');
+        }
+      }
+      
+      // Destacar resultado
+      const resPos1 = findPosition(step.resultChar1);
+      const resPos2 = findPosition(step.resultChar2);
+      if (resPos1) {
+        const resCell1 = document.getElementById(`pf-${resPos1.row}-${resPos1.col}`);
+        if (resCell1) resCell1.classList.add('highlight-result1');
+      }
+      if (resPos2) {
+        const resCell2 = document.getElementById(`pf-${resPos2.row}-${resPos2.col}`);
+        if (resCell2) resCell2.classList.add('highlight-result2');
+      }
+    }
+
+    // Destacar célula Vigenère
+    function highlightVigenereCell(textChar, keyChar, resultChar) {
+      document.querySelectorAll('.grid-table td').forEach(cell => {
+        cell.classList.remove('highlight-row', 'highlight-col', 'highlight-cell');
+      });
+      if (!textChar || !keyChar) return;
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let row, col;
+      if (mode === 'encrypt') {
+        row = alphabet.indexOf(keyChar);
+        col = alphabet.indexOf(textChar);
+      } else {
+        row = alphabet.indexOf(keyChar);
+        col = alphabet.indexOf(resultChar);
+      }
+      const headerRow = document.getElementById(`header-row-${row}`);
+      const headerCol = document.getElementById(`header-col-${col}`);
+      if (headerRow) headerRow.classList.add('highlight-row');
+      if (headerCol) headerCol.classList.add('highlight-col');
+      for (let i = 0; i < 26; i++) {
+        const rowCell = document.getElementById(`cell-${row}-${i}`);
+        const colCell = document.getElementById(`cell-${i}-${col}`);
+        if (rowCell) rowCell.classList.add('highlight-row');
+        if (colCell) colCell.classList.add('highlight-col');
+      }
+      const resultCell = document.getElementById(`cell-${row}-${col}`);
+      if (resultCell) resultCell.classList.add('highlight-cell');
+    }
+
+    // Destacar disco César
+    function highlightCesarWheel(textChar, resultChar) {
+      document.querySelectorAll('.strip-cell').forEach(cell => {
+        cell.classList.remove('highlight-original', 'highlight-shifted');
+      });
+      if (!textChar) return;
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const origIndex = alphabet.indexOf(textChar);
+      const resIndex = alphabet.indexOf(resultChar);
+      const origCell = document.getElementById(`orig-${origIndex}`);
+      const shiftCell = document.getElementById(`shift-${origIndex}`);
+      if (origCell) origCell.classList.add('highlight-original');
+      if (shiftCell) shiftCell.classList.add('highlight-shifted');
+    }
+
+    // Vigenère
+    function vigenere(text, key, encrypt = true) {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let result = '', extendedKey = '';
+      for (let i = 0; i < text.length; i++) extendedKey += key[i % key.length];
+      steps = [];
+      for (let i = 0; i < text.length; i++) {
+        const textChar = text[i], keyChar = extendedKey[i];
+        const textIndex = alphabet.indexOf(textChar), keyIndex = alphabet.indexOf(keyChar);
+        let resultIndex = encrypt ? (textIndex + keyIndex) % 26 : (textIndex - keyIndex + 26) % 26;
+        const resultChar = alphabet[resultIndex];
+        result += resultChar;
+        steps.push({ index: i, textChar, keyChar, resultChar, textIndex, keyIndex, resultIndex });
+      }
+      processedText = text;
+      processedKey = extendedKey;
+      return result;
+    }
+
+    // César
+    function cesar(text, shift, encrypt = true) {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let result = '';
+      steps = [];
+      for (let i = 0; i < text.length; i++) {
+        const textChar = text[i];
+        const textIndex = alphabet.indexOf(textChar);
+        let resultIndex = encrypt ? (textIndex + shift) % 26 : (textIndex - shift + 26) % 26;
+        const resultChar = alphabet[resultIndex];
+        result += resultChar;
+        steps.push({ index: i, textChar, resultChar, textIndex, resultIndex, shift });
+      }
+      processedText = text;
+      processedKey = shift.toString();
+      return result;
+    }
+
+    function renderCharacters() {
+      textRow.innerHTML = '';
+      keyRow.innerHTML = '';
+      resultRow.innerHTML = '';
+      
+      if (activeCipher === 'playfair') {
+        // Playfair trabalha com pares
+        for (let i = 0; i < processedText.length; i += 2) {
+          const pairBox = document.createElement('div');
+          pairBox.style.display = 'flex';
+          pairBox.style.gap = '2px';
+          
+          const textBox1 = document.createElement('div');
+          textBox1.className = 'char-box';
+          textBox1.textContent = processedText[i];
+          pairBox.appendChild(textBox1);
+          
+          const textBox2 = document.createElement('div');
+          textBox2.className = 'char-box';
+          textBox2.textContent = processedText[i + 1];
+          pairBox.appendChild(textBox2);
+          
+          textRow.appendChild(pairBox);
+          
+          const resultPairBox = document.createElement('div');
+          resultPairBox.style.display = 'flex';
+          resultPairBox.style.gap = '2px';
+          
+          const resultBox1 = document.createElement('div');
+          resultBox1.className = 'char-box';
+          resultPairBox.appendChild(resultBox1);
+          
+          const resultBox2 = document.createElement('div');
+          resultBox2.className = 'char-box';
+          resultPairBox.appendChild(resultBox2);
+          
+          resultRow.appendChild(resultPairBox);
+        }
+      } else if (activeCipher === 'rail-fence') {
+        // Rail Fence mostra cada caractere
+        for (let i = 0; i < processedText.length; i++) {
+          const textBox = document.createElement('div');
+          textBox.className = 'char-box';
+          textBox.textContent = processedText[i];
+          textRow.appendChild(textBox);
+          
+          const resultBox = document.createElement('div');
+          resultBox.className = 'char-box';
+          resultRow.appendChild(resultBox);
+        }
+      } else {
+        // Vigenere e César trabalham caractere por caractere
+        for (let i = 0; i < processedText.length; i++) {
+          const textBox = document.createElement('div');
+          textBox.className = 'char-box';
+          textBox.textContent = processedText[i];
+          textRow.appendChild(textBox);
+
+          if (activeCipher === 'vigenere') {
+            const keyBox = document.createElement('div');
+            keyBox.className = 'char-box key';
+            keyBox.textContent = processedKey[i];
+            keyRow.appendChild(keyBox);
+          }
+
+          const resultBox = document.createElement('div');
+          resultBox.className = 'char-box';
+          resultRow.appendChild(resultBox);
+        }
+      }
+    }
+
+    function updateStep(step) {
+      const textBoxes = (activeCipher === 'playfair' || activeCipher === 'rail-fence') ? textRow.children : textRow.querySelectorAll('.char-box');
+      const keyBoxes = keyRow.querySelectorAll('.char-box');
+      const resultBoxes = (activeCipher === 'playfair' || activeCipher === 'rail-fence') ? resultRow.children : resultRow.querySelectorAll('.char-box');
+
+      if (activeCipher === 'playfair') {
+        // Limpar highlights dos pares
+        Array.from(textBoxes).forEach(pairBox => {
+          Array.from(pairBox.children).forEach(box => {
+            box.classList.remove('highlight', 'processed');
+          });
+        });
+        Array.from(resultBoxes).forEach(pairBox => {
+          Array.from(pairBox.children).forEach(box => {
+            box.classList.remove('processed');
+            box.textContent = '';
+          });
+        });
+      } else if (activeCipher === 'rail-fence') {
+        // Limpar highlights do Rail Fence
+        Array.from(textBoxes).forEach(box => {
+          box.classList.remove('highlight', 'processed');
+        });
+        Array.from(resultBoxes).forEach(box => {
+          box.classList.remove('processed');
+          box.textContent = '';
+        });
+      } else {
+        textBoxes.forEach(box => box.classList.remove('highlight', 'processed'));
+        keyBoxes.forEach(box => box.classList.remove('highlight'));
+        resultBoxes.forEach(box => {
+          box.classList.remove('processed');
+          box.textContent = '';
+        });
+      }
+
+      if (step >= 0 && step < steps.length) {
+        const currentStepData = steps[step];
+        
+        if (activeCipher === 'rail-fence') {
+          // Destacar caractere atual
+          textBoxes[currentStepData.col].classList.add('highlight');
+          
+          // Mostrar resultado
+          resultBoxes[currentStepData.index].textContent = currentStepData.char;
+          resultBoxes[currentStepData.index].classList.add('processed');
+          
+          // Processar anteriores
+          for (let i = 0; i < step; i++) {
+            if (mode === 'encrypt') {
+              textBoxes[steps[i].col].classList.add('processed');
+            } else {
+              textBoxes[steps[i].index].classList.add('processed');
+            }
+            resultBoxes[steps[i].index].textContent = steps[i].char;
+            resultBoxes[steps[i].index].classList.add('processed');
+          }
+          
+          // Informação do passo
+          const action = mode === 'encrypt' ? 'Lendo' : 'Reconstruindo';
+          stepInfo.innerHTML = `
+            <div class="digram-info">
+              <h4>Passo ${step + 1} de ${steps.length}</h4>
+              <p>${action} caractere: <span class="digram-pair">${currentStepData.char}</span></p>
+              <p style="margin-top: 10px; margin-bottom: 0px;">Trilho ${currentStepData.rail}, Posição ${currentStepData.position}</p>
+            </div>
+          `;
+          
+          highlightRailFenceCell(currentStepData.row, currentStepData.col, mode === 'encrypt');
+          markRailFenceCellsProcessed(step);
+        } else if (activeCipher === 'playfair') {
+          // Destacar par atual
+          const currentPair = textBoxes[step];
+          Array.from(currentPair.children).forEach(box => box.classList.add('highlight'));
+          
+          // Mostrar resultado
+          const resultPair = resultBoxes[step];
+          resultPair.children[0].textContent = currentStepData.resultChar1;
+          resultPair.children[0].classList.add('processed');
+          resultPair.children[1].textContent = currentStepData.resultChar2;
+          resultPair.children[1].classList.add('processed');
+          
+          // Processar pares anteriores
+          for (let i = 0; i < step; i++) {
+            const prevPair = textBoxes[i];
+            Array.from(prevPair.children).forEach(box => box.classList.add('processed'));
+            const prevResultPair = resultBoxes[i];
+            prevResultPair.children[0].textContent = steps[i].resultChar1;
+            prevResultPair.children[0].classList.add('processed');
+            prevResultPair.children[1].textContent = steps[i].resultChar2;
+            prevResultPair.children[1].classList.add('processed');
+          }
+          
+          // Informação do passo
+          const ruleText = mode === 'encrypt' ? currentStepData.rule : currentStepData.rule + ' (inverso)';
+          stepInfo.innerHTML = `
+            <div class="digram-info">
+              <h4>Passo ${step + 1} de ${steps.length}</h4>
+              <p>Par: <span class="digram-pair">${currentStepData.char1}${currentStepData.char2}</span> → 
+              <span class="digram-pair">${currentStepData.resultChar1}${currentStepData.resultChar2}</span></p>
+              <p style="margin-top: 10px; margin-bottom: 0px;">Regra aplicada: <strong>${ruleText}</strong></p>
+            </div>
+          `;
+          
+          highlightPlayfairCells(currentStepData);
+          
+        } else {
+          textBoxes[step].classList.add('highlight');
+          if (activeCipher === 'vigenere') keyBoxes[step].classList.add('highlight');
+
+          resultBoxes[step].textContent = currentStepData.resultChar;
+          resultBoxes[step].classList.add('processed');
+
+          for (let i = 0; i < step; i++) {
+            textBoxes[i].classList.add('processed');
+            resultBoxes[i].textContent = steps[i].resultChar;
+            resultBoxes[i].classList.add('processed');
+          }
+
+          if (activeCipher === 'vigenere') {
+            const operation = mode === 'encrypt' 
+              ? `(${currentStepData.textChar} + ${currentStepData.keyChar}) mod 26 = (${currentStepData.textIndex} + ${currentStepData.keyIndex}) mod 26 = ${currentStepData.resultIndex} = ${currentStepData.resultChar}`
+              : `(${currentStepData.textChar} - ${currentStepData.keyChar}) mod 26 = (${currentStepData.textIndex} - ${currentStepData.keyIndex} + 26) mod 26 = ${currentStepData.resultIndex} = ${currentStepData.resultChar}`;
+            stepInfo.textContent = `Passo ${step + 1} de ${steps.length}: ${operation}`;
+            highlightVigenereCell(currentStepData.textChar, currentStepData.keyChar, currentStepData.resultChar);
+          } else {
+            const operation = mode === 'encrypt'
+              ? `(${currentStepData.textChar} + ${currentStepData.shift}) mod 26 = (${currentStepData.textIndex} + ${currentStepData.shift}) mod 26 = ${currentStepData.resultIndex} = ${currentStepData.resultChar}`
+              : `(${currentStepData.textChar} - ${currentStepData.shift}) mod 26 = (${currentStepData.textIndex} - ${currentStepData.shift} + 26) mod 26 = ${currentStepData.resultIndex} = ${currentStepData.resultChar}`;
+            stepInfo.textContent = `Passo ${step + 1} de ${steps.length}: ${operation}`;
+            highlightCesarWheel(currentStepData.textChar, currentStepData.resultChar);
+          }
+        }
+      } else if (step === -1) {
+        stepInfo.textContent = 'Pronto para começar - Clique em Play ou Próximo';
+        document.querySelectorAll('.grid-table td').forEach(cell => {
+          cell.classList.remove('highlight-row', 'highlight-col', 'highlight-cell');
+        });
+        document.querySelectorAll('.strip-cell').forEach(cell => {
+          cell.classList.remove('highlight-original', 'highlight-shifted');
+        });
+        document.querySelectorAll('.playfair-grid td').forEach(cell => {
+          cell.classList.remove('highlight-pair1', 'highlight-pair2', 'highlight-result1', 'highlight-result2', 'same-row', 'same-col');
+        });
+        document.querySelectorAll('.rail-grid td').forEach(cell => {
+          cell.classList.remove('highlight-char', 'current-rail', 'processed');
+        });
+      } else {
+        if (activeCipher === 'rail-fence') {
+          for (let i = 0; i < steps.length; i++) {
+            if (mode === 'encrypt') {
+              textBoxes[steps[i].col].classList.add('processed');
+            } else {
+              textBoxes[steps[i].index].classList.add('processed');
+            }
+            resultBoxes[steps[i].index].textContent = steps[i].char;
+            resultBoxes[steps[i].index].classList.add('processed');
+          }
+        } else if (activeCipher === 'playfair') {
+          for (let i = 0; i < steps.length; i++) {
+            const pair = textBoxes[i];
+            Array.from(pair.children).forEach(box => box.classList.add('processed'));
+            const resultPair = resultBoxes[i];
+            resultPair.children[0].textContent = steps[i].resultChar1;
+            resultPair.children[0].classList.add('processed');
+            resultPair.children[1].textContent = steps[i].resultChar2;
+            resultPair.children[1].classList.add('processed');
+          }
+        } else {
+          for (let i = 0; i < steps.length; i++) {
+            textBoxes[i].classList.add('processed');
+            resultBoxes[i].textContent = steps[i].resultChar;
+            resultBoxes[i].classList.add('processed');
+          }
+        }
+        const unit = activeCipher === 'playfair' ? 'pares processados' : 'caracteres processados';
+        stepInfo.textContent = `Processo completo! ${steps.length} ${unit}.`;
+        document.querySelectorAll('.grid-table td').forEach(cell => {
+          cell.classList.remove('highlight-row', 'highlight-col', 'highlight-cell');
+        });
+        document.querySelectorAll('.strip-cell').forEach(cell => {
+          cell.classList.remove('highlight-original', 'highlight-shifted');
+        });
+        document.querySelectorAll('.playfair-grid td').forEach(cell => {
+          cell.classList.remove('highlight-pair1', 'highlight-pair2', 'highlight-result1', 'highlight-result2', 'same-row', 'same-col');
+        });
+        document.querySelectorAll('.rail-grid td').forEach(cell => {
+          cell.classList.remove('highlight-char', 'current-rail', 'processed');
+        });
+      }
+
+      if (!isPlaying) {
+        prevBtn.disabled = step <= -1;
+        nextBtn.disabled = step >= steps.length - 1;
+      }
+    }
+
+    playBtn.addEventListener('click', () => {
+      let hasInput;
+      if (activeCipher === 'vigenere') {
+        hasInput = textInput.value && keyInput.value;
+      } else if (activeCipher === 'cesar') {
+        hasInput = textInput.value && cesarShiftInput.value;
+      } else if (activeCipher === 'playfair') {
+        hasInput = textInput.value && playfairKeyInput.value;
+      } else if (activeCipher === 'rail-fence') {
+        hasInput = textInput.value && railFenceRailsInput.value;
+      }
+      
+      if (!hasInput) {
+        alert('Por favor, preencha todos os campos!');
+        return;
+      }
+
+      if (isPlaying) pause();
+      else play();
+    });
+
+    function play() {
+      if (currentStep >= steps.length - 1) reset();
+      isPlaying = true;
+      playBtn.textContent = 'Pausar';
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      const speed = parseInt(speedSelect.value);
+      playInterval = setInterval(() => {
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          updateStep(currentStep);
+        } else pause();
+      }, speed);
+    }
+
+    function pause() {
+      isPlaying = false;
+      playBtn.textContent = 'Play';
+      clearInterval(playInterval);
+      prevBtn.disabled = currentStep <= -1;
+      nextBtn.disabled = currentStep >= steps.length - 1;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateStep(currentStep);
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > -1) {
+        currentStep--;
+        updateStep(currentStep);
+      }
+    });
+
+    resetBtn.addEventListener('click', reset);
+
+    speedSelect.addEventListener('change', () => {
+      if (isPlaying) {
+        clearInterval(playInterval);
+        const speed = parseInt(speedSelect.value);
+        playInterval = setInterval(() => {
+          if (currentStep < steps.length - 1) {
+            currentStep++;
+            updateStep(currentStep);
+          } else pause();
+        }, speed);
+      }
+    });
+
+    function reset() {
+      pause();
+      currentStep = -1;
+
+      const text = textInput.value.toUpperCase();
+      let result, hasKey;
+
+      if (activeCipher === 'vigenere') {
+        const key = keyInput.value.toUpperCase();
+        hasKey = text && key;
+        if (hasKey) result = vigenere(text, key, mode === 'encrypt');
+      } else if (activeCipher === 'cesar') {
+        const shift = parseInt(cesarShiftInput.value);
+        hasKey = text && shift >= 1 && shift <= 25;
+        if (hasKey) {
+          result = cesar(text, shift, mode === 'encrypt');
+          createCesarWheel(mode === 'encrypt' ? shift : -shift);
+        }
+      } else if (activeCipher === 'playfair') {
+        const key = playfairKeyInput.value.toUpperCase();
+        hasKey = text && key;
+        if (hasKey) {
+          result = playfair(text, key, mode === 'encrypt');
+        }
+      } else if (activeCipher === 'rail-fence') {
+        const rails = parseInt(railFenceRailsInput.value);
+        hasKey = text && rails >= 2 && rails <= 10;
+        if (hasKey) {
+          result = railFence(text, rails, mode === 'encrypt');
+        }
+      }
+
+      if (hasKey) {
+        finalResult.textContent = result;
+        renderCharacters();
+        updateStep(-1);
+        playBtn.disabled = false;
+        nextBtn.disabled = false;
+        stepInfo.classList.add('show');
+        visualization.classList.add('show');
+        resultSection.classList.add('show');
+        
+        // Mostrar visualização específica
+        if (activeCipher === 'vigenere') {
+          vigenereTable.classList.add('show');
+          cesarWheel.classList.remove('show');
+          playfairMatrix.classList.remove('show');
+          railFenceGrid.classList.remove('show');
+        } else if (activeCipher === 'cesar') {
+          vigenereTable.classList.remove('show');
+          cesarWheel.classList.add('show');
+          playfairMatrix.classList.remove('show');
+          railFenceGrid.classList.remove('show');
+        } else if (activeCipher === 'playfair') {
+          vigenereTable.classList.remove('show');
+          cesarWheel.classList.remove('show');
+          playfairMatrix.classList.add('show');
+          railFenceGrid.classList.remove('show');
+        } else if (activeCipher === 'rail-fence') {
+          vigenereTable.classList.remove('show');
+          cesarWheel.classList.remove('show');
+          playfairMatrix.classList.remove('show');
+          railFenceGrid.classList.add('show');
+        }
+      } else {
+        processedText = '';
+        processedKey = '';
+        steps = [];
+        textRow.innerHTML = '';
+        keyRow.innerHTML = '';
+        resultRow.innerHTML = '';
+        finalResult.textContent = '-';
+        stepInfo.textContent = 'Configure o texto e a chave para começar';
+        
+        document.querySelectorAll('.grid-table td').forEach(cell => {
+          cell.classList.remove('highlight-row', 'highlight-col', 'highlight-cell');
+        });
+        document.querySelectorAll('.strip-cell').forEach(cell => {
+          cell.classList.remove('highlight-original', 'highlight-shifted');
+        });
+        document.querySelectorAll('.playfair-grid td').forEach(cell => {
+          cell.classList.remove('highlight-pair1', 'highlight-pair2', 'highlight-result1', 'highlight-result2', 'same-row', 'same-col');
+        });
+        document.querySelectorAll('.rail-grid td').forEach(cell => {
+          cell.classList.remove('highlight-char', 'current-rail', 'processed');
+        });
+        
+        playBtn.disabled = true;
+        nextBtn.disabled = true;
+        prevBtn.disabled = true;
+        stepInfo.classList.remove('show');
+        visualization.classList.remove('show');
+        resultSection.classList.remove('show');
+        vigenereTable.classList.remove('show');
+        cesarWheel.classList.remove('show');
+        playfairMatrix.classList.remove('show');
+        railFenceGrid.classList.remove('show');
+      }
+    }
+
+    createVigenereTable();
+  </script>
+</body>
+</html>
