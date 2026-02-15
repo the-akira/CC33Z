@@ -128,7 +128,8 @@
     }
     
     .effect-btn:hover {
-      background-color: #e6e6e6;
+      background-color: #273E74;
+      color: white;
     }
     
     .effect-btn.active {
@@ -880,21 +881,25 @@
       }
     }
 
-    function drawFloralMandala(ctx, cx, cy, radius) {
+    function drawFloralMandala(ctx, cx, cy, radius, petalConfig = [34, 21, 13]) {
       ctx.strokeStyle = '#5c6d82';
       ctx.lineWidth = 2;
-      
-      const layers = 3;
+
+      const layers = petalConfig.length;
+
       for (let layer = 0; layer < layers; layer++) {
-        const petals = 8 + layer * 4;
+
+        const petals = petalConfig[layer];
+
         const r = radius * (0.2 + layer * 0.12);
         const dist = radius * (0.15 + layer * 0.15);
-        
+
         for (let i = 0; i < petals; i++) {
           const angle = (i * 2 * Math.PI / petals) + (layer * 0.3);
+
           const x = cx + dist * Math.cos(angle);
           const y = cy + dist * Math.sin(angle);
-          
+
           ctx.beginPath();
           ctx.arc(x, y, r, 0, 2 * Math.PI);
           ctx.stroke();
