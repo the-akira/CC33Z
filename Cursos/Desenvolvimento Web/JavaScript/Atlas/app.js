@@ -3,6 +3,7 @@ let layers = {}; // Armazena as layers (camadas) criadas
 let activeLayer = null; // Define a layer ativa para edição
 let layerStyles = {};
 let currentCoordinates = '';
+let layerTypeFilters = {};
 
 function logAction(action, details) {
     const transaction = db.transaction(['history'], 'readwrite');
@@ -413,7 +414,46 @@ function updateLayerList() {
         layerItem.appendChild(colorInput);
         layerItem.appendChild(activateButton);
         layerItem.appendChild(deleteButton);
-        container.appendChild(layerItem);
+
+        // Dropdown de filtro por tipo
+        const typeFilterRow = document.createElement('div');
+        typeFilterRow.style.cssText = 'margin: 5px 0 0 24px; display:flex; align-items:center; gap:6px;';
+
+        const typeFilterLabel = document.createElement('span');
+        typeFilterLabel.textContent = 'Exibir:';
+        typeFilterLabel.style.cssText = 'font-size:12px; color:#555;';
+
+        const typeFilterSelect = document.createElement('select');
+        typeFilterSelect.style.cssText = 'font-size:12px; border:1px solid black; background:#efefef; height:26px; outline:none; flex:1;';
+
+        [
+            { value: '', label: 'Todas as geometrias' },
+            { value: 'circle',    label: 'Círculos' },
+            { value: 'polygon',   label: 'Polígonos' },
+            { value: 'rectangle', label: 'Retângulos' },
+            { value: 'polyline',  label: 'Linhas' },
+            { value: 'marker',    label: 'Marcadores' }
+        ].forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            if ((layerTypeFilters[layerName] || '') === opt.value) option.selected = true;
+            typeFilterSelect.appendChild(option);
+        });
+
+        typeFilterSelect.addEventListener('change', () => {
+            layerTypeFilters[layerName] = typeFilterSelect.value;
+            loadFeatures();
+        });
+
+        typeFilterRow.appendChild(typeFilterLabel);
+        typeFilterRow.appendChild(typeFilterSelect);
+
+        const layerBlock = document.createElement('div');
+        layerBlock.style.cssText = 'margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #ddd;';
+        layerBlock.appendChild(layerItem);
+        layerBlock.appendChild(typeFilterRow);
+        container.appendChild(layerBlock);
     });
 
     updateDrawControl();
@@ -476,6 +516,7 @@ function deleteLayer(layerName) {
     // Remove a camada do mapa
     map.removeLayer(layers[layerName]);
     delete layers[layerName];
+    delete layerTypeFilters[layerName];
 
     // Remove a camada do banco de dados
     const layerTransaction = db.transaction(['layers'], 'readwrite');
@@ -1147,7 +1188,11 @@ function loadFeatures() {
 
             // Adicionar ao grupo da camada correspondente
             if (layers[feature.layer]) {
-                layers[feature.layer].addLayer(layer); // Adiciona à camada correta
+                const activeTypeFilter = layerTypeFilters[feature.layer];
+                const matchesFilter = !activeTypeFilter || feature.type === activeTypeFilter;
+                if (matchesFilter) {
+                    layers[feature.layer].addLayer(layer);
+                }
             }
 
             // Atualizar a lista na barra lateral
