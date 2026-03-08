@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Editor Web - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <style>
+    /* ── Layout geral ── */
+    .editor-page {
+      max-width: 1400px;
+      margin: 0 auto 30px auto;
+      padding: 0 20px;
+    }
+
+    /* ── Barra de ferramentas ── */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      margin-top: 20px;
+    }
+    .toolbar-title {
+      font-weight: bold;
+      color: #273E74;
+      font-size: 1rem;
+      margin-right: 6px;
+    }
+    .toolbar button,
+    .toolbar select {
+      padding: 8px 14px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.92rem;
+      transition: background-color 0.2s;
+    }
+    .toolbar button:hover,
+    .toolbar select:hover { background-color: #273E74; }
+    .toolbar select:focus,
+    .toolbar button:focus  { outline: none; }
+    .toolbar .btn-run {
+      background-color: #273E74;
+      border-color: #273E74;
+    }
+    .toolbar .btn-run:hover { background-color: #5C6D82; }
+    .toolbar .btn-clear {
+      background-color: white;
+      color: #273E74;
+      border-color: #273E74;
+    }
+    .toolbar .btn-clear:hover { background-color: #5C6D82; color: white; }
+    .toolbar-sep {
+      width: 1px;
+      height: 32px;
+      background: #273E74;
+      opacity: 0.3;
+      margin: 0 4px;
+    }
+    .shortcut-hint {
+      font-size: 0.95rem;
+      color: #5C6D82;
+      margin-left: auto;
+    }
+
+    /* ── Área principal: editores + preview ── */
+    .workspace {
+      display: flex;
+      flex-direction: row;
+      border: 2px solid #273E74;
+      min-height: 560px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Painel esquerdo: abas dos editores */
+    .editors-panel {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 50%;
+      width: 50%;
+      min-width: 0;
+      border-right: 2px solid #273E74;
+      overflow: hidden;
+    }
+
+    /* Painel direito: preview */
+    .preview-panel {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    /* ── Splitter arrastável (desktop) ── */
+    .splitter {
+      width: 6px;
+      background: #273E74;
+      cursor: col-resize;
+      flex-shrink: 0;
+      position: relative;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+    .splitter:hover,
+    .splitter.dragging { background: #5C6D82; }
+    .splitter::after {
+      content: '⋮';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255,255,255,0.6);
+      font-size: 1rem;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    /* Abas */
+    .tabs {
+      display: flex;
+      background: #273E74;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border-right: 1px solid rgba(255,255,255,0.15);
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .tab-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+    .tab-btn.active {
+      color: white;
+      background: #1a2d56;
+      border-bottom: 3px solid #fff;
+    }
+    .tab-btn .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .dot-html { background: #e44d26; }
+    .dot-css  { background: #1e99f7; }
+    .dot-js   { background: #f7df1e; }
+
+    /* Monaco container */
+    .editor-container {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+    }
+    .editor-container.active { display: flex; }
+    .monaco-box {
+      flex: 1;
+      min-height: 500px;
+    }
+
+    /* Cabeçalho do preview */
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #273E74;
+      padding: 10px 14px;
+    }
+    .preview-header span {
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+    }
+    .preview-header-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .preview-header-btns button {
+      padding: 4px 12px;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      transition: background 0.2s;
+      background: #5C6D82;
+    }
+    .preview-header-btns button:hover { background: rgba(255,255,255,0.15); }
+
+    /* iframe de preview */
+    #preview-frame {
+      flex: 1;
+      border: none;
+      background: white;
+      min-height: 500px;
+    }
+
+    /* ── Exemplos ── */
+    .examples-section {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      border-top: none;
+      padding: 16px 20px;
+    }
+    .examples-section h3 {
+      color: #273E74;
+      margin: 0 0 12px 0;
+      font-size: 1rem;
+    }
+    .example-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .example-buttons button {
+      padding: 8px 14px;
+      border: 2px solid #273E74;
+      background: white;
+      color: #273E74;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .example-buttons button:hover {
+      background: #5C6D82;
+      color: white;
+      border-color: #5C6D82;
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      background: #273E74;
+      color: white;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 0;
+      border: 2px solid #273E74;
+      border-top: none;
+    }
+    .status-bar .status-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #00cc66;
+      box-shadow: 0 0 6px #00cc66;
+    }
+    .status-dot.loading {
+      background: #ffaa00;
+      box-shadow: 0 0 6px #ffaa00;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.3; }
+    }
+
+    /* ══════════════════════════════════
+       RESPONSIVIDADE
+       ══════════════════════════════════ */
+
+    /* ── Tablet (≤ 1024px): splitter some, painéis empilham ── */
+    @media only screen and (max-width: 1024px) {
+      .workspace { flex-direction: column; min-height: unset; }
+      .splitter  { display: none; }
+      .editors-panel {
+        flex: none;
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #273E74;
+      }
+      .preview-panel { flex: none; width: 100%; }
+      .monaco-box    { min-height: 380px; }
+      #preview-frame { min-height: 380px; }
+    }
+
+    /* ── Mobile (≤ 680px): toolbar compacta ── */
+    @media only screen and (max-width: 680px) {
+      .editor-page   { padding: 0 10px; }
+      .toolbar-title,
+      .toolbar-sep,
+      .shortcut-hint { display: none; }
+      .toolbar       { gap: 6px; padding: 8px 10px; }
+      .toolbar button,
+      .toolbar select { padding: 7px 10px; font-size: 0.82rem; }
+      #statusRight   { display: none; }
+      .monaco-box    { min-height: 320px; }
+      #preview-frame { min-height: 320px; }
+    }
+
+    /* ── Mobile pequeno (≤ 400px) ── */
+    @media only screen and (max-width: 400px) {
+      .monaco-box    { min-height: 260px; }
+      #preview-frame { min-height: 260px; }
+      .tab-btn       { padding: 10px 12px; font-size: 0.8rem; }
+      .tab-btn .dot  { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ════ CABEÇALHO DO SITE ════ -->
+  <header>
+    <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+    <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+    <h1>Curso de Informática</h1>
+    <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+    <nav>
+      <a class="menu" href="index">Material</a>
+      <a class="menu" href="websites">Websites</a>
+      <a class="menu" href="ferramentas">Ferramentas</a>
+      <a class="menu" href="dicionario">Dicionário</a>
+      <a class="menu" href="quiz.html">Quiz</a>
+      <a class="menu" href="simulador.html">Simulador</a>
+      <a class="menu" href="biblioteca.html">Biblioteca</a>
+      <a class="menu" href="informacao.html">Unidades de Informação</a>
+      <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
+      <a class="menu" href="historia.html">História da Computação</a>
+      <a class="menu" href="contato.html">Contato</a>
+      <a class="menu" href="faq.html">Perguntas Frequentes</a>
+      <a class="menu" href="digitacao.html">Treinamento Digitação</a>
+      <a class="menu" href="mouse.html">Treinamento Mouse</a>
+      <a class="menu" href="algoritmos.html">Algoritmos</a>
+      <a class="menu" href="games.html">Games</a>
+      <a class="menu" href="portas.html">Portas Lógicas</a>
+      <a class="menu" href="interpretador.html">Interpretador Python</a>
+      <a class="menu" href="geometria.html">Geometria</a>
+      <a class="menu" href="criptografia.html">Criptografia</a>
+      <a class="menu" href="editor.html">Editor Web</a>
+    </nav>
+  </header>
+
+  <h1 class="subtitle">Editor Web</h1>
+
+  <!-- ════ ÁREA PRINCIPAL ════ -->
+  <div class="editor-page">
+
+    <!-- Barra de ferramentas -->
+    <div class="toolbar">
+      <span class="toolbar-title">&#9881; Editor</span>
+      <div class="toolbar-sep"></div>
+      <button class="btn-run" id="btnRun" title="Ctrl+Enter">&#9654; Executar</button>
+      <button class="btn-clear" id="btnClear">&#10006; Limpar Tudo</button>
+      <div class="toolbar-sep"></div>
+      <select id="themeSelect" title="Tema do editor">
+        <option value="vs-light">Tema Claro</option>
+        <option value="vs-dark" selected>Tema Escuro</option>
+        <option value="hc-black">Alto Contraste</option>
+      </select>
+      <select id="fontSizeSelect" title="Tamanho da fonte">
+        <option value="12">Fonte 12px</option>
+        <option value="14" selected>Fonte 14px</option>
+        <option value="16">Fonte 16px</option>
+        <option value="18">Fonte 18px</option>
+      </select>
+      <button id="btnFullscreen" title="Tela cheia do preview">Tela Cheia</button>
+      <span class="shortcut-hint">Atalho: <strong>Ctrl+Enter</strong> para executar</span>
+    </div>
+
+    <!-- Workspace: editores + preview -->
+    <div class="workspace" id="workspace">
+
+      <!-- Painel de editores -->
+      <div class="editors-panel" id="editorsPanel">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="html">
+            <span class="dot dot-html"></span>HTML
+          </button>
+          <button class="tab-btn" data-tab="css">
+            <span class="dot dot-css"></span>CSS
+          </button>
+          <button class="tab-btn" data-tab="js">
+            <span class="dot dot-js"></span>JavaScript
+          </button>
+        </div>
+
+        <div class="editor-container active" id="tab-html">
+          <div class="monaco-box" id="editor-html"></div>
+        </div>
+        <div class="editor-container" id="tab-css">
+          <div class="monaco-box" id="editor-css"></div>
+        </div>
+        <div class="editor-container" id="tab-js">
+          <div class="monaco-box" id="editor-js"></div>
+        </div>
+      </div>
+
+      <!-- Splitter arrastável -->
+      <div class="splitter" id="splitter"></div>
+
+      <!-- Painel de preview -->
+      <div class="preview-panel" id="previewPanel">
+        <div class="preview-header">
+          <span>Pré-visualização</span>
+          <div class="preview-header-btns">
+            <button id="btnRefresh" title="Atualizar preview">&#8635; Atualizar</button>
+            <button id="btnOpenNew" title="Abrir em nova aba">&#8599; Nova Aba</button>
+          </div>
+        </div>
+        <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+    </div>
+
+    <!-- Exemplos prontos -->
+    <div class="examples-section">
+      <h3>Exemplos prontos — clique para carregar:</h3>
+      <div class="example-buttons">
+        <button data-example="hello">Olá Mundo</button>
+        <button data-example="table">Tabela HTML</button>
+        <button data-example="form">Formulário</button>
+        <button data-example="flexbox">Flexbox CSS</button>
+        <button data-example="grid">CSS Grid</button>
+        <button data-example="animation">Animação CSS</button>
+        <button data-example="counter">Contador JS</button>
+        <button data-example="lista">Lista Dinâmica</button>
+        <button data-example="cores">Gerador de Cores</button>
+        <button data-example="relogio">Relógio Digital</button>
+      </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <div class="status-left">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Editor pronto — escreva seu código e clique em Executar</span>
+      </div>
+      <span id="statusRight">Monaco Editor carregado</span>
+    </div>
+
+  </div><!-- /editor-page -->
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ══════════════════════════════════════
+  //  EXEMPLOS
+  // ══════════════════════════════════════
+  const EXAMPLES = {
+    hello: {
+      html: `<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  <meta charset="UTF-8">\n  <title>Olá Mundo</title>\n</head>\n<body>\n  <h1>Olá, Mundo! 🌎</h1>\n  <p>Meu primeiro documento HTML.</p>\n</body>\n</html>`,
+      css: `body {\n  font-family: Arial, sans-serif;\n  background: #f0f4ff;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  min-height: 100vh;\n  margin: 0;\n}\n\nh1 {\n  color: #273E74;\n  font-size: 2.5rem;\n}\n\np {\n  color: #5C6D82;\n  font-size: 1.2rem;\n}`,
+      js: `console.log("Olá, Mundo!");`
+    },
+    table: {
+      html: `<h2>Tabela de Alunos</h2>\n<table>\n  <thead>\n    <tr>\n      <th>Nome</th>\n      <th>Nota</th>\n      <th>Situação</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr><td>Luana Lima</td><td>9.5</td><td class="ap">Aprovada</td></tr>\n    <tr><td>Rafael Oliveira</td><td>7.0</td><td class="ap">Aprovado</td></tr>\n    <tr><td>Sofia Silva</td><td>4.5</td><td class="rep">Reprovada</td></tr>\n    <tr><td>Daniel Coelho</td><td>8.2</td><td class="ap">Aprovado</td></tr>\n  </tbody>\n</table>`,
+      css: `body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }\nh2 { color: #273E74; }\ntable { border-collapse: collapse; width: 100%; max-width: 500px; }\nth, td { border: 2px solid #273E74; padding: 10px 16px; text-align: left; }\nth { background: #273E74; color: white; }\ntr:nth-child(even) { background: #eef1f8; }\n.ap { color: green; font-weight: bold; }\n.rep { color: red; font-weight: bold; }`,
+      js: ``
+    },
+    form: {
+      html: `<h2>Formulário de Cadastro</h2>\n<form id="form">\n  <label>Nome:</label>\n  <input type="text" id="nome" placeholder="Seu nome">\n  <label>E-mail:</label>\n  <input type="email" id="email" placeholder="seu@email.com">\n  <label>Curso:</label>\n  <select id="curso">\n    <option>Informática</option>\n    <option>Word</option>\n    <option>Excel</option>\n    <option>PowerPoint</option>\n  </select>\n  <button type="button" onclick="enviar()">Enviar</button>\n</form>\n<p id="msg"></p>`,
+      css: `body { font-family: Arial, sans-serif; padding: 30px; max-width: 400px; }\nh2 { color: #273E74; }\nform { display: flex; flex-direction: column; gap: 10px; }\nlabel { font-weight: bold; color: #273E74; }\ninput, select { padding: 10px; border: 2px solid #273E74; font-size: 1rem; }\ninput:focus, select:focus { outline: none; border-color: #5C6D82; }\nbutton { padding: 12px; background: #273E74; color: white; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; }\nbutton:hover { background: #5C6D82; }\n#msg { color: green; font-weight: bold; }`,
+      js: `function enviar() {\n  const nome = document.getElementById('nome').value;\n  const email = document.getElementById('email').value;\n  if (!nome || !email) {\n    document.getElementById('msg').textContent = '⚠ Preencha todos os campos!';\n    document.getElementById('msg').style.color = 'red';\n    return;\n  }\n  document.getElementById('msg').textContent = '✓ Cadastro de ' + nome + ' realizado com sucesso!';\n  document.getElementById('msg').style.color = 'green';\n}`
+    },
+    flexbox: {
+      html: `<h2>Flexbox</h2>\n<div class="container">\n  <div class="box">1</div>\n  <div class="box">2</div>\n  <div class="box">3</div>\n  <div class="box">4</div>\n  <div class="box">5</div>\n  <div class="box">6</div>\n</div>`,
+      css: `body { font-family: Arial, sans-serif; padding: 20px; }\nh2 { color: #273E74; }\n.container {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 16px;\n  padding: 20px;\n  background: #f0f4ff;\n  border: 2px solid #273E74;\n}\n.box {\n  width: 80px;\n  height: 80px;\n  background: #273E74;\n  color: white;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 1.5rem;\n  font-weight: bold;\n  transition: transform 0.2s;\n}\n.box:hover {\n  transform: scale(1.1);\n  background: #5C6D82;\n}`,
+      js: ``
+    },
+    grid: {
+      html: `<h2>CSS Grid — Layout de Página</h2>\n<div class="grid">\n  <header>Cabeçalho</header>\n  <nav>Menu</nav>\n  <main>Conteúdo Principal</main>\n  <aside>Barra Lateral</aside>\n  <footer>Rodapé</footer>\n</div>`,
+      css: `body { font-family: Arial, sans-serif; padding: 20px; }\nh2 { color: #273E74; }\n.grid {\n  display: grid;\n  grid-template-areas:\n    "header header"\n    "nav    main"\n    "nav    aside"\n    "footer footer";\n  grid-template-columns: 160px 1fr;\n  gap: 8px;\n  height: 400px;\n}\n.grid > * {\n  background: #273E74;\n  color: white;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: bold;\n  font-size: 1.1rem;\n  padding: 10px;\n}\nheader { grid-area: header; background: #1a2d56; }\nnav    { grid-area: nav; background: #5C6D82; }\nmain   { grid-area: main; }\naside  { grid-area: aside; background: #7a8fa3; }\nfooter { grid-area: footer; background: #1a2d56; }`,
+      js: ``
+    },
+    animation: {
+      html: `<h2>Animações CSS</h2>\n<div class="scene">\n  <div class="ball"></div>\n  <div class="square"></div>\n  <div class="pulse"></div>\n</div>`,
+      css: `body { font-family: Arial, sans-serif; padding: 20px; background: #0d1b2a; }\nh2 { color: white; }\n.scene {\n  display: flex;\n  gap: 40px;\n  align-items: center;\n  justify-content: center;\n  height: 200px;\n}\n.ball {\n  width: 60px; height: 60px;\n  background: #e44d26;\n  border-radius: 50%;\n  animation: bounce 1s infinite alternate ease-in-out;\n}\n.square {\n  width: 60px; height: 60px;\n  background: #264de4;\n  animation: spin 2s linear infinite;\n}\n.pulse {\n  width: 60px; height: 60px;\n  background: #00cc66;\n  border-radius: 50%;\n  animation: pulse 1.5s ease-in-out infinite;\n}\n@keyframes bounce {\n  from { transform: translateY(0); }\n  to   { transform: translateY(-80px); }\n}\n@keyframes spin {\n  to { transform: rotate(360deg); }\n}\n@keyframes pulse {\n  0%,100% { transform: scale(1); opacity: 1; }\n  50%     { transform: scale(1.5); opacity: 0.5; }\n}`,
+      js: ``
+    },
+    counter: {
+      html: `<h2>Contador Interativo</h2>\n<div class="counter-box">\n  <span id="val">0</span>\n  <div class="btns">\n    <button onclick="change(-1)">−</button>\n    <button onclick="reset()">Reset</button>\n    <button onclick="change(1)">+</button>\n  </div>\n</div>`,
+      css: `body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; }\nh2 { color: #273E74; }\n.counter-box { text-align: center; }\n#val { font-size: 5rem; font-weight: bold; color: #273E74; display: block; }\n.btns { display: flex; gap: 12px; margin-top: 20px; }\nbutton { width: 70px; height: 50px; border: 2px solid #273E74; background: #5C6D82; color: white; font-size: 1.5rem; font-weight: bold; cursor: pointer; }\nbutton:hover { background: #273E74; }\nbutton:nth-child(2) { background: white; color: #273E74; font-size: 0.9rem; }\nbutton:nth-child(2):hover { background: #eef1f8; }`,
+      js: `let n = 0;\nfunction change(d) {\n  n += d;\n  const el = document.getElementById('val');\n  el.textContent = n;\n  el.style.color = n < 0 ? 'red' : n > 0 ? 'green' : '#273E74';\n}\nfunction reset() {\n  n = 0;\n  const el = document.getElementById('val');\n  el.textContent = 0;\n  el.style.color = '#273E74';\n}`
+    },
+    lista: {
+      html: `<h2>Lista de Tarefas</h2>\n<div class="row">\n  <input type="text" id="task" placeholder="Nova tarefa...">\n  <button onclick="add()">Adicionar</button>\n</div>\n<ul id="list"></ul>`,
+      css: `body { font-family: Arial, sans-serif; padding: 30px; max-width: 400px; }\nh2 { color: #273E74; }\n.row { display: flex; gap: 8px; margin-bottom: 16px; }\ninput { flex: 1; padding: 10px; border: 2px solid #273E74; font-size: 1rem; }\ninput:focus { outline: none; border-color: #5C6D82; }\nbutton { padding: 10px 16px; background: #273E74; color: white; border: none; font-weight: bold; cursor: pointer; }\nbutton:hover { background: #5C6D82; }\nul { list-style: none; padding: 0; }\nli { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border: 2px solid #273E74; margin-bottom: 6px; font-size: 1rem; }\nli.done { text-decoration: line-through; opacity: 0.5; }\nli button { padding: 4px 10px; font-size: 0.8rem; background: #c00; }\nli span { cursor: pointer; flex: 1; }`,
+      js: `function add() {\n  const input = document.getElementById('task');\n  const text = input.value.trim();\n  if (!text) return;\n  const li   = document.createElement('li');\n  const span = document.createElement('span');\n  span.textContent = text;\n  span.onclick = () => li.classList.toggle('done');\n  const btn = document.createElement('button');\n  btn.textContent = '✕';\n  btn.onclick = () => li.remove();\n  li.appendChild(span);\n  li.appendChild(btn);\n  document.getElementById('list').appendChild(li);\n  input.value = '';\n  input.focus();\n}`
+    },
+    cores: {
+      html: `<h2>Gerador de Cores</h2>\n<div id="box"></div>\n<p id="hex">#000000</p>\n<button onclick="gerar()">Nova Cor</button>`,
+      css: `body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; gap: 16px; }\nh2 { color: #273E74; margin: 0; }\n#box { width: 200px; height: 200px; background: #000; border: 3px solid #273E74; transition: background 0.4s; }\n#hex { font-size: 2rem; font-weight: bold; color: #273E74; margin: 0; letter-spacing: 0.1em; }\nbutton { padding: 12px 28px; background: #273E74; color: white; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; }\nbutton:hover { background: #5C6D82; }`,
+      js: `function gerar() {\n  const r = Math.floor(Math.random()*256);\n  const g = Math.floor(Math.random()*256);\n  const b = Math.floor(Math.random()*256);\n  const hex = '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');\n  document.getElementById('box').style.background = hex;\n  document.getElementById('hex').textContent = hex.toUpperCase();\n}\ngerar();`
+    },
+    relogio: {
+      html: `<h2>Relógio Digital</h2>\n<div id="clock"></div>\n<p id="date"></p>`,
+      css: `body { font-family: 'Courier New', monospace; background: #0d1b2a; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }\nh2 { color: #5C6D82; letter-spacing: 0.2em; }\n#clock { font-size: 5rem; font-weight: bold; color: #00ff88; text-shadow: 0 0 20px #00ff88; letter-spacing: 0.05em; }\n#date { color: #7a8fa3; font-size: 1.2rem; letter-spacing: 0.1em; margin-top: 10px; }`,
+      js: `function tick() {\n  const now = new Date();\n  const h = String(now.getHours()).padStart(2,'0');\n  const m = String(now.getMinutes()).padStart(2,'0');\n  const s = String(now.getSeconds()).padStart(2,'0');\n  document.getElementById('clock').textContent = h + ':' + m + ':' + s;\n  const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];\n  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];\n  document.getElementById('date').textContent = dias[now.getDay()] + ', ' + now.getDate() + ' ' + meses[now.getMonth()] + ' ' + now.getFullYear();\n}\ntick();\nsetInterval(tick, 1000);`
+    }
+  };
+
+  // ══════════════════════════════════════
+  //  MONACO SETUP
+  // ══════════════════════════════════════
+  let editors = {};
+
+  require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+
+  require(['vs/editor/editor.main'], function () {
+    const commonOpts = {
+      theme: 'vs-dark',
+      fontSize: 14,
+      minimap: { enabled: false },
+      scrollBeyondLastLine: false,
+      automaticLayout: true,
+      wordWrap: 'on',
+      lineNumbers: 'on',
+      padding: { top: 10, bottom: 10 },
+      fontFamily: "'Courier New', Consolas, monospace",
+    };
+
+    editors.html = monaco.editor.create(document.getElementById('editor-html'), {
+      ...commonOpts,
+      language: 'html',
+      value: EXAMPLES.hello.html
+    });
+
+    editors.css = monaco.editor.create(document.getElementById('editor-css'), {
+      ...commonOpts,
+      language: 'css',
+      value: EXAMPLES.hello.css
+    });
+
+    editors.js = monaco.editor.create(document.getElementById('editor-js'), {
+      ...commonOpts,
+      language: 'javascript',
+      value: EXAMPLES.hello.js
+    });
+
+    // Executar ao pressionar Ctrl+Enter em qualquer editor
+    Object.values(editors).forEach(ed => {
+      ed.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runPreview);
+    });
+
+    setStatus('ready', 'Editor pronto');
+    runPreview(); // preview inicial
+  });
+
+  // ══════════════════════════════════════
+  //  PREVIEW
+  // ══════════════════════════════════════
+  function runPreview() {
+    if (!editors.html) return;
+    setStatus('loading', 'Atualizando preview...');
+
+    const html = editors.html.getValue();
+    const css  = editors.css.getValue();
+    const js   = editors.js.getValue();
+
+    // Detectar se o HTML já é um documento completo
+    const isFullDoc = /<!doctype/i.test(html) || /<html/i.test(html);
+
+    let src;
+    if (isFullDoc) {
+      // Injetar CSS e JS no documento existente
+      src = html
+        .replace('</head>', `<style>${css}</style>\n</head>`)
+        .replace('</body>', `<script>${js}<\/script>\n</body>`);
+      // Se não encontrou as tags, adicionar no final
+      if (!src.includes(`<style>${css}</style>`)) {
+        src = html + `\n<style>${css}</style>\n<script>${js}<\/script>`;
+      }
+    } else {
+      // Montar documento completo
+      src = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>${css}</style>
+</head>
+<body>
+${html}
+<script>${js}<\/script>
+</body>
+</html>`;
+    }
+
+    const frame = document.getElementById('preview-frame');
+    frame.srcdoc = src;
+    frame.onload = () => setStatus('ready', 'Preview atualizado com sucesso');
+    updateStatusRight();
+  }
+
+  function updateStatusRight() {
+    const lines = editors.html ? editors.html.getModel().getLineCount() : 0;
+    document.getElementById('statusRight').textContent =
+      `HTML: ${lines} linhas | CSS: ${editors.css ? editors.css.getModel().getLineCount() : 0} linhas | JS: ${editors.js ? editors.js.getModel().getLineCount() : 0} linhas`;
+  }
+
+  // ══════════════════════════════════════
+  //  STATUS BAR
+  // ══════════════════════════════════════
+  function setStatus(state, msg) {
+    const dot  = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    dot.className = 'status-dot' + (state === 'loading' ? ' loading' : '');
+    text.textContent = msg;
+  }
+
+  // ══════════════════════════════════════
+  //  TABS
+  // ══════════════════════════════════════
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.editor-container').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+      if (editors[tab]) editors[tab].layout();
+    });
+  });
+
+  // ══════════════════════════════════════
+  //  BOTÕES
+  // ══════════════════════════════════════
+  document.getElementById('btnRun').addEventListener('click', runPreview);
+
+  document.getElementById('btnClear').addEventListener('click', () => {
+    if (!confirm('Limpar todo o código? Esta ação não pode ser desfeita.')) return;
+    if (editors.html) editors.html.setValue('');
+    if (editors.css)  editors.css.setValue('');
+    if (editors.js)   editors.js.setValue('');
+    document.getElementById('preview-frame').srcdoc = '';
+    setStatus('ready', 'Editor limpo');
+  });
+
+  document.getElementById('btnRefresh').addEventListener('click', runPreview);
+
+  document.getElementById('btnOpenNew').addEventListener('click', () => {
+    const frame = document.getElementById('preview-frame');
+    const blob = new Blob([frame.srcdoc || ''], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  });
+
+  document.getElementById('themeSelect').addEventListener('change', function () {
+    monaco.editor.setTheme(this.value);
+  });
+
+  document.getElementById('fontSizeSelect').addEventListener('change', function () {
+    const size = parseInt(this.value);
+    Object.values(editors).forEach(ed => ed.updateOptions({ fontSize: size }));
+  });
+
+  document.getElementById('btnFullscreen').addEventListener('click', () => {
+    const frame = document.getElementById('preview-frame');
+    if (frame.requestFullscreen) frame.requestFullscreen();
+    else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+  });
+
+  // ══════════════════════════════════════
+  //  EXEMPLOS
+  // ══════════════════════════════════════
+  document.querySelectorAll('[data-example]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.example;
+      const ex  = EXAMPLES[key];
+      if (!ex || !editors.html) return;
+      editors.html.setValue(ex.html);
+      editors.css.setValue(ex.css);
+      editors.js.setValue(ex.js);
+      setStatus('ready', `Exemplo "${btn.textContent}" carregado`);
+      runPreview();
+    });
+  });
+
+  // ══════════════════════════════════════
+  // ======================================
+  //  ATALHO GLOBAL Ctrl+Enter
+  // ======================================
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      runPreview();
+    }
+  });
+
+  // ======================================
+  //  SPLITTER ARRASTAVEL (desktop)
+  // ======================================
+  (function () {
+    const splitter     = document.getElementById('splitter');
+    const workspace    = document.getElementById('workspace');
+    const editorsPanel = document.getElementById('editorsPanel');
+    let dragging = false, startX = 0, startW = 0;
+
+    // Overlay transparente que bloqueia o iframe durante o drag
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute;inset:0;z-index:999;display:none;cursor:col-resize;';
+    document.getElementById('previewPanel').appendChild(overlay);
+
+    splitter.addEventListener('mousedown', e => {
+      dragging = true;
+      startX = e.clientX;
+      startW = editorsPanel.getBoundingClientRect().width;
+      splitter.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      overlay.style.display = 'block'; // bloqueia o iframe
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const totalW = workspace.getBoundingClientRect().width;
+      const newW   = Math.min(Math.max(startW + (e.clientX - startX), totalW * 0.2), totalW * 0.8);
+      editorsPanel.style.flex = 'none';
+      editorsPanel.style.width = newW + 'px';
+      Object.values(editors).forEach(ed => ed && ed.layout());
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      splitter.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      overlay.style.display = 'none'; // libera o iframe
+    });
+
+    splitter.addEventListener('touchstart', e => {
+      dragging = true;
+      startX = e.touches[0].clientX;
+      startW = editorsPanel.getBoundingClientRect().width;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const totalW = workspace.getBoundingClientRect().width;
+      const newW   = Math.min(Math.max(startW + (e.touches[0].clientX - startX), totalW * 0.2), totalW * 0.8);
+      editorsPanel.style.flex = 'none';
+      editorsPanel.style.width = newW + 'px';
+      Object.values(editors).forEach(ed => ed && ed.layout());
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => { dragging = false; });
+  })();
+  </script>
+</body>
+</html>
