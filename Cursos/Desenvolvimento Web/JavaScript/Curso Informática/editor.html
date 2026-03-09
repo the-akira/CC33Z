@@ -664,6 +664,7 @@ ${html}
     if (editors.js)   editors.js.setValue('');
     document.getElementById('preview-frame').srcdoc = '';
     setStatus('ready', 'Editor limpo');
+    updateStatusRight();
   });
 
   document.getElementById('btnRefresh').addEventListener('click', runPreview);
