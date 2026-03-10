@@ -144,11 +144,22 @@
       letter-spacing: 0.03em;
     }
     .tab-btn:hover { color: white; background: rgba(255,255,255,0.08); }
-    .tab-btn.active {
-      color: white;
-      background: #1a2d56;
-      border-bottom: 3px solid #fff;
-    }
+
+    /* Tema escuro */
+    [data-theme="vs-dark"] .tab-btn[data-tab="html"].active { color: white; background: #1a2d56; border-bottom: 3px solid #fff; }
+    [data-theme="vs-dark"] .tab-btn[data-tab="css"].active  { color: white; background: #1a2d56; border-bottom: 3px solid #fff; }
+    [data-theme="vs-dark"] .tab-btn[data-tab="js"].active   { color: white; background: #1a2d56; border-bottom: 3px solid #fff; }
+
+    /* Tema claro */
+    [data-theme="vs-light"] .tab-btn[data-tab="html"].active { color: white; background: #1a2d56; border-bottom: 3px solid #1a2d56; }
+    [data-theme="vs-light"] .tab-btn[data-tab="css"].active  { color: white; background: #1a2d56; border-bottom: 3px solid #1a2d56; }
+    [data-theme="vs-light"] .tab-btn[data-tab="js"].active   { color: white; background: #1a2d56; border-bottom: 3px solid #1a2d56; }
+
+    /* Alto contraste */
+    [data-theme="hc-black"] .tab-btn[data-tab="html"].active { color: white; background: #1a2d56; border-bottom: 3px solid #fff; }
+    [data-theme="hc-black"] .tab-btn[data-tab="css"].active  { color: white; background: #1a2d56; border-bottom: 3px solid #fff; }
+    [data-theme="hc-black"] .tab-btn[data-tab="js"].active   { color: white; background: #1a2d56; border-bottom: 3px solid #fff; }
+
     .tab-btn .dot {
       display: inline-block;
       width: 8px;
@@ -165,6 +176,7 @@
       flex: 1;
       display: none;
       flex-direction: column;
+      background: #1E1E1E;
     }
     .editor-container.active { display: flex; }
     .monaco-box {
@@ -339,7 +351,7 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="vs-dark">
   <div id="loading-overlay" class="active"></div>
   <!-- ════ CABEÇALHO DO SITE ════ -->
   <header>
@@ -571,6 +583,7 @@
       ed.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runPreview);
     });
 
+
     setStatus('ready', 'Editor pronto');
     runPreview(); // preview inicial
   });
@@ -679,6 +692,7 @@ ${html}
 
   document.getElementById('themeSelect').addEventListener('change', function () {
     monaco.editor.setTheme(this.value);
+    document.body.dataset.theme = this.value;
   });
 
   document.getElementById('fontSizeSelect').addEventListener('change', function () {
