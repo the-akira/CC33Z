@@ -1,0 +1,2771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Estatística - Curso de Informática</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      background: #5c6d82;
+      border-bottom: 5.5px solid #273E74;
+      margin-bottom: 30px;
+      color: white;
+    }
+
+    header > h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    header > .subtitle {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    #indexBtn {
+      margin-top: 15px;
+      margin-bottom: 0px;
+      background: white;
+      color: #273E74;
+      border: 3.3px solid #273E74;
+      padding: 9px 12px;
+      font-size: 1.025rem;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+    }
+
+    #indexBtn:hover {
+      background-color: #273E74;
+      color: white;
+      border: 3.3px solid white;
+      cursor: pointer;
+    }
+
+    /* ════ Layout geral ════ */
+    .stat-section {
+      max-width: 960px;
+      margin: 0 auto 30px auto;
+      padding: 0 20px;
+    }
+    .stat-section h2, .graficos-intro h2 {
+      color: #273E74;
+      border-left: 5px solid #5C6D82;
+      padding-left: 12px;
+      margin-bottom: 14px;
+      font-size: 1.35rem;
+    }
+    .stat-section p { line-height: 1.75; color: #222; margin-bottom: 10px; }
+
+    /* ════ Caixa de conceito ════ */
+    .conceito-box {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+    }
+    .conceito-box strong { color: #273E74; }
+
+    /* ════ Fórmula ════ */
+    .formula-box {
+      background: #5c6d82;
+      color: #fff;
+      padding: 16px 22px;
+      font-size: 1.05rem;
+      text-align: center;
+      letter-spacing: 0.03em;
+      font-family: 'Courier New', monospace;
+      border: 2px solid #273E74;
+    }
+
+    /* ════ Separador ════ */
+    .separador {
+      max-width: 960px;
+      margin: 0 auto 30px auto;
+      border: none;
+      border-top: 2px solid #273E74;
+    }
+
+    /* ════ Tipos de dados — hierárquico ════ */
+    .tipos-hierarquia {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .tipo-grupo {
+      flex: 1 1 340px;
+      border: 2px solid #273E74;
+      overflow: hidden;
+    }
+    .tipo-grupo-header {
+      background: #5c6d82;
+      color: white;
+      padding: 14px 20px;
+    }
+    .tipo-grupo-header h3 { margin: 0; font-size: 1.1rem; letter-spacing: 0.02em; }
+    .tipo-grupo-header p {
+      margin: 4px 0 0 0; font-size: 0.95rem; opacity: 0.95;
+      line-height: 1.4; color: white;
+    }
+    .tipo-subgrupos { display: flex; flex-direction: column; gap: 0; }
+    .tipo-sub { background: #f2f2f2; border-top: 2px solid #273E74; padding: 16px 20px; }
+    .tipo-sub-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+    .tipo-sub h4 { color: #273E74; font-size: 0.97rem; margin: 0; }
+    .tipo-sub-badge {
+      font-size: 0.7rem; font-weight: bold; letter-spacing: 0.05em;
+      color: white; background: #5C6D82; padding: 5px 8px; white-space: nowrap;
+    }
+    .tipo-sub p { font-size: 0.87rem; color: #444; line-height: 1.55; margin: 0 0 10px 0; }
+    .tipo-sub ul { margin: 0; padding-left: 18px; font-size: 0.85rem; color: #555; line-height: 1.75; }
+    @media (max-width: 680px) { .tipo-grupo { flex: 1 1 100%; } }
+
+    /* ════ Gráficos estáticos ════ */
+    .graficos-intro { max-width: 960px; margin: 0 auto 10px auto; padding: 0 20px; }
+    .graficos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      max-width: 960px;
+      margin: 0 auto 40px auto;
+      padding: 0 20px;
+    }
+    .grafico-card { background: #f2f2f2; border: 2px solid #273E74; padding: 20px; min-width: 0; }
+    .grafico-card h3 { color: #273E74; margin: 0 0 4px 0; font-size: 1.1rem; }
+    .grafico-card .grafico-uso { font-size: 0.85rem; color: #5C6D82; margin-bottom: 14px; font-style: italic; margin-top: 5px; }
+    .grafico-card p { font-size: 0.9rem; color: #333; line-height: 1.6; margin-top: 14px; }
+    .canvas-wrapper { position: relative; width: 100%; aspect-ratio: 4 / 3; }
+    .canvas-wrapper canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+    @media (max-width: 680px) { .graficos-grid { grid-template-columns: 1fr; } }
+
+    /* ════ Tabela ════ */
+    .tabela-wrapper { overflow-x: auto; margin-top: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    table th { background: #273E74; color: white; padding: 10px 14px; text-align: left; }
+    table td { padding: 9px 14px; border-bottom: 1px solid #c8c8c8; color: #222; }
+    table tr:nth-child(even) td { background: #e8e8e8; }
+    table tr:last-child td { background: #5C6D82; color: white; font-weight: bold; }
+
+    /* ════ Calculadora de Medidas Estatísticas ════ */
+    .calc-wrapper { max-width: 960px; margin: 0 auto 30px auto; padding: 0 20px; }
+    .calc-input-row {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: flex-start; margin-bottom: 16px;
+    }
+    .calc-input-row input[type="text"] {
+      flex: 1 1 300px; padding: 10px 14px; font-size: 1rem;
+      border: 2px solid #273E74; font-family: 'Courier New', monospace; color: #273E74;
+    }
+    .calc-input-row input:focus { outline: none; border-color: #5C6D82; }
+    .calc-input-row button {
+      padding: 10px 22px; background: #273E74; color: white;
+      border: 2px solid #273E74; font-size: 1rem; font-weight: bold; cursor: pointer;
+    }
+    .calc-input-row button:hover { background: #5C6D82; border-color: #5C6D82; }
+    .calc-erro { color: #b00020; font-size: 0.9rem; font-weight: bold; min-height: 20px; margin-bottom: 10px; }
+
+    .medidas-grid { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+    .medida-card {
+      flex: 1 1 110px; background: #f2f2f2;
+      border: 2px solid #273E74; padding: 14px 12px; text-align: center;
+    }
+    .medida-card.destaque { background: #5c6d82; color: white; }
+    .medida-label {
+      font-size: 0.7rem; font-weight: bold; letter-spacing: 0.06em;
+      color: #5C6D82; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .medida-card.destaque .medida-label { color: white; }
+    .medida-valor { font-size: 1.4rem; font-weight: bold; color: #273E74; font-family: 'Courier New', monospace; }
+    .medida-card.destaque .medida-valor { color: white; }
+    .medida-desc { font-size: 0.7rem; color: #555; margin-top: 4px; line-height: 1.4; }
+    .medida-card.destaque .medida-desc { color: white; }
+
+    .dados-visuais { display: flex; flex-direction: column; gap: 16px; }
+    .dados-chart-box { background: #f2f2f2; border: 2px solid #273E74; padding: 16px; }
+    .dados-chart-box h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.95rem; }
+    .dados-chart-canvas {
+      position: relative; width: 100%; aspect-ratio: 16 / 7; min-height: 180px;
+    }
+    .dados-chart-canvas canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    .chart-legenda { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 0.78rem; }
+    .chart-legenda-item { display: flex; align-items: center; gap: 6px; color: #333; }
+    .chart-legenda-cor { width: 14px; height: 14px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.15); }
+    .chart-legenda-linha { width: 22px; height: 3px; flex-shrink: 0; }
+
+    .conjunto-visual { background: #f2f2f2; border: 2px solid #273E74; padding: 16px; }
+    .conjunto-visual h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.95rem; }
+    .numeros-flex { display: flex; flex-wrap: wrap; gap: 6px; }
+    .num-pill {
+      padding: 5px 11px; font-family: 'Courier New', monospace;
+      font-size: 0.95rem; font-weight: bold;
+      border: 2px solid #273E74; background: white; color: #273E74;
+    }
+    .num-pill.p-max  { background: #273E74; color: white; border-color: #273E74; }
+    .num-pill.p-min  { background: #5C6D82; color: white; border-color: #5C6D82; }
+    .num-pill.p-med  { background: #7A9BB5; color: white; border-color: #7A9BB5; }
+    .num-pill.p-moda { background: #A8C0D6; color: #273E74; border-color: #5C6D82; }
+
+    .legenda-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; font-size: 0.77rem; }
+    .legenda-item { display: flex; align-items: center; gap: 5px; color: #333; }
+    .legenda-cor { width: 13px; height: 13px; border: 1px solid #aaa; flex-shrink: 0; }
+
+    .explicacao-medidas { margin-top: 16px; }
+    .medida-explic {
+      background: #f2f2f2; border-left: 4px solid #5C6D82;
+      padding: 12px 16px; margin-bottom: 10px;
+      font-size: 0.9rem; color: #222; line-height: 1.6;
+    }
+    .medida-explic strong { color: #273E74; }
+
+    .placeholder-msg {
+      text-align: center; padding: 30px; color: #5C6D82;
+      font-style: italic; font-size: 0.95rem;
+      border: 2px dashed #5C6D82; background: #f8f8f8;
+    }
+
+    /* ════ Calculadora de Porcentagem ════ */
+    .porc-wrapper { max-width: 960px; margin: 0 auto 30px auto; padding: 0 20px; }
+    .porc-modos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .modo-btn {
+      padding: 9px 18px; border: 2px solid #273E74;
+      background: white; color: #273E74; font-weight: bold; font-size: 0.85rem; cursor: pointer;
+    }
+    .modo-btn.ativo { background: #273E74; color: white; }
+    .modo-btn:hover:not(.ativo) { background: #f2f2f2; }
+    .porc-painel { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    .porc-inputs { flex: 1 1 240px; background: #f2f2f2; border: 2px solid #273E74; padding: 20px; }
+    .porc-inputs h4 { color: #273E74; margin: 0 0 16px 0; font-size: 1rem; }
+    .campo-grupo { margin-bottom: 14px; }
+    .campo-grupo label { display: block; font-size: 0.85rem; font-weight: bold; color: #273E74; margin-bottom: 5px; }
+    .campo-grupo input[type="number"] {
+      width: 100%; padding: 9px 12px; font-size: 1rem;
+      border: 2px solid #273E74; box-sizing: border-box;
+      font-family: 'Courier New', monospace; color: #273E74;
+    }
+    .campo-grupo input:focus { outline: none; border-color: #5C6D82; }
+    .porc-calcular {
+      width: 100%; padding: 11px; background: #273E74; color: white;
+      border: none; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 4px;
+    }
+    .porc-calcular:hover { background: #5C6D82; }
+    .porc-resultado { flex: 1 1 380px; background: #f2f2f2; border: 2px solid #273E74; padding: 20px; }
+    .porc-resultado h4 { color: #273E74; margin: 0 0 14px 0; font-size: 1rem; }
+    .resultado-numero { text-align: center; padding: 14px 0 18px 0; }
+    .res-valor { font-size: 3.2rem; font-weight: bold; color: #273E74; font-family: 'Courier New', monospace; line-height: 1; }
+    .res-label { font-size: 0.9rem; color: #5C6D82; margin-top: 8px; }
+    .barra-container {
+      background: #ddd; height: 36px; border: 2px solid #273E74;
+      margin-bottom: 8px; position: relative; overflow: hidden;
+    }
+    .barra-fill {
+      height: 100%; background: linear-gradient(90deg, #273E74, #5C6D82);
+      transition: width 0.5s ease; display: flex; align-items: center;
+      justify-content: flex-end; min-width: 0; box-sizing: border-box; overflow: hidden;
+    }
+    .barra-fill span { font-size: 0.8rem; font-weight: bold; color: white; white-space: nowrap; }
+    .barra-rotulos { display: flex; justify-content: space-between; font-size: 0.78rem; color: #5C6D82; margin-bottom: 14px; }
+    .grade-100 {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 3px;
+      margin-bottom: 16px;
+    }
+    .quad {
+      aspect-ratio: 1;
+      background: #d4dce8;
+      border: 1px solid #b8c4d4;
+      transition: background 0.2s;
+    }
+    .quad.cheio   { background: #273E74; border-color: #1a2e5a; }
+    .quad.parcial { background: #5C6D82; border-color: #3d5470; }
+    .passo-box { background: white; border: 2px solid #5C6D82; padding: 14px 16px; font-size: 0.9rem; color: #333; line-height: 1.9; }
+    .passo-titulo { font-weight: bold; color: #273E74; margin-bottom: 4px; font-size: 0.88rem; }
+    .passo-calc { font-family: 'Courier New', monospace; background: #f2f2f2; padding: 1px 6px; color: #273E74; }
+
+    /* ════ Box Plot ════ */
+    .boxplot-wrapper {
+      max-width: 960px;
+      display: none;
+    }
+    .boxplot-canvas-box {
+      background: #f2f2f2; border: 2px solid #273E74; padding: 16px; margin-bottom: 16px;
+    }
+    .boxplot-canvas-box h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.95rem; }
+    .boxplot-canvas { position: relative; width: 100%; aspect-ratio: 16 / 6; min-height: 160px; }
+    .boxplot-canvas canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    .boxplot-stats {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;
+    }
+    .boxplot-stat {
+      flex: 1 1 100px; background: #f2f2f2;
+      border: 2px solid #273E74; padding: 12px; text-align: center;
+    }
+    .boxplot-stat-label {
+      font-size: 0.68rem; font-weight: bold; letter-spacing: 0.06em;
+      color: #5C6D82; text-transform: uppercase; margin-bottom: 5px;
+    }
+    .boxplot-stat-valor {
+      font-size: 1.3rem; font-weight: bold;
+      color: #273E74; font-family: 'Courier New', monospace;
+    }
+    .boxplot-stat-desc { font-size: 0.68rem; color: #888; margin-top: 3px; }
+    .boxplot-stat.destaque { background: #5c6d82; }
+    .boxplot-stat.destaque .boxplot-stat-label { color: white; }
+    .boxplot-stat.destaque .boxplot-stat-valor { color: white; }
+    .boxplot-stat.destaque .boxplot-stat-desc  { color: white; }
+
+    .boxplot-outliers-box {
+      background: #f2f2f2; border: 2px solid #5C6D82;
+      border-left: 4px solid #c0392b; padding: 12px 16px;
+      font-size: 0.88rem; color: #333; line-height: 1.7; margin-bottom: 30px;
+    }
+    .boxplot-outliers-box strong { color: #c0392b; }
+
+    /* ════ Simulador de Dados e Moedas ════ */
+    .sim-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .sim-tab {
+      padding: 8px 20px;
+      border: 2px solid #273E74;
+      background: white; color: #273E74;
+      font-weight: bold; font-size: 0.85rem; cursor: pointer;
+    }
+    .sim-tab.ativo { background: #273E74; color: white; }
+    .sim-tab:hover:not(.ativo) { background: #f2f2f2; }
+
+    .sim-controls {
+      display: flex; flex-wrap: wrap; gap: 20px;
+      align-items: flex-end; margin-bottom: 16px;
+      background: #f2f2f2; border: 2px solid #273E74; padding: 18px 20px;
+    }
+    .sim-ctrl-grupo { display: flex; flex-direction: column; gap: 12px; }
+    .sim-ctrl-grupo label { font-size: 0.85rem; font-weight: bold; color: #273E74; }
+    .sim-ctrl-grupo input[type="range"] { accent-color: #273E74; width: 200px; }
+    .sim-ctrl-grupo span {
+      font-family: 'Courier New', monospace;
+      background: #273E74; color: white;
+      padding: 2px 10px; font-size: 0.95rem; font-weight: bold;
+      display: inline-block; width: fit-content;
+    }
+    .sim-btn {
+      padding: 10px 22px; background: #273E74; color: white;
+      border: 2px solid #273E74; font-size: 1rem; font-weight: bold; cursor: pointer;
+    }
+    .sim-btn:hover { background: #5C6D82; border-color: #5C6D82; }
+    .sim-btn-reset {
+      padding: 10px 18px; background: white; color: #273E74;
+      border: 2px solid #273E74; font-size: 1rem; cursor: pointer; font-weight: bold;
+    }
+    .sim-btn-reset:hover { background: #f2f2f2; }
+
+    .sim-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .sim-stat {
+      flex: 1 1 110px; background: #f2f2f2;
+      border: 2px solid #273E74; padding: 13px 12px; text-align: center;
+    }
+    .sim-stat-label { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.06em; color: #5C6D82; text-transform: uppercase; margin-bottom: 5px; }
+    .sim-stat-val { font-size: 1.4rem; font-weight: bold; color: #273E74; font-family: 'Courier New', monospace; }
+
+    .sim-chart-box { background: #f2f2f2; border: 2px solid #273E74; padding: 16px; margin-bottom: 16px; }
+    .sim-chart-box h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.95rem; }
+    .sim-chart-canvas { position: relative; width: 100%; aspect-ratio: 16 / 7; }
+    .sim-chart-canvas canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    .sim-lei {
+      background: #f2f2f2; border-left: 4px solid #273E74;
+      padding: 14px 18px; font-size: 0.9rem; color: #222; line-height: 1.7;
+    }
+    .sim-lei strong { color: #273E74; }
+
+    /* ════ Calculadora de Probabilidade ════ */
+    .prob-wrapper { max-width: 960px; margin: 0 auto 30px auto; padding: 0 20px; }
+
+    .prob-inputs {
+      background: #f2f2f2; border: 2px solid #273E74; padding: 20px; margin-bottom: 16px;
+    }
+    .prob-inputs h4 { color: #273E74; margin: 0 0 18px 0; font-size: 1rem; }
+
+    .prob-campo { margin-bottom: 16px; }
+    .prob-campo label {
+      display: block; font-size: 0.85rem; font-weight: bold;
+      color: #273E74; margin-bottom: 6px;
+    }
+    .prob-campo input[type="number"] {
+      width: 100%; padding: 10px 12px; font-size: 1.1rem;
+      border: 2px solid #273E74; box-sizing: border-box;
+      font-family: 'Courier New', monospace; color: #273E74;
+    }
+    .prob-campo input:focus { outline: none; border-color: #5C6D82; }
+    .prob-campo small { display: block; font-size: 0.78rem; color: #5C6D82; margin-top: 5px; }
+
+    .prob-calcular {
+      width: 100%; padding: 11px; background: #273E74; color: white;
+      border: none; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 4px;
+    }
+    .prob-calcular:hover { background: #5C6D82; }
+
+    .prob-resultado {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    /* Três cards de representação */
+    .prob-cards { display: flex; flex-wrap: wrap; gap: 12px; }
+    .prob-card {
+      flex: 1 1 120px; border: 2px solid #273E74;
+      padding: 16px 12px; text-align: center;
+      background: #f2f2f2;
+    }
+    .prob-card.destaque { background: #5C6D82; }
+    .prob-card-label {
+      font-size: 0.68rem; font-weight: bold; letter-spacing: 0.07em;
+      color: #5C6D82; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .prob-card.destaque .prob-card-label { color: white; }
+    .prob-card-valor {
+      font-size: 1.9rem; font-weight: bold;
+      color: #273E74; font-family: 'Courier New', monospace; line-height: 1;
+    }
+    .prob-card.destaque .prob-card-valor { color: white; }
+    .prob-card-sub { font-size: 0.75rem; color: #555; margin-top: 6px; }
+    .prob-card.destaque .prob-card-sub { color: white; }
+
+    /* Barra visual */
+    .prob-barra-box {
+      background: #f2f2f2; border: 2px solid #273E74; padding: 16px;
+    }
+    .prob-barra-box h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.9rem; }
+    .prob-barra-trilho {
+      background: #ddd; height: 32px; border: 2px solid #273E74;
+      position: relative; overflow: hidden;
+    }
+    .prob-barra-fill {
+      height: 100%; background: linear-gradient(90deg, #273E74, #5C6D82);
+      transition: width 0.5s ease; display: flex; align-items: center;
+      justify-content: flex-end; padding-right: 8px; box-sizing: border-box; overflow: hidden;
+    }
+    .prob-barra-fill span { font-size: 0.8rem; font-weight: bold; color: white; white-space: nowrap; }
+    .prob-barra-rotulos {
+      display: flex; justify-content: space-between;
+      font-size: 0.78rem; color: #5C6D82; margin-top: 5px;
+    }
+
+    /* Exemplos rápidos */
+    .prob-exemplos {
+      background: #f2f2f2; border: 2px solid #273E74; padding: 16px;
+    }
+    .prob-exemplos h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.9rem; }
+    .prob-exemplos-grid {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .prob-exemplo-btn {
+      padding: 7px 14px; border: 2px solid #273E74;
+      background: white; color: #273E74; font-size: 0.82rem;
+      cursor: pointer; font-weight: bold;
+    }
+    .prob-exemplo-btn:hover { background: #273E74; color: white; }
+
+    /* Passo a passo */
+    .prob-passo {
+      background: white; border: 2px solid #5C6D82; padding: 14px 16px;
+      font-size: 0.9rem; color: #222; line-height: 1.9;
+    }
+    .prob-passo-titulo { font-weight: bold; color: #273E74; margin-bottom: 6px; font-size: 0.88rem; }
+    .prob-code { font-family: 'Courier New', monospace; background: #f2f2f2; padding: 1px 7px; color: #273E74; }
+
+    /* ════ Calculadora de Correlação ════ */
+    .corr-wrapper { max-width: 960px; margin: 0 auto 30px auto; padding: 0 20px; }
+
+    .corr-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 600px) { .corr-inputs-grid { grid-template-columns: 1fr; } }
+
+    .corr-campo { background: #f2f2f2; border: 2px solid #273E74; padding: 16px; }
+    .corr-campo label {
+      display: block; font-weight: bold; color: #273E74;
+      font-size: 0.9rem; margin-bottom: 8px;
+    }
+    .corr-campo textarea {
+      width: 100%; height: 110px; padding: 9px 12px;
+      font-size: 0.92rem; font-family: 'Courier New', monospace;
+      border: 2px solid #273E74; box-sizing: border-box;
+      resize: none; color: #273E74; line-height: 1.6;
+    }
+    .corr-campo textarea:focus { outline: none; border-color: #5C6D82; }
+    .corr-campo small { display: block; font-size: 0.78rem; color: #5C6D82; margin-top: 6px; }
+
+    .corr-botao-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .corr-btn {
+      padding: 10px 24px; background: #273E74; color: white;
+      border: 2px solid #273E74; font-size: 1rem; font-weight: bold; cursor: pointer;
+    }
+    .corr-btn:hover { background: #5C6D82; border-color: #5C6D82; }
+    .corr-btn-limpar {
+      padding: 10px 18px; background: white; color: #273E74;
+      border: 2px solid #273E74; font-size: 1rem; cursor: pointer; font-weight: bold;
+    }
+    .corr-btn-limpar:hover { background: #f2f2f2; }
+
+    /* Resultado principal */
+    .corr-resultado-box {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;
+    }
+    .corr-r-card {
+      flex: 0 0 auto; min-width: 160px;
+      background: #5C6D82; color: white;
+      border: 2px solid #273E74; padding: 18px 22px; text-align: center;
+    }
+    .corr-r-label { font-size: 0.95rem; font-weight: bold; letter-spacing: 0.07em; color: white; margin-bottom: 6px; }
+    .corr-r-valor { font-size: 2.4rem; font-weight: bold; font-family: 'Courier New', monospace; line-height: 1; }
+    .corr-r-sublabel { font-size: 0.9rem; color: white; margin-top: 6px; }
+
+    .corr-interpretacao {
+      flex: 1 1 260px; border: 2px solid #273E74;
+      background: #f2f2f2; padding: 16px 20px;
+      font-size: 0.9rem; color: #222; line-height: 1.7;
+    }
+    .corr-interpretacao strong { color: #273E74; }
+    .corr-forca {
+      display: inline-block; padding: 3px 12px; font-weight: bold;
+      font-size: 0.82rem; letter-spacing: 0.04em; color: white;
+      margin-bottom: 8px;
+    }
+
+    /* Gráfico de dispersão */
+    .corr-chart-box { background: #f2f2f2; border: 2px solid #273E74; padding: 16px; margin-bottom: 16px; }
+    .corr-chart-box h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.95rem; }
+    .corr-chart-canvas { position: relative; width: 100%; aspect-ratio: 4 / 3; }
+    .corr-chart-canvas canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    /* Tabela de pares */
+    .corr-tabela-box { background: #f2f2f2; border: 2px solid #273E74; padding: 16px; }
+    .corr-tabela-box h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.95rem; }
+
+    .corr-placeholder {
+      text-align: center; padding: 30px; color: #5C6D82;
+      font-style: italic; font-size: 0.95rem;
+      border: 2px dashed #5C6D82; background: #f8f8f8;
+    }
+    .glossario-wrapper { max-width: 960px; margin: 0 auto 30px auto; padding: 0 20px; }
+    .glossario-busca {
+      display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .glossario-busca input {
+      flex: 1 1 260px; padding: 10px 14px; font-size: 1rem;
+      border: 2px solid #273E74; color: #273E74;
+    }
+    .glossario-busca input:focus { outline: none; border-color: #5C6D82; }
+    .glossario-grid { display: flex; flex-direction: column; gap: 0; }
+    .glossario-item {
+      border: 2px solid #273E74;
+      border-top: none;
+      background: #f2f2f2;
+    }
+    .glossario-item:first-child { border-top: 2px solid #273E74; }
+    .glossario-item.oculto { display: none; }
+    .glossario-cabecalho {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 18px; cursor: pointer;
+      user-select: none;
+    }
+    .glossario-cabecalho:hover { background: #e6eaf2; }
+    .glossario-letra {
+      background: #273E74; color: white; font-size: 0.72rem;
+      font-weight: bold; letter-spacing: 0.06em;
+      padding: 3px 8px; white-space: nowrap;
+    }
+    .glossario-termo { font-weight: bold; color: #273E74; font-size: 0.97rem; flex: 1; }
+    .glossario-seta { color: #5C6D82; font-size: 0.85rem; transition: transform 0.2s; }
+    .glossario-item.aberto .glossario-seta { transform: rotate(90deg); }
+    .glossario-corpo {
+      display: none; padding: 16px 18px 16px 18px;
+      font-size: 0.9rem; color: #333; line-height: 1.7;
+      border-top: 1px solid #c8c8c8;
+    }
+    .glossario-item.aberto .glossario-corpo { display: block; }
+    .glossario-corpo strong { color: #273E74; }
+    .glossario-vazio { padding: 24px; text-align: center; color: #5C6D82; font-style: italic; border: 2px solid #273E74; background: #f8f8f8; }
+
+    /* ════ Distribuição Normal ════ */
+    .gauss-wrapper { max-width: 960px; margin: 0 auto 30px auto; padding: 0 20px; }
+
+    .gauss-controles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 16px;
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      padding: 20px 24px;
+    }
+    .gauss-slider-grupo { flex: 1 1 200px; }
+    .gauss-slider-grupo label {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-weight: bold; color: #273E74; font-size: 0.9rem; margin-bottom: 8px;
+    }
+    .gauss-slider-grupo label span {
+      font-family: 'Courier New', monospace;
+      background: #273E74; color: white;
+      padding: 2px 10px; font-size: 0.95rem; font-weight: bold;
+    }
+    .gauss-slider-grupo input[type="range"] {
+      width: 100%; accent-color: #273E74; cursor: pointer; height: 6px;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      height: 8px;
+      background: #dce1eb;
+      outline: none;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+    input[type="range"]:hover {
+      background: #c4ccda;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      background: linear-gradient(90deg, #5c6d82, #273E74);
+    }
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      background: linear-gradient(90deg, #5c6d82, #273E74);
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #ffffff;
+      border: 2px solid #273E74;
+      margin-top: -5px;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #ffffff;
+      border: 2px solid #273E74;
+    }
+    .gauss-slider-sub { font-size: 0.85rem; color: #5C6D82; margin-top: 10px; }
+
+    .gauss-chart-box {
+      background: #f2f2f2; border: 2px solid #273E74; padding: 16px; margin-bottom: 16px;
+    }
+    .gauss-chart-box h4 { color: #273E74; margin: 0 0 12px 0; font-size: 0.95rem; }
+    .gauss-canvas { position: relative; width: 100%; aspect-ratio: 16 / 6; min-height: 180px; }
+    .gauss-canvas canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    .gauss-regra {
+      display: flex; flex-wrap: wrap; gap: 14px; margin-top: 0;
+    }
+    .gauss-regra-card {
+      flex: 1 1 180px; padding: 16px 18px;
+      border: 2px solid #273E74; text-align: center;
+    }
+    .gauss-regra-card:nth-child(1) { background: #273E74; color: white; }
+    .gauss-regra-card:nth-child(2) { background: #5C6D82; color: white; }
+    .gauss-regra-card:nth-child(3) { background: #7A9BB5; color: white; }
+    .gauss-regra-titulo { font-size: 0.85rem; font-weight: bold; letter-spacing: 0.06em; opacity: 0.85; margin-bottom: 6px; }
+    .gauss-regra-pct { font-size: 2rem; font-weight: bold; font-family: 'Courier New', monospace; line-height: 1; }
+    .gauss-regra-detalhe { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; line-height: 1.4; }
+    .gauss-regra-intervalo {
+      font-size: 0.8rem; font-family: 'Courier New', monospace;
+      background: rgba(255,255,255,0.18); padding: 3px 8px; margin-top: 8px; display: inline-block;
+    }
+
+    @media (max-width: 600px) {
+      .gauss-regra-card { flex: 1 1 100%; }
+      .medida-card { flex: 1 1 90px; }
+      .medida-valor { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+      <h1>Estatística</h1>
+      <p class="subtitle">Como os dados são organizados e compreendidos</p>
+      <button class="btn" id="indexBtn" onclick="openIndex()">Página Inicial</button>
+  </header>
+
+  <!-- ══════════ O QUE É ESTATÍSTICA ══════════ -->
+  <section class="stat-section">
+    <h2>O que é Estatística?</h2>
+    <p>
+      A <strong>Estatística</strong> é a ciência que coleta, organiza, analisa e interpreta dados para
+      auxiliar na tomada de decisões. Ela está presente em pesquisas científicas, resultados esportivos,
+      notas escolares, pesquisas eleitorais, saúde pública e muito mais.
+    </p>
+    <div class="conceito-box" style="margin-top: 16px;">
+      <strong>Conceitos fundamentais:</strong>
+      <ul style="margin-top:8px;padding-left:20px;line-height:1.9; margin-bottom: 0px;">
+        <li><strong>População:</strong> conjunto completo de elementos que se deseja estudar.</li>
+        <li><strong>Amostra:</strong> subconjunto da população usado quando estudar todos é inviável.</li>
+        <li><strong>Variável:</strong> característica observada em cada elemento (idade, nota, cor...).</li>
+        <li><strong>Frequência:</strong> quantas vezes um valor aparece nos dados.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="separador">
+
+  <!-- ══════════ TIPOS DE DADOS ══════════ -->
+  <section class="stat-section">
+    <h2>Tipos de Dados</h2>
+    <p>
+      Antes de analisar qualquer conjunto de informações, precisamos identificar o
+      <strong>tipo de dado</strong>. Eles se dividem em duas grandes categorias —
+      <strong>Qualitativos</strong> e <strong>Quantitativos</strong> — cada uma com seus próprios subtipos.
+    </p>
+
+    <div class="tipos-hierarquia">
+
+      <!-- ── QUALITATIVO ── -->
+      <div class="tipo-grupo">
+        <div class="tipo-grupo-header">
+          <h3>Dados Qualitativos</h3>
+          <p>Expressam características, atributos ou categorias. Não representam uma quantidade numérica mensurável.</p>
+        </div>
+        <div class="tipo-subgrupos">
+
+          <div class="tipo-sub">
+            <div class="tipo-sub-header">
+              <h4>Nominal</h4>
+              <span class="tipo-sub-badge">SEM ORDEM</span>
+            </div>
+            <p>
+              As categorias <strong>não possuem hierarquia</strong> entre si.
+              Não é possível dizer que uma é "maior" ou "melhor" que outra.
+            </p>
+            <ul>
+              <li>Cor dos olhos (azul, verde, castanho)</li>
+              <li>Sistema operacional (Windows, Linux, macOS)</li>
+              <li>Tipo sanguíneo (A, B, AB, O)</li>
+              <li>Gênero de filme (ação, comédia, drama)</li>
+              <li>Estado civil (solteiro, casado, divorciado)</li>
+            </ul>
+          </div>
+
+          <div class="tipo-sub">
+            <div class="tipo-sub-header">
+              <h4>Ordinal</h4>
+              <span class="tipo-sub-badge">COM ORDEM</span>
+            </div>
+            <p>
+              As categorias possuem uma <strong>ordem natural</strong> entre si,
+              mas não é possível medir com exatidão a diferença entre elas.
+            </p>
+            <ul>
+              <li>Escolaridade (Fundamental, Médio, Superior)</li>
+              <li>Satisfação (Ótimo, Bom, Regular, Ruim)</li>
+              <li>Dificuldade (Fácil, Médio, Difícil)</li>
+              <li>Nível de experiência (Iniciante, Intermediário, Avançado)</li>
+              <li>Classificação de risco (Baixo, Médio, Alto)</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── QUANTITATIVO ── -->
+      <div class="tipo-grupo">
+        <div class="tipo-grupo-header">
+          <h3>Dados Quantitativos</h3>
+          <p>Expressam uma quantidade numérica mensurável. Permitem operações matemáticas como soma e média.</p>
+        </div>
+        <div class="tipo-subgrupos">
+
+          <div class="tipo-sub">
+            <div class="tipo-sub-header">
+              <h4>Discreto</h4>
+              <span class="tipo-sub-badge">VALORES INTEIROS</span>
+            </div>
+            <p>
+              Representa quantidades <strong>contáveis</strong>. Os valores são números inteiros
+              e não faz sentido ter fração entre dois consecutivos.
+            </p>
+            <ul>
+              <li>Número de alunos em uma sala (28, 29, 30...)</li>
+              <li>Quantidade de computadores em um laboratório</li>
+              <li>Número de filhos em uma família</li>
+              <li>Quantidade de erros em um código</li>
+              <li>Número de gols em uma partida</li>
+            </ul>
+          </div>
+
+          <div class="tipo-sub">
+            <div class="tipo-sub-header">
+              <h4>Contínuo</h4>
+              <span class="tipo-sub-badge">VALORES REAIS</span>
+            </div>
+            <p>
+              Representa medidas que podem assumir <strong>qualquer valor</strong> dentro de um
+              intervalo, incluindo decimais com qualquer número de casas.
+            </p>
+            <ul>
+              <li>Altura de uma pessoa (1,72 m; 1,735 m...)</li>
+              <li>Temperatura (36,5°C; 37,2°C...)</li>
+              <li>Tempo de execução de um programa (0,034 s)</li>
+              <li>Peso de um dispositivo (0,485 kg)</li>
+              <li>Velocidade de uma rede (12,7 Mbps)</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="separador">
+
+  <!-- ══════════ MEDIDAS ESTATÍSTICAS — INTERATIVO ══════════ -->
+  <section class="stat-section" style="margin-bottom: 10px;">
+    <h2>Medidas Estatísticas</h2>
+    <p>
+      As medidas estatísticas resumem um conjunto de dados. Temos as
+      <strong>medidas de tendência central</strong> (média, moda, mediana) e as
+      <strong>medidas de dispersão</strong> (variância, desvio padrão, máximo, mínimo).
+      Digite qualquer conjunto de números abaixo e explore os resultados ao vivo.
+    </p>
+  </section>
+
+  <div class="calc-wrapper">
+    <div class="calc-input-row">
+      <input type="text" id="dadosInput"
+        placeholder="Números separados por vírgula. Ex: 4, 7, 7, 8, 10, 12, 7, 5"
+        value="4, 7, 7, 8, 10, 12, 7, 5">
+      <button onclick="calcularMedidas()">Calcular</button>
+    </div>
+    <div class="calc-erro" id="calcErro"></div>
+
+    <div class="medidas-grid" id="medidasGrid">
+      <div class="placeholder-msg" style="width:100%;">
+        Digite seus números acima e clique em <strong>Calcular</strong> para ver os resultados.
+      </div>
+    </div>
+
+    <div class="dados-visuais" id="dadosVisuais" style="display:none;">
+      <div class="dados-chart-box">
+        <h4>Distribuição dos valores com marcações de média e mediana</h4>
+        <div class="dados-chart-canvas">
+          <canvas id="chartMedidas"></canvas>
+        </div>
+        <div class="chart-legenda">
+          <div class="chart-legenda-item">
+            <div class="chart-legenda-cor" style="background:#273E74;"></div>Frequência
+          </div>
+          <div class="chart-legenda-item">
+            <div class="chart-legenda-cor" style="background:#7A9BB5;"></div>Bin da Mediana
+          </div>
+          <div class="chart-legenda-item">
+            <div class="chart-legenda-linha" style="background:#c0392b;"></div>Média
+          </div>
+          <div class="chart-legenda-item">
+            <div class="chart-legenda-linha" style="background: repeating-linear-gradient(90deg,#27962f 0,#27962f 4px,transparent 4px,transparent 8px);"></div>Mediana
+          </div>
+        </div>
+      </div>
+      <div class="conjunto-visual">
+        <h4>Conjunto ordenado</h4>
+        <div class="numeros-flex" id="numerosOrdenados"></div>
+        <div class="legenda-pills">
+          <div class="legenda-item"><div class="legenda-cor" style="background:#273E74;"></div>Máximo</div>
+          <div class="legenda-item"><div class="legenda-cor" style="background:#5C6D82;"></div>Mínimo</div>
+          <div class="legenda-item"><div class="legenda-cor" style="background:#7A9BB5;"></div>Mediana</div>
+          <div class="legenda-item"><div class="legenda-cor" style="background:#A8C0D6;border:1px solid #5C6D82;"></div>Moda</div>
+          <div class="legenda-item"><div class="legenda-cor" style="background:white;border:1px solid #273E74;"></div>Outros</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explicacao-medidas" id="explicacaoMedidas" style="display:none;"></div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ TABELA DE FREQUÊNCIA ══════════ -->
+  <section class="stat-section">
+    <h2>Tabela de Frequência</h2>
+    <p>
+      A <strong>tabela de frequência</strong> organiza os dados mostrando quantas vezes cada valor aparece
+      no conjunto. Ela é a base para construir gráficos e calcular medidas estatísticas.
+      As colunas mais comuns são:
+    </p>
+    <div class="conceito-box" style="margin-bottom: 0px;">
+      <ul style="padding-left:20px; line-height:2; margin-top: 0px; margin-bottom: 0px;">
+        <li><strong>Valor (xi):</strong> cada valor distinto do conjunto de dados.</li>
+        <li><strong>Frequência Absoluta (fi):</strong> quantas vezes o valor aparece.</li>
+        <li><strong>Frequência Relativa (fr):</strong> proporção em relação ao total — fi / n.</li>
+        <li><strong>Frequência Percentual (%):</strong> frequência relativa em porcentagem — fr × 100.</li>
+        <li><strong>Frequência Acumulada (Fi):</strong> soma das frequências absolutas até aquele valor.</li>
+      </ul>
+    </div>
+    <p style="margin-top: 10px;">
+      A tabela abaixo é gerada automaticamente a partir dos números que você digitou na calculadora acima.
+      Experimente alterar os valores para ver a tabela mudar.
+    </p>
+  </section>
+
+  <div class="calc-wrapper" style="margin-top:-20px;">
+    <div id="freqTabela">
+      <div class="placeholder-msg">
+        Digite números na calculadora acima e clique em <strong>Calcular</strong> para gerar a tabela.
+      </div>
+    </div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ BOX PLOT ══════════ -->
+
+  <section class="stat-section" style="margin-bottom:10px;">
+    <h2>Diagrama de Caixa (Box Plot)</h2>
+    <p>
+      O <strong>Box Plot</strong> resume a distribuição dos dados em cinco números:
+      mínimo, Q1, mediana, Q3 e máximo. A caixa central representa os 50% centrais dos dados
+      (intervalo interquartil), e os pontos fora dos limites são <strong>outliers</strong>.
+    </p>
+  
+
+    <div class="calc-wrapper" style="margin-top:0; margin-bottom:20px; padding-right: 0px; padding-left: 0px;">
+      <div class="boxplot-stats" id="boxplotStats"></div>
+      <div class="boxplot-canvas-box">
+        <h4>Diagrama de caixa com outliers destacados</h4>
+        <div class="boxplot-canvas">
+          <canvas id="chartBoxplot"></canvas>
+        </div>
+      </div>
+      <div id="boxplotOutliers"></div>
+    </div>
+  </section>
+
+
+  <hr class="separador">
+
+  <!-- ══════════ PORCENTAGEM — INTERATIVO ══════════ -->
+  <section class="stat-section" style="margin-bottom: 16px;">
+    <h2>Porcentagem</h2>
+    <p>
+      Porcentagem (%) significa "por cento", ou seja, <strong>de cada 100</strong>. É uma forma prática de
+      expressar uma proporção em relação a um total. Usamos em pesquisas, descontos, taxas de aprovação e muito mais.
+    </p>
+    <div class="formula-box">Porcentagem = (Parte / Total) × 100</div>
+  </section>
+
+  <div class="porc-wrapper">
+    <div class="porc-modos">
+      <button class="modo-btn ativo" onclick="setModo('parteTodo', this)">Parte de um Total</button>
+      <button class="modo-btn" onclick="setModo('valorDePorc', this)">Calcular o Valor</button>
+      <button class="modo-btn" onclick="setModo('quantoE', this)">A é quantos % de B?</button>
+    </div>
+
+    <div class="porc-painel">
+      <div class="porc-inputs">
+        <h4 id="porcTituloForm">Qual a porcentagem de uma parte?</h4>
+
+        <div class="campo-grupo" id="campo-parte">
+          <label>Parte (valor obtido)</label>
+          <input type="number" id="inp-parte" placeholder="Ex: 30" min="0">
+        </div>
+        <div class="campo-grupo" id="campo-total">
+          <label>Total</label>
+          <input type="number" id="inp-total" placeholder="Ex: 40" min="0">
+        </div>
+        <div class="campo-grupo" id="campo-porc" style="display:none;">
+          <label>Porcentagem (%)</label>
+          <input type="number" id="inp-porc" placeholder="Ex: 75" min="0" max="100">
+        </div>
+        <div class="campo-grupo" id="campo-base" style="display:none;">
+          <label>Valor base (100%)</label>
+          <input type="number" id="inp-base" placeholder="Ex: 200" min="0">
+        </div>
+        <div class="campo-grupo" id="campo-valA" style="display:none;">
+          <label>Valor A</label>
+          <input type="number" id="inp-valA" placeholder="Ex: 45">
+        </div>
+        <div class="campo-grupo" id="campo-valB" style="display:none;">
+          <label>Valor B (base, 100%)</label>
+          <input type="number" id="inp-valB" placeholder="Ex: 200">
+        </div>
+
+        <button class="porc-calcular" onclick="calcularPorc()">Calcular</button>
+        <div class="calc-erro" id="porcErro" style="margin-top:10px; display: none; margin-bottom: 0px;"></div>
+      </div>
+
+      <div class="porc-resultado">
+        <h4>Resultado</h4>
+        <div class="resultado-numero" id="resNumero">
+          <div class="res-valor" style="color:#ccc;">—</div>
+          <div class="res-label">Aguardando cálculo</div>
+        </div>
+        <div class="barra-container">
+          <div class="barra-fill" id="barraFill" style="width:0%;">
+            <span id="barraTexto"></span>
+          </div>
+        </div>
+        <div class="barra-rotulos"><span>0%</span><span>50%</span><span>100%</span></div>
+        <div class="grade-100" id="grade100"></div>
+        <div class="passo-box" id="passoBox" style="display:none;">
+          <div class="passo-titulo">Passo a passo:</div>
+          <div id="passoConteudo"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ GRÁFICOS ══════════ -->
+  <div class="graficos-intro">
+    <h2>Representação Gráfica dos Dados</h2>
+    <p style="color:#333;line-height:1.75;margin-bottom:0;">
+      Os gráficos facilitam a interpretação dos dados visualmente.
+      Cada tipo é mais adequado para um determinado tipo de informação.
+    </p>
+  </div>
+
+  <div class="graficos-grid">
+    <div class="grafico-card">
+      <h3>Gráfico de Colunas</h3>
+      <div class="grafico-uso">Ideal para comparar valores entre categorias distintas.</div>
+      <div class="canvas-wrapper"><canvas id="chartColunas"></canvas></div>
+      <p style="margin-bottom: 0px;">Compara categorias lado a lado com barras verticais. Média de notas por disciplina.</p>
+    </div>
+    <div class="grafico-card">
+      <h3>Gráfico de Barras</h3>
+      <div class="grafico-uso">Útil quando os rótulos das categorias são longos.</div>
+      <div class="canvas-wrapper"><canvas id="chartBarras"></canvas></div>
+      <p style="margin-bottom: 0px;">Versão horizontal. Especialmente útil com nomes de categorias extensos.</p>
+    </div>
+    <div class="grafico-card">
+      <h3>Gráfico de Linhas</h3>
+      <div class="grafico-uso">Ideal para mostrar evolução ao longo do tempo.</div>
+      <div class="canvas-wrapper"><canvas id="chartLinhas"></canvas></div>
+      <p style="margin-bottom: 0px;">Conecta pontos em sequência revelando a tendência de evolução ao longo do tempo.</p>
+    </div>
+    <div class="grafico-card">
+      <h3>Gráfico de Pizza</h3>
+      <div class="grafico-uso">Mostra a proporção de cada parte em relação ao todo.</div>
+      <div class="canvas-wrapper"><canvas id="chartPizza"></canvas></div>
+      <p style="margin-bottom: 0px;">Divide um círculo em fatias proporcionais. Ideal para visualizar porcentagens.</p>
+    </div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ DISTRIBUIÇÃO NORMAL ══════════ -->
+  <section class="stat-section" style="margin-bottom: 10px;">
+    <h2>Distribuição Normal — Curva de Gauss</h2>
+    <p style="margin-bottom: 5px;">
+      A <strong>distribuição normal</strong> é o padrão mais comum na natureza e nas ciências.
+      Quando muitos fenômenos aleatórios se somam — alturas de pessoas, notas de provas,
+      erros de medição — o resultado tende a seguir essa curva simétrica em forma de sino,
+      chamada de <strong>curva de Gauss</strong>.
+    </p>
+    <p style="margin-top: 0px;">
+      Ela é completamente descrita por dois parâmetros: a <strong>média (μ)</strong>, que define o centro,
+      e o <strong>desvio padrão (σ)</strong>, que controla a largura. Use os controles abaixo para ver
+      como cada parâmetro transforma a curva.
+    </p>
+    <div class="conceito-box" style="margin-bottom: 16px;">
+      <strong>Regra Empírica (68 – 95 – 99,7):</strong> em qualquer distribuição normal,
+      aproximadamente <strong>68%</strong> dos dados estão a 1σ da média,
+      <strong>95%</strong> a 2σ e <strong>99,7%</strong> a 3σ.
+      Essa regra é a base para detectar outliers e tomar decisões estatísticas.
+    </div>
+  </section>
+
+  <div class="gauss-wrapper">
+    <!-- Controles -->
+    <div class="gauss-controles">
+      <div class="gauss-slider-grupo">
+        <label>Média (μ) <span id="gaussMuVal">50</span></label>
+        <input type="range" id="gaussMu" min="10" max="90" value="50" step="1" oninput="atualizarGauss()">
+        <div class="gauss-slider-sub">Deslize para mover o centro da curva.</div>
+      </div>
+      <div class="gauss-slider-grupo">
+        <label>Desvio Padrão (σ) <span id="gaussSigmaVal">10</span></label>
+        <input type="range" id="gaussSigma" min="3" max="25" value="10" step="1" oninput="atualizarGauss()">
+        <div class="gauss-slider-sub">Deslize para controlar a largura da curva.</div>
+      </div>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="gauss-chart-box">
+      <h4>Curva de Gauss — áreas destacadas pela Regra Empírica</h4>
+      <div class="gauss-canvas">
+        <canvas id="chartGauss"></canvas>
+      </div>
+    </div>
+
+    <!-- Cards da regra empírica -->
+    <div class="gauss-regra">
+      <div class="gauss-regra-card">
+        <div class="gauss-regra-titulo">μ ± 1σ</div>
+        <div class="gauss-regra-pct">68%</div>
+        <div class="gauss-regra-detalhe">68,27% dos dados estão nesta faixa</div>
+        <div class="gauss-regra-intervalo" id="gauss1s">40 – 60</div>
+      </div>
+      <div class="gauss-regra-card">
+        <div class="gauss-regra-titulo">μ ± 2σ</div>
+        <div class="gauss-regra-pct">95%</div>
+        <div class="gauss-regra-detalhe">95,45% dos dados estão nesta faixa</div>
+        <div class="gauss-regra-intervalo" id="gauss2s">30 – 70</div>
+      </div>
+      <div class="gauss-regra-card">
+        <div class="gauss-regra-titulo">μ ± 3σ</div>
+        <div class="gauss-regra-pct">99,7%</div>
+        <div class="gauss-regra-detalhe">99,73% dos dados estão nesta faixa</div>
+        <div class="gauss-regra-intervalo" id="gauss3s">20 – 80</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ CORRELAÇÃO DE PEARSON ══════════ -->
+  <section class="stat-section" style="margin-bottom: 0px;">
+    <h2>Correlação de Pearson</h2>
+    <p>
+      A <strong>correlação</strong> mede o grau de relação linear entre duas variáveis quantitativas.
+      O <strong>coeficiente de Pearson (r)</strong> varia de <strong>−1 a +1</strong>:
+    </p>
+    <div class="conceito-box" style="margin-bottom: 14px;">
+      <ul style="padding-left:20px; line-height:2.1; margin-bottom: 0px; margin-top: 0px;">
+        <li><strong>r próximo de +1:</strong> correlação positiva forte — quando X aumenta, Y tende a aumentar.</li>
+        <li><strong>r próximo de −1:</strong> correlação negativa forte — quando X aumenta, Y tende a diminuir.</li>
+        <li><strong>r próximo de 0:</strong> correlação fraca ou inexistente — X e Y não têm relação linear.</li>
+      </ul>
+    </div>
+    <p style="margin-top: 0px;">
+      Digite dois conjuntos com o mesmo número de valores. O exemplo pré-carregado mostra a relação entre
+      <strong>horas de estudo</strong> e <strong>nota obtida</strong> por 10 alunos.
+    </p>
+  </section>
+
+  <div class="corr-wrapper">
+    <div class="corr-inputs-grid">
+      <div class="corr-campo">
+        <label id="corrLabelX">Variável X — Horas de Estudo</label>
+        <textarea id="corrX" spellcheck="false">1, 2, 3, 4, 5, 6, 7, 8, 9, 10</textarea>
+        <small>Um valor por linha ou separados por vírgula.</small>
+      </div>
+      <div class="corr-campo">
+        <label id="corrLabelY">Variável Y — Nota (0–10)</label>
+        <textarea id="corrY" spellcheck="false">3.5, 4.2, 5.0, 5.8, 6.5, 7.1, 7.6, 8.3, 8.9, 9.4</textarea>
+        <small>Deve ter a mesma quantidade de valores que X.</small>
+      </div>
+    </div>
+
+    <div class="corr-botao-row">
+      <button class="corr-btn" onclick="calcularCorrelacao()">Calcular Correlação</button>
+      <button class="corr-btn-limpar" onclick="limparCorrelacao()">Limpar</button>
+    </div>
+    <div class="calc-erro" id="corrErro" style="display: none;"></div>
+
+    <div id="corrResultado">
+      <div class="corr-placeholder">
+        Preencha os dois conjuntos acima e clique em <strong>Calcular Correlação</strong>.
+      </div>
+    </div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ CALCULADORA DE PROBABILIDADE ══════════ -->
+  <section class="stat-section" style="margin-bottom: 16px;">
+    <h2>Probabilidade Clássica</h2>
+    <p>
+      A <strong>probabilidade</strong> mede a chance de um evento ocorrer. Na abordagem clássica,
+      todos os resultados têm a mesma chance de acontecer — como em um dado justo ou uma moeda equilibrada.
+    </p>
+    <div class="conceito-box" style="margin-bottom: 14px;">
+      <ul style="padding-left:20px; line-height:2.1; margin-bottom: 0px; margin-top: 0px;">
+        <li><strong>Experimento aleatório:</strong> processo cujo resultado não pode ser previsto com certeza. Ex.: lançar um dado.</li>
+        <li><strong>Espaço amostral (S):</strong> conjunto de todos os resultados possíveis. Ex.: {1, 2, 3, 4, 5, 6}.</li>
+        <li><strong>Evento (E):</strong> subconjunto do espaço amostral. Ex.: sair número par = {2, 4, 6}.</li>
+        <li><strong>Probabilidade clássica:</strong> P(E) = número de resultados favoráveis / total de resultados possíveis.</li>
+      </ul>
+    </div>
+    <p style="margin-bottom: 0px;">
+      A probabilidade sempre fica entre <strong>0</strong> (evento impossível) e <strong>1</strong> (evento certo).
+      Use a calculadora abaixo ou clique em um dos exemplos pré-carregados.
+    </p>
+  </section>
+
+  <div class="prob-wrapper">
+    <div class="prob-painel">
+
+      <div class="prob-inputs">
+        <h4>Definir o evento</h4>
+        <div class="prob-campo">
+          <label>Total de resultados possíveis</label>
+          <input type="number" id="probTotal" min="1" value="6" placeholder="Ex: 6">
+          <small>Tamanho do espaço amostral. Ex.: 6 faces de um dado.</small>
+        </div>
+        <div class="prob-campo">
+          <label>Resultados favoráveis ao evento</label>
+          <input type="number" id="probFav" min="0" value="3" placeholder="Ex: 3">
+          <small>Quantos resultados satisfazem o evento. Ex.: números ímpares = 3.</small>
+        </div>
+        <button class="prob-calcular" onclick="calcularProb()">Calcular</button>
+        <div class="calc-erro" id="probErro" style="margin-top:10px; margin-bottom: 0px;"></div>
+      </div>
+
+      <div class="prob-resultado" id="probResultado">
+        <div class="prob-exemplos">
+          <h4>Exemplos rápidos</h4>
+          <div class="prob-exemplos-grid">
+            <button class="prob-exemplo-btn" onclick="probExemplo(6,1)">Dado — face 1</button>
+            <button class="prob-exemplo-btn" onclick="probExemplo(6,3)">Dado — número ímpar</button>
+            <button class="prob-exemplo-btn" onclick="probExemplo(6,2)">Dado — múltiplo de 3</button>
+            <button class="prob-exemplo-btn" onclick="probExemplo(2,1)">Moeda — cara</button>
+            <button class="prob-exemplo-btn" onclick="probExemplo(52,4)">Baralho — um ás</button>
+            <button class="prob-exemplo-btn" onclick="probExemplo(52,13)">Baralho — ouros</button>
+            <button class="prob-exemplo-btn" onclick="probExemplo(10,0)">Evento impossível</button>
+            <button class="prob-exemplo-btn" onclick="probExemplo(10,10)">Evento certo</button>
+          </div>
+        </div>
+        <div class="placeholder-msg">
+          Defina o evento ao lado ou clique em um exemplo acima.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ SIMULADOR DE DADOS E MOEDAS ══════════ -->
+  <section class="stat-section" style="margin-bottom: 0px;">
+    <h2>Simulador — Lei dos Grandes Números</h2>
+    <p>
+      Escolha o objeto, defina quantos lançamentos por clique e observe como,
+      conforme o total aumenta, as frequências de cada resultado se aproximam
+      da probabilidade teórica. Isso é a <strong>Lei dos Grandes Números</strong> em ação.
+    </p>
+    <div class="conceito-box" style="margin-bottom: 16px;">
+      A probabilidade teórica de cada face de um dado justo é <strong>1/6 ≈ 16,7%</strong>.
+      Para uma moeda justa, cada lado tem <strong>1/2 = 50%</strong>.
+      Com poucas jogadas o acaso domina, mas com muitas jogadas as frequências
+      observadas convergem para esses valores.
+    </div>
+  </section>
+
+  <div class="calc-wrapper">
+    <div class="sim-tabs">
+      <button class="sim-tab ativo" onclick="setObjSim('dado', this)">Dado (6 faces)</button>
+      <button class="sim-tab" onclick="setObjSim('moeda', this)">Moeda</button>
+    </div>
+
+    <div class="sim-controls">
+      <div class="sim-ctrl-grupo">
+        <label>Lançamentos por clique</label>
+        <input type="range" id="simSlider" min="1" max="500" value="10" step="1"
+               oninput="document.getElementById('simSliderVal').textContent = this.value">
+        <span id="simSliderVal">10</span>
+      </div>
+      <div style="display:flex; gap:10px; margin-left:auto; flex-wrap:wrap;">
+        <button class="sim-btn" onclick="simLancar()">Lançar</button>
+        <button class="sim-btn" onclick="simLancar100()">Repetir 100×</button>
+        <button class="sim-btn-reset" onclick="simResetar()">Resetar</button>
+      </div>
+    </div>
+
+    <div class="sim-stats" id="simStats"></div>
+
+    <div class="sim-chart-box">
+      <h4 id="simChartTitulo">Frequências observadas vs. esperadas — Dado</h4>
+      <div class="sim-chart-canvas">
+        <canvas id="simChart"></canvas>
+      </div>
+    </div>
+
+    <div class="sim-lei" id="simLei">
+      Clique em <strong>Lançar</strong> para iniciar a simulação.
+    </div>
+  </div>
+
+  <hr class="separador">
+
+  <!-- ══════════ GLOSSÁRIO ══════════ -->
+  <section class="stat-section" style="margin-bottom: 10px;">
+    <h2>Glossário de Estatística</h2>
+    <p>
+      Consulte abaixo os principais termos utilizados em Estatística.
+      Use a busca para encontrar um termo específico ou clique em qualquer item para expandir a definição.
+    </p>
+  </section>
+
+  <div class="glossario-wrapper">
+    <div class="glossario-busca">
+      <input type="text" id="glossarioBusca" placeholder="Buscar termo... Ex: média, variância, histograma" oninput="filtrarGlossario()">
+    </div>
+    <div class="glossario-grid" id="glossarioGrid"></div>
+    <div class="glossario-vazio" id="glossarioVazio" style="display:none;">Nenhum termo encontrado.</div>
+  </div>
+
+  <script>
+  /* ─── UTILITÁRIOS ─── */
+  function fmt(n) {
+    if (typeof n !== 'number') return n;
+    if (Number.isInteger(n)) return String(n);
+    return n.toFixed(2).replace('.', ',');
+  }
+
+  /* ─────────────────────────────────────────────────────
+     CALCULADORA DE MEDIDAS ESTATÍSTICAS
+  ───────────────────────────────────────────────────── */
+  let chartMedidasInst = null;
+
+  function calcularMedidas() {
+    const raw    = document.getElementById('dadosInput').value;
+    const erroEl = document.getElementById('calcErro');
+    erroEl.style.display = "none";
+    erroEl.textContent = '';
+
+    const nums = raw.split(',')
+      .map(s => s.trim()).filter(s => s !== '')
+      .map(s => parseFloat(s.replace(',', '.')));
+
+    if (nums.some(isNaN)) {
+      erroEl.textContent = 'Erro: use apenas números separados por vírgula.';
+      erroEl.style.display = "block";
+      return;
+    }
+    if (nums.length < 2) {
+      erroEl.textContent = 'Erro: informe pelo menos 2 números.';
+      erroEl.style.display = "block";
+      return;
+    }
+
+    const n      = nums.length;
+    const sorted = [...nums].sort((a, b) => a - b);
+
+    /* Média */
+    const media = nums.reduce((a, b) => a + b, 0) / n;
+
+    /* Mediana */
+    let mediana, medianaPosicoes;
+    if (n % 2 === 1) {
+      const idx = Math.floor(n / 2);
+      mediana = sorted[idx];
+      medianaPosicoes = new Set([sorted[idx]]);
+    } else {
+      mediana = (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+      medianaPosicoes = new Set([sorted[n / 2 - 1], sorted[n / 2]]);
+    }
+
+    /* Moda */
+    const freq = {};
+    nums.forEach(v => { freq[v] = (freq[v] || 0) + 1; });
+    const maxFreq = Math.max(...Object.values(freq));
+    const modas   = Object.entries(freq)
+      .filter(([, f]) => f === maxFreq)
+      .map(([v]) => parseFloat(v));
+    const amodal  = maxFreq === 1;
+    const modaStr = amodal ? 'Amodal' : modas.map(fmt).join(', ');
+
+    /* Variância e desvio padrão */
+    const variancia    = nums.reduce((s, v) => s + Math.pow(v - media, 2), 0) / n;
+    const desvioPadrao = Math.sqrt(variancia);
+
+    const maximo    = sorted[n - 1];
+    const minimo    = sorted[0];
+    const amplitude = maximo - minimo;
+
+    /* ── Cards de resultado ── */
+    const medidas = [
+      { label: 'Média',         valor: fmt(media),        desc: 'Soma / quantidade' },
+      { label: 'Mediana',       valor: fmt(mediana),      desc: 'Valor central ordenado' },
+      { label: 'Moda',          valor: modaStr,           desc: amodal ? 'Sem repetições' : `Repete ${maxFreq}x` },
+      { label: 'Variância',     valor: fmt(variancia),    desc: 'Média dos desvios²' },
+      { label: 'Desvio Padrão', valor: fmt(desvioPadrao), desc: 'Raiz da variância' },
+      { label: 'Máximo',        valor: fmt(maximo),       desc: 'Maior valor', dest: true },
+      { label: 'Mínimo',        valor: fmt(minimo),       desc: 'Menor valor' },
+      { label: 'Amplitude',     valor: fmt(amplitude),    desc: 'Máximo - Mínimo' },
+    ];
+
+    document.getElementById('medidasGrid').innerHTML = medidas.map(m => `
+      <div class="medida-card${m.dest ? ' destaque' : ''}">
+        <div class="medida-label">${m.label}</div>
+        <div class="medida-valor">${m.valor}</div>
+        <div class="medida-desc">${m.desc}</div>
+      </div>`).join('');
+
+    /* ── Conjunto ordenado colorido ── */
+    const modasSet = new Set(modas.map(String));
+    document.getElementById('numerosOrdenados').innerHTML = sorted.map(v => {
+      let cls = '';
+      if (v === maximo)                              cls = 'p-max';
+      else if (v === minimo)                         cls = 'p-min';
+      else if (medianaPosicoes.has(v))               cls = 'p-med';
+      else if (!amodal && modasSet.has(String(v)))   cls = 'p-moda';
+      return `<span class="num-pill ${cls}">${fmt(v)}</span>`;
+    }).join('');
+
+    /* ── Histograma com linhas de média e mediana ── */
+    if (chartMedidasInst) chartMedidasInst.destroy();
+
+    const nBins = Math.max(3, Math.ceil(Math.log2(n) + 1));
+    const binW  = (maximo - minimo) / nBins || 1;
+    const bins  = Array.from({ length: nBins }, (_, i) => ({
+      inicio: minimo + i * binW,
+      fim:    minimo + (i + 1) * binW,
+      count:  0,
+    }));
+    nums.forEach(v => {
+      const idx = Math.min(Math.floor((v - minimo) / binW), nBins - 1);
+      bins[idx].count++;
+    });
+
+    const binLabels = bins.map(b =>
+      `${fmt(parseFloat(b.inicio.toFixed(2)))} – ${fmt(parseFloat(b.fim.toFixed(2)))}`
+    );
+    const binCounts = bins.map(b => b.count);
+    const binColors = bins.map(b =>
+      (mediana >= b.inicio && mediana < b.fim) || (mediana === maximo && mediana <= b.fim)
+        ? '#7A9BB5' : '#273E74'
+    );
+
+    chartMedidasInst = new Chart(document.getElementById('chartMedidas'), {
+      type: 'bar',
+      data: {
+        labels: binLabels,
+        datasets: [{
+          data: binCounts,
+          backgroundColor: binColors,
+          borderColor: binColors.map(c => c === '#7A9BB5' ? '#5C6D82' : '#1a2e5a'),
+          borderWidth: 1,
+          borderRadius: 0,
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: ctx => `Intervalo: ${ctx[0].label}`,
+              label: ctx => ` Frequência: ${ctx.parsed.y} valor${ctx.parsed.y !== 1 ? 'es' : ''}`,
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Intervalos de valores' },
+            grid: { display: false },
+            ticks: { color: '#555', font: { size: 10 }, maxRotation: 30 }
+          },
+          y: {
+            title: { display: true, text: 'Frequência' },
+            grid: { color: '#e8e8e8' },
+            ticks: { stepSize: 1, color: '#555', font: { size: 11 } },
+            beginAtZero: true,
+          }
+        }
+      },
+      plugins: [{
+        id: 'linhasRef',
+        afterDatasetsDraw(chart) {
+          const { ctx, scales: { x, y }, chartArea } = chart;
+          const valToX = val => {
+            const ratio = (val - minimo) / (maximo - minimo || 1);
+            return chartArea.left + ratio * (chartArea.right - chartArea.left);
+          };
+          [
+            { val: media,   cor: '#c0392b', label: `Média: ${fmt(media)}`,    dash: [],     offsetY: -6  },
+            { val: mediana, cor: '#27962f', label: `Mediana: ${fmt(mediana)}`, dash: [7, 4], offsetY: 14  },
+          ].forEach(({ val, cor, label, dash, offsetY }) => {
+            const xPx = valToX(val);
+            ctx.save();
+            ctx.setLineDash(dash);
+            ctx.strokeStyle = cor;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(xPx, chartArea.top);
+            ctx.lineTo(xPx, chartArea.bottom);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.font = 'bold 11px sans-serif';
+            const tw = ctx.measureText(label).width + 10;
+            const ty = chartArea.top + (offsetY < 0 ? 25 : 55);
+            ctx.fillStyle = cor;
+            ctx.fillRect(xPx + 4, ty - 13, tw, 19);
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'left';
+            ctx.fillText(label, xPx + 9, ty);
+            ctx.restore();
+          });
+        }
+      }]
+    });
+
+    /* ── Explicações ── */
+    const posMediana = n % 2 === 1
+      ? `o elemento na posição ${Math.floor(n/2)+1}`
+      : `a média das posições ${n/2} e ${n/2+1}`;
+
+    document.getElementById('explicacaoMedidas').innerHTML = `
+      <div class="medida-explic">
+        <strong>Média:</strong> soma de todos os valores dividida pela quantidade.
+        (${nums.map(fmt).join(' + ')}) / ${n} = <strong>${fmt(media)}</strong>
+      </div>
+      <div class="medida-explic">
+        <strong>Mediana:</strong> valor central do conjunto <em>ordenado</em>.
+        Com ${n} elemento${n>1?'s':''}, usamos ${posMediana} = <strong>${fmt(mediana)}</strong>
+      </div>
+      <div class="medida-explic">
+        <strong>Moda:</strong> o valor que mais se repete.
+        ${amodal
+          ? 'Nenhum valor se repete — conjunto amodal.'
+          : `<strong>${modaStr}</strong> aparece(m) <strong>${maxFreq}</strong> vez(es).`}
+      </div>
+      <div class="medida-explic">
+        <strong>Variância:</strong> mede o quanto os valores se afastam da média.
+        Calculada como a média dos quadrados dos desvios em relação à média.
+        Resultado: <strong>${fmt(variancia)}</strong>
+      </div>
+      <div class="medida-explic">
+        <strong>Desvio Padrão:</strong> raiz quadrada da variância.
+        Indica, na mesma unidade dos dados, o afastamento médio em relação à média.
+        Resultado: <strong>${fmt(desvioPadrao)}</strong>.
+        Quanto menor, mais homogêneo é o conjunto.
+      </div>
+      <div class="medida-explic">
+        <strong>Máximo, Mínimo e Amplitude:</strong>
+        O maior valor é <strong>${fmt(maximo)}</strong> e o menor é <strong>${fmt(minimo)}</strong>.
+        A amplitude (diferença entre eles) é <strong>${fmt(amplitude)}</strong>,
+        indicando o alcance total dos dados.
+      </div>
+    `;
+
+    document.getElementById('dadosVisuais').style.display      = 'flex';
+    document.getElementById('explicacaoMedidas').style.display = 'block';
+
+    /* ── Tabela de Frequência ── */
+    const valoresDistintos = [...new Set(sorted)];
+    let fi_acum = 0;
+    const linhas = valoresDistintos.map(v => {
+      const fi = freq[v];
+      const fr = fi / n;
+      fi_acum += fi;
+      return { v, fi, fr, pct: fr * 100, Fi: fi_acum };
+    });
+
+    document.getElementById('freqTabela').innerHTML = `
+      <div class="tabela-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Valor (xi)</th>
+              <th>Freq. Absoluta (fi)</th>
+              <th>Freq. Relativa (fr)</th>
+              <th>Freq. Percentual (%)</th>
+              <th>Freq. Acumulada (Fi)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${linhas.map(r => `
+              <tr>
+                <td><strong>${fmt(r.v)}</strong></td>
+                <td>${r.fi}</td>
+                <td>${r.fr.toFixed(4).replace('.', ',')}</td>
+                <td>${r.pct.toFixed(2).replace('.', ',')}%</td>
+                <td>${r.Fi}</td>
+              </tr>`).join('')}
+            <tr>
+              <td><strong>Total</strong></td>
+              <td><strong>${n}</strong></td>
+              <td><strong>1,0000</strong></td>
+              <td><strong>100,00%</strong></td>
+              <td><strong>${n}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    /* ── Box Plot ── */
+    // Quartis via interpolação linear
+    function quartil(arr, p) {
+      const pos = p * (arr.length - 1);
+      const lo  = Math.floor(pos), hi = Math.ceil(pos);
+      return arr[lo] + (arr[hi] - arr[lo]) * (pos - lo);
+    }
+    const q1  = quartil(sorted, 0.25);
+    const q3  = quartil(sorted, 0.75);
+    const iqr = q3 - q1;
+    const limInf = q1 - 1.5 * iqr;
+    const limSup = q3 + 1.5 * iqr;
+    const outliers  = sorted.filter(v => v < limInf || v > limSup);
+    const whiskerLo = limInf;
+    const whiskerHi = limSup;
+
+    // Cards de resumo
+    const bpStats = [
+      { label: 'Mínimo',   valor: fmt(minimo),   desc: 'Menor valor' },
+      { label: 'Q1',       valor: fmt(parseFloat(q1.toFixed(2))),  desc: '25% dos dados abaixo' },
+      { label: 'Mediana',  valor: fmt(mediana),  desc: '50% dos dados abaixo', dest: true },
+      { label: 'Q3',       valor: fmt(parseFloat(q3.toFixed(2))),  desc: '75% dos dados abaixo' },
+      { label: 'Máximo',   valor: fmt(maximo),   desc: 'Maior valor' },
+      { label: 'IQR',      valor: fmt(parseFloat(iqr.toFixed(2))), desc: 'Q3 − Q1' },
+    ];
+    document.getElementById('boxplotStats').innerHTML = bpStats.map(s => `
+      <div class="boxplot-stat${s.dest ? ' destaque' : ''}">
+        <div class="boxplot-stat-label">${s.label}</div>
+        <div class="boxplot-stat-valor">${s.valor}</div>
+        <div class="boxplot-stat-desc">${s.desc}</div>
+      </div>`).join('');
+
+    // Outliers
+    if (outliers.length > 0) {
+      document.getElementById('boxplotOutliers').innerHTML = `
+        <div class="boxplot-outliers-box">
+          <p style="margin-top: 0px; margin-bottom: 5px;"><strong>Outlier${outliers.length > 1 ? 's' : ''} detectado${outliers.length > 1 ? 's' : ''} (${outliers.length}):</strong>
+          ${outliers.map(v => `<strong>${fmt(v)}</strong>`).join(', ')}</p>
+
+          <p style="margin-bottom: 0px; margin-top: 0px;">O <strong>IQR (Intervalo Interquartil)</strong> é a distância entre Q1 e Q3 —
+          ou seja, a largura da caixa central do diagrama.
+          Neste conjunto: IQR = Q3 − Q1 = ${fmt(parseFloat(q3.toFixed(2)))} − ${fmt(parseFloat(q1.toFixed(2)))} = <strong>${fmt(parseFloat(iqr.toFixed(2)))}</strong>.</p>
+
+          <p style="margin-bottom: 0px; margin-top: 5px;">Pela <strong>regra de Tukey</strong>, qualquer valor abaixo de
+          Q1 − 1,5 × IQR = ${fmt(parseFloat(q1.toFixed(2)))} − ${fmt(parseFloat((1.5*iqr).toFixed(2)))} = <strong>${fmt(parseFloat(limInf.toFixed(2)))}</strong>
+          ou acima de
+          Q3 + 1,5 × IQR = ${fmt(parseFloat(q3.toFixed(2)))} + ${fmt(parseFloat((1.5*iqr).toFixed(2)))} = <strong>${fmt(parseFloat(limSup.toFixed(2)))}</strong>
+          é considerado um <strong>outlier</strong> — um valor incomum que se afasta muito dos demais.</p>
+        </div>`;
+    } else {
+      document.getElementById('boxplotOutliers').innerHTML = `
+        <div class="boxplot-outliers-box" style="border-left-color:#27ae60;">
+          <p style="margin-top: 0px; margin-bottom: 5px;"><strong style="color:#27ae60;">Nenhum outlier detectado.</strong></p>
+
+          <p style="margin-bottom: 0px; margin-top: 0px;">O <strong>IQR (Intervalo Interquartil)</strong> é a distância entre Q1 e Q3 —
+          a largura da caixa central do diagrama.
+          Neste conjunto: IQR = ${fmt(parseFloat(q3.toFixed(2)))} − ${fmt(parseFloat(q1.toFixed(2)))} = <strong>${fmt(parseFloat(iqr.toFixed(2)))}</strong>.</p>
+
+          <p style="margin-bottom: 0px; margin-top: 5px;">Pela <strong>regra de Tukey</strong>, valores fora do intervalo
+          [<strong>${fmt(parseFloat(limInf.toFixed(2)))}</strong>, <strong>${fmt(parseFloat(limSup.toFixed(2)))}</strong>]
+          seriam considerados outliers — mas todos os valores do conjunto estão dentro desse limite.</p>
+        </div>`;
+    }
+
+    // Desenhar box plot no canvas manualmente
+    if (window._chartBoxplotInst) { window._chartBoxplotInst.destroy(); }
+
+    const padding = 0.5;
+    const xRange  = [Math.min(minimo, limInf) - padding, Math.max(maximo, limSup) + padding];
+    const normalPoints = sorted.filter(v => !outliers.includes(v));
+
+    window._chartBoxplotInst = new Chart(document.getElementById('chartBoxplot'), {
+      type: 'scatter',
+      data: {
+        datasets: [
+          // Pontos outliers (vermelhos)
+          {
+            label: 'Outliers',
+            data: outliers.map(v => ({ x: v, y: 0 })),
+            backgroundColor: '#c0392b',
+            borderColor: '#8b1a1a',
+            pointRadius: 7,
+            pointHoverRadius: 9,
+            pointStyle: 'circle',
+          },
+          // Todos os dados (azuis)
+          {
+            label: 'Dados',
+            data: normalPoints.map(v => ({ x: v, y: 0 })),
+            backgroundColor: '#273E74',
+            borderColor: '#1a2e5a',
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointStyle: 'circle',
+          },
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: () => '',
+              label: ctx => {
+                const v = ctx.parsed.x;
+                const isOutlier = outliers.includes(v);
+                return ` Valor: ${fmt(v)}${isOutlier ? ' ⚠ outlier' : ''}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            min: xRange[0],
+            max: xRange[1],
+            title: { display: true, text: 'Valores' },
+            grid: { color: '#e8e8e8' },
+            ticks: { color: '#555', font: { size: 11 } }
+          },
+          y: {
+            display: false,
+            min: -1, max: 1,
+          }
+        }
+      },
+      plugins: [{
+        id: 'boxplotDraw',
+        beforeDatasetsDraw(chart) {
+          const { ctx, scales: { x, y }, chartArea } = chart;
+          const yc    = y.getPixelForValue(0);
+          const boxH  = (chartArea.bottom - chartArea.top) * 0.45;
+          const yTop  = yc - boxH / 2;
+          const yBot  = yc + boxH / 2;
+          const whH   = boxH * 0.25;
+
+          const px = v => x.getPixelForValue(v);
+
+          ctx.save();
+
+          // Linha do whisker inferior
+          ctx.strokeStyle = '#273E74'; ctx.lineWidth = 2; ctx.setLineDash([]);
+          ctx.beginPath(); ctx.moveTo(px(whiskerLo), yc); ctx.lineTo(px(q1), yc); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(px(whiskerLo), yc - whH); ctx.lineTo(px(whiskerLo), yc + whH); ctx.stroke();
+
+          // Linha do whisker superior
+          ctx.beginPath(); ctx.moveTo(px(q3), yc); ctx.lineTo(px(whiskerHi), yc); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(px(whiskerHi), yc - whH); ctx.lineTo(px(whiskerHi), yc + whH); ctx.stroke();
+
+          // Caixa IQR
+          ctx.fillStyle = 'rgba(92,109,130,0.25)';
+          ctx.fillRect(px(q1), yTop, px(q3) - px(q1), boxH);
+          ctx.strokeStyle = '#273E74'; ctx.lineWidth = 2.5;
+          ctx.strokeRect(px(q1), yTop, px(q3) - px(q1), boxH);
+
+          // Linha da mediana
+          ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(px(mediana), yTop); ctx.lineTo(px(mediana), yBot); ctx.stroke();
+
+          // Rótulos Q1, Mediana, Q3
+          ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+          [[q1, 'Q1'], [q3, 'Q3']].forEach(([v, lbl]) => {
+            const col = lbl === 'Med' ? '#c0392b' : '#273E74';
+            ctx.fillStyle = col;
+            ctx.fillText(`${lbl}=${fmt(parseFloat(v.toFixed(1)))}`, px(v), yTop - 8);
+          });
+
+          ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+          [[mediana, 'Med']].forEach(([v, lbl]) => {
+            const col = lbl === 'Med' ? '#c0392b' : '#273E74';
+            ctx.fillStyle = col;
+            ctx.fillText(`${lbl}=${fmt(parseFloat(v.toFixed(1)))}`, px(v), yTop + 139);
+          });
+
+          // Rótulos dos extremos dos bigodes
+          ctx.fillStyle = '#273E74'; ctx.font = 'bold 10px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(`Q1−1,5×IQR`, px(whiskerLo), yBot + 14);
+          ctx.fillText(`= ${fmt(parseFloat(whiskerLo.toFixed(2)))}`, px(whiskerLo), yBot + 26);
+          ctx.fillText(`Q3+1,5×IQR`, px(whiskerHi), yBot + 14);
+          ctx.fillText(`= ${fmt(parseFloat(whiskerHi.toFixed(2)))}`, px(whiskerHi), yBot + 26);
+
+          ctx.restore();
+        }
+      }]
+    });
+  }
+
+  window.addEventListener('load', calcularMedidas);
+
+
+  /* ─────────────────────────────────────────────────────
+     CALCULADORA DE PORCENTAGEM
+  ───────────────────────────────────────────────────── */
+  let modoAtual = 'parteTodo';
+
+  function setModo(modo, btn) {
+    modoAtual = modo;
+    document.querySelectorAll('.modo-btn').forEach(b => b.classList.remove('ativo'));
+    btn.classList.add('ativo');
+
+    document.getElementById('resNumero').innerHTML =
+      '<div class="res-valor" style="color:#ccc;">—</div><div class="res-label">Aguardando cálculo</div>';
+    document.getElementById('barraFill').style.width  = '0%';
+    document.getElementById('barraTexto').textContent = '';
+    document.getElementById('grade100').innerHTML     = '';
+    document.getElementById('passoBox').style.display = 'none';
+    document.getElementById('porcErro').textContent   = '';
+
+    const titulos = {
+      parteTodo:   'Qual a porcentagem de uma parte?',
+      valorDePorc: 'Qual o valor de uma porcentagem?',
+      quantoE:     'A é quantos % de B?',
+    };
+    document.getElementById('porcTituloForm').textContent = titulos[modo];
+
+    const campos = {
+      'campo-parte': ['parteTodo'],
+      'campo-total': ['parteTodo'],
+      'campo-porc':  ['valorDePorc'],
+      'campo-base':  ['valorDePorc'],
+      'campo-valA':  ['quantoE'],
+      'campo-valB':  ['quantoE'],
+    };
+    Object.entries(campos).forEach(([id, modos]) => {
+      document.getElementById(id).style.display = modos.includes(modo) ? 'block' : 'none';
+    });
+    ['inp-parte','inp-total','inp-porc','inp-base','inp-valA','inp-valB']
+      .forEach(id => { document.getElementById(id).value = ''; });
+  }
+
+  function calcularPorc() {
+    document.getElementById('porcErro').textContent = '';
+    document.getElementById('porcErro').style.display = "none";
+    let pct, resultValor, resultLabel, passos;
+
+    if (modoAtual === 'parteTodo') {
+      const parte = parseFloat(document.getElementById('inp-parte').value);
+      const total = parseFloat(document.getElementById('inp-total').value);
+      if (isNaN(parte) || isNaN(total)) { 
+        document.getElementById('porcErro').textContent = 'Preencha os dois campos.'; 
+        document.getElementById('porcErro').style.display = "block";
+        return; 
+      }
+      if (total === 0) { document.getElementById('porcErro').textContent = 'O total não pode ser zero.'; return; }
+      pct = (parte / total) * 100;
+      resultValor = pct.toFixed(2).replace('.', ',') + '%';
+      resultLabel = `${parte} é ${resultValor} de ${total}`;
+      passos = `
+        <div>Fórmula: <span class="passo-calc">(Parte / Total) × 100</span></div>
+        <div>Aplicando: <span class="passo-calc">(${parte} / ${total}) × 100</span></div>
+        <div>Resultado: <span class="passo-calc"><strong>${resultValor}</strong></span></div>
+      `;
+
+    } else if (modoAtual === 'valorDePorc') {
+      const porc = parseFloat(document.getElementById('inp-porc').value);
+      const base = parseFloat(document.getElementById('inp-base').value);
+      if (isNaN(porc) || isNaN(base)) { 
+        document.getElementById('porcErro').textContent = 'Preencha os dois campos.'; 
+        document.getElementById('porcErro').style.display = "block";
+        return; 
+      }
+      const valor = (porc / 100) * base;
+      pct = porc;
+      resultValor = fmt(valor);
+      resultLabel = `${porc}% de ${base} = ${fmt(valor)}`;
+      passos = `
+        <div>Fórmula: <span class="passo-calc">(Porcentagem / 100) × Total</span></div>
+        <div>Aplicando: <span class="passo-calc">(${porc} / 100) × ${base}</span></div>
+        <div>Resultado: <span class="passo-calc"><strong>${fmt(valor)}</strong></span></div>
+      `;
+
+    } else {
+      const a = parseFloat(document.getElementById('inp-valA').value);
+      const b = parseFloat(document.getElementById('inp-valB').value);
+      if (isNaN(a) || isNaN(b)) { 
+        document.getElementById('porcErro').textContent = 'Preencha os dois campos.'; 
+        document.getElementById('porcErro').style.display = "block";
+        return; 
+      }
+      if (b === 0) { document.getElementById('porcErro').textContent = 'O valor B não pode ser zero.'; return; }
+      pct = (a / b) * 100;
+      resultValor = pct.toFixed(2).replace('.', ',') + '%';
+      resultLabel = `${a} é ${resultValor} de ${b}`;
+      passos = `
+        <div>Fórmula: <span class="passo-calc">(A / B) × 100</span></div>
+        <div>Aplicando: <span class="passo-calc">(${a} / ${b}) × 100</span></div>
+        <div>Resultado: <span class="passo-calc"><strong>${resultValor}</strong></span></div>
+      `;
+    }
+
+    const pctClamp = Math.min(Math.max(pct, 0), 100);
+
+    document.getElementById('resNumero').innerHTML = `
+      <div class="res-valor">${resultValor}</div>
+      <div class="res-label">${resultLabel}</div>
+    `;
+
+    const barraFill = document.getElementById('barraFill');
+    barraFill.style.width        = pctClamp + '%';
+    barraFill.style.paddingRight = pctClamp > 0 ? '8px' : '0';
+    document.getElementById('barraTexto').textContent = pctClamp > 0 ? pctClamp.toFixed(1) + '%' : '';
+
+    const grade = document.getElementById('grade100');
+    grade.innerHTML = '';
+    for (let i = 0; i < 100; i++) {
+      const q = document.createElement('div');
+      q.className = 'quad' + (i < Math.floor(pctClamp) ? ' cheio' : i < pctClamp ? ' parcial' : '');
+      grade.appendChild(q);
+    }
+
+    document.getElementById('passoConteudo').innerHTML = passos;
+    document.getElementById('passoBox').style.display  = 'block';
+  }
+
+
+  /* ─────────────────────────────────────────────────────
+     GRÁFICOS ESTÁTICOS
+  ───────────────────────────────────────────────────── */
+  const C1='#273E74', C2='#5C6D82', C3='#7A9BB5', C4='#A8C0D6', C5='#D1E4F0';
+  Chart.defaults.font  = { family: 'sans-serif', size: 12 };
+  Chart.defaults.color = '#333';
+
+  new Chart(document.getElementById('chartColunas'), {
+    type: 'bar',
+    data: { labels: ['Matemática','Português','Ciências','História','Informática'],
+      datasets: [{ data: [7.2,8.0,6.5,7.8,9.1], backgroundColor:[C1,C2,C3,C4,C1], borderColor:C1, borderWidth:1 }]
+    },
+    options: { indexAxis:'x', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>' Média: '+c.parsed.y.toFixed(1)}} },
+      scales:{ y:{beginAtZero:true,max:10,title:{display:true,text:'Nota média'},grid:{color:'#ddd'}}, x:{grid:{display:false}} }
+    }
+  });
+
+  new Chart(document.getElementById('chartBarras'), {
+    type: 'bar',
+    data: { labels: ['Word e Excel','Programação','Design Gráfico','Redes','Manutenção'],
+      datasets: [{ data:[42,35,28,19,24], backgroundColor:[C1,C2,C3,C4,C5], borderColor:C1, borderWidth:1 }]
+    },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>' Alunos: '+c.parsed.x}} },
+      scales:{ x:{beginAtZero:true,title:{display:true,text:'Número de alunos'},grid:{color:'#ddd'}}, y:{grid:{display:false}} }
+    }
+  });
+
+  new Chart(document.getElementById('chartLinhas'), {
+    type: 'line',
+    data: { labels: ['1º Bim','2º Bim','3º Bim','4º Bim','5º Bim','6º Bim'],
+      datasets: [{ data:[5.5,6.2,6.8,7.4,8.0,8.7], borderColor:C1,
+        backgroundColor:'rgba(39,62,116,0.1)', pointBackgroundColor:C1, pointRadius:5, tension:0.35, fill:true }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>' Nota: '+c.parsed.y.toFixed(1)}} },
+      scales:{ y:{min:4,max:10,title:{display:true,text:'Nota'},grid:{color:'#ddd'}}, x:{grid:{color:'#e8e8e8'}} }
+    }
+  });
+
+  new Chart(document.getElementById('chartPizza'), {
+    type: 'pie',
+    data: { labels: ['Windows','Linux','macOS','Outro'],
+      datasets: [{ data:[58,22,15,5], backgroundColor:[C1,C2,C3,C4], borderColor:'#fff', borderWidth:2 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'bottom', labels:{padding:16,boxWidth:14} },
+        tooltip:{ callbacks:{label:c=>' '+c.label+': '+c.parsed+'%'} }
+      }
+    }
+  });
+
+
+  /* ─────────────────────────────────────────────────────
+     DISTRIBUIÇÃO NORMAL — CURVA DE GAUSS
+  ───────────────────────────────────────────────────── */
+  let chartGaussInst = null;
+  let gaussMuAtual    = 50;
+  let gaussSigmaAtual = 10;
+
+  function gaussPDF(x, mu, sigma) {
+    return (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+           Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+  }
+
+  function fmtG(n) { return n % 1 === 0 ? String(n) : n.toFixed(1); }
+
+  function atualizarGauss() {
+    const mu    = parseFloat(document.getElementById('gaussMu').value);
+    const sigma = parseFloat(document.getElementById('gaussSigma').value);
+    gaussMuAtual    = mu;
+    gaussSigmaAtual = sigma;
+
+    document.getElementById('gaussMuVal').textContent    = mu;
+    document.getElementById('gaussSigmaVal').textContent = sigma;
+
+    // Atualizar intervalos nos cards
+    document.getElementById('gauss1s').textContent = `${fmtG(mu - sigma)} – ${fmtG(mu + sigma)}`;
+    document.getElementById('gauss2s').textContent = `${fmtG(mu - 2*sigma)} – ${fmtG(mu + 2*sigma)}`;
+    document.getElementById('gauss3s').textContent = `${fmtG(mu - 3*sigma)} – ${fmtG(mu + 3*sigma)}`;
+
+    // Gerar pontos da curva
+    const xMin  = mu - 4 * sigma;
+    const xMax  = mu + 4 * sigma;
+    const steps = 200;
+    const step  = (xMax - xMin) / steps;
+    const xs    = Array.from({ length: steps + 1 }, (_, i) => xMin + i * step);
+    const ys    = xs.map(x => gaussPDF(x, mu, sigma));
+
+    // Função para gerar dataset de área preenchida entre x1 e x2
+    function areaDataset(x1, x2, color) {
+      return {
+        data: xs.map((x, i) => ({
+          x,
+          y: (x >= x1 && x <= x2) ? ys[i] : null,
+        })),
+        borderColor: 'transparent',
+        backgroundColor: color,
+        fill: { target: 'origin', above: color },
+        pointRadius: 0,
+        tension: 0.4,
+        spanGaps: false,
+      };
+    }
+
+    const datasets = [
+      // Áreas preenchidas (ordem: 3σ → 2σ → 1σ, de fora pra dentro)
+      areaDataset(mu - 3*sigma, mu + 3*sigma, 'rgba(122,155,181,0.30)'),
+      areaDataset(mu - 2*sigma, mu + 2*sigma, 'rgba(92,109,130,0.35)'),
+      areaDataset(mu - 1*sigma, mu + 1*sigma, 'rgba(39,62,116,0.45)'),
+      // Curva principal
+      {
+        data: xs.map((x, i) => ({ x, y: ys[i] })),
+        borderColor: '#273E74',
+        borderWidth: 2.5,
+        backgroundColor: 'transparent',
+        pointRadius: 0,
+        tension: 0.4,
+      },
+    ];
+
+    if (chartGaussInst) {
+      chartGaussInst.data.datasets = datasets;
+      chartGaussInst.options.scales.x.min = xMin;
+      chartGaussInst.options.scales.x.max = xMax;
+      chartGaussInst.update();
+    } else {
+      chartGaussInst = new Chart(document.getElementById('chartGauss'), {
+        type: 'line',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 250 },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                title: ctx => `x = ${ctx[0].parsed.x.toFixed(2)}`,
+                label: ctx => ` Densidade: ${ctx.parsed.y.toFixed(5)}`,
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'linear',
+              min: xMin,
+              max: xMax,
+              title: { display: true, text: 'Valores' },
+              grid: { color: '#e8e8e8' },
+              ticks: { color: '#555', font: { size: 11 }, maxTicksLimit: 10 }
+            },
+            y: {
+              title: { display: true, text: 'Densidade de probabilidade' },
+              grid: { color: '#e8e8e8' },
+              ticks: { color: '#555', font: { size: 10 }, maxTicksLimit: 6 },
+              beginAtZero: true,
+            }
+          }
+        },
+        plugins: [{
+          id: 'linhasGauss',
+          afterDatasetsDraw(chart) {
+            const { ctx, scales: { x }, chartArea } = chart;
+            const mu = gaussMuAtual;
+            // Linha central (μ)
+            const xMu = x.getPixelForValue(mu);
+            ctx.save();
+            ctx.strokeStyle = '#c0392b';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(xMu, chartArea.top);
+            ctx.lineTo(xMu, chartArea.bottom);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // Rótulo μ
+            ctx.font = 'bold 12px sans-serif';
+            const label = `μ = ${mu}`;
+            const tw = ctx.measureText(label).width + 10;
+            ctx.fillStyle = '#c0392b';
+            ctx.fillRect(xMu + 4, chartArea.top + 6, tw, 18);
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'left';
+            ctx.fillText(label, xMu + 9, chartArea.top + 19);
+            ctx.restore();
+          }
+        }]
+      });
+    }
+  }
+
+  atualizarGauss();
+
+
+  /* ─────────────────────────────────────────────────────
+     CALCULADORA DE CORRELAÇÃO DE PEARSON
+  ───────────────────────────────────────────────────── */
+  let chartCorrInst = null;
+
+  function parseSerie(raw) {
+    return raw.split(/[\n,;]+/)
+      .map(s => s.trim()).filter(s => s !== '')
+      .map(s => parseFloat(s.replace(',', '.')));
+  }
+
+  function calcularCorrelacao() {
+    const erroEl = document.getElementById('corrErro');
+    erroEl.style.display = "none";
+    erroEl.textContent = '';
+
+    const xs = parseSerie(document.getElementById('corrX').value);
+    const ys = parseSerie(document.getElementById('corrY').value);
+
+    if (xs.some(isNaN) || ys.some(isNaN)) {
+      erroEl.style.display = "block";
+      erroEl.textContent = 'Erro: use apenas números separados por vírgula ou em linhas.'; 
+      return;
+    }
+    if (xs.length < 3 || ys.length < 3) {
+      erroEl.style.display = "block";
+      erroEl.textContent = 'Erro: informe pelo menos 3 valores em cada conjunto.'; 
+      return;
+    }
+    if (xs.length !== ys.length) {
+      erroEl.style.display = "block";
+      erroEl.textContent = `Erro: X tem ${xs.length} valor(es) e Y tem ${ys.length}. Os dois devem ter a mesma quantidade.`; 
+      return;
+    }
+
+    const n  = xs.length;
+    const mx = xs.reduce((a, b) => a + b, 0) / n;
+    const my = ys.reduce((a, b) => a + b, 0) / n;
+
+    let num = 0, denX = 0, denY = 0;
+    for (let i = 0; i < n; i++) {
+      const dx = xs[i] - mx, dy = ys[i] - my;
+      num  += dx * dy;
+      denX += dx * dx;
+      denY += dy * dy;
+    }
+    const r = num / Math.sqrt(denX * denY);
+
+    // Linha de tendência (regressão linear simples)
+    const b1 = num / denX;
+    const b0 = my - b1 * mx;
+    const xMin = Math.min(...xs), xMax = Math.max(...xs);
+    const margin = (xMax - xMin) * 0.1 || 1;
+    const lx = [xMin - margin, xMax + margin];
+    const ly = lx.map(x => b0 + b1 * x);
+
+    // Classificação
+    const absR = Math.abs(r);
+    let forca, cor, descricao;
+    if (absR >= 0.9)      { forca = 'Muito forte';  cor = '#1a5276'; }
+    else if (absR >= 0.7) { forca = 'Forte';         cor = '#273E74'; }
+    else if (absR >= 0.5) { forca = 'Moderada';      cor = '#5C6D82'; }
+    else if (absR >= 0.3) { forca = 'Fraca';          cor = '#7A9BB5'; }
+    else                  { forca = 'Muito fraca';    cor = '#9aabb8'; }
+
+    const direcao = r > 0.05 ? 'positiva' : r < -0.05 ? 'negativa' : 'nula';
+
+    if (direcao === 'positiva')
+      descricao = `Quando <strong>X aumenta</strong>, <strong>Y tende a aumentar</strong> também.`;
+    else if (direcao === 'negativa')
+      descricao = `Quando <strong>X aumenta</strong>, <strong>Y tende a diminuir</strong>.`;
+    else
+      descricao = `<strong>X e Y não apresentam relação linear</strong> significativa.`;
+
+    const r2 = r * r;
+
+    // Renderizar resultado
+    document.getElementById('corrResultado').innerHTML = `
+      <div class="corr-resultado-box">
+        <div class="corr-r-card">
+          <div class="corr-r-label">COEFICIENTE r</div>
+          <div class="corr-r-valor">${r.toFixed(3).replace('.', ',')}</div>
+          <div class="corr-r-sublabel">r² = ${r2.toFixed(3).replace('.', ',')}</div>
+        </div>
+        <div class="corr-interpretacao">
+          <p style="margin-top: 0px; margin-bottom: 5px;"><span class="corr-forca" style="background:${cor};">${forca.toUpperCase()} — ${direcao.toUpperCase()}</span><br>
+          ${descricao}</p>
+
+          <p style="margin-top: 0px; margin-bottom: 0px;">O coeficiente de determinação <strong>r² = ${(r2 * 100).toFixed(1).replace('.', ',')}%</strong>
+          indica que ${(r2 * 100).toFixed(1).replace('.', ',')}% da variação de Y é explicada por X.</p>
+
+          <p style="margin-bottom: 0px; margin-top: 5px;"><strong>Equação da reta:</strong> ŷ = ${fmt(parseFloat(b0.toFixed(4)))} + ${fmt(parseFloat(b1.toFixed(4)))} × x</p>
+        </div>
+      </div>
+
+      <div class="corr-chart-box">
+        <h4>Diagrama de dispersão com linha de tendência</h4>
+        <div class="corr-chart-canvas">
+          <canvas id="chartCorr"></canvas>
+        </div>
+      </div>
+
+      <div class="corr-tabela-box">
+        <h4>Tabela de pares (${n} observações)</h4>
+        <div class="tabela-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>X</th>
+                <th>Y</th>
+                <th>X − x̄</th>
+                <th>Y − ȳ</th>
+                <th>(X−x̄)(Y−ȳ)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${xs.map((x, i) => {
+                const dx = x - mx, dy = ys[i] - my;
+                return `<tr>
+                  <td>${i + 1}</td>
+                  <td>${fmt(x)}</td>
+                  <td>${fmt(ys[i])}</td>
+                  <td>${fmt(parseFloat(dx.toFixed(4)))}</td>
+                  <td>${fmt(parseFloat(dy.toFixed(4)))}</td>
+                  <td>${fmt(parseFloat((dx * dy).toFixed(4)))}</td>
+                </tr>`;
+              }).join('')}
+              <tr>
+                <td><strong>Médias</strong></td>
+                <td><strong>${fmt(parseFloat(mx.toFixed(3)))}</strong></td>
+                <td><strong>${fmt(parseFloat(my.toFixed(3)))}</strong></td>
+                <td>—</td><td>—</td><td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    // Desenhar gráfico
+    if (chartCorrInst) { chartCorrInst.destroy(); chartCorrInst = null; }
+
+    chartCorrInst = new Chart(document.getElementById('chartCorr'), {
+      type: 'scatter',
+      data: {
+        datasets: [
+          {
+            label: 'Observações',
+            data: xs.map((x, i) => ({ x, y: ys[i] })),
+            backgroundColor: '#273E74',
+            borderColor: '#273E74',
+            pointRadius: 7,
+            pointHoverRadius: 9,
+          },
+          {
+            label: 'Linha de tendência',
+            data: [{ x: lx[0], y: ly[0] }, { x: lx[1], y: ly[1] }],
+            type: 'line',
+            borderColor: '#c0392b',
+            borderWidth: 2,
+            borderDash: [6, 4],
+            pointRadius: 0,
+            fill: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            filter: item => item.datasetIndex === 0,
+            callbacks: {
+              title: () => '',
+              label: ctx => ` X = ${fmt(ctx.parsed.x)},  Y = ${fmt(ctx.parsed.y)}`,
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Variável X' },
+            grid: { color: '#e8e8e8' },
+            ticks: { color: '#555' }
+          },
+          y: {
+            title: { display: true, text: 'Variável Y' },
+            grid: { color: '#e8e8e8' },
+            ticks: { color: '#555' }
+          }
+        }
+      }
+    });
+  }
+
+  function limparCorrelacao() {
+    document.getElementById('corrX').value = '';
+    document.getElementById('corrY').value = '';
+    document.getElementById('corrErro').textContent = '';
+    document.getElementById('corrResultado').innerHTML = `
+      <div class="corr-placeholder">
+        Preencha os dois conjuntos acima e clique em <strong>Calcular Correlação</strong>.
+      </div>`;
+    if (chartCorrInst) { chartCorrInst.destroy(); chartCorrInst = null; }
+  }
+
+  // Calcular com o exemplo pré-carregado
+  calcularCorrelacao();
+
+  /* ─────────────────────────────────────────────────────
+     CALCULADORA DE PROBABILIDADE
+  ───────────────────────────────────────────────────── */
+  function mdc(a, b) { return b === 0 ? a : mdc(b, a % b); }
+
+  function probExemplo(total, fav) {
+    document.getElementById('probTotal').value = total;
+    document.getElementById('probFav').value   = fav;
+    calcularProb();
+  }
+
+  function calcularProb() {
+    const erroEl = document.getElementById('probErro');
+    erroEl.style.display = "none";
+    erroEl.textContent = '';
+
+    const total = parseInt(document.getElementById('probTotal').value);
+    const fav   = parseInt(document.getElementById('probFav').value);
+
+    if (isNaN(total) || isNaN(fav)) { 
+      erroEl.style.display = "block";
+      erroEl.textContent = 'Preencha os dois campos.'; 
+      return; 
+    }
+    if (total < 1)  { 
+      erroEl.style.display = "block";
+      erroEl.textContent = 'O total de resultados deve ser pelo menos 1.'; 
+      return; 
+    }
+    if (fav < 0)    { 
+      erroEl.style.display = "block";
+      erroEl.textContent = 'O número de resultados favoráveis não pode ser negativo.'; 
+      return; 
+    }
+    if (fav > total){ 
+      erroEl.style.display = "block";
+      erroEl.textContent = 'Os resultados favoráveis não podem ser maiores que o total.'; 
+      return; 
+    }
+
+    const p     = fav / total;
+    const pct   = p * 100;
+    const d     = mdc(fav, total);
+    const fracN = fav / d;
+    const fracD = total / d;
+
+    // Classificação
+    let classe, classeDesc;
+    if (p === 0)       { classe = 'Evento impossível'; classeDesc = 'Probabilidade zero — o evento nunca ocorre.'; }
+    else if (p === 1)  { classe = 'Evento certo';       classeDesc = 'Probabilidade 1 — o evento sempre ocorre.'; }
+    else if (p < 0.2)  { classe = 'Muito improvável';   classeDesc = 'Menos de 20% de chance.'; }
+    else if (p < 0.4)  { classe = 'Improvável';         classeDesc = 'Entre 20% e 40% de chance.'; }
+    else if (p < 0.6)  { classe = 'Moderado';           classeDesc = 'Próximo de 50% — resultado incerto.'; }
+    else if (p < 0.8)  { classe = 'Provável';           classeDesc = 'Entre 60% e 80% de chance.'; }
+    else               { classe = 'Muito provável';     classeDesc = 'Mais de 80% de chance.'; }
+
+    const pctFill = Math.min(Math.max(pct, 0), 100);
+
+    document.getElementById('probResultado').innerHTML = `
+      <div class="prob-exemplos">
+        <h4>Exemplos rápidos</h4>
+        <div class="prob-exemplos-grid">
+          <button class="prob-exemplo-btn" onclick="probExemplo(6,1)">Dado — face 1</button>
+          <button class="prob-exemplo-btn" onclick="probExemplo(6,3)">Dado — número ímpar</button>
+          <button class="prob-exemplo-btn" onclick="probExemplo(6,2)">Dado — múltiplo de 3</button>
+          <button class="prob-exemplo-btn" onclick="probExemplo(2,1)">Moeda — cara</button>
+          <button class="prob-exemplo-btn" onclick="probExemplo(52,4)">Baralho — um ás</button>
+          <button class="prob-exemplo-btn" onclick="probExemplo(52,13)">Baralho — ouros</button>
+          <button class="prob-exemplo-btn" onclick="probExemplo(10,0)">Evento impossível</button>
+          <button class="prob-exemplo-btn" onclick="probExemplo(10,10)">Evento certo</button>
+        </div>
+      </div>
+
+      <div class="prob-cards">
+        <div class="prob-card destaque">
+          <div class="prob-card-label">Porcentagem</div>
+          <div class="prob-card-valor">${pct.toFixed(2).replace('.',',')}%</div>
+          <div class="prob-card-sub">${classe}</div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-card-label">Fração</div>
+          <div class="prob-card-valor" style="font-size:1.4rem;">${fracN}/${fracD}</div>
+          <div class="prob-card-sub">forma reduzida</div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-card-label">Decimal</div>
+          <div class="prob-card-valor">${p.toFixed(4).replace('.',',')}</div>
+          <div class="prob-card-sub">entre 0 e 1</div>
+        </div>
+      </div>
+
+      <div class="prob-barra-box">
+        <h4>Representação visual — ${pct.toFixed(2).replace('.',',')}% de chance</h4>
+        <div class="prob-barra-trilho">
+          <div class="prob-barra-fill" style="width:${pctFill}%; padding-right:${pctFill > 5 ? '8px' : '0'};">
+            <span>${pctFill > 8 ? pct.toFixed(1).replace('.',',') + '%' : ''}</span>
+          </div>
+        </div>
+        <div class="prob-barra-rotulos"><span>0% (impossível)</span><span>50%</span><span>100% (certo)</span></div>
+      </div>
+
+      <div class="prob-passo">
+        <div class="prob-passo-titulo">Passo a passo:</div>
+        <div>Fórmula: <span class="prob-code">P(E) = resultados favoráveis / total possível</span></div>
+        <div>Aplicando: <span class="prob-code">${fav} / ${total} = ${p.toFixed(6).replace('.',',')}</span></div>
+        <div>Fração reduzida: <span class="prob-code">${fav}/${total} ÷ ${d} = <strong>${fracN}/${fracD}</strong></span></div>
+        <div>Em porcentagem: <span class="prob-code">${p.toFixed(6).replace('.',',')} × 100 = <strong>${pct.toFixed(4).replace('.',',')}%</strong></span></div>
+        <div style="margin-top:4px; color:#5C6D82; font-size:0.85rem;">${classeDesc}</div>
+      </div>
+    `;
+  }
+
+  calcularProb();
+
+  /* ─────────────────────────────────────────────────────
+     SIMULADOR DE DADOS E MOEDAS
+  ───────────────────────────────────────────────────── */
+  let simObj       = 'dado';
+  let simContagens = {};
+  let simTotal     = 0;
+  let simChartInst = null;
+  let simIntervalId = null;
+  const SIM_CORES  = ['#273E74','#3d5a9e','#5C6D82','#7A9BB5','#A8C0D6','#c5d4df'];
+ 
+  function simFaces() {
+    return simObj === 'dado' ? [1,2,3,4,5,6] : ['Cara','Coroa'];
+  }
+ 
+  function simEsperado() { return 1 / simFaces().length * 100; }
+ 
+  function simResetar() {
+    if (simIntervalId) { clearInterval(simIntervalId); simIntervalId = null; }
+    simContagens = {};
+    simFaces().forEach(f => { simContagens[f] = 0; });
+    simTotal = 0;
+    simRenderizar();
+  }
+ 
+  function setObjSim(tipo, btn) {
+    simObj = tipo;
+    document.querySelectorAll('.sim-tab').forEach(b => b.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    document.getElementById('simChartTitulo').textContent =
+      `Frequências observadas vs. esperadas — ${tipo === 'dado' ? 'Dado' : 'Moeda'}`;
+    simResetar();
+  }
+ 
+  function simLancarN(n) {
+    const fs = simFaces();
+    for (let i = 0; i < n; i++) {
+      const r = fs[Math.floor(Math.random() * fs.length)];
+      simContagens[r] = (simContagens[r] || 0) + 1;
+      simTotal++;
+    }
+    simRenderizar();
+  }
+ 
+  function simLancar() {
+    simLancarN(parseInt(document.getElementById('simSlider').value));
+  }
+ 
+  function simLancar100() {
+    if (simIntervalId) { clearInterval(simIntervalId); simIntervalId = null; }
+    const n = parseInt(document.getElementById('simSlider').value);
+    let i = 0;
+    simIntervalId = setInterval(() => {
+      simLancarN(n); i++;
+      if (i >= 100) { clearInterval(simIntervalId); simIntervalId = null; }
+    }, 30);
+  }
+ 
+  function simRenderizar() {
+    const fs       = simFaces();
+    const esperado = simEsperado();
+    const freqRel  = fs.map(f => simTotal > 0 ? (simContagens[f] / simTotal * 100) : 0);
+ 
+    const maxF = fs.reduce((a, b) => (simContagens[a]||0) >= (simContagens[b]||0) ? a : b);
+    const minF = fs.reduce((a, b) => (simContagens[a]||0) <= (simContagens[b]||0) ? a : b);
+    const desvMax = simTotal > 0
+      ? Math.max(...freqRel.map(f => Math.abs(f - esperado))).toFixed(1)
+      : '—';
+ 
+    document.getElementById('simStats').innerHTML = [
+      { label: 'Total lançado',          val: simTotal.toLocaleString('pt-BR') },
+      { label: 'Esperado por resultado', val: esperado.toFixed(1) + '%' },
+      { label: 'Mais frequente',         val: String(maxF) },
+      { label: 'Menos frequente',        val: String(minF) },
+      { label: 'Maior desvio',           val: desvMax === '—' ? '—' : desvMax + '%' },
+    ].map(s => `
+      <div class="sim-stat">
+        <div class="sim-stat-label">${s.label}</div>
+        <div class="sim-stat-val">${s.val}</div>
+      </div>`).join('');
+ 
+    const desvNum = simTotal > 0 ? Math.max(...freqRel.map(f => Math.abs(f - esperado))) : null;
+    let lei = '';
+    if (simTotal === 0) {
+      lei = 'Clique em <strong>Lançar</strong> para iniciar a simulação.';
+    } else if (simTotal < 30) {
+      lei = `Com apenas <strong>${simTotal} lançamento${simTotal > 1 ? 's' : ''}</strong>, a distribuição ainda é muito irregular — o acaso domina em amostras pequenas.`;
+    } else if (desvNum > 10) {
+      lei = `Com <strong>${simTotal.toLocaleString('pt-BR')} lançamentos</strong>, as frequências ainda variam bastante. Continue lançando — a <strong>Lei dos Grandes Números</strong> prevê que convergirão para ${esperado.toFixed(1)}% cada.`;
+    } else if (desvNum > 3) {
+      lei = `Com <strong>${simTotal.toLocaleString('pt-BR')} lançamentos</strong>, a distribuição já se aproxima da uniforme, mas ainda há variação. A <strong>Lei dos Grandes Números</strong> está em ação.`;
+    } else {
+      lei = `Com <strong>${simTotal.toLocaleString('pt-BR')} lançamentos</strong>, todas as frequências estão muito próximas de ${esperado.toFixed(1)}%. A <strong>Lei dos Grandes Números</strong> confirmada: mais lançamentos → frequência converge para a probabilidade teórica.`;
+    }
+    document.getElementById('simLei').innerHTML = lei;
+ 
+    const barData  = freqRel.map(v => parseFloat(v.toFixed(2)));
+    const lineData = fs.map(() => parseFloat(esperado.toFixed(2)));
+ 
+    // Atualizar gráfico existente sem destruir, ou criar se não existir
+    if (simChartInst && simChartInst.data.labels.length === fs.length) {
+      simChartInst.data.datasets[0].data = barData;
+      simChartInst.data.datasets[1].data = lineData;
+      simChartInst.data.datasets[1].label = `Esperado: ${esperado.toFixed(1)}%`;
+      simChartInst.options.scales.y.max = Math.max(60, ...freqRel.map(v => v + 8));
+      simChartInst.update('none');
+      return;
+    }
+ 
+    if (simChartInst) { simChartInst.destroy(); simChartInst = null; }
+ 
+    simChartInst = new Chart(document.getElementById('simChart'), {
+      type: 'bar',
+      data: {
+        labels: fs.map(String),
+        datasets: [
+          {
+            label: 'Frequência observada (%)',
+            data: barData,
+            backgroundColor: fs.map((_, i) => SIM_CORES[i % SIM_CORES.length]),
+            borderWidth: 0,
+          },
+          {
+            label: `Esperado: ${esperado.toFixed(1)}%`,
+            data: lineData,
+            type: 'line',
+            borderColor: '#c0392b',
+            borderWidth: 2.5,
+            borderDash: [6, 4],
+            pointRadius: 0,
+            fill: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 0 },
+        plugins: {
+          legend: {
+            display: true, position: 'top',
+            labels: { font: { size: 12 }, boxWidth: 14, color: '#333', padding: 16 }
+          },
+          tooltip: {
+            callbacks: {
+              title: ctx => `Resultado: ${ctx[0].label}`,
+              label: ctx => {
+                if (ctx.datasetIndex === 0) {
+                  const f = simFaces()[ctx.dataIndex];
+                  return ` ${simContagens[f] || 0} vezes — ${ctx.parsed.y.toFixed(1)}%`;
+                }
+                return ` Esperado: ${ctx.parsed.y.toFixed(1)}%`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#555', font: { size: 12 } } },
+          y: {
+            beginAtZero: true,
+            max: Math.max(60, ...freqRel.map(v => v + 8)),
+            title: { display: true, text: 'Frequência (%)', color: '#555', font: { size: 11 } },
+            grid: { color: '#e8e8e8' },
+            ticks: { color: '#555', font: { size: 11 }, callback: v => v + '%' }
+          }
+        }
+      }
+    });
+  }
+ 
+  simResetar();
+
+  /* ─────────────────────────────────────────────────────
+     GLOSSÁRIO DE ESTATÍSTICA
+  ───────────────────────────────────────────────────── */
+  const GLOSSARIO = [
+    {
+      termo: 'Amostra',
+      def: 'Subconjunto de uma população selecionado para representá-la em um estudo. Uma boa amostra deve ser <strong>representativa</strong>, ou seja, refletir as características da população. Ex.: entrevistar 500 eleitores para estimar a opinião de milhões.'
+    },
+    {
+      termo: 'Amplitude',
+      def: 'Diferença entre o <strong>valor máximo</strong> e o <strong>valor mínimo</strong> de um conjunto de dados. Indica o quanto os dados se espalham ao longo de uma escala. <br>Fórmula: <code>Amplitude = Máximo − Mínimo</code>'
+    },
+    {
+      termo: 'Bin (intervalo de classe)',
+      def: 'Em um histograma, cada <strong>barra representa um bin</strong>, ou seja, um intervalo contínuo de valores. Todos os dados que caem naquele intervalo são contados juntos para formar a frequência da barra.'
+    },
+    {
+      termo: 'Dados brutos',
+      def: 'Conjunto de dados coletados diretamente, <strong>sem nenhum tratamento ou organização</strong>. São o ponto de partida de qualquer análise estatística. Ex.: lista de idades de 30 alunos na ordem em que foram anotadas.'
+    },
+    {
+      termo: 'Dado qualitativo',
+      def: 'Tipo de dado que descreve <strong>características ou categorias</strong>, não valores numéricos. Subdivide-se em <strong>nominal</strong> (sem ordem, ex.: cor dos olhos) e <strong>ordinal</strong> (com ordem, ex.: nível de satisfação).'
+    },
+    {
+      termo: 'Dado quantitativo',
+      def: 'Tipo de dado que representa <strong>quantidades numéricas mensuráveis</strong>. Subdivide-se em <strong>discreto</strong> (valores inteiros e contáveis, ex.: número de filhos) e <strong>contínuo</strong> (pode assumir qualquer valor real, ex.: altura).'
+    },
+    {
+      termo: 'Desvio padrão',
+      def: 'Medida de dispersão que indica, <strong>na mesma unidade dos dados</strong>, o quanto os valores se afastam da média. É a raiz quadrada da variância. Quanto menor o desvio padrão, mais homogêneo é o conjunto.<br>Fórmula: <code>σ = √(Σ(xi − x̄)² / n)</code>'
+    },
+    {
+      termo: 'Distribuição de frequência',
+      def: 'Tabela ou gráfico que mostra <strong>como os dados se distribuem</strong> entre os possíveis valores ou intervalos. É a base para construir histogramas e calcular medidas estatísticas.'
+    },
+    {
+      termo: 'Estatística descritiva',
+      def: 'Ramo da estatística que <strong>resume e descreve</strong> um conjunto de dados por meio de tabelas, gráficos e medidas como média, mediana e desvio padrão. Não faz previsões — apenas organiza e apresenta as informações.'
+    },
+    {
+      termo: 'Estatística inferencial',
+      def: 'Ramo da estatística que usa <strong>amostras para tirar conclusões sobre a população</strong>. Inclui testes de hipótese, intervalos de confiança e modelos de regressão.'
+    },
+    {
+      termo: 'Frequência absoluta (fi)',
+      def: 'O número de vezes que um determinado valor ou categoria <strong>aparece em um conjunto de dados</strong>. É a forma mais direta de expressar a frequência. Ex.: se o valor 7 aparece 3 vezes, sua frequência absoluta é 3.'
+    },
+    {
+      termo: 'Frequência acumulada (Fi)',
+      def: 'A <strong>soma progressiva das frequências absolutas</strong> até um determinado valor, na tabela ordenada. Permite saber, por exemplo, quantos valores são menores ou iguais a um certo número.'
+    },
+    {
+      termo: 'Frequência relativa (fr)',
+      def: 'A proporção de vezes que um valor aparece em relação ao total de dados. Sempre está entre 0 e 1.<br>Fórmula: <code>fr = fi / n</code><br>Multiplicando por 100, obtemos a <strong>frequência percentual</strong>.'
+    },
+    {
+      termo: 'Histograma',
+      def: 'Gráfico de barras utilizado para representar a <strong>distribuição de dados contínuos</strong>. As barras são adjacentes (sem espaço entre elas) e cada uma representa um intervalo (bin). A altura indica a frequência daquele intervalo.'
+    },
+    {
+      termo: 'Média aritmética (x̄)',
+      def: 'A medida de tendência central mais comum. Calculada como a <strong>soma de todos os valores dividida pela quantidade</strong> de elementos. Sensível a valores extremos (outliers).<br>Fórmula: <code>x̄ = (x₁ + x₂ + ... + xn) / n</code>'
+    },
+    {
+      termo: 'Mediana',
+      def: 'O <strong>valor central</strong> de um conjunto de dados ordenado. Metade dos valores está abaixo dela e metade está acima. Com n ímpar, é o elemento do meio; com n par, é a média dos dois centrais. Menos sensível a outliers que a média.'
+    },
+    {
+      termo: 'Moda',
+      def: 'O <strong>valor que aparece com maior frequência</strong> em um conjunto de dados. Um conjunto pode ser: <strong>amodal</strong> (sem repetições), <strong>unimodal</strong> (uma moda), <strong>bimodal</strong> (duas modas) ou <strong>multimodal</strong> (várias modas).'
+    },
+    {
+      termo: 'Outlier (valor discrepante)',
+      def: 'Um valor que se <strong>afasta muito dos demais</strong> dados de um conjunto. Pode ser um erro de medição ou um caso genuinamente incomum. Outliers afetam significativamente a média e o desvio padrão.'
+    },
+    {
+      termo: 'Parâmetro',
+      def: 'Medida numérica que descreve uma característica de uma <strong>população inteira</strong>. Ex.: a média de altura de todos os brasileiros. Por ser difícil de medir diretamente, geralmente estimamos parâmetros a partir de estatísticas amostral.'
+    },
+    {
+      termo: 'População',
+      def: 'O conjunto <strong>completo</strong> de todos os elementos que se deseja estudar. Pode ser finita (todos os alunos de uma escola) ou infinita (todas as medições possíveis de temperatura).'
+    },
+    {
+      termo: 'Porcentagem',
+      def: 'Forma de expressar uma <strong>proporção em relação a 100</strong>. Usada para comparar grandezas, calcular descontos, taxas e proporções. O símbolo é <strong>%</strong>.<br>Fórmula: <code>% = (Parte / Total) × 100</code>'
+    },
+    {
+      termo: 'Quartil',
+      def: 'Valores que <strong>dividem o conjunto ordenado em quatro partes iguais</strong>. O primeiro quartil (Q1) separa os 25% menores valores; a mediana é o Q2 (50%); o terceiro quartil (Q3) separa os 75% menores. A diferença Q3 − Q1 é chamada de intervalo interquartil (IQR).'
+    },
+    {
+      termo: 'Regra de Sturges',
+      def: 'Fórmula usada para determinar o <strong>número ideal de intervalos (bins)</strong> em um histograma.<br>Fórmula: <code>k = ⌈log₂(n) + 1⌉</code><br>Onde n é o número de observações e k é o número de classes.'
+    },
+    {
+      termo: 'Variância (σ²)',
+      def: 'Medida de dispersão que representa a <strong>média dos quadrados dos desvios</strong> em relação à média. Quanto maior a variância, mais espalhados estão os dados. Por estar em unidade ao quadrado, geralmente usa-se o desvio padrão para interpretação.<br>Fórmula: <code>σ² = Σ(xi − x̄)² / n</code>'
+    },
+    {
+      termo: 'Variável',
+      def: 'Característica <strong>observada ou medida</strong> em cada elemento da população ou amostra. Pode ser qualitativa (categorias) ou quantitativa (números). Ex.: cor dos olhos, altura, nota de uma prova.'
+    },
+  ];
+
+  function renderGlossario(lista) {
+    const grid  = document.getElementById('glossarioGrid');
+    const vazio = document.getElementById('glossarioVazio');
+ 
+    // Guardar quais termos estão abertos pelo texto do termo
+    const abertos = new Set(
+      [...document.querySelectorAll('.glossario-item.aberto')]
+        .map(el => el.querySelector('.glossario-termo').textContent)
+    );
+ 
+    if (lista.length === 0) {
+      grid.innerHTML = '';
+      vazio.style.display = 'block';
+      return;
+    }
+    vazio.style.display = 'none';
+ 
+    grid.innerHTML = lista.map((item, i) => {
+      const letra   = item.termo.charAt(0).toUpperCase();
+      const estaAberto = abertos.has(item.termo) ? ' aberto' : '';
+      return `
+        <div class="glossario-item${estaAberto}" id="gi-${i}">
+          <div class="glossario-cabecalho" onclick="toggleGlossario(${i})">
+            <span class="glossario-letra">${letra}</span>
+            <span class="glossario-termo">${item.termo}</span>
+            <span class="glossario-seta">&#9658;</span>
+          </div>
+          <div class="glossario-corpo">${item.def}</div>
+        </div>
+      `;
+    }).join('');
+  }
+ 
+  function toggleGlossario(i) {
+    const el = document.getElementById('gi-' + i);
+    el.classList.toggle('aberto');
+  }
+ 
+  function filtrarGlossario() {
+    const q = document.getElementById('glossarioBusca').value.toLowerCase().trim();
+    const filtrado = q
+      ? GLOSSARIO.filter(t => t.termo.toLowerCase().includes(q) || t.def.toLowerCase().includes(q))
+      : GLOSSARIO;
+    renderGlossario(filtrado);
+  }
+ 
+  renderGlossario(GLOSSARIO);
+
+  function openIndex() {
+      window.location.href = "/";
+  }
+  </script>
+</body>
+</html>
