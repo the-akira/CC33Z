@@ -1761,19 +1761,19 @@
           ctx.beginPath(); ctx.moveTo(px(mediana), yTop); ctx.lineTo(px(mediana), yBot); ctx.stroke();
 
           // Rótulos Q1, Mediana, Q3
-          ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+          ctx.font = 'bold 10px sans-serif'; 
+          ctx.textAlign = 'center';
+
+          // Rótulos superiores (Q1 e Q3)
           [[q1, 'Q1'], [q3, 'Q3']].forEach(([v, lbl]) => {
-            const col = lbl === 'Med' ? '#c0392b' : '#273E74';
-            ctx.fillStyle = col;
+            ctx.fillStyle = '#273E74';
             ctx.fillText(`${lbl}=${fmt(parseFloat(v.toFixed(1)))}`, px(v), yTop - 8);
           });
 
-          ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
-          [[mediana, 'Med']].forEach(([v, lbl]) => {
-            const col = lbl === 'Med' ? '#c0392b' : '#273E74';
-            ctx.fillStyle = col;
-            ctx.fillText(`${lbl}=${fmt(parseFloat(v.toFixed(1)))}`, px(v), yTop + 137);
-          });
+          // Rótulo inferior da Mediana (dinâmico)
+          const yBottomLabel = yBot + 15;
+          ctx.fillStyle = '#c0392b';
+          ctx.fillText(`Med=${fmt(parseFloat(mediana.toFixed(1)))}`, px(mediana), yBottomLabel);
 
           // Rótulos dos extremos dos bigodes
           ctx.fillStyle = '#273E74'; ctx.font = 'bold 10px sans-serif';
