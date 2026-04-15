@@ -1782,12 +1782,22 @@
           ctx.fillText(`Med=${fmt(parseFloat(mediana.toFixed(1)))}`, px(mediana), yBottomLabel);
 
           // Rótulos dos extremos dos bigodes
-          ctx.fillStyle = '#273E74'; ctx.font = 'bold 10px sans-serif';
+          const labelOffsetY = 14;
+          const valueOffsetY = 26;
+
+          ctx.fillStyle = '#273E74';
+          ctx.font = 'bold 10px sans-serif'; // Tamanho fixo, sem redução
           ctx.textAlign = 'center';
-          ctx.fillText(`Q1−1,5×IQR`, px(whiskerLo), yBot + 14);
-          ctx.fillText(`= ${fmt(parseFloat(whiskerLo.toFixed(2)))}`, px(whiskerLo), yBot + 26);
-          ctx.fillText(`Q3+1,5×IQR`, px(whiskerHi), yBot + 14);
-          ctx.fillText(`= ${fmt(parseFloat(whiskerHi.toFixed(2)))}`, px(whiskerHi), yBot + 26);
+
+          // Ajuste automático para não sair da tela
+          const leftX = Math.max(px(whiskerLo), chartArea.left + 36);
+          const rightX = Math.min(px(whiskerHi), chartArea.right - 40);
+
+          ctx.fillText(`Q1−1,5×IQR`, leftX, yBot + labelOffsetY);
+          ctx.fillText(`= ${fmt(parseFloat(whiskerLo.toFixed(2)))}`, leftX, yBot + valueOffsetY);
+
+          ctx.fillText(`Q3+1,5×IQR`, rightX, yBot + labelOffsetY);
+          ctx.fillText(`= ${fmt(parseFloat(whiskerHi.toFixed(2)))}`, rightX, yBot + valueOffsetY);
 
           ctx.restore();
         }
