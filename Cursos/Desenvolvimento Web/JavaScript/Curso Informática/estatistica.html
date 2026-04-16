@@ -1689,6 +1689,7 @@
             pointRadius: 7,
             pointHoverRadius: 9,
             pointStyle: 'circle',
+            clip: false,
           },
           // Todos os dados (azuis)
           {
@@ -1790,7 +1791,7 @@
           ctx.textAlign = 'center';
 
           // Ajuste automático para não sair da tela
-          const leftX = Math.max(px(whiskerLo), chartArea.left + 36);
+          const leftX = Math.max(px(whiskerLo), chartArea.left + 30);
           const rightX = Math.min(px(whiskerHi), chartArea.right - 40);
 
           ctx.fillText(`Q1−1,5×IQR`, leftX, yBot + labelOffsetY);
