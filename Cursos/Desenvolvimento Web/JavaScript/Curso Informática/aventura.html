@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aventura Digital - Curso de Informática</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #050510;
+    font-family: 'Courier New', monospace;
+  }
+  #title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px; color: #00ffcc;
+    text-shadow: 0 0 30px #00ffcc88, 0 0 60px #00ffcc44;
+    margin-bottom: 10px; letter-spacing: 3px;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+  canvas { 
+    display: block; 
+    image-rendering: pixelated; 
+    border: 2px solid #4e768a;
+    margin: 0 auto;
+  }
+  #keys {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #68829c;
+    letter-spacing: 1px;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 4px;
+  }
+  #keys kbd, #indexBtn {
+    background: #0a1520; border: 1px solid #1a2a3a;
+    color: #4488aa; padding: 4.2px 6px 3px 6px;
+    font-family: 'Courier New', monospace; font-size: 10px;
+  }
+  #indexBtn {
+    font-size: 1rem;
+    padding: 10.2px 10px 9px 10px;
+    color: #00ffcc;
+    border: 1px solid #00ffcc;
+  }
+  #indexBtn:hover {
+    cursor: pointer;
+  }
+  .selectGroup {
+    text-align: center; 
+    margin-top: 20px;
+  }
+  select {
+    background: #0a1520;
+    border: 1px solid #00ffcc;
+    color: #00ffcc;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    padding: 10.2px 10px 9px 10px;
+    cursor: pointer;
+    margin-right: 15px;
+  }
+  select:focus {
+    outline: none;
+  }
+  label {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    color: #4488aa;
+    letter-spacing: 1px;
+  }
+  #filtros {
+    text-align: center;
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 24px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #4488aa;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+  }
+  input[type="range"] {
+    accent-color: #27c6db; 
+    vertical-align: middle; 
+  }
+  input[type="range"]:focus {
+    outline: none;
+  }
+  @media only screen and (max-width: 665px) {
+      canvas {
+          width: 90%;
+      }
+  }
+</style>
+</head>
+<body>
+<div id="title">Aventura Digital</div>
+<canvas id="c" width="640" height="480"></canvas>
+<div id="keys">
+  <span><kbd>Setas</kbd> / <kbd>WASD</kbd> mover</span>
+  <span>·</span>
+  <span><kbd>E</kbd> / <kbd>Espaço</kbd> interagir</span>
+  <span>·</span>
+  <span><kbd>G</kbd> Glossário</span>
+  <span>·</span>
+  <span><kbd>ESC</kbd> fechar janelas</span>
+  <span>·</span>
+  <span><kbd>PgUp</kbd> / <kbd>PgDn</kbd> rolar terminal</span>
+</div>
+
+<div class="selectGroup">
+  <label for="scaleSelect">ZOOM:</label>
+  <select id="scaleSelect" onchange="SCALE = parseFloat(this.value)">
+    <option value="1" selected>100%</option>
+    <option value="1.5">150%</option>
+    <option value="2">200%</option>
+    <option value="2.5">250%</option>
+  </select>
+  <button id="indexBtn" onclick="openIndex()">Página Inicial</button>
+</div>
+
+<div id="filtros">
+  <label>BRILHO
+    <input type="range" id="brilho" min="50" max="150" value="100">
+    <span id="brilhoVal">100%</span>
+  </label>
+
+  <label>SATURAÇÃO
+    <input type="range" id="saturacao" min="0" max="200" value="100">
+    <span id="saturacaoVal">100%</span>
+  </label>
+
+  <label>CONTRASTE
+    <input type="range" id="contraste" min="50" max="150" value="100">
+    <span id="contrasteVal">100%</span>
+  </label>
+
+  <label>MATIZ
+    <input type="range" id="matiz" min="0" max="360" value="0">
+    <span id="matizVal">0°</span>
+  </label>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//   Aventura Digital — RPG EDUCATIVO
+//   Sistema: Tiles + Câmera + NPCs + Diálogos
+// ═══════════════════════════════════════
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let SCALE = 1;
+const CVW = 640, CVH = 480;
+const TS = 32;          // tile size px
+const MC = 25, MR = 18; // map cols, rows
+
+// ── Tile IDs ───────────────────────────
+const G=0,  // Grass
+      W=1,  // Wall
+      P=2,  // Path (stone)
+      A=3,  // wAter
+      E=4,  // Exit portal
+      T=5,  // Tree
+      F=6,  // Floor (interior)
+      B=7,  // Building wall
+      R=8,  // Road
+      K=9;  // Circuit (circ-board floor)
+      L=10; // exit portaL (Left arrow)
+      H=11; // High-tech lab floor
+      V=12, // aVenue — futuristic neon road
+      S=13, // Skyscraper wall
+      Z=14; // city plaza (holographic ground)
+      U=15, // exit Up arrow
+      D=16, // exit Down arrow
+      O=17, // Open-source terminal floor
+      J=18; // community Junction floor
+      X=19, // compiled code floor
+      Y=20, // data stack floor
+      Q=21; // interpreted/REPL floor
+      C=22, // academic Circuit floor
+      M=23, // theoretical Matrix floor
+      N=24; // scientific network Node floor
+      I=25; // flower (decorative, non-walkable)
+      TC=26; // Terminal Computer (interactive object tile)
+      AR=27; // ARbusto
+
+const WALKABLE = new Set([G, P, E, F, R, K, L, H, V, Z, U, D, O, J, X, Y, Q, C, M, N]);
+
+// ── Tile Renderer ──────────────────────
+function drawTile(id, px, py, now) {
+  const col = px / TS | 0, row = py / TS | 0; // tile coords for deterministic patterns
+  switch (id) {
+    case G: { // Grass
+      ctx.fillStyle = '#172817';
+      ctx.fillRect(px, py, TS, TS);
+
+      // Hash determinístico por tile
+      const hash = (n) => ((Math.sin(n) * 43758.5453) % 1 + 1) % 1;
+
+      const pontos = [
+        { cor: '#122212', s: 3 },
+        { cor: '#1d3e1d', s: 2 },
+        { cor: '#2a5c2a', s: 2 },
+        { cor: '#1d3e1d', s: 3 },
+        { cor: '#122212', s: 2 },
+        { cor: '#2a5c2a', s: 2 },
+      ];
+
+      pontos.forEach((p, i) => {
+        const ox = hash(col * 127 + row * 311 + i * 57)  * (TS - p.s) | 0;
+        const oy = hash(col * 233 + row * 179 + i * 83)  * (TS - p.s) | 0;
+        ctx.fillStyle = p.cor;
+        ctx.fillRect(px + ox, py + oy, p.s, p.s);
+      });
+
+      break;
+    }
+    case W: { // Wall
+      ctx.fillStyle = '#242436';
+      ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#1a1a28';
+      ctx.fillRect(px, py, TS, 1); ctx.fillRect(px, py, 1, TS);
+      ctx.fillStyle = '#2e2e46';
+      ctx.fillRect(px+1, py+1, TS-2, TS-2);
+      ctx.fillStyle = '#232338';
+      ctx.fillRect(px+2, py+2, 14, 13);
+      ctx.fillRect(px+16+1, py+17, 13, 12);
+      break;
+    }
+    case P: { // Stone path
+      ctx.fillStyle = '#383626';
+      ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#44422e';
+      ctx.fillRect(px+1, py+1, TS-2, TS-2);
+      ctx.fillStyle = '#38362a';
+      ctx.fillRect(px+2, py+2, 13, 13);
+      ctx.fillRect(px+17, py+17, 13, 13);
+      break;
+    }
+    case A: { // Water (animated)
+      const w = Math.sin(now*0.001 + col*0.4 + row*0.3);
+      ctx.fillStyle = `hsl(210,68%,${17+w*4}%)`;
+      ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = 'rgba(120,200,255,0.14)';
+      const wx = (Math.sin(now*0.0008 + col*0.2)*6 + 6) | 0;
+      ctx.fillRect(px+wx, py+7, TS-wx-4, 3);
+      ctx.fillRect(px+(TS-wx-12), py+19, TS-wx-6, 2);
+      break;
+    }
+    case E: { // Exit portal (animated)
+      ctx.fillStyle = '#060618';
+      ctx.fillRect(px, py, TS, TS);
+      const pls = 0.5 + 0.5*Math.sin(now*0.004);
+      ctx.fillStyle = `rgba(0,255,180,${0.15+pls*0.25})`;
+      ctx.fillRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = `rgba(0,255,180,${0.5+pls*0.5})`;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = '#00ffbb'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px+9, py+16); ctx.lineTo(px+22, py+16);
+      ctx.moveTo(px+17,py+11); ctx.lineTo(px+22,py+16); ctx.lineTo(px+17,py+21);
+      ctx.stroke();
+      break;
+    }
+    case L: { // Exit portal — left arrow (animated)
+      ctx.fillStyle = '#060618';
+      ctx.fillRect(px, py, TS, TS);
+      const plsL = 0.5 + 0.5*Math.sin(now*0.004);
+      ctx.fillStyle = `rgba(0,255,180,${0.15+plsL*0.25})`;
+      ctx.fillRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = `rgba(0,255,180,${0.5+plsL*0.5})`;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = '#00ffbb'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px+23, py+16); ctx.lineTo(px+10, py+16);
+      ctx.moveTo(px+15,py+11); ctx.lineTo(px+10,py+16); ctx.lineTo(px+15,py+21);
+      ctx.stroke();
+      break;
+    }
+    case T: { // Tree
+      ctx.fillStyle = '#172817'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#4a2a08'; ctx.fillRect(px+13, py+20, 6, 12);
+      ctx.fillStyle = '#175417';
+      ctx.beginPath(); ctx.arc(px+16, py+12, 13, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#1e6a20';
+      ctx.beginPath(); ctx.arc(px+13, py+10, 8, 0, Math.PI*2); ctx.fill();
+      break;
+    }
+    case AR: { // Arbusto
+      const hash = (n) => ((Math.sin(n) * 43758.5453) % 1 + 1) % 1;
+
+      // Chão de grama embaixo
+      ctx.fillStyle = '#172817';
+      ctx.fillRect(px, py, TS, TS);
+
+      // Tronco
+      ctx.fillStyle = '#4a2a08';
+      ctx.fillRect(px+13, py+24, 6, 8);
+
+      // Massa principal (verde escuro)
+      ctx.fillStyle = '#1a4d1a';
+      ctx.beginPath();
+      ctx.arc(px+16, py+15, 12, 0, Math.PI*2);
+      ctx.fill();
+
+      // Bolinhas secundárias para dar volume
+      ctx.fillStyle = '#1f5c1f';
+      ctx.beginPath(); ctx.arc(px+9,  py+17, 8, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+23, py+17, 8, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+16, py+10, 7, 0, Math.PI*2); ctx.fill();
+
+      // Highlight (luz vindo de cima)
+      ctx.fillStyle = '#2e7d2e';
+      ctx.beginPath(); ctx.arc(px+14, py+11, 5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+8,  py+14, 4, 0, Math.PI*2); ctx.fill();
+
+      break;
+    }
+    case F: { // Interior floor
+      ctx.fillStyle = '#1e1e32'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#23233e'; ctx.fillRect(px+1, py+1, TS-2, TS-2);
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(px+2, py+2, TS/2-4, TS/2-4);
+      ctx.fillRect(px+TS/2+2, py+TS/2+2, TS/2-4, TS/2-4);
+      break;
+    }
+    case B: { // Building wall
+      ctx.fillStyle = '#181828'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#20203a'; ctx.fillRect(px+2, py+2, TS-4, TS-4);
+      const gl = 0.2 + 0.15*Math.sin(now*0.0015+col+row);
+      ctx.fillStyle = `rgba(40,180,255,${gl})`;
+      ctx.fillRect(px+7, py+7, 8, 8);
+      ctx.fillRect(px+17, py+7, 8, 8);
+      break;
+    }
+    case R: { // Road
+      ctx.fillStyle = '#1e1e1e'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#262626'; ctx.fillRect(px+1, py+1, TS-2, TS-2);
+      ctx.fillStyle = '#363636'; ctx.fillRect(px, py+14, TS, 4);
+      break;
+    }
+    case K: { // Circuit board floor
+      ctx.fillStyle = '#081412'; ctx.fillRect(px, py, TS, TS);
+      ctx.strokeStyle = '#004422'; ctx.lineWidth = 1;
+      ctx.strokeRect(px+4, py+4, TS-8, TS-8);
+      ctx.fillStyle = '#002e16';
+      ctx.fillRect(px+14, py, 4, TS); ctx.fillRect(px, py+14, TS, 4);
+      const glow = 0.3 + 0.3*Math.sin(now*0.003+col*0.15+row*0.2);
+      ctx.fillStyle = `rgba(0,220,100,${glow})`;
+      ctx.fillRect(px+14, py+14, 4, 4);
+      break;
+    }
+    case H: { // High-tech lab floor
+      // Base 32x32
+      ctx.fillStyle = '#0a0a1a'; ctx.fillRect(px, py, TS, TS);
+      // Borda (4 lados com fillRect, igual ao padrão dos outros tiles)
+      ctx.fillStyle = 'rgba(80,80,200,0.4)';
+      ctx.fillRect(px,       py,       TS, 1);  // top
+      ctx.fillRect(px,       py+TS-1,  TS, 1);  // bottom
+      ctx.fillRect(px,       py,       1,  TS);  // left
+      ctx.fillRect(px+TS-1,  py,       1,  TS);  // right
+      // Cruz interna (começa em 1 e vai até TS-1 para não vazar na borda)
+      ctx.fillStyle = 'rgba(60,60,160,0.3)';
+      ctx.fillRect(px+15, py+1, 2, TS-2); // vertical
+      ctx.fillRect(px+1, py+15, TS-2, 2); // horizontal
+      // Quadradinhos nos 4 cantos
+      ctx.fillStyle = '#12122e';
+      ctx.fillRect(px+2,  py+2,  12, 12);
+      ctx.fillRect(px+18, py+2,  12, 12);
+      ctx.fillRect(px+2,  py+18, 12, 12);
+      ctx.fillRect(px+18, py+18, 12, 12);
+      // Centro pulsante
+      const gh = 0.25 + 0.25*Math.sin(now*0.003 + col*0.2 + row*0.3);
+      ctx.fillStyle = `rgba(100,80,255,${gh})`;
+      ctx.fillRect(px+14, py+14, 4, 4);
+      break;
+    }
+    case V: { // aVenue — futuristic neon road
+      ctx.fillStyle = '#0c0c14'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#111118'; ctx.fillRect(px+1, py+1, TS-2, TS-2);
+      // Faixas laterais neon — amplitude reduzida
+      const nv = 0.3 + 0.1*Math.sin(now*0.002 + col*0.25);
+      ctx.fillStyle = `rgba(0,220,255,${nv})`;
+      ctx.fillRect(px, py,      TS, 2);
+      ctx.fillRect(px, py+TS-2, TS, 2);
+      // Linha central — usa sin em vez de on/off para transição suave
+      const dash = 0.3 + 0.2*Math.sin(now*0.003 + col*0.8);
+      ctx.fillStyle = `rgba(255,220,0,${dash})`;
+      ctx.fillRect(px+14, py+12, 4, 8);
+      break;
+    }
+    case S: { // Skyscraper wall
+      ctx.fillStyle = '#080812'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#10101e'; ctx.fillRect(px+1, py+1, TS-2, TS-2);
+      // Janelas com brilho independente por tile
+      const sw  = 0.2 + 0.15*Math.sin(now*0.0018 + col*1.3 + row*0.9);
+      const sw2 = 0.2 + 0.15*Math.sin(now*0.0022 + col*0.7 + row*1.4);
+      ctx.fillStyle = `rgba(0,180,255,${sw})`;
+      ctx.fillRect(px+4,  py+4,  10, 10);
+      ctx.fillRect(px+18, py+18, 10, 10);
+      ctx.fillStyle = `rgba(180,0,255,${sw2})`;
+      ctx.fillRect(px+18, py+4,  10, 10);
+      ctx.fillRect(px+4,  py+18, 10, 10);
+      // Borda neon fina
+      ctx.fillStyle = 'rgba(0,150,255,0.4)';
+      ctx.fillRect(px,    py,    TS, 1);
+      ctx.fillRect(px,    py,    1,  TS);
+      break;
+    }
+    case Z: { // City plaza — holographic ground
+      ctx.fillStyle = '#080810'; ctx.fillRect(px, py, TS, TS);
+      // Grade holográfica com fillRect (sem stroke)
+      const gz = 0.12 + 0.08*Math.sin(now*0.0015 + col*0.4 + row*0.3);
+      ctx.fillStyle = `rgba(0,200,255,${gz})`;
+      ctx.fillRect(px,    py+10, TS, 1);
+      ctx.fillRect(px,    py+21, TS, 1);
+      ctx.fillRect(px+10, py,    1,  TS);
+      ctx.fillRect(px+21, py,    1,  TS);
+      // Nós brilhantes nos cruzamentos
+      const gr = 0.3 + 0.2*Math.sin(now*0.002 + col*0.5 + row*0.6);
+      ctx.fillStyle = `rgba(0,255,255,${gr})`;
+      ctx.fillRect(px+9,  py+9,  3, 3);
+      ctx.fillRect(px+20, py+9,  3, 3);
+      ctx.fillRect(px+9,  py+20, 3, 3);
+      ctx.fillRect(px+20, py+20, 3, 3);
+      break;
+    }
+    case U: { // exit Up arrow (animated)
+      ctx.fillStyle = '#060618'; ctx.fillRect(px, py, TS, TS);
+      const plsU = 0.5 + 0.5*Math.sin(now*0.004);
+      ctx.fillStyle = `rgba(0,255,180,${0.15+plsU*0.25})`;
+      ctx.fillRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = `rgba(0,255,180,${0.5+plsU*0.5})`;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = '#00ffbb'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px+16, py+23); ctx.lineTo(px+16, py+10);
+      ctx.moveTo(px+11, py+15); ctx.lineTo(px+16, py+10); ctx.lineTo(px+21, py+15);
+      ctx.stroke();
+      break;
+    }
+    case D: { // exit Down arrow (animated)
+      ctx.fillStyle = '#060618'; ctx.fillRect(px, py, TS, TS);
+      const plsD = 0.5 + 0.5*Math.sin(now*0.004);
+      ctx.fillStyle = `rgba(0,255,180,${0.15+plsD*0.25})`;
+      ctx.fillRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = `rgba(0,255,180,${0.5+plsD*0.5})`;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px+4, py+4, TS-8, TS-8);
+      ctx.strokeStyle = '#00ffbb'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px+16, py+9);  ctx.lineTo(px+16, py+22);
+      ctx.moveTo(px+11, py+17); ctx.lineTo(px+16, py+22); ctx.lineTo(px+21, py+17);
+      ctx.stroke();
+      break;
+    }
+    case O: { // Open-source terminal floor
+      ctx.fillStyle = '#030d03'; ctx.fillRect(px, py, TS, TS);
+      // Scanlines
+      ctx.fillStyle = 'rgba(0,40,0,0.6)';
+      ctx.fillRect(px, py+8,  TS, 2);
+      ctx.fillRect(px, py+20, TS, 2);
+      // Borda terminal verde
+      ctx.fillStyle = 'rgba(0,180,0,0.35)';
+      ctx.fillRect(px,       py,      TS, 1);
+      ctx.fillRect(px,       py+TS-1, TS, 1);
+      ctx.fillRect(px,       py,      1,  TS);
+      ctx.fillRect(px+TS-1,  py,      1,  TS);
+      // Cursor piscante por tile
+      const cur = Math.sin(now*0.005 + col*0.9 + row*1.1) > 0.3;
+      if (cur) {
+        ctx.fillStyle = `rgba(0,255,60,0.7)`;
+        ctx.fillRect(px+4, py+12, 8, 2);
+      }
+      // Caracteres simulados
+      ctx.fillStyle = 'rgba(0,160,0,0.25)';
+      ctx.fillRect(px+4,  py+5,  6, 1);
+      ctx.fillRect(px+12, py+5,  8, 1);
+      ctx.fillRect(px+4,  py+22, 10, 1);
+      ctx.fillRect(px+16, py+22, 5,  1);
+      break;
+    }
+    case J: { // community Junction floor
+      ctx.fillStyle = '#110a00'; ctx.fillRect(px, py, TS, TS);
+      // Padrão de madeira clara — piso de coworking
+      ctx.fillStyle = '#1a1000';
+      ctx.fillRect(px+1,  py+1,  TS-2, 6);
+      ctx.fillRect(px+1,  py+17, TS-2, 6);
+      ctx.fillStyle = '#160d00';
+      ctx.fillRect(px+1,  py+9,  13, 12);
+      ctx.fillRect(px+16, py+9,  TS-17, 12);
+      // Brilho âmbar suave
+      const jg = 0.08 + 0.05*Math.sin(now*0.001 + col*0.3 + row*0.4);
+      ctx.fillStyle = `rgba(255,160,0,${jg})`;
+      ctx.fillRect(px+4, py+4, TS-8, TS-8);
+      break;
+    }
+    case X: { // compiled code floor — blocos encaixados, tom ferrugem/laranja
+      ctx.fillStyle = '#0e0800'; ctx.fillRect(px, py, TS, TS);
+      // Blocos de bytecode encaixados
+      ctx.fillStyle = '#1c1000';
+      ctx.fillRect(px+1,  py+1,  14, 14);
+      ctx.fillRect(px+17, py+1,  13, 14);
+      ctx.fillRect(px+1,  py+17, 14, 13);
+      ctx.fillRect(px+17, py+17, 13, 13);
+      // Conectores entre blocos
+      ctx.fillStyle = '#2a1800';
+      ctx.fillRect(px+15, py+6,  2, 4);
+      ctx.fillRect(px+15, py+22, 2, 4);
+      ctx.fillRect(px+6,  py+15, 4, 2);
+      ctx.fillRect(px+22, py+15, 4, 2);
+      // Brilho laranja pulsante
+      const xg = 0.15 + 0.1*Math.sin(now*0.0025 + col*0.4 + row*0.35);
+      ctx.fillStyle = `rgba(255,120,0,${xg})`;
+      ctx.fillRect(px+2,  py+2,  12, 12);
+      ctx.fillRect(px+18, py+2,  11, 12);
+      ctx.fillRect(px+2,  py+18, 12, 11);
+      ctx.fillRect(px+18, py+18, 11, 11);
+      break;
+    }
+    case Y: { // data stack floor — pilhas empilhadas, tom azul aço
+      ctx.fillStyle = '#030810'; ctx.fillRect(px, py, TS, TS);
+      // Camadas da pilha
+      ctx.fillStyle = '#081428';
+      ctx.fillRect(px+4, py+4,  TS-8, 6);
+      ctx.fillRect(px+4, py+13, TS-8, 6);
+      ctx.fillRect(px+4, py+22, TS-8, 6);
+      // Separadores
+      ctx.fillStyle = '#0c1e3c';
+      ctx.fillRect(px+4, py+10, TS-8, 1);
+      ctx.fillRect(px+4, py+19, TS-8, 1);
+      // Brilho azul-aço por camada, fases diferentes
+      const ya = 0.18 + 0.1*Math.sin(now*0.002  + col*0.3 + row*0.2);
+      const yb = 0.18 + 0.1*Math.sin(now*0.002  + col*0.3 + row*0.2 + 2);
+      const yc = 0.18 + 0.1*Math.sin(now*0.002  + col*0.3 + row*0.2 + 4);
+      ctx.fillStyle = `rgba(60,140,255,${ya})`; ctx.fillRect(px+5, py+5,  TS-10, 4);
+      ctx.fillStyle = `rgba(60,140,255,${yb})`; ctx.fillRect(px+5, py+14, TS-10, 4);
+      ctx.fillStyle = `rgba(60,140,255,${yc})`; ctx.fillRect(px+5, py+23, TS-10, 4);
+      break;
+    }
+    case Q: { // interpreted/REPL floor — prompt piscante, tom verde limão
+      ctx.fillStyle = '#050f05'; ctx.fillRect(px, py, TS, TS);
+      // Linhas de código simuladas
+      ctx.fillStyle = '#0a1a0a';
+      ctx.fillRect(px+1, py+1,  TS-2, TS-2);
+      ctx.fillStyle = 'rgba(80,200,80,0.18)';
+      ctx.fillRect(px+3, py+6,  18, 2);
+      ctx.fillRect(px+3, py+12, 14, 2);
+      ctx.fillRect(px+3, py+18, 20, 2);
+      ctx.fillRect(px+3, py+24, 10, 2);
+      // Prompt >>> piscante
+      const qp = 0.4 + 0.4*Math.sin(now*0.004 + col*0.7 + row*0.9);
+      ctx.fillStyle = `rgba(100,255,100,${qp})`;
+      ctx.fillRect(px+3, py+28, 4, 2);
+      // Borda limão suave
+      ctx.fillStyle = 'rgba(80,200,80,0.2)';
+      ctx.fillRect(px,       py,      TS, 1);
+      ctx.fillRect(px,       py+TS-1, TS, 1);
+      ctx.fillRect(px,       py,      1,  TS);
+      ctx.fillRect(px+TS-1,  py,      1,  TS);
+      break;
+    }
+    case C: { // academic Circuit floor — branco-giz sobre ardósia escura
+      ctx.fillStyle = '#080c10'; ctx.fillRect(px, py, TS, TS);
+      // Fundo ardósia
+      ctx.fillStyle = '#0d1218'; ctx.fillRect(px+1, py+1, TS-2, TS-2);
+      // Linhas de quadro-negro horizontais
+      ctx.fillStyle = 'rgba(200,220,255,0.08)';
+      ctx.fillRect(px+2, py+8,  TS-4, 1);
+      ctx.fillRect(px+2, py+16, TS-4, 1);
+      ctx.fillRect(px+2, py+24, TS-4, 1);
+      // Símbolo central pulsante (como Σ ou ∞ pixelado)
+      const cg = 0.2 + 0.12*Math.sin(now*0.0018 + col*0.5 + row*0.4);
+      ctx.fillStyle = `rgba(180,210,255,${cg})`;
+      ctx.fillRect(px+10, py+11, 12, 2); // topo do sigma
+      ctx.fillRect(px+10, py+15, 12, 2); // meio
+      ctx.fillRect(px+10, py+19, 12, 2); // base
+      ctx.fillRect(px+10, py+11, 2,  10); // vertical esquerdo
+      ctx.fillRect(px+20, py+11, 2,  4);  // diagonal topo
+      ctx.fillRect(px+20, py+17, 2,  4);  // diagonal base
+      break;
+    }
+    case M: { // theoretical Matrix floor — grade de dígitos binários
+      ctx.fillStyle = '#04080c'; ctx.fillRect(px, py, TS, TS);
+      // Mini dígitos binários simulados por bloquinhos
+      const digits = [
+        [1,0,1,1],[0,1,0,1],[1,1,0,0],[0,0,1,0],
+      ];
+      for (let r = 0; r < 4; r++) {
+        for (let dc = 0; dc < 4; dc++) {
+          const on = digits[r][dc];
+          const mg = on
+            ? 0.25 + 0.2*Math.sin(now*0.002 + col*0.3 + row*0.25 + r*0.7 + dc*0.5)
+            : 0.04;
+          ctx.fillStyle = `rgba(0,255,160,${mg})`;
+          ctx.fillRect(px+3 + dc*7, py+3 + r*7, 5, 5);
+        }
+      }
+      // Borda sutil
+      ctx.fillStyle = 'rgba(0,180,100,0.15)';
+      ctx.fillRect(px, py,      TS, 1);
+      ctx.fillRect(px, py+TS-1, TS, 1);
+      break;
+    }
+    case N: { // scientific network Node — teia de nós conectados
+      ctx.fillStyle = '#06060e'; ctx.fillRect(px, py, TS, TS);
+      // Linhas de conexão entre nós
+      const ng = 0.12 + 0.08*Math.sin(now*0.0014 + col*0.35 + row*0.45);
+      ctx.fillStyle = `rgba(180,100,255,${ng})`;
+      ctx.fillRect(px+8,  py+4,  1, 10); // topo-esq → centro
+      ctx.fillRect(px+23, py+4,  1, 10); // topo-dir → centro
+      ctx.fillRect(px+8,  py+18, 1, 10); // base-esq → centro
+      ctx.fillRect(px+23, py+18, 1, 10); // base-dir → centro
+      ctx.fillRect(px+9,  py+14, 14, 1); // horizontal centro
+      ctx.fillRect(px+9,  py+14, 14, 1);
+      // Nós (círculos pixelados 3x3)
+      const nr = 0.4 + 0.3*Math.sin(now*0.002 + col*0.6 + row*0.5);
+      ctx.fillStyle = `rgba(200,140,255,${nr})`;
+      ctx.fillRect(px+7,  py+3,  3, 3);  // topo-esq
+      ctx.fillRect(px+22, py+3,  3, 3);  // topo-dir
+      ctx.fillRect(px+7,  py+26, 3, 3);  // base-esq
+      ctx.fillRect(px+22, py+26, 3, 3);  // base-dir
+      ctx.fillRect(px+14, py+13, 4, 4);  // centro
+      break;
+    }
+    case I: { // Flower — decorative, non-walkable
+      // Fundo de grama (igual ao G)
+      ctx.fillStyle = '#172817'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#1d3e1d';
+      ctx.fillRect(px + (col*7+1)%26, py + (row*11+3)%26, 2, 2);
+      ctx.fillRect(px + (col*13+17)%24, py + (row*7+21)%24, 2, 2);
+      // Caule
+      ctx.fillStyle = '#2a6a1a';
+      ctx.fillRect(px+15, py+20, 2, 10);
+      // Folhinhas
+      ctx.fillStyle = '#225a12';
+      ctx.fillRect(px+10, py+22, 5, 3);
+      ctx.fillRect(px+17, py+25, 5, 3);
+      // Pétalas (animadas — leve pulsação)
+      const fp = 0.85 + 0.15*Math.sin(now*0.002 + col*0.8 + row*0.6);
+      const fc = `rgba(255,100,180,${fp})`;
+      ctx.fillStyle = fc;
+      ctx.fillRect(px+13, py+10, 6, 4); // topo
+      ctx.fillRect(px+13, py+18, 6, 4); // base
+      ctx.fillRect(px+9,  py+14, 4, 6); // esq
+      ctx.fillRect(px+19, py+14, 4, 6); // dir
+      // Centro amarelo
+      const fy = 0.9 + 0.1*Math.sin(now*0.003 + col*0.5 + row*0.7);
+      ctx.fillStyle = `rgba(255,220,0,${fy})`;
+      ctx.fillRect(px+13, py+14, 6, 6);
+      break;
+    }
+    case TC: { // Terminal Computer — objeto interativo
+      // Base/mesa
+      ctx.fillStyle = '#1a1a2e'; ctx.fillRect(px, py, TS, TS);
+      ctx.fillStyle = '#252540'; ctx.fillRect(px+2, py+20, TS-4, 10);
+      // Monitor
+      ctx.fillStyle = '#0a0a18'; ctx.fillRect(px+4, py+3, TS-8, 16);
+      ctx.fillStyle = '#111130'; ctx.fillRect(px+5, py+4, TS-10, 14);
+      // Tela verde (terminal)
+      const tc = 0.7 + 0.3*Math.sin(now*0.003 + col*0.5);
+      ctx.fillStyle = `rgba(0,200,80,${tc*0.15})`;
+      ctx.fillRect(px+5, py+4, TS-10, 14);
+      // Linhas de texto simuladas
+      ctx.fillStyle = `rgba(0,220,80,${tc*0.6})`;
+      ctx.fillRect(px+6,  py+6,  10, 1);
+      ctx.fillRect(px+6,  py+9,  14, 1);
+      ctx.fillRect(px+6,  py+12, 8,  1);
+      // Cursor piscante
+      const blink = Math.sin(now*0.006) > 0;
+      if (blink) {
+        ctx.fillStyle = `rgba(0,255,80,${tc})`;
+        ctx.fillRect(px+6, py+15, 4, 2);
+      }
+      // Suporte monitor
+      ctx.fillStyle = '#1e1e38';
+      ctx.fillRect(px+14, py+19, 4, 3);
+      ctx.fillRect(px+10, py+21, 12, 2);
+      // Borda neon pulsante
+      ctx.fillStyle = `rgba(0,255,100,${0.3+0.2*Math.sin(now*0.002)})`;
+      ctx.fillRect(px+4, py+3,   TS-8, 1);
+      ctx.fillRect(px+4, py+18,  TS-8, 1);
+      ctx.fillRect(px+4, py+3,   1, 16);
+      ctx.fillRect(px+TS-5, py+3, 1, 16);
+      break;
+    }
+  }
+}
+
+// ── Map Definitions ───────────────────
+const MAPS = {
+  // ── MAP 1: Cidade dos Processadores ──
+  cpu: {
+    name: 'Cidade dos Processadores',
+    sub: '→ explore e fale com os NPCs para aprender!',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+      [W,G,G,G,T,G,G,B,B,B,B,G,G,G,G,T,T,G,G,AR,AR,G,G,G,W],
+      [W,G,G,G,G,G,G,B,F,F,B,G,G,G,G,G,T,G,G,G,G,G,G,G,W],
+      [W,G,T,G,G,G,G,B,F,F,B,G,G,G,P,P,P,P,P,G,I,G,G,G,W],
+      [W,G,G,G,G,G,G,B,B,P,B,G,G,G,P,G,G,G,P,P,P,G,G,G,W],
+      [W,G,G,G,P,P,P,P,P,P,P,P,P,P,P,G,G,G,P,G,T,G,G,G,W],
+      [W,G,G,G,P,G,G,G,G,G,G,G,G,P,G,G,G,G,P,G,G,G,G,G,W],
+      [W,T,G,G,P,G,G,I,I,T,AR,G,G,P,G,G,G,G,G,G,G,G,G,G,W],
+      [W,G,G,G,P,G,G,G,G,G,G,G,G,P,G,G,T,G,G,G,G,G,G,G,E],
+      [W,G,G,G,P,G,G,T,I,T,T,G,G,P,G,G,AR,G,G,G,G,G,G,G,E],
+      [W,G,G,G,P,G,G,G,G,G,G,G,G,P,G,G,G,G,G,T,G,G,G,G,E],
+      [W,G,T,G,P,P,P,P,P,P,P,P,P,P,G,G,G,G,G,G,G,G,G,G,W],
+      [W,G,G,G,G,G,G,B,B,P,B,G,G,G,G,G,G,G,G,G,G,G,G,G,W],
+      [W,G,G,G,AR,T,G,B,F,F,B,G,G,I,G,T,G,G,G,G,G,G,G,G,W],
+      [W,G,G,G,G,G,G,B,F,F,B,G,G,G,G,G,G,G,T,G,G,G,G,G,W],
+      [W,G,G,T,G,G,G,B,B,B,B,G,G,G,G,B,F,F,B,G,G,G,G,G,W],
+      [W,G,G,G,G,G,G,G,G,G,G,G,G,G,G,B,F,F,B,G,G,T,G,G,W],
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:24,y:8,  to:'mem', tx:1, ty:8},
+      {x:24,y:9,  to:'mem', tx:1, ty:9},
+      {x:24,y:10, to:'mem', tx:1, ty:10},
+    ],
+    npcs: [
+      { x:8, y:14,  name:'Prof. CPU',   color:'#22ddff', hat:'#1188aa',
+        topic:'O Processador (CPU)',
+        lines:[
+          'Olá, aventureiro! Sou o Professor CPU!',
+          'CPU = Central Processing Unit — o CÉREBRO do computador!',
+          'Executo bilhões de instruções por segundo usando ciclos de clock.',
+          'Cada ciclo: busco uma instrução na memória, decodifico e executo.',
+          'Processadores modernos têm vários NÚCLEOS — como ter múltiplos cérebros!',
+          'Mais GHz (gigahertz) = mais rápido. Mais núcleos = mais tarefas juntas!',
+          'Sem mim, o computador seria apenas uma caixa bonita... inútil!',
+        ]},
+      { x:8, y:2,  name:'Bit o Binário', color:'#ff7733', hat:'#cc4400',
+        topic:'Sistema Binário e Bits',
+        lines:[
+          'Oi! Sou o Bit — o menor pedaço de informação do universo digital!',
+          'Computadores só entendem BINÁRIO: zeros e uns, 0 e 1.',
+          'Pensa num interruptor de luz: desligado (0) ou ligado (1).',
+          '8 bits formam 1 BYTE. Com 8 bits você representa 256 valores!',
+          'A letra "A" em binário ASCII é: 01000001. Incrível, né?',
+          'Imagens, músicas, vídeos — tudo no computador é 0s e 1s no fundo!',
+          'Quanto mais bits, mais informação. 1 TB = 8.000.000.000.000 bits!',
+        ]},
+      { x:13, y:4, name:'Gabi GPU',    color:'#ff4466', hat:'#aa1133',
+        topic:'Processamento Gráfico (GPU)',
+        lines:[
+          'Ei! Sou a Gabi GPU — processo pixels mais rápido que você pisca!',
+          'GPU = Graphics Processing Unit. Nasci para renderizar gráficos em jogos.',
+          'Enquanto a CPU tem poucos núcleos poderosos, eu tenho MILHARES de núcleos simples.',
+          'Isso me torna perfeita para tarefas paralelas: calcular muita coisa ao mesmo tempo!',
+          'A IA adorou isso — treinar redes neurais é exatamente o tipo de tarefa que adoro.',
+          'GPUs modernas como a NVIDIA H100 fazem quintilhões de operações por segundo!',
+          'Sem mim, não existiria IA moderna, metaverso, nem jogos em 4K.',
+        ]},
+      { x:20, y:13, name:'Sys Tema',   color:'#ffaa22', hat:'#bb6600',
+        topic:'Sistemas Operacionais',
+        lines:[
+          'Olá! Sou o Sys Tema, o grande gerente do computador!',
+          'Sistema Operacional = o software que gerencia todo o hardware e outros programas.',
+          'Sem mim, seu computador seria inútil — nenhum programa conseguiria rodar!',
+          'Minhas funções: gerenciar memória, processos, arquivos e dispositivos.',
+          'Os mais famosos: Windows, macOS, Linux, Android e iOS.',
+          'Linux roda em 96% dos servidores do mundo. Discreto, mas onipresente!',
+          'Cada app que você abre faz centenas de pedidos a mim por segundo. Ocupado!',
+        ]},
+      { x:16, y:16,  name:'Fund Amento', color:'#ff66aa', hat:'#bb1166',
+        topic:'Fundamentos de Programação',
+        lines:[
+          'Olá! Eu sou o Fund Amento — seu guia nos primeiros passos da programação!',
+          'Programar é, basicamente, dar instruções para o processador (CPU) executar.',
+          'Mas tem um detalhe importante: o CPU só entende linguagem de máquina (0s e 1s).',
+          'Por isso usamos linguagens de programação — elas são mais fáceis para humanos escreverem.',
+          'Depois, um tradutor (compilador ou interpretador) converte tudo para a linguagem que a CPU entende.',
+          'Para programar bem, você precisa dominar 4 conceitos fundamentais:',
+          'Variáveis → guardam valores. Ex: idade = 17.',
+          'Condicionais → tomam decisões. Ex: SE idade ≥ 18, então permitir entrada.',
+          'Loops → repetem ações. Ex: repetir até terminar.',
+          'Funções → reutilizam código. Escreva uma vez, use várias vezes.',
+          'Com esses 4 pilares, você já consegue resolver uma enorme variedade de problemas.',
+          'Programação não é decorar código — é aprender a pensar de forma lógica.',
+          'Quanto mais você pratica, mais natural isso se torna.',
+          'Agora siga em frente… o mundo da programação está só começando!',
+        ]},
+    ],
+  },
+  // ── MAP 2: Floresta da Memória ────────
+  mem: {
+    name: 'Floresta da Memória',
+    sub: '← CPU City | Rede Global →',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+      [W,G,T,AR,T,G,G,G,G,T,T,T,G,G,G,T,AR,T,T,G,G,G,G,G,W],
+      [W,G,T,G,T,G,G,G,G,I,T,T,G,G,G,T,G,T,G,G,G,G,G,G,W],
+      [W,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,W],
+      [W,T,G,G,G,P,P,P,P,G,G,G,G,P,P,P,P,G,G,G,T,G,G,G,W],
+      [W,G,G,G,G,P,G,G,P,G,G,G,G,P,G,G,P,G,G,G,G,G,G,T,W],
+      [W,G,T,G,G,P,G,G,P,A,A,A,A,P,G,G,P,G,G,G,G,G,G,G,W],
+      [W,G,G,G,G,P,G,G,P,A,A,A,A,P,G,G,P,G,G,G,T,G,G,G,W],
+      [L,G,G,G,G,P,P,P,P,A,A,A,A,P,P,P,P,G,G,G,G,G,G,G,E],
+      [L,G,G,G,G,G,G,G,G,A,A,A,A,G,G,G,G,G,G,G,G,G,G,G,E],
+      [L,G,G,G,G,P,P,P,P,A,A,A,A,P,P,P,P,G,G,G,G,AR,G,G,E],
+      [W,G,T,G,G,P,G,G,P,A,A,A,A,P,G,G,P,G,G,G,G,G,G,G,W],
+      [W,G,G,G,G,P,G,G,P,A,A,A,A,P,G,G,P,G,G,I,T,G,G,G,W],
+      [W,G,G,AR,G,P,G,G,P,G,G,G,G,P,G,G,P,G,G,G,G,G,G,G,W],
+      [W,G,G,G,G,P,P,P,P,G,G,G,G,P,P,P,P,G,G,G,G,G,G,T,W],
+      [W,T,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,W],
+      [W,G,G,G,T,AR,T,G,G,I,T,AR,T,T,G,G,G,T,AR,T,G,G,G,AR,W],
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:0, y:8,  to:'cpu', tx:23, ty:8},
+      {x:0, y:9,  to:'cpu', tx:23, ty:9},
+      {x:0, y:10, to:'cpu', tx:23, ty:10},
+      {x:24,y:8,  to:'net', tx:1,  ty:8},
+      {x:24,y:9,  to:'net', tx:1,  ty:9},
+      {x:24,y:10, to:'net', tx:1,  ty:10},
+    ],
+    npcs: [
+      { x:7, y:6, name:'Ramona RAM', color:'#ffaa00', hat:'#cc7700',
+        topic:'Memória RAM',
+        lines:[
+          'Oi! Sou a Ramona, especialista em RAM! Tudo que é rápido passa por mim!',
+          'RAM = Random Access Memory (Memória de Acesso Aleatório).',
+          'Sou a MESA DE TRABALHO do computador: extremamente rápida, mas temporária.',
+          'Quando você abre um programa, ele vem para cá para ser executado!',
+          'Atenção: sou VOLÁTIL! Quando o PC desliga, perco tudo imediatamente!',
+          'Mais RAM = mais programas abertos ao mesmo tempo sem travar o sistema.',
+          'PCs hoje têm 8–32 GB de RAM. Servidores podem ter centenas de GB!',
+        ]},
+      { x:14,y:12,name:'Disco Rígido', color:'#66bbff', hat:'#2266aa',
+        topic:'Armazenamento HD/SSD',
+        lines:[
+          'Salve! Sou o Disco, o grande almoxarifado do computador!',
+          'HD e SSD são memórias NÃO-VOLÁTEIS: guardo dados mesmo sem energia!',
+          'HD (Hard Disk): usa pratos magnéticos girando. Mais lento, mais barato.',
+          'SSD (Solid State Drive): chips de memória flash. Muito mais rápido!',
+          'Enquanto a RAM é sua mesa de trabalho, EU sou o arquivo permanente.',
+          '1 TB = 1.000.000.000.000 bytes. Cabem mais de 200 mil fotos em alta res!',
+          'A nuvem? Armazenamento em servidores distantes, acessado pela Internet.',
+        ]},
+      { x:14, y:6, name:'Cache Flash',  color:'#ffdd00', hat:'#aa8800',
+        topic:'Memória Cache',
+        lines:[
+          'Zum! Sou o Cache Flash — sou tão rápido que mal dá pra me ver!',
+          'Cache é uma memória minúscula e ultrarrápida dentro do próprio processador.',
+          'Meu trabalho: guardar os dados que a CPU usa com mais frequência.',
+          'Sem mim, a CPU ficaria esperando a RAM o tempo todo — lenta demais!',
+          'Existem níveis: L1 (menor e mais rápido), L2 e L3 (maiores e um pouco mais lentos).',
+          'L1 cache acessa dados em menos de 1 nanossegundo. Inacreditável!',
+          'Sou pequeno — apenas alguns MB — mas faço uma diferença ENORME no desempenho.',
+        ]},
+      { x:7, y:12, name:'Vivi Virtual', color:'#cc88ff', hat:'#773399',
+        topic:'Memória Virtual',
+        lines:[
+          'Oi! Sou a Vivi Virtual, a mágica da memória!',
+          'Memória Virtual é uma técnica que faz o HD "fingir" ser RAM extra.',
+          'Quando a RAM enche, o SO move partes menos usadas para o disco temporariamente.',
+          'Isso permite rodar programas maiores do que a RAM física disponível!',
+          'O custo? Disco é muito mais lento que RAM — o PC pode travar ("engasgar").',
+          'No Windows isso se chama "arquivo de paginação". No Linux, "swap".',
+          'Por isso mais RAM = PC mais fluido. Menos necessidade de usar o disco!',
+        ]},
+      { x:21, y:3, name:'Regi Strad',  color:'#ff4488', hat:'#aa1155',
+        topic:'Registradores',
+        lines:[
+          'Psiu! Sou o Regi Strad — sou a memória mais rápida que existe!',
+          'Registradores ficam DENTRO do processador — menores e mais velozes que o cache.',
+          'São usados para guardar os valores que a CPU está operando agora, neste instante.',
+          'Exemplos: registrador acumulador, contador de programa, registrador de instrução.',
+          'Um acesso à RAM leva centenas de ciclos. Um registrador? Apenas 1 ciclo!',
+          'CPUs modernas têm dezenas de registradores de uso geral — ex: RAX, RBX no x86-64.',
+          'O compilador decide quais valores merecem ficar em registradores. Arte invisível!',
+        ]},
+    ],
+  },
+  // ── MAP 3: Rede Global ────────────────
+  net: {
+    name: 'Rede Global',
+    sub: '← Floresta da Memória | Laboratório de IA →',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [L,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,E],
+      [L,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,E],
+      [L,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,E],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,W],
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:0, y:8,  to:'mem', tx:23, ty:8},
+      {x:0, y:9,  to:'mem', tx:23, ty:9},
+      {x:0, y:10, to:'mem', tx:23, ty:10},
+      {x:24,y:8,  to:'lab', tx:1,  ty:8},
+      {x:24,y:9,  to:'lab', tx:1,  ty:9},
+      {x:24,y:10, to:'lab', tx:1,  ty:10},
+    ],
+    npcs: [
+      { x:4, y:3,  name:'Web Neto',    color:'#44ffaa', hat:'#22aa66',
+        topic:'Internet e Web',
+        lines:[
+          'Bem-vindo à Rede Global! Sou o Web Neto!',
+          'A INTERNET é uma rede mundial de computadores interconectados!',
+          'Surgiu nos anos 60 como ARPANET, um projeto militar dos EUA.',
+          'A Web (World Wide Web) foi criada em 1989 por Tim Berners-Lee.',
+          'Atenção: Internet ≠ Web! A Internet é a infraestrutura; a Web é um serviço nela.',
+          'Dados viajam em pacotes por cabos de fibra ótica, ondas de rádio e satélites!',
+          'Do Brasil ao Japão em milissegundos. Isso é a magia da Internet!',
+        ]},
+      { x:12,y:9, name:'Proto Collo',  color:'#ff44aa', hat:'#bb1177',
+        topic:'Protocolos de Rede',
+        lines:[
+          'Oi! Sou o Proto Collo, mestre dos protocolos!',
+          'PROTOCOLO = conjunto de regras para comunicação entre computadores.',
+          'HTTP/HTTPS: protocolo da Web. O "S" significa Seguro — usa criptografia!',
+          'TCP/IP: o protocolo BASE da Internet. Garante entrega correta dos pacotes.',
+          'DNS: traduz "google.com" para o IP real, como uma lista telefônica digital.',
+          'Endereço IP identifica cada dispositivo na rede — como o CEP da sua casa!',
+          'Sem protocolos, computadores falariam idiomas diferentes. Caos total!',
+        ]},
+      { x:20,y:14,name:'Ciber Segura', color:'#ffee44', hat:'#aaaa00',
+        topic:'Segurança Digital',
+        lines:[
+          'Psiu! Sou a Ciber Segura. Fique esperto na Internet!',
+          'CRIPTOGRAFIA embaralha seus dados para que só o destinatário consiga ler.',
+          'HTTPS usa TLS/SSL para proteger sua conexão. Sempre veja o cadeado!',
+          'Senha forte: longa, com letras maiúsculas, minúsculas, números e símbolos.',
+          'PHISHING: quando criminosos fingem ser empresas reais para roubar dados.',
+          'Nunca clique em links suspeitos nem baixe arquivos de fontes desconhecidas.',
+          'Ative autenticação em dois fatores (2FA) em todas as contas importantes!',
+        ]},
+      { x:20, y:3, name:'DB Dana',     color:'#44ffdd', hat:'#118866',
+        topic:'Bancos de Dados',
+        lines:[
+          'Olá! Sou a DB Dana, guardiã dos dados organizados!',
+          'Banco de Dados = sistema para armazenar, organizar e consultar informações.',
+          'SQL (linguagem de consulta): SELECT, INSERT, UPDATE, DELETE — os 4 verbos essenciais!',
+          'Bancos RELACIONAIS (MySQL, PostgreSQL) usam tabelas ligadas entre si.',
+          'Bancos NoSQL (MongoDB, Redis) são mais flexíveis — ótimos para dados variados.',
+          'Toda vez que você faz login em algum app, um banco de dados é consultado!',
+          'Sem bancos de dados, não existiria e-commerce, redes sociais nem streaming.',
+        ]},
+      { x:4, y:14, name:'Api Olo',    color:'#ff88cc', hat:'#bb2277',
+        topic:'APIs e Integração',
+        lines:[
+          'Oi! Sou o Api Olo, o grande conector de sistemas!',
+          'API = Application Programming Interface — uma forma de programas conversarem.',
+          'É como um garçom: você pede ao garçom, ele vai à cozinha e traz o resultado.',
+          'REST é o estilo de API mais popular da web. Usa HTTP e responde em JSON.',
+          'Quando um app mostra o clima, consulta uma API de meteorologia. Simples assim!',
+          'Plataformas como Stripe (pagamentos) e Google Maps funcionam via APIs públicas.',
+          'APIs são a cola da Internet moderna — conectam tudo com tudo!',
+        ]},
+    ],
+  },
+  // ── MAP 4: Laboratório de IA ──────────
+  lab: {
+    name: 'Laboratório de IA',
+    sub: '← Rede Global | Cidade do Futuro →',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+      [W,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,H,W],
+      [W,H,H,H,H,H,H,H,H,H,B,B,B,H,H,H,H,H,H,H,H,H,H,H,W],
+      [W,H,H,B,B,B,B,B,H,H,B,H,B,H,H,H,B,B,B,B,B,H,H,H,W],
+      [W,H,H,B,H,H,H,B,H,H,B,H,B,H,H,H,B,H,H,H,B,H,H,H,W],
+      [W,H,H,B,H,H,H,B,H,H,H,P,H,H,H,H,B,H,H,H,B,H,H,H,W],
+      [W,H,H,B,B,P,B,B,H,H,H,P,H,H,H,H,B,B,P,B,B,H,H,H,W],
+      [W,H,H,H,H,P,H,H,H,H,H,P,H,H,H,H,H,H,P,H,H,H,H,H,W],
+      [L,H,H,H,H,P,P,P,P,P,P,P,P,P,P,P,P,P,P,H,H,H,H,H,E],
+      [L,H,H,H,H,H,H,H,H,H,H,P,H,H,H,H,P,H,H,H,H,H,H,H,E],
+      [L,H,H,H,H,H,H,H,H,H,H,P,H,H,H,H,P,H,H,H,H,H,H,H,E],
+      [W,H,H,H,H,H,H,H,H,H,H,P,H,H,H,H,P,H,H,H,H,H,H,H,W],
+      [W,H,H,B,B,B,B,B,H,H,H,P,H,H,H,H,P,H,H,H,H,H,H,H,W],
+      [W,H,H,B,H,H,H,B,H,H,H,P,H,H,H,H,P,H,H,H,H,H,H,H,W],
+      [W,H,H,B,H,H,H,B,H,H,H,P,H,H,B,B,P,B,B,B,H,H,H,H,W],
+      [W,H,H,B,B,P,B,B,H,H,H,P,H,H,B,H,H,H,H,B,H,H,H,H,W],
+      [W,H,H,H,H,P,P,P,P,P,P,P,H,H,B,H,H,H,H,B,H,H,H,H,W],
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:0, y:8,  to:'net', tx:23, ty:8},
+      {x:0, y:9,  to:'net', tx:23, ty:9},
+      {x:0, y:10, to:'net', tx:23, ty:10},
+      {x:24,y:8,  to:'fut', tx:1,  ty:8},
+      {x:24,y:9,  to:'fut', tx:1,  ty:9},
+      {x:24,y:10, to:'fut', tx:1,  ty:10},
+    ],
+    npcs: [
+      { x:5, y:4,  name:'Ada Neural',   color:'#ff66cc', hat:'#aa2299',
+        topic:'Inteligência Artificial',
+        lines:[
+          'Olá! Sou a Ada Neural, cientista de IA! Bem-vindo ao laboratório!',
+          'IA = Inteligência Artificial: máquinas que simulam a inteligência humana.',
+          'A IA existe desde os anos 50, mas só explodiu com poder computacional e dados!',
+          'Existem IAs FRACAS (fazem uma coisa só) e a hipotética IA GERAL (faz tudo).',
+          'Hoje usamos IA no celular, no streaming, no diagnóstico médico e muito mais!',
+          'ChatGPT, imagens geradas por IA, carros autônomos — tudo é IA aplicada.',
+          'A IA não pensa como humano — ela encontra padrões em oceanos de dados!',
+        ]},
+      { x:18, y:4, name:'Max Learning',  color:'#55eeff', hat:'#1199bb',
+        topic:'Machine Learning',
+        lines:[
+          'Oi! Sou o Max, especialista em Machine Learning!',
+          'ML = Machine Learning: ensinar máquinas a aprender com exemplos, sem programar regras.',
+          'É como treinar um cachorro: você mostra exemplos até ele aprender o padrão!',
+          'Tipos principais: Supervisionado, Não-supervisionado e Aprendizado por Reforço.',
+          'Redes Neurais Artificiais são inspiradas no cérebro — camadas de "neurônios" digitais.',
+          'Deep Learning usa redes neurais MUITO profundas. Reconhece rostos, voz, objetos!',
+          'O modelo aprende ajustando milhões de parâmetros até acertar as previsões.',
+        ]},
+      { x:5, y:13, name:'Lina Syntax',   color:'#aaff44', hat:'#558800',
+        topic:'Linguagens de Programação',
+        lines:[
+          'Oi! Sou a Lina Syntax, políglota do código!',
+          'Linguagens de programação são formas de dar instruções ao computador.',
+          'Python: simples, poderoso, queridinho da IA e da ciência de dados!',
+          'JavaScript: a linguagem da Web. Roda em todo navegador do planeta!',
+          'C e C++: ultra-rápidas, usadas em jogos, sistemas operacionais e hardware.',
+          'Existem muitas linguagens de programação! Cada uma tem seu propósito.',
+          'A melhor linguagem? A que resolve seu problema. Aprenda os fundamentos!',
+        ]},
+      { x:11, y:3, name:'Data Dora',     color:'#ff9944', hat:'#cc5500',
+        topic:'Ciência de Dados',
+        lines:[
+          'Olá! Sou a Data Dora, cientista de dados! Números são minha paixão!',
+          'Ciência de Dados = extrair conhecimento útil de grandes volumes de dados.',
+          'O processo: coletar → limpar → explorar → modelar → comunicar resultados.',
+          'Dados sujos são o maior inimigo! 80% do tempo é limpeza e preparação.',
+          'Big Data: volumes tão gigantes que ferramentas tradicionais não aguentam.',
+          'Ferramentas populares: Python, R, SQL, Pandas, Spark e Jupyter Notebook.',
+          'Toda decisão inteligente começa com bons dados. Sem dados, é só opinião!',
+        ]},
+      { x:16, y:16, name:'Cloud Nino',   color:'#aaddff', hat:'#4488bb',
+        topic:'Computação em Nuvem',
+        lines:[
+          'Oi! Sou o Cloud Nino — moro nas nuvens, literalmente!',
+          'Computação em Nuvem = usar servidores remotos pela Internet, não locais.',
+          'Em vez de comprar servidores caros, você aluga capacidade sob demanda!',
+          'Os três gigantes: AWS (Amazon), Azure (Microsoft) e Google Cloud.',
+          'Modelos: IaaS (infraestrutura), PaaS (plataforma) e SaaS (software).',
+          'Netflix, Spotify, iFood — quase tudo que você usa roda na nuvem hoje!',
+          'Escalabilidade é o superpoder: cresce com a demanda, sem comprar hardware.',
+        ]},
+    ],
+  },
+  // ── MAP 5: Cidade do Futuro ───────────
+  fut: {
+    name: 'Cidade do Futuro',
+    sub: '← Laboratório de IA | Lab. Open Source ↓',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+      [W,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,W],
+      [W,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,V,V,W],
+      [W,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,V,V,W],
+      [W,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,V,V,W],
+      [W,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,V,V,W],
+      [W,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,W],
+      [W,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,W],
+      [L,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,W],
+      [L,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,W],
+      [L,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,W],
+      [W,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,Z,W],
+      [W,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,V,W],
+      [W,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,V,V,W],
+      [W,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,V,V,W],
+      [W,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,Z,S,S,Z,V,V,V,W],
+      [W,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,Z,Z,Z,Z,V,V,V,W],
+      [W,W,W,W,W,W,W,W,W,W,W,D,W,W,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:0, y:8,  to:'lab', tx:23, ty:8},
+      {x:0, y:9,  to:'lab', tx:23, ty:9},
+      {x:0, y:10, to:'lab', tx:23, ty:10},
+      {x:11, y:17, to:'oss', tx:11, ty:1},
+    ],
+    npcs: [
+      { x:5,  y:4,  name:'Quant Rix',   color:'#00eeff', hat:'#0088aa',
+        topic:'Computação Quântica',
+        lines:[
+          'Olá! Sou o Quant Rix — existo em vários estados ao mesmo tempo!',
+          'Computação Quântica usa os princípios da física quântica para processar dados.',
+          'Bits clássicos são 0 ou 1. Qubits quânticos podem ser 0, 1 ou AMBOS ao mesmo tempo!',
+          'Isso se chama SUPERPOSIÇÃO — e permite calcular inúmeras possibilidades em paralelo.',
+          'ENTRELAÇAMENTO quântico: dois qubits conectados que se afetam instantaneamente.',
+          'Um computador quântico pode quebrar criptografias atuais em segundos. Assustador!',
+          'IBM, Google e outros já têm computadores quânticos reais. O futuro chegou!',
+        ]},
+      { x:15, y:4,  name:'Bio Teca',    color:'#44ff88', hat:'#117733',
+        topic:'Biotecnologia e Bioinformática',
+        lines:[
+          'Oi! Sou a Bio Teca — onde a biologia encontra a computação!',
+          'Bioinformática usa algoritmos para analisar dados biológicos como o DNA.',
+          'O Projeto Genoma Humano mapeou 3 bilhões de pares de bases do nosso DNA!',
+          'CRISPR é uma ferramenta de "edição de DNA" — como um ctrl+Z para genes.',
+          'IA já consegue prever a estrutura de proteínas — descoberta que levou décadas!',
+          'Vacinas de mRNA (como as da COVID) são um triunfo da biotecnologia moderna.',
+          'Em breve: remédios personalizados para o seu DNA específico. Incrível!',
+        ]},
+      { x:5,  y:14, name:'Print 3D',    color:'#ffbb00', hat:'#996600',
+        topic:'Impressão 3D e Fabricação Digital',
+        lines:[
+          'Olá! Sou o Print 3D — crio objetos do nada, camada por camada!',
+          'Impressão 3D = fabricação aditiva: construir objetos adicionando material.',
+          'O processo: modelar em software → fatiar em camadas → imprimir fisicamente.',
+          'Materiais: plástico, metal, cerâmica, concreto e até células humanas (bioprinting)!',
+          'Hospitais imprimem próteses personalizadas em horas. Antes levavam meses!',
+          'SpaceX usa peças impressas em 3D em seus foguetes. NASA também!',
+          'No futuro: casas inteiras impressas em 3D em menos de 24 horas.',
+        ]},
+      { x:10,  y:4,  name:'Vera AR',     color:'#bb88ff', hat:'#6633cc',
+        topic:'Realidade Virtual e Aumentada',
+        lines:[
+          'Oi! Sou a Vera AR — vivo entre o real e o digital!',
+          'VR (Virtual Reality): você entra num mundo 100% digital com óculos especiais.',
+          'AR (Augmented Reality): elementos digitais sobrepostos ao mundo real.',
+          'O Pokémon GO foi um dos primeiros grandes sucessos de AR no celular!',
+          'VR usa giroscópios, acelerômetros e displays de alta taxa de atualização.',
+          'Latência baixa é crítica: mais de 20ms de atraso causa enjoo no usuário.',
+          'Medicina, arquitetura, treinamento militar — VR/AR já transformam essas áreas!',
+        ]},
+      { x:20, y:14,  name:'Neuro Link',  color:'#ff44ff', hat:'#991199',
+        topic:'Interface Cérebro-Computador (BCI)',
+        lines:[
+          'Olá! Sou a Neuro Link — conecto mentes e máquinas!',
+          'BCI = Brain-Computer Interface: tecnologia que lê sinais elétricos do cérebro.',
+          'Eletrodos captam ondas cerebrais (EEG) e as traduzem em comandos digitais.',
+          'Pacientes paralisados já controlam cursores e braços robóticos só com o pensamento!',
+          'A Neuralink implanta chips diretamente no córtex — resolução muito maior que EEG.',
+          'BCIs não invasivas usam capacetes com sensores. Invasivas exigem cirurgia.',
+          'O futuro: memória aumentada, telepresença e fusão humano-IA. Ficção científica hoje, realidade amanhã!',
+        ]},
+      { x:15,  y:14, name:'Lingua NLP',  color:'#ff99ff', hat:'#aa22aa',
+        topic:'Processamento de Linguagem Natural',
+        lines:[
+          'Olá! Sou a Lingua NLP — ensino máquinas a entender humanos!',
+          'PLN = Processamento de Linguagem Natural: Técnica que compreende texto e fala.',
+          'Tokenização: o texto é quebrado em pedaços menores — palavras ou subpalavras.',
+          'Embeddings: cada palavra vira um vetor numérico que captura seu significado.',
+          'Palavras parecidas ficam próximas no espaço vetorial: "rei" e "rainha" são vizinhos!',
+          'Transformers (a arquitetura do GPT) revolucionaram o PLN em 2017.',
+          'Tradutores, chatbots, resumidores, corretores — tudo isso é PLN em ação!',
+        ]},
+    ],
+  },
+  // ── MAP 6: Laboratório Open Source ───
+  oss: {
+    name: 'Laboratório Open Source',
+    sub: '↑ Cidade do Futuro | Mundo da Programação ↓',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,U,W,W,W,W,W,W,W,W,W,W,W,W,W],
+      [W,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,W],
+      [W,O,J,J,J,J,O,J,J,J,J,O,O,O,J,J,J,J,O,J,J,J,J,O,W],
+      [W,O,J,F,F,J,O,J,F,F,J,O,O,O,J,F,F,J,O,J,F,F,J,O,W],
+      [W,O,J,F,F,J,O,J,F,F,J,O,O,O,J,F,F,J,O,J,F,F,J,O,W],
+      [W,O,J,J,P,J,O,J,J,P,J,O,O,O,J,J,P,J,O,J,J,P,J,O,W],
+      [W,O,O,O,P,O,O,O,O,P,O,O,O,O,O,O,P,O,O,O,O,P,O,O,W],
+      [W,O,O,O,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,O,O,W],
+      [W,O,O,O,O,O,O,O,O,O,O,P,O,O,O,O,O,O,O,O,O,O,O,O,W],
+      [W,O,O,O,O,O,O,O,O,O,O,P,O,O,O,O,O,O,O,O,O,O,O,O,W],
+      [W,O,J,J,J,J,O,O,O,O,O,P,O,O,O,O,O,J,J,J,J,O,O,O,W],
+      [W,O,J,F,F,J,O,O,O,O,O,P,O,O,O,O,O,J,F,F,J,O,O,O,W],
+      [W,O,J,F,F,J,O,O,O,O,O,P,O,O,O,O,O,J,F,F,J,O,O,O,W],
+      [W,O,J,J,P,J,O,O,O,O,O,P,O,O,O,O,O,J,J,P,J,O,O,O,W],
+      [W,O,O,O,P,O,O,O,O,O,O,P,O,O,O,O,O,O,O,P,O,O,O,O,W],
+      [W,O,O,O,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,O,O,O,O,W],
+      [W,O,O,O,O,O,O,O,O,O,O,P,P,P,O,O,O,O,O,O,O,O,O,O,W],
+      [W,W,W,W,W,W,W,W,W,W,W,D,D,D,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:11, y:0, to:'fut', tx:11, ty:16},
+      {x:12, y:0, to:'fut', tx:12, ty:16},
+      {x:13, y:0, to:'fut', tx:13, ty:16},
+      {x:11, y:17, to:'prog', tx:11, ty:1},
+      {x:12, y:17, to:'prog', tx:12, ty:1},
+      {x:13, y:17, to:'prog', tx:13, ty:1},
+    ],
+    npcs: [
+      { x:4,  y:3,  name:'Linus T.',    color:'#ffcc00', hat:'#aa8800',
+        topic:'Linux e o Kernel',
+        lines:[
+          'Ei! Sou o Linus T. — criei o kernel do Linux aos 21 anos, em 1991!',
+          'Linux é um kernel de código aberto que roda em bilhões de dispositivos.',
+          'Android, servidores, supercomputadores, TVs — todos rodam Linux por baixo!',
+          'Open source: qualquer pessoa pode ler, modificar e distribuir o código.',
+          'Hoje, milhares de desenvolvedores ao redor do mundo contribuem para o kernel.',
+          'O modelo de desenvolvimento distribuído do Linux inspirou o Git, também criado por mim!',
+          '"Talk is cheap. Show me the code." — minha frase mais famosa.',
+        ]},
+      { x:9,  y:3,  name:'Gitzinho',     color:'#ffffff', hat:'#444444',
+        topic:'Git e Controle de Versão',
+        lines:[
+          'Oi! Sou o Git — guardo a história de todo o seu código!',
+          'Git é um sistema de controle de versão distribuído, criado por Linus Torvalds.',
+          'Cada mudança no código é registrada em um COMMIT — um snapshot do projeto.',
+          'Branches permitem trabalhar em funcionalidades sem afetar o código principal.',
+          'Pull Request: proposta de mudança que outros revisam antes de aceitar. Colaboração pura!',
+          'Fork, clone, merge, rebase — aprender Git é essencial para qualquer dev.',
+        ]},
+      { x:16, y:3,  name:'Mozilla Fox',  color:'#ff6600', hat:'#cc3300',
+        topic:'Firefox e Mozilla',
+        lines:[
+          'Olá! Sou o Mozila Fox — navego pela web com código aberto!',
+          'Firefox é um navegador open source mantido pela Mozilla Foundation.',
+          'A Mozilla nasceu do código do Netscape, aberto ao público em 1998.',
+          'Firefox introduziu abas, extensões e ferramentas de dev que todo browser copia!',
+          'SpiderMonkey: o engine JavaScript do Firefox, um dos primeiros do mundo.',
+          'A Mozilla também criou o Rust — linguagem de sistemas segura e veloz.',
+          'Sem Firefox, a web seria dominada por um único browser. Diversidade importa!',
+        ]},
+      { x:21, y:3,  name:'Pito Piton',  color:'#3776ab', hat:'#1a4a6e',
+        topic:'Python e sua Comunidade',
+        lines:[
+          'Olá! Sou o Pito Piton — simples, elegante e poderoso!',
+          'Python foi criado por Guido van Rossum em 1991 e é 100% open source.',
+          'PyPI (Python Package Index) tem mais de 500.000 pacotes gratuitos disponíveis!',
+          'NumPy, Pandas, TensorFlow, Django — todos são projetos open source em Python.',
+          '"Batteries included": Python vem com uma biblioteca padrão enorme por padrão.',
+          'A comunidade Python é conhecida pelo lema: "Venha pelo código, fique pelas pessoas".',
+          'PEP 8 é o guia de estilo da comunidade — código legível é código respeitoso!',
+        ]},
+      { x:4,  y:11, name:'Gimpinho',    color:'#5c5caa', hat:'#2d2d77',
+        topic:'GIMP e Design Open Source',
+        lines:[
+          'Oi! Sou o Gimpinho — edito imagens sem cobrar um centavo!',
+          'GIMP = GNU Image Manipulation Program, criado em 1995 por estudantes da UC Berkeley.',
+          'É a alternativa open source ao Photoshop — gratuito, extensível e multiplataforma.',
+          'Suporta camadas, máscaras, filtros, scripts e centenas de plugins da comunidade.',
+          'Script-Fu e Python-Fu permitem automatizar tarefas complexas de edição em batch.',
+          'Inkscape (vetores), Krita (pintura digital) e Blender (3D) completam a suíte open source!',
+          'Profissionais do mundo todo criam capas, logos e artes usando só ferramentas gratuitas.',
+        ]},
+      { x:18, y:11, name:'Apache Web',  color:'#cc2200', hat:'#881100',
+        topic:'Apache, Nginx e Servidores Open Source',
+        lines:[
+          'Salve! Sou o Apache Web — sirvo páginas desde 1995!',
+          'Apache HTTP Server foi o primeiro grande projeto open source da web.',
+          'Por décadas, rodou mais de 60% de todos os sites do mundo.',
+          'Nginx surgiu em 2004 focado em performance e baixo consumo de memória.',
+          'Ambos são open source e gratuitos — qualquer um pode hospedar um servidor!',
+          'Apache Foundation também mantém Kafka, Hadoop, Spark e dezenas de outros projetos.',
+          'Open source em servidores = infraestrutura da internet é bem pública.',
+        ]},
+    ],
+  },
+  // ── MAP 7: Mundo da Programação ───────
+  prog: {
+    name: 'Mundo da Programação',
+    sub: '↑ Lab. Open Source | Áreas da Ciência da Computação ↓',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,U,U,U,W,W,W,W,W,W,W,W,W,W,W],
+      [W,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,X,W],
+      [W,X,Y,Y,Y,Y,X,Y,Y,Y,Y,X,Q,Q,Q,Q,X,Y,Y,Y,Y,X,X,X,W],
+      [W,X,Y,F,F,Y,X,Y,F,F,Y,X,Q,F,F,Q,X,Y,F,F,Y,X,X,X,W],
+      [W,X,Y,F,F,Y,X,Y,F,F,Y,X,Q,F,F,Q,X,Y,F,F,Y,X,X,X,W],
+      [W,X,Y,Y,P,Y,X,Y,Y,P,Y,X,Q,Q,P,Q,X,Y,Y,P,Y,X,X,X,W],
+      [W,X,X,X,P,X,X,X,X,P,X,X,X,X,P,X,X,X,X,P,X,X,X,X,W],
+      [W,Q,Q,Q,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,Q,Q,Q,Q,W],
+      [W,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,P,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,W],
+      [W,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,P,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,W],
+      [W,X,Y,Y,Y,Y,X,X,X,X,X,P,X,X,X,X,X,Y,Y,Y,Y,X,X,X,W],
+      [W,X,Y,F,F,Y,X,X,X,X,X,P,X,X,X,X,X,Y,F,F,Y,X,X,X,W],
+      [W,X,Y,F,F,Y,X,X,X,X,X,P,X,X,X,X,X,Y,F,F,Y,X,X,X,W],
+      [W,X,Y,Y,P,Y,X,X,X,X,X,P,X,X,X,X,X,Y,Y,P,Y,X,X,X,W],
+      [W,X,X,X,P,X,X,X,X,X,X,P,X,X,X,X,X,X,X,P,X,X,X,X,W],
+      [W,Q,Q,Q,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,Q,Q,Q,Q,W],
+      [W,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,P,P,P,Q,Q,Q,Q,Q,Q,Q,Q,Q,Q,W],
+      [W,W,W,W,W,W,W,W,W,W,W,D,D,D,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:11, y:0, to:'oss', tx:11, ty:16},
+      {x:12, y:0, to:'oss', tx:12, ty:16},
+      {x:13, y:0, to:'oss', tx:13, ty:16},
+      {x:11, y:17, to:'cs',  tx:11, ty:1},
+      {x:12, y:17, to:'cs',  tx:12, ty:1},
+      {x:13, y:17, to:'cs',  tx:13, ty:1},
+    ],
+    npcs: [
+      { x:4,  y:3,  name:'Compi Lador',  color:'#ff8800', hat:'#aa4400',
+        topic:'Compiladores',
+        lines:[
+          'Olá! Sou o Compi Lador — transformo código humano em linguagem de máquina!',
+          'Um compilador lê seu código-fonte inteiro e gera um executável binário.',
+          'Etapas: análise léxica → sintática → semântica → geração de código → otimização.',
+          'C, C++, Rust e Go são compilados — o executável roda diretamente no hardware.',
+          'A vantagem: extrema velocidade em execução, pois tudo já está traduzido!',
+          'Desvantagem: precisa recompilar para cada sistema operacional e arquitetura.',
+          'GCC, Clang e LLVM são compiladores open source usados por milhões de devs!',
+        ]},
+      { x:8,  y:3,  name:'Inter Preta',  color:'#88ff44', hat:'#448800',
+        topic:'Interpretadores',
+        lines:[
+          'Oi! Sou a Inter Preta — executo seu código linha por linha, na hora!',
+          'Um interpretador lê e executa o código-fonte diretamente, sem compilar antes.',
+          'Python, Ruby, PHP e JavaScript no navegador são exemplos clássicos.',
+          'Vantagem: desenvolvimento mais ágil — altere e rode sem recompilar!',
+          'Desvantagem: mais lento que código compilado, pois traduz em tempo real.',
+          'JIT (Just-In-Time): compilação durante a execução. O melhor dos dois mundos!',
+          'V8 (Node.js) e PyPy usam JIT para acelerar JavaScript e Python drasticamente.',
+        ]},
+      { x:18, y:3,  name:'Estruda Dos',  color:'#4488ff', hat:'#1144aa',
+        topic:'Estruturas de Dados',
+        lines:[
+          'Salve! Sou o Estruda Dos — organizo dados para você achar tudo rápido!',
+          'Estrutura de dados = forma de organizar e armazenar dados eficientemente.',
+          'Array: sequência indexada. Lista Ligada: nós com ponteiros para o próximo.',
+          'Pilha (Stack): último a entrar, primeiro a sair — LIFO. Como uma pilha de pratos!',
+          'Fila (Queue): primeiro a entrar, primeiro a sair — FIFO. Como uma fila de banco.',
+          'Árvore Binária: cada nó tem até 2 filhos. Busca em O(log n) se balanceada!',
+          'Hash Table: chave → índice por função hash. Busca em O(1) no caso médio.',
+        ]},
+      { x:4,  y:11, name:'Recur São',    color:'#ff44ff', hat:'#aa00aa',
+        topic:'Recursão',
+        lines:[
+          'Oi! Sou o Recur São — me chamo a mim mesmo para resolver problemas!',
+          'Recursão = função que chama a si própria com um problema menor.',
+          'Todo algoritmo recursivo precisa de um CASO BASE para parar. Sem ele: stack overflow!',
+          'Exemplo clássico: fatorial(n) = n × fatorial(n-1). Base: fatorial(0) = 1.',
+          'A call stack empilha cada chamada recursiva na memória.',
+          'Torres de Hanói, busca em árvores, quicksort — recursão brilha nesses casos!',
+          'Tail recursion: otimização que evita crescimento da stack em linguagens funcionais.',
+        ]},
+      { x:14,  y:3, name:'Orien Tado',   color:'#ffdd00', hat:'#aa8800',
+        topic:'Orientação a Objetos',
+        lines:[
+          'Oi! Sou o Orien Tado — organizo código em objetos do mundo real!',
+          'POO = Programação Orientada a Objetos: código organizado em classes e objetos.',
+          'CLASSE = molde. OBJETO = instância do molde com seus próprios dados.',
+          '4 pilares: Encapsulamento, Herança, Polimorfismo e Abstração.',
+          'Encapsulamento: esconde detalhes internos, expõe só o necessário (getters/setters).',
+          'Herança: classe filha herda atributos e métodos da classe pai. Reutilização!',
+          'Python, Java, C#, C++ e Ruby são linguagens fortemente orientadas a objetos.',
+        ]},
+      { x:18, y:11, name:'Big Ômega',    color:'#ff3366', hat:'#aa0033',
+        topic:'Complexidade e Big-O',
+        lines:[
+          'Atenção! Sou o Big Ômega — meço a eficiência dos algoritmos!',
+          'Big-O descreve como o tempo ou memória de um algoritmo cresce com a entrada.',
+          'O(1): constante — não importa o tamanho, sempre leva o mesmo tempo.',
+          'O(log n): logarítmico — busca binária. Dobrar a entrada = +1 passo apenas!',
+          'O(n): linear — percorrer uma lista. Dobrar a entrada = dobrar o tempo.',
+          'O(n²): quadrático — bubble sort. Dobrar a entrada = quadruplicar o tempo!',
+          'Escolher o algoritmo certo pode fazer a diferença entre segundos e anos.',
+        ]},
+      { x:8, y:11, name:'Debug Gina',    color:'#4db031', hat:'#7ea305',
+        topic:'Debugging',
+        lines:[
+          'Opa! Sou a Debug Gina — caçadora de bugs!',
+          'Bug = erro no código que causa comportamento inesperado.',
+          'Debugar é encontrar e corrigir esses erros.',
+          'Ferramentas como breakpoints ajudam muito!',
+          'Logs são seus melhores amigos.',
+          'Todo programador passa mais tempo debugando do que codando.',
+        ]},
+      { x:14, y:11,  name:'Algo Ritmo',  color:'#bb44ff', hat:'#7722cc',
+        topic:'Algoritmos',
+        lines:[
+          'Bem-vindo! Sou o Algo Ritmo, mestre dos algoritmos!',
+          'Um ALGORITMO é uma sequência de passos para resolver um problema.',
+          'É como uma receita de cozinha: siga os passos e chegue ao resultado!',
+          'Exemplo: 1. Acorde  2. Tome banho  3. Coma  4. Saia. É um algoritmo!',
+          'Algoritmos podem ser simples ou incrivelmente complexos.',
+          'O Google usa algoritmos para ordenar BILHÕES de páginas em milissegundos!',
+          'Programar é escrever algoritmos que o computador consegue executar.',
+        ]},
+    ],
+  },
+  // ── MAP 8: Áreas da Ciência da Computação ──
+  cs: {
+    name: 'Áreas da Ciência da Computação',
+    sub: '↑ Mundo da Programação | a teoria por trás de tudo!',
+    tiles: [
+      [W,W,W,W,W,W,W,W,W,W,W,U,U,U,W,W,W,W,W,W,W,W,W,W,W],
+      [W,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,W],
+      [W,C,M,M,M,M,C,N,N,N,N,C,M,M,M,M,C,N,N,N,N,C,C,C,W],
+      [W,C,M,F,F,M,C,N,F,F,N,C,M,F,F,M,C,N,F,F,N,C,C,C,W],
+      [W,C,M,F,F,M,C,N,F,F,N,C,M,F,F,M,C,N,F,F,N,C,C,C,W],
+      [W,C,M,M,P,M,C,N,N,P,N,C,M,M,P,M,C,N,N,P,N,C,C,C,W],
+      [W,C,C,C,P,C,C,C,C,P,C,C,C,C,P,C,C,C,C,P,C,C,C,C,W],
+      [W,N,N,N,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,N,N,N,N,W],
+      [W,TC,N,N,N,N,N,N,N,N,N,P,N,N,N,N,N,N,N,N,N,N,N,TC,W],
+      [W,N,N,N,N,N,N,N,N,N,N,P,N,N,N,N,N,N,N,N,N,N,N,N,W],
+      [W,C,M,M,M,M,C,C,C,C,C,P,C,C,C,C,C,N,N,N,N,C,C,C,W],
+      [W,C,M,F,F,M,C,C,C,C,C,P,C,C,C,C,C,N,F,F,N,C,C,C,W],
+      [W,C,M,F,F,M,C,C,C,C,C,P,C,C,C,C,C,N,F,F,N,C,C,C,W],
+      [W,C,M,M,P,M,C,C,C,C,C,P,C,C,C,C,C,N,N,P,N,C,C,C,W],
+      [W,C,C,C,P,C,C,C,C,C,C,P,C,C,C,C,C,C,C,P,C,C,C,C,W],
+      [W,M,M,M,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,M,M,M,M,W],
+      [W,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,W],
+      [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+    ],
+    exits: [
+      {x:11, y:0, to:'prog', tx:11, ty:16},
+      {x:12, y:0, to:'prog', tx:12, ty:16},
+      {x:13, y:0, to:'prog', tx:13, ty:16},
+    ],
+    npcs: [
+      { x:4,  y:3,  name:'Graf Teoria',  color:'#cc88ff', hat:'#6622cc',
+        topic:'Teoria dos Grafos',
+        lines:[
+          'Olá! Sou o Graf Teória — conecto tudo com nós e arestas! 🕸️',
+          'Grafo = conjunto de vértices (nós) ligados por arestas (conexões).',
+          'Grafos modelam: redes sociais, mapas, internet, moléculas e muito mais!',
+          'Grafo direcionado: arestas têm sentido (A→B ≠ B→A). Ex: seguidores no Twitter.',
+          'BFS (busca em largura) e DFS (busca em profundidade) são os algoritmos base.',
+          'Dijkstra encontra o caminho mais curto — usado no GPS e no Google Maps!',
+          'O Problema do Caixeiro Viajante é NP-difícil. Grafos guardam grandes mistérios!',
+        ]},
+      { x:8,  y:3,  name:'Dist Ribuí',  color:'#44ddff', hat:'#1188aa',
+        topic:'Sistemas Distribuídos',
+        lines:[
+          'Oi! Sou o Dist Ribuí — computação espalhada por muitas máquinas!',
+          'Sistema distribuído = múltiplos computadores que parecem um só para o usuário.',
+          'Teorema CAP: um sistema distribuído só pode garantir 2 de 3: Consistência, Disponibilidade, Tolerância a partições.',
+          'Consenso distribuído é um problema clássico — algoritmos como Raft e Paxos resolvem isso.',
+          'MapReduce (Google) processa petabytes dividindo em Map e Reduce em milhares de nós.',
+          'Microsserviços: arquitetura onde cada função do sistema é um serviço independente.',
+          'Falha parcial é inevitável — sistemas distribuídos precisam tolerar falhas de nós.',
+        ]},
+      { x:19, y:3,  name:'Para Lelo',   color:'#ffaa00', hat:'#cc6600',
+        topic:'Computação Paralela',
+        lines:[
+          'Salve! Sou o Para Lelo — faço mil coisas ao mesmo tempo!',
+          'Computação paralela = dividir um problema em partes executadas simultaneamente.',
+          'Thread: fluxo de execução dentro de um processo. Um núcleo pode ter várias!',
+          'Condição de corrida: dois threads acessam o mesmo dado ao mesmo tempo. Bug clássico!',
+          'Mutex e semáforos: mecanismos para sincronizar threads e evitar conflitos.',
+          'Lei de Amdahl: o ganho de paralelismo é limitado pela parte sequencial do código.',
+          'GPU tem milhares de núcleos simples — perfeita para paralelismo massivo!',
+        ]},
+      { x:4,  y:11, name:'Cripto Graf',  color:'#00ffaa', hat:'#008855',
+        topic:'Criptografia Computacional',
+        lines:[
+          'Psiu! Sou o Cripto Graf — protejo segredos com matemática!',
+          'Criptografia simétrica: mesma chave para cifrar e decifrar. Ex: AES.',
+          'Criptografia assimétrica: chave pública cifra, chave privada decifra. Ex: RSA.',
+          'RSA se baseia na dificuldade de fatorar números primos enormes.',
+          'Hash criptográfico: função unidirecional — fácil de calcular, impossível de reverter.',
+          'SHA-256 é usado no Bitcoin para minerar blocos. Força bruta leva trilhões de anos!',
+          'Computadores quânticos ameaçam RSA — criptografia pós-quântica já está em desenvolvimento.',
+        ]},
+      { x:14,  y:3, name:'Eng Software',  color:'#ffdd44', hat:'#aa9900',
+        topic:'Engenharia de Software',
+        lines:[
+          'Oi! Sou o Eng Software — construo sistemas que duram!',
+          'Engenharia de Software aplica princípios de engenharia ao desenvolvimento de sistemas.',
+          'Metodologias: Cascata (sequencial) vs Ágil (iterativo e incremental).',
+          'Scrum e Kanban são frameworks ágeis para organizar times de desenvolvimento.',
+          'SOLID: 5 princípios de design orientado a objetos para código sustentável.',
+          'Testes: unitários, de integração e end-to-end formam a pirâmide de testes.',
+        ]},
+      { x:18, y:11, name:'Robô Tica',    color:'#ff5555', hat:'#aa1111',
+        topic:'Robótica e Sistemas Embarcados',
+        lines:[
+          'Oi! Sou o Robo Tica — faço o digital tocar o mundo físico!',
+          'Robótica combina mecânica, eletrônica e computação para criar máquinas autônomas.',
+          'Sistemas embarcados: computadores minúsculos dentro de outros dispositivos.',
+          'Arduino e Raspberry Pi democratizaram a prototipagem de hardware para todos!',
+          'RTOS (Real-Time Operating System): SO que garante respostas em tempo determinado.',
+          'Sensores + atuadores + algoritmos de controle = robô que interage com o ambiente.',
+          'Robôs cirúrgicos, drones, carros autônomos — robótica já transforma vidas!',
+        ]},
+      { x:8, y:11, name:'Teoria Comp', color:'#88ff88', hat:'#44aa44',
+        topic:'Teoria da Computação',
+        lines:[
+          'Olá! Sou a Teoria Comp — estudo o que é computável!',
+          'A Teoria da Computação pergunta: o que computadores PODEM ou NÃO PODEM fazer?',
+          'Máquina de Turing: modelo matemático criado por Alan Turing em 1936 — a base da computação!',
+          'Tese de Church-Turing: qualquer computável é computável por uma Máquina de Turing.',
+          'Problema da Parada (Halting Problem): É IMPOSSÍVEL saber se um programa vai parar ou não!',
+          'Provas de Turing provaram que existem problemas que nenhum computador jamais resolverá.',
+          'Computabilidade, decidibilidade, redução — o mundo fascinante dos limites da computação!',
+        ]},
+      { x:14, y:11, name:'Visão Comp', color:'#ffaa66', hat:'#cc7733',
+        topic:'Visão Computacional',
+        lines:[
+          'Oi! Sou a Visão Comp — ensino computadores a ENXERGAR!',
+          'Visão Computacional = extrair informações de imagens e vídeos.',
+          'Pixels são a menor unidade de uma imagem digital. Milhões deles formam o que você vê!',
+          'Filtros (borrão, detecção de bordas) são operações matemáticas em vizinhanças de pixels.',
+          'Redes Neurais Convolucionais (CNN) revolucionaram o reconhecimento de imagens.',
+          'Detecção de objetos: YOLO e R-CNN encontram e classificam objetos em tempo real.',
+          'Reconhecimento facial, carros autônomos, diagnóstico médico por imagem — tudo usa visão computacional!',
+        ]},
+      { x:22, y:13, name:'Dado Base', color:'#44ddff', hat:'#1199aa',
+        topic:'Banco de Dados',
+        lines:[
+          'Oi! Sou o Dado Base — organizo informações para você acessar rápido!',
+          'Banco de Dados = sistema para armazenar, organizar e consultar informações.',
+          'SQL (Structured Query Language): linguagem padrão para bancos relacionais.',
+          'SELECT, INSERT, UPDATE, DELETE — os 4 verbos fundamentais do SQL.',
+          'Índices (INDEX) aceleram buscas, mas tornam inserções mais lentas. É um trade-off!',
+          'Normalização: organiza dados para evitar redundância e anomalias.',
+          'ACID: Atomicidade, Consistência, Isolamento, Durabilidade — propriedades das transações seguras.',
+          'NoSQL: MongoDB, Cassandra, Redis — para dados não estruturados ou alta escala.',
+        ]},
+      { x:22, y:3, name:'Comp Grafi', color:'#dd88ff', hat:'#aa44cc',
+        topic:'Computação Gráfica',
+        lines:[
+          'Oi! Sou a Comp Grafi — crio mundos digitais a partir da matemática! 🎨',
+          'Computação Gráfica = gerar imagens digitais através de algoritmos.',
+          'Rasterização: converte modelos 3D em pixels 2D na sua tela.',
+          'Ray Tracing: simula trajetos de raios de luz. Gera imagens FOTO-REALISTAS!',
+          'Shader: programa que roda na GPU controlando cor, luz e sombra de cada pixel.',
+          'Transformações: matrizes movem, rotacionam e escalonam objetos 3D.',
+          'Texturas colam imagens em modelos 3D. Sem texturas, seria tudo liso e sem graça.',
+          'Todo filme da Pixar, todo jogo 3D, todo efeito especial usa computação gráfica! 🎬',
+        ]},
+    ],
+  },
+};
+
+// ── Input ─────────────────────────────
+const held = {};    // keys held down
+const newk = new Set(); // keys just pressed this frame (buffer)
+document.addEventListener('keydown', e => {
+  // Terminal captura input de texto diretamente
+  if (gs.terminal) {
+    if (e.key === 'Escape') { gs.terminal = null; e.preventDefault(); return; }
+    if (e.key === 'Enter') {
+      const cmd = gs.terminal.input.trim();
+      if (cmd) gs.terminal.history.unshift(cmd);
+      gs.terminal.histIdx = -1;
+      gs.terminal.lines.push('user@aventura:~$ ' + cmd);
+      const out = runCommand(cmd);
+      out.forEach(l => gs.terminal.lines.push(l));
+      gs.terminal.input = '';
+      gs.terminal.scroll = 0;
+      // Keep only last 40 lines
+      if (gs.terminal.lines.length > 200) gs.terminal.lines = gs.terminal.lines.slice(-200);
+      e.preventDefault(); return;
+    }
+    if (e.key === 'Backspace') { gs.terminal.input = gs.terminal.input.slice(0,-1); e.preventDefault(); return; }
+    if (e.key === 'PageUp') { gs.terminal.scroll += 5; e.preventDefault(); return; }
+    if (e.key === 'PageDown') { gs.terminal.scroll = Math.max(0, gs.terminal.scroll - 5); e.preventDefault(); return; }
+    if (e.key === 'ArrowUp') {
+      if (gs.terminal.histIdx < gs.terminal.history.length-1) gs.terminal.histIdx++;
+      gs.terminal.input = gs.terminal.history[gs.terminal.histIdx] || '';
+      e.preventDefault(); return;
+    }
+    if (e.key === 'ArrowDown') {
+      gs.terminal.histIdx = Math.max(-1, gs.terminal.histIdx-1);
+      gs.terminal.input = gs.terminal.histIdx >= 0 ? gs.terminal.history[gs.terminal.histIdx] : '';
+      e.preventDefault(); return;
+    }
+    if (e.key.length === 1) { gs.terminal.input += e.key; e.preventDefault(); return; }
+    e.preventDefault(); return;
+  }
+  if (!held[e.code]) newk.add(e.code);
+  held[e.code] = true;
+  e.preventDefault();
+});
+document.addEventListener('keyup', e => { held[e.code] = false; });
+
+// ── Game State ────────────────────────
+const gs = {
+  screen: 'title',
+  mapId: 'cpu',
+  px: 2, py: 9,     // player tile position
+  dialog: null,     // { npc, line }
+  fade: 0,          // 0=clear, 1=black
+  fading: null,     // { to, tx, ty, phase:'out'|'in' }
+  learned: new Set(),
+  moveTimer: 0,
+  moving: false,
+  glossary: false,
+  glossaryScroll: 0,
+  terminal: null,   // { lines:[], input:'', history:[], histIdx:-1 }
+};
+const MOVE_DELAY = 150; // ms between tile moves
+
+// ── Helpers ───────────────────────────
+function tileAt(mapId, tx, ty) {
+  const m = MAPS[mapId];
+  if (tx < 0 || ty < 0 || tx >= MC || ty >= MR) return W;
+  return m.tiles[ty][tx];
+}
+
+function isWalkable(mapId, tx, ty) {
+  return WALKABLE.has(tileAt(mapId, tx, ty));
+}
+
+function npcAt(mapId, tx, ty) {
+  return MAPS[mapId].npcs.find(n => n.x === tx && n.y === ty) || null;
+}
+
+function terminalAt(mapId, tx, ty) {
+  return tileAt(mapId, tx, ty) === TC;
+}
+
+// ── Camera ────────────────────────────
+function getCamera() {
+  const vw = CVW / SCALE, vh = CVH / SCALE;
+  const maxX = MC * TS - vw, maxY = MR * TS - vh;
+  let cx = gs.px * TS + TS/2 - vw/2;
+  let cy = gs.py * TS + TS/2 - vh/2;
+  return {
+    x: Math.max(0, Math.min(cx, maxX)),
+    y: Math.max(0, Math.min(cy, maxY)),
+  };
+}
+
+// ── Update ────────────────────────────
+let lastTs = 0;
+function update(dt, just) {
+  if (gs.screen === 'title') {
+    if (just.has('Enter') || just.has('NumpadEnter') || just.has('Space')) gs.screen = 'game';
+    return;
+  }
+  if (gs.fading) { updateFade(dt); return; }
+
+  // ── Dialog input ──
+  if (gs.dialog) {
+    if (just.has('KeyE') || just.has('Space') || just.has('Enter')) {
+      gs.dialog.line++;
+      if (gs.dialog.line >= gs.dialog.npc.lines.length) {
+        gs.learned.add(gs.dialog.npc.topic);
+        gs.dialog = null;
+      }
+    }
+    if (just.has('Escape')) gs.dialog = null;
+    return;
+  }
+
+  if (just.has('KeyG')) {
+    gs.glossary = !gs.glossary;
+    gs.glossaryScroll = 0;
+  }
+  if (gs.glossary) {
+    if (just.has('Escape')) gs.glossary = false;
+    if (held['ArrowDown'] || held['KeyS']) gs.glossaryScroll++;
+    if (held['ArrowUp']   || held['KeyW']) gs.glossaryScroll--;
+    return; // bloqueia movimento enquanto glossário está aberto
+  }
+
+  // ── Movement ──
+  gs.moveTimer += dt;
+  if (gs.moveTimer >= MOVE_DELAY) {
+    let nx = gs.px, ny = gs.py;
+    if (held['ArrowLeft']  || held['KeyA']) nx--;
+    else if (held['ArrowRight'] || held['KeyD']) nx++;
+    else if (held['ArrowUp']    || held['KeyW']) ny--;
+    else if (held['ArrowDown']  || held['KeyS']) ny++;
+
+    if (nx !== gs.px || ny !== gs.py) {
+      if (!npcAt(gs.mapId, nx, ny) && isWalkable(gs.mapId, nx, ny)) {
+        gs.px = nx; gs.py = ny;
+        gs.moving = true; // ← moveu
+        const ex = MAPS[gs.mapId].exits.find(e => e.x === nx && e.y === ny);
+        if (ex) startFade(ex.to, ex.tx, ex.ty);
+      }
+      gs.moveTimer = 0;
+    } else {
+      gs.moving = false; // ← parado
+    }
+  }
+
+  // ── Interact ──
+  if (just.has('KeyE') || just.has('Space')) {
+    const dirs = [
+      {x:gs.px-1,y:gs.py},{x:gs.px+1,y:gs.py},
+      {x:gs.px,y:gs.py-1},{x:gs.px,y:gs.py+1},
+      {x:gs.px-1,y:gs.py-1},{x:gs.px+1,y:gs.py-1},
+      {x:gs.px-1,y:gs.py+1},{x:gs.px+1,y:gs.py+1},
+    ];
+    // Check terminal first
+    let foundTerminal = false;
+    for (const d of dirs) {
+      if (terminalAt(gs.mapId, d.x, d.y)) { openTerminal(); foundTerminal = true; break; }
+    }
+    if (!foundTerminal) {
+      for (const d of dirs) {
+        const n = npcAt(gs.mapId, d.x, d.y);
+        if (n) { gs.dialog = {npc:n, line:0}; break; }
+      }
+    }
+  }
+}
+
+// ── Terminal Commands ─────────────────
+const TERM_FILES = {
+  'algoritmos.txt': [
+    'Um algoritmo é uma sequência finita de passos para resolver um problema.',
+    'Complexidade: medimos eficiência com Big-O.',
+    'O(1) < O(log n) < O(n) < O(n log n) < O(n²) < O(2ⁿ)',
+    'Exemplos: busca binária O(log n), quicksort O(n log n), bubble sort O(n²).',
+  ],
+  'grafos.txt': [
+    'Grafo G = (V, E): conjunto de vértices V e arestas E.',
+    'Tipos: direcionado, não-direcionado, ponderado, bipartido.',
+    'Algoritmos: BFS, DFS, Dijkstra, Bellman-Ford, Floyd-Warshall.',
+    'Aplicações: GPS, redes sociais, roteamento de pacotes, compiladores.',
+  ],
+  'criptografia.txt': [
+    'Simétrica: mesma chave para cifrar/decifrar. Ex: AES-256.',
+    'Assimétrica: par de chaves pública/privada. Ex: RSA-2048.',
+    'Hash: função unidirecional. SHA-256 produz 256 bits fixos.',
+    'TLS/HTTPS usa assimétrica para troca de chave, depois simétrica.',
+    'Bitcoin: SHA-256 duplo para Proof-of-Work.',
+  ],
+  'sistemas.txt': [
+    'Sistemas Distribuídos: múltiplas máquinas, um sistema lógico.',
+    'Teorema CAP: Consistência, Disponibilidade, Tolerância a partições.',
+    'Só 2 dos 3 podem ser garantidos simultaneamente.',
+    'Paxos e Raft: algoritmos de consenso distribuído.',
+    'Eventual consistency: dados convergem, sem garantia imediata.',
+  ],
+  'paralelo.txt': [
+    'Paralelismo: execução simultânea em múltiplos núcleos.',
+    'Thread: fluxo de execução independente dentro de um processo.',
+    'Race condition: dois threads acessam o mesmo recurso sem sincronia.',
+    'Mutex: trava exclusiva. Semáforo: contador de acessos.',
+    'Lei de Amdahl: speedup ≤ 1/(s + (1-s)/p), onde s = parte serial.',
+  ],
+  'engenharia.txt': [
+    'SOLID: Single responsibility, Open/closed, Liskov, Interface segregation, Dependency inversion.',
+    'DRY: Don\'t Repeat Yourself. KISS: Keep It Simple, Stupid.',
+    'Pirâmide de testes: unitários > integração > E2E.',
+    'CI/CD: integração e entrega contínua com pipelines automatizados.',
+    'Dívida técnica: custo futuro de decisões rápidas de hoje.',
+  ],
+  'robotica.txt': [
+    'Robótica: mecânica + eletrônica + computação.',
+    'Sensores: entrada do mundo físico (câmera, LIDAR, IMU).',
+    'Atuadores: saída para o mundo físico (motores, servos).',
+    'ROS (Robot Operating System): framework open source para robótica.',
+    'SLAM: Simultaneous Localization and Mapping.',
+  ],
+  'readme.txt': [
+    '╔═══════════════════════════════════════════╗',
+    '║  AVENTURA DIGITAL RESEARCH TERMINAL v1.0  ║',
+    '║  Áreas da Ciência da Computação           ║',
+    '╚═══════════════════════════════════════════╝',
+    '',
+    'Digite "help" para ver os comandos disponíveis.',
+    'Este terminal contém arquivos de pesquisa acadêmica.',
+    'Boa exploração, pesquisador!',
+  ],
+};
+ 
+function runCommand(raw) {
+  const parts = raw.trim().split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+  const arg = parts.slice(1).join(' ');
+  const out = [];
+ 
+  switch(cmd) {
+    case 'help':
+      out.push('Comandos disponíveis:');
+      out.push('  ls              — lista arquivos disponíveis');
+      out.push('  cat <arquivo>   — exibe conteúdo de um arquivo');
+      out.push('  man <tema>      — manual de um tema (algoritmos, grafos, rede...)');
+      out.push('  whoami          — quem é você');
+      out.push('  uname           — informações do sistema');
+      out.push('  pwd             — diretório atual');
+      out.push('  history         — histórico de comandos');
+      out.push('  progress        — seu progresso no jogo');
+      out.push('  clear           — limpa o terminal');
+      out.push('  echo <texto>    — repete o texto');
+      out.push('  date            — data e hora atual');
+      break;
+ 
+    case 'ls':
+      out.push('total ' + Object.keys(TERM_FILES).length);
+      Object.keys(TERM_FILES).forEach(f => out.push('  -rw-r--r--  ' + f));
+      break;
+ 
+    case 'cat':
+      if (!arg) { out.push('Uso: cat <arquivo>. Tente: cat readme.txt'); break; }
+      const f = TERM_FILES[arg] || TERM_FILES[arg + '.txt'];
+      if (f) { f.forEach(l => out.push(l)); }
+      else out.push('cat: ' + arg + ': arquivo não encontrado. Use "ls" para listar.');
+      break;
+ 
+    case 'man':
+      const manPages = {
+        algoritmos: ['ALGORITMOS(1)', '', 'Nome: Algoritmos - sequências de passos computacionais', '', 'Descrição: Um algoritmo é qualquer procedimento computacional bem definido', 'que transforma entradas em saídas. A análise de complexidade usa notação', 'Big-O para descrever comportamento assintótico no pior caso.', '', 'Ver também: grafos(1), paralelo(1)'],
+        grafos: ['GRAFOS(1)', '', 'Nome: Teoria dos Grafos - estruturas de nós e arestas', '', 'Descrição: Grafo G=(V,E) onde V são vértices e E arestas.', 'Fundamental para modelar redes, dependências e caminhos.', '', 'Ver também: algoritmos(1), sistemas(1)'],
+        rede: ['REDES(1)', '', 'Nome: Redes de Computadores', '', 'TCP/IP: protocolo base da internet.', 'DNS: resolução de nomes. HTTP/HTTPS: protocolo web.', 'BGP: roteamento entre sistemas autônomos na internet.'],
+        crypto: ['CRYPTO(1)', '', 'Nome: Criptografia Computacional', '', 'RSA: baseado em fatoração de primos. Seguro até ~2048 bits hoje.', 'ECC: Elliptic Curve Cryptography - mesma segurança com chaves menores.', 'AES: padrão simétrico. Blocos de 128 bits, chaves de 128/192/256 bits.'],
+      };
+      const page = manPages[arg.toLowerCase()];
+      if (page) { page.forEach(l => out.push(l)); }
+      else { out.push('Nenhum manual para "' + arg + '".'); out.push('Tópicos: algoritmos, grafos, rede, crypto'); }
+      break;
+ 
+    case 'whoami':
+      out.push('aventureiro@aventuradigital');
+      out.push('Nível: Explorador da Ciência da Computação');
+      out.push('Lições aprendidas: ' + gs.learned.size + '/' + Object.values(MAPS).flatMap(m=>m.npcs).length);
+      break;
+ 
+    case 'uname':
+      out.push('AventuraOS 1.0.0 (Canvas Edition)');
+      out.push('Arquitetura: 2D-tile-based');
+      out.push('Kernel: GameLoop/rAF v60hz');
+      break;
+ 
+    case 'pwd':
+      out.push('/home/aventureiro/cs-lab/terminal');
+      break;
+ 
+    case 'date':
+      out.push(new Date().toLocaleString('pt-BR'));
+      break;
+ 
+    case 'echo':
+      out.push(arg || '');
+      break;
+ 
+    case 'history':
+      if (!gs.terminal.history.length) { out.push('(histórico vazio)'); break; }
+      gs.terminal.history.slice().reverse().forEach((h,i) => out.push(`  ${i+1}  ${h}`));
+      break;
+ 
+    case 'progress': {
+      const allNpcs = Object.values(MAPS).flatMap(m => m.npcs);
+      out.push('=== Progresso do Aventureiro ===');
+      Object.entries(MAPS).forEach(([id, map]) => {
+        const done = map.npcs.filter(n => gs.learned.has(n.topic)).length;
+        const total = map.npcs.length;
+        const bar = '█'.repeat(done) + '░'.repeat(total-done);
+        out.push(`  ${map.name.padEnd(30)} [${bar}] ${done}/${total}`);
+      });
+      out.push('Total: ' + gs.learned.size + '/' + allNpcs.length);
+      break;
+    }
+ 
+    case 'clear':
+      gs.terminal.lines = [];
+      break;
+ 
+    case 'sudo':
+      out.push('Este terminal não suporta privilégios de root.');
+      out.push('Nice try, hacker.');
+      break;
+ 
+    case 'rm':
+      out.push('rm: operação negada. Este é um terminal de pesquisa.');
+      break;
+
+    case 'matrix':
+      out.push('Acorde aventureiro... A matrix possui você...');
+      break;
+
+    case 'hack':
+      out.push('Acesso negado. Você não é Neo.');
+      out.push('... mas que tal aprender criptografia? cat criptografia.txt');
+      break;
+ 
+    case '':
+      break;
+ 
+    default:
+      out.push(cmd + ': comando não encontrado. Digite "help" para ajuda.');
+  }
+  return out;
+}
+ 
+function openTerminal() {
+  gs.terminal = {
+    lines: [
+      '╔═════════════════════════════════════════════╗',
+      '║   AVENTURA DIGITAL RESEARCH TERMINAL v1.0   ║',
+      '╚═════════════════════════════════════════════╝',
+      'Conectado ao servidor cs-lab.aventura.edu',
+      'Digite "help" para ver os comandos. ESC para sair.',
+      '',
+    ],
+    input: '',
+    history: [],
+    histIdx: -1,
+    scroll: 0,
+  };
+}
+
+function startFade(to, tx, ty) {
+  gs.fading = {to, tx, ty, phase:'out'};
+  gs.fade = 0;
+}
+
+function updateFade(dt) {
+  const sp = 0.0025;
+  if (gs.fading.phase === 'out') {
+    gs.fade = Math.min(1, gs.fade + sp*dt);
+    if (gs.fade >= 1) {
+      gs.mapId = gs.fading.to;
+      gs.px = gs.fading.tx;
+      gs.py = gs.fading.ty;
+      gs.fading.phase = 'in';
+    }
+  } else {
+    gs.fade = Math.max(0, gs.fade - sp*dt);
+    if (gs.fade <= 0) gs.fading = null;
+    gs.moving = false;
+  }
+}
+
+// ── Rendering ─────────────────────────
+function render(now) {
+  if (gs.screen === 'title') { drawTitle(now); return; }
+  ctx.clearRect(0, 0, CVW, CVH);
+  const map = MAPS[gs.mapId];
+  const cam = getCamera();
+
+  ctx.save();
+  ctx.scale(SCALE, SCALE);
+  ctx.translate(-cam.x, -cam.y);
+ 
+  // Tiles (only visible range)
+  const c0 = Math.max(0, (cam.x/TS)|0);
+  const r0 = Math.max(0, (cam.y/TS)|0);
+  const c1 = Math.min(MC, c0 + ((CVW/SCALE)/TS|0) + 2);
+  const r1 = Math.min(MR, r0 + ((CVH/SCALE)/TS|0) + 2);
+  for (let r = r0; r < r1; r++)
+    for (let c = c0; c < c1; c++)
+      drawTile(map.tiles[r][c], c*TS, r*TS, now);
+
+  // NPCs
+  for (const npc of map.npcs) drawNPC(npc, now);
+
+  // Player
+  drawPlayer(now);
+
+  ctx.restore();
+
+  // HUD
+  drawHUD(map, now);
+
+  // Dialog
+  if (gs.dialog) drawDialog(gs.dialog, now);
+  if (gs.terminal) drawTerminal(now);
+
+  if (gs.glossary) drawGlossary(now);
+
+  // Fade overlay
+  if (gs.fade > 0) {
+    ctx.fillStyle = `rgba(0,0,0,${gs.fade})`;
+    ctx.fillRect(0, 0, CVW, CVH);
+  }
+}
+
+function drawGlossary(now) {
+  // Monta lista de todos os NPCs do jogo
+  const allNpcs = Object.values(MAPS).flatMap(m => m.npcs);
+
+  // Overlay escuro
+  ctx.fillStyle = 'rgba(2,2,18,0.96)';
+  ctx.fillRect(0, 0, CVW, CVH);
+  ctx.strokeStyle = '#00ffcc';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(10, 10, CVW-20, CVH-20);
+
+  // Título
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 14px monospace';
+  ctx.fillStyle = '#00ffcc';
+  ctx.fillText('GLOSSÁRIO DE TECNOLOGIA', CVW/2, 36);
+  ctx.font = '9px monospace';
+  ctx.fillStyle = '#87afd4';
+  ctx.fillText(`${gs.learned.size} de ${allNpcs.length} conceitos aprendidos`, CVW/2, 52);
+
+  // Barra de progresso
+  ctx.fillStyle = '#0a1a2a';
+  ctx.fillRect(40, 58, CVW-80, 6);
+  ctx.fillStyle = gs.learned.size === allNpcs.length ? '#00ffcc' : '#ffdd44';
+  ctx.fillRect(40, 58, (CVW-80)*(gs.learned.size/allNpcs.length), 6);
+  ctx.strokeStyle = '#1a3a5a'; ctx.lineWidth = 1;
+  ctx.strokeRect(40, 58, CVW-80, 6);
+
+  // Lista de termos (2 colunas)
+  const itemH = 44;
+  const cols = 2;
+  const colW = (CVW - 40) / cols;
+  const startY = 80;
+  const visibleRows = Math.floor((CVH - startY - 30) / itemH);
+  const maxScroll = Math.max(0, Math.ceil(allNpcs.length / cols) - visibleRows);
+  gs.glossaryScroll = Math.max(0, Math.min(gs.glossaryScroll, maxScroll));
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(10, startY, CVW-20, CVH-startY-30);
+  ctx.clip();
+
+  allNpcs.forEach((npc, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols) - gs.glossaryScroll;
+    if (row < 0 || row >= visibleRows) return;
+
+    const ix = 25 + col * colW;
+    const iy = startY + row * itemH;
+    const learned = gs.learned.has(npc.topic);
+
+    // Card
+    ctx.fillStyle = learned ? 'rgba(0,40,30,0.7)' : 'rgba(10,10,25,0.7)';
+    roundRect(ctx, ix, iy+2, colW-10, itemH-6, 4); ctx.fill();
+    ctx.strokeStyle = learned ? '#00ffcc' : '#1a2a3a';
+    ctx.lineWidth = 1;
+    roundRect(ctx, ix, iy+2, colW-10, itemH-6, 4); ctx.stroke();
+
+    // Ícone de status
+    ctx.font = '12px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = learned ? '#00ffcc' : '#2a3a4a';
+    ctx.fillText(learned ? '✓' : '?', ix+8, iy+18);
+
+    // Nome do NPC
+    ctx.font = `bold 10px monospace`;
+    ctx.fillStyle = learned ? npc.color : '#2a3a4a';
+    ctx.fillText(npc.name, ix+22, iy+18);
+
+    // Tópico
+    ctx.font = '9px monospace';
+    ctx.fillStyle = learned ? '#aacccc' : '#1a2a3a';
+    // Quebra o tópico se for longo
+    const maxW = colW - 36;
+    let topic = npc.topic;
+    if (ctx.measureText(topic).width > maxW) {
+      topic = topic.slice(0, 28) + '…';
+    }
+    ctx.fillText(topic, ix+22, iy+31);
+  });
+
+  ctx.restore();
+
+  // Rodapé
+  ctx.textAlign = 'center';
+  ctx.font = '11px monospace';
+  ctx.fillStyle = '#87afd4';
+  ctx.fillText('↑↓ rolar  •  G ou ESC fechar', CVW/2, CVH-24);
+}
+
+function drawTitle(now) {
+  // Fundo
+  ctx.fillStyle = '#050510';
+  ctx.fillRect(0, 0, CVW, CVH);
+
+  // Grade de circuito decorativa
+  ctx.strokeStyle = 'rgba(0,255,180,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < CVW; x += 32) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,CVH); ctx.stroke(); }
+  for (let y = 0; y < CVH; y += 32) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(CVW,y); ctx.stroke(); }
+
+  // Título
+  const glow = 0.7 + 0.3 * Math.sin(now * 0.002);
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 48px monospace';
+  ctx.shadowColor = '#00ffcc';
+  ctx.shadowBlur = 30 * glow;
+  ctx.fillStyle = `rgba(0,255,200,${glow})`;
+  ctx.fillText('Aventura Digital', CVW/2, CVH/2 - 60);
+  ctx.shadowBlur = 0;
+
+  // Subtítulo
+  ctx.font = '14px monospace';
+  ctx.fillStyle = '#4a6a88';
+  ctx.fillText('RPG Educativo — Explore o mundo da tecnologia!', CVW/2, CVH/2 - 20);
+
+  // Prompt piscante
+  const blink = Math.sin(now * 0.004) > 0;
+  if (blink) {
+    ctx.font = 'bold 16px monospace';
+    ctx.fillStyle = '#00ffcc';
+    ctx.fillText('[ ENTER ] ou [ ESPAÇO ] para iniciar', CVW/2, CVH/2 + 40);
+  }
+}
+
+// ── Player Drawing ────────────────────
+function drawPlayer(now) {
+  const px = gs.px * TS, py = gs.py * TS;
+  const bob = Math.sin(now * 0.005) * 1.2;
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(px+16, py+29, 8, 3, 0, 0, Math.PI*2); ctx.fill();
+
+  // Body
+  ctx.fillStyle = '#3366cc';
+  ctx.fillRect(px+9, py+10+bob, 14, 14);
+
+  // Head
+  ctx.fillStyle = '#f0c070';
+  ctx.fillRect(px+10, py+2+bob, 12, 12);
+
+  // Hair
+  ctx.fillStyle = '#553300';
+  ctx.fillRect(px+10, py+1+bob, 12, 5);
+
+  // Eyes
+  ctx.fillStyle = '#2a1a0a';
+  ctx.fillRect(px+13, py+7+bob, 2, 2);
+  ctx.fillRect(px+17, py+7+bob, 2, 2);
+
+  // Legs (animated)
+  const leg = gs.moving ? Math.sin(now * 0.012) * 2 : 0;
+  ctx.fillStyle = '#224488';
+  ctx.fillRect(px+10, py+24+bob, 5, 5 + leg);
+  ctx.fillRect(px+17, py+24+bob, 5, 5 - leg);
+
+  // [E] prompt when near NPC
+  const dirs = [
+    {x:gs.px-1,y:gs.py},  {x:gs.px+1,y:gs.py},
+    {x:gs.px,y:gs.py-1},  {x:gs.px,y:gs.py+1},
+    {x:gs.px-1,y:gs.py-1},{x:gs.px+1,y:gs.py-1},
+    {x:gs.px-1,y:gs.py+1},{x:gs.px+1,y:gs.py+1},
+  ];
+  const nearInteract = dirs.some(d => npcAt(gs.mapId, d.x, d.y) || terminalAt(gs.mapId, d.x, d.y));
+  if (nearInteract) {
+    const p = 0.5 + 0.5*Math.sin(now * 0.004);
+    ctx.fillStyle = `rgba(0,255,180,${p})`;
+    ctx.font = 'bold 9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('[E]', px+16, py+1+bob);
+  }
+}
+
+// ── Terminal Rendering ────────────────
+function drawTerminal(now) {
+  const bx=20, by=30, bw=CVW-40, bh=CVH-60;
+  const SBW = 8; // scrollbar width
+ 
+  // Fundo
+  ctx.fillStyle='rgba(2,8,2,0.97)';
+  roundRect(ctx,bx,by,bw,bh,6); ctx.fill();
+  ctx.strokeStyle='#00cc44'; ctx.lineWidth=2;
+  roundRect(ctx,bx,by,bw,bh,6); ctx.stroke();
+ 
+  // Barra de título
+  ctx.fillStyle='#003300';
+  ctx.fillRect(bx+2, by+2, bw-4, 18);
+  ctx.textAlign='center';
+  ctx.font='bold 10px monospace';
+  ctx.fillStyle='#00ff44';
+  ctx.fillText('AVENTURA DIGITAL TERMINAL — ESC para fechar', CVW/2, by+15);
+ 
+  // Calcular scroll
+  ctx.font='11px monospace';
+  ctx.textAlign='left';
+  const lineH=14, startY=by+36, maxLines=Math.floor((bh-50)/lineH);
+  const totalLines = gs.terminal.lines.length;
+  const maxScroll = Math.max(0, totalLines - maxLines);
+  gs.terminal.scroll = Math.max(0, Math.min(gs.terminal.scroll, maxScroll));
+ 
+  // Janela de linhas visíveis (scroll=0 → fundo)
+  const fromIdx = maxScroll - gs.terminal.scroll;
+  const visible = gs.terminal.lines.slice(fromIdx, fromIdx + maxLines);
+ 
+  // Clip output area
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(bx+2, startY-lineH, bw - SBW - 6, maxLines*lineH + lineH);
+  ctx.clip();
+  visible.forEach((line,i) => {
+    const isPrompt = line.startsWith('user@');
+    const isTitle  = line.startsWith('╔') || line.startsWith('║') || line.startsWith('╚');
+    ctx.fillStyle = isTitle ? '#00ffaa' : isPrompt ? '#00ff44' : '#88cc88';
+    ctx.fillText(line, bx+10, startY+i*lineH);
+  });
+  ctx.restore();
+ 
+  // Scrollbar (só quando há conteúdo para rolar)
+  if (maxScroll > 0) {
+    const sbX = bx + bw - SBW - 4;
+    const sbTop = startY - 2;
+    const sbH = maxLines * lineH;
+ 
+    // Trilha
+    ctx.fillStyle = '#001400';
+    ctx.fillRect(sbX, sbTop, SBW, sbH);
+ 
+    // Thumb proporcional
+    const thumbH = Math.max(16, (maxLines / totalLines) * sbH);
+    const scrollRatio = gs.terminal.scroll / maxScroll; // 0=fundo, 1=topo
+    const thumbY = sbTop + (1 - scrollRatio) * (sbH - thumbH);
+    ctx.fillStyle = gs.terminal.scroll > 0 ? '#00aa33' : '#005511';
+    ctx.fillRect(sbX, thumbY, SBW, thumbH);
+ 
+    // Dica piscante quando não está no fundo
+    if (gs.terminal.scroll > 0) {
+      const p = 0.5 + 0.5*Math.sin(now*0.005);
+      ctx.fillStyle = `rgba(0,255,100,${p})`;
+      ctx.font = '9px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('PgUp/PgDn para rolar', bx+bw-14, by+bh-22);
+    }
+  }
+ 
+  // Linha de input
+  const inputY = by+bh-20;
+  ctx.fillStyle='#001800';
+  ctx.fillRect(bx+2, inputY-12, bw-4, 16);
+  ctx.fillStyle='#00ff44';
+  ctx.font='11px monospace';
+  ctx.textAlign='left';
+  const promptTxt='user@aventura:~$ ';
+  const cursor = Math.sin(now*0.006) > 0 ? '█' : ' ';
+  ctx.fillText(promptTxt + gs.terminal.input + cursor, bx+10, inputY);
+}
+
+// ── NPC Drawing ───────────────────────
+function drawNPC(npc, now) {
+  const px = npc.x * TS, py = npc.y * TS;
+  const bob = Math.sin(now * 0.002 + npc.x * 0.7) * 1.2;
+  const learned = gs.learned.has(npc.topic);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(px+16, py+30, 8, 3, 0, 0, Math.PI*2); ctx.fill();
+
+  // Body
+  ctx.fillStyle = npc.color;
+  ctx.fillRect(px+9, py+13+bob, 14, 14);
+
+  // Head
+  ctx.fillStyle = '#f0c070';
+  ctx.fillRect(px+10, py+5+bob, 12, 12);
+
+  // Hat (brim + crown)
+  ctx.fillStyle = npc.hat;
+  ctx.fillRect(px+7, py+3+bob, 18, 4);
+  ctx.fillRect(px+10, py-1+bob, 12, 5);
+
+  // Eyes
+  ctx.fillStyle = '#2a1a0a';
+  ctx.fillRect(px+13, py+9+bob, 2, 2);
+  ctx.fillRect(px+17, py+9+bob, 2, 2);
+  // Smile
+  ctx.fillStyle = '#2a1a0a';
+  ctx.fillRect(px+13, py+13+bob, 6, 1);
+
+  // Name tag bubble
+  ctx.font = '9px monospace';
+  ctx.textAlign = 'center';
+  const tw = ctx.measureText(npc.name).width;
+  const bx = px+16-tw/2-5, by = py-19, bw = tw+10, bh = 14;
+  ctx.fillStyle = 'rgba(5,5,20,0.85)';
+  roundRect(ctx, bx, by, bw, bh, 2); ctx.fill();
+  ctx.strokeStyle = learned ? '#00ffcc' : npc.color;
+  ctx.lineWidth = 1;
+  roundRect(ctx, bx, by, bw, bh, 2); ctx.stroke();
+  ctx.fillStyle = learned ? '#00ffcc' : '#e8e8ff';
+  ctx.fillText(npc.name, px+16, py-8.5);
+}
+
+// ── HUD Drawing ───────────────────────
+function drawHUD(map, now) {
+  // Top gradient bar
+  const tg = ctx.createLinearGradient(0,0,0,44);
+  tg.addColorStop(0,'rgba(5,5,20,0.97)');
+  tg.addColorStop(1,'rgba(5,5,20,0)');
+  ctx.fillStyle = tg; ctx.fillRect(0,0,CVW,44);
+
+  // Map name
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 13px monospace';
+  ctx.fillStyle = '#00ffcc';
+  ctx.fillText(map.name, 10, 20);
+  ctx.font = '10px monospace';
+  ctx.fillStyle = '#87afd4';
+  ctx.fillText(map.sub, 10, 35);
+
+  // Lessons progress (top right)
+  const total = Object.values(MAPS).reduce((s,m)=>s+m.npcs.length,0);
+  const done = gs.learned.size;
+  ctx.textAlign = 'right';
+  ctx.font = 'bold 11px monospace';
+  ctx.fillStyle = '#ffdd44';
+  ctx.fillText(`${done}/${total} lições`, CVW-10, 19);
+  // Progress bar
+  ctx.fillStyle = '#1a2a3a';
+  ctx.fillRect(CVW-114, 25, 104, 7);
+  ctx.fillStyle = done === total ? '#00ffcc' : '#ffdd44';
+  ctx.fillRect(CVW-114, 25, 104*(done/total), 7);
+  ctx.strokeStyle = '#334455'; ctx.lineWidth = 1;
+  ctx.strokeRect(CVW-114, 25, 104, 7);
+
+  // All learned celebration
+  if (done === total) {
+    const p = 0.5+0.5*Math.sin(now*0.003);
+    ctx.textAlign='center';
+    ctx.font='bold 11px monospace';
+    ctx.fillStyle=`rgba(0,255,200,${p})`;
+    ctx.fillText('PARABÉNS! Você aprendeu todos os conceitos!', CVW/2, 470);
+  }
+}
+
+// ── Dialog Box ───────────────────────
+function drawDialog(dlg, now) {
+  const npc = dlg.npc, line = npc.lines[dlg.line];
+  const total = npc.lines.length, cur = dlg.line + 1;
+  const bx=10, by=CVH-130, bw=CVW-20, bh=120;
+
+  // Box
+  ctx.fillStyle='rgba(4,4,18,0.97)';
+  roundRect(ctx,bx,by,bw,bh,6); ctx.fill();
+  ctx.strokeStyle=npc.color; ctx.lineWidth=2;
+  roundRect(ctx,bx,by,bw,bh,6); ctx.stroke();
+
+  // Mini avatar
+  const ax=bx+10, ay=by+10;
+  ctx.fillStyle='rgba(255,255,255,0.04)';
+  roundRect(ctx,ax,ay,58,58,4); ctx.fill();
+  // draw tiny NPC portrait
+  ctx.fillStyle=npc.color; ctx.fillRect(ax+16,ay+31,25,18);
+  ctx.fillStyle='#f0c070'; ctx.fillRect(ax+18,ay+15,21,20);
+  ctx.fillStyle=npc.hat; ctx.fillRect(ax+14,ay+12,28,5); ctx.fillRect(ax+17,ay+8,22,6);
+  ctx.fillStyle='#2a1a0a'; ctx.fillRect(ax+22,ay+20,3,3); ctx.fillRect(ax+32,ay+20,3,3);
+
+  // Name + topic
+  ctx.textAlign='left'; ctx.font='bold 12px monospace';
+  ctx.fillStyle=npc.color;
+  ctx.fillText(npc.name, bx+76, by+20);
+  ctx.font='9px monospace'; ctx.fillStyle='#ffdd44';
+  ctx.fillText('Lição: ' + npc.topic, bx+76, by+35);
+
+  // Dialog text (wrapped)
+  ctx.fillStyle='#d8e8ff'; ctx.font='13px monospace';
+  wrapText(line, bx+76, by+57, bw-90, 17);
+
+  // Progress dots
+  const dotY = by+bh-14;
+  for (let i=0; i<total; i++) {
+    ctx.beginPath();
+    ctx.arc(CVW/2 - (total*10)/2 + i*10 + 5, dotY, 3, 0, Math.PI*2);
+    ctx.fillStyle = i < cur ? npc.color : '#1a2a3a';
+    ctx.fill();
+  }
+
+  // Continue hint
+  const pls = 0.5+0.5*Math.sin(now*0.005);
+  ctx.textAlign='right'; ctx.font='9px monospace';
+  ctx.fillStyle=`rgba(0,255,180,${pls})`;
+  ctx.fillText(cur<total ? '[E] continuar ▶' : '[E] fechar ✓', bx+bw-8, by+bh-8);
+}
+
+function wrapText(text, x, y, maxW, lh) {
+  const words = text.split(' ');
+  let line='', ly=y;
+  for (let i=0; i<words.length; i++) {
+    const test = line + words[i] + ' ';
+    if (ctx.measureText(test).width > maxW && i > 0) {
+      ctx.fillText(line, x, ly); line = words[i]+' '; ly += lh;
+    } else { line = test; }
+  }
+  ctx.fillText(line, x, ly);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+}
+
+// ── Main Loop ─────────────────────────
+function loop(ts) {
+  const dt = Math.min(ts - lastTs, 100);
+  lastTs = ts;
+
+  // Snapshot just-pressed keys for this frame
+  const just = new Set(newk);
+  newk.clear();
+
+  update(dt, just);
+  render(ts);
+
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(ts => { lastTs = ts; requestAnimationFrame(loop); });
+
+function openIndex() {
+  window.location.href = "/";
+}
+
+(function() {
+  const canvas = document.getElementById('c');
+  const ids   = ['brilho', 'saturacao', 'contraste', 'matiz'];
+  const props = ['brightness', 'saturate', 'contrast', 'hue-rotate'];
+
+  function aplicarFiltros() {
+    canvas.style.filter = ids.map((id, i) => {
+      const val = document.getElementById(id).value;
+      const unidade = id === 'matiz' ? '°' : '%';
+      document.getElementById(id + 'Val').textContent = val + unidade;
+      return id === 'matiz'
+        ? `hue-rotate(${val}deg)`
+        : `${props[i]}(${val}%)`;
+    }).join(' ');
+  }
+
+  ids.forEach(id =>
+    document.getElementById(id).addEventListener('input', aplicarFiltros)
+  );
+})();
+</script>
+</body>
+</html>
