@@ -745,7 +745,7 @@ const MAPS = {
       { x:8, y:2,  name:'Bit o Binário', color:'#ff7733', hat:'#cc4400',
         topic:'Sistema Binário e Bits',
         lines:[
-          'Oi! Sou o Bit — o menor pedaço de informação do universo digital!',
+          'Oi! Sou o Bit — o menor pedaço de informação do Universo Digital!',
           'Computadores só entendem BINÁRIO: zeros e uns, 0 e 1.',
           'Pensa num interruptor de luz: desligado (0) ou ligado (1).',
           '8 bits formam 1 BYTE. Com 8 bits você representa 256 valores!',
@@ -791,7 +791,7 @@ const MAPS = {
           'Com esses 4 pilares, você já consegue resolver uma enorme variedade de problemas.',
           'Programação não é decorar código — é aprender a pensar de forma lógica.',
           'Quanto mais você pratica, mais natural isso se torna.',
-          'Agora siga em frente… o mundo da programação está só começando!',
+          'Agora siga em frente... o mundo da programação está só começando!',
         ]},
     ],
   },
@@ -2037,7 +2037,7 @@ function drawGlossary(now) {
     const maxW = colW - 36;
     let topic = npc.topic;
     if (ctx.measureText(topic).width > maxW) {
-      topic = topic.slice(0, 28) + '…';
+      topic = topic.slice(0, 28) + '...';
     }
     ctx.fillText(topic, ix+22, iy+31);
   });
