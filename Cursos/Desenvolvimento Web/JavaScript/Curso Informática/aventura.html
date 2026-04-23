@@ -1252,7 +1252,7 @@ const MAPS = {
           'Profissionais do mundo todo criam capas, logos e artes usando só ferramentas gratuitas.',
         ]},
       { x:18, y:11, name:'Apache Web',  color:'#cc2200', hat:'#881100',
-        topic:'Apache, Nginx e Servidores Open Source',
+        topic:'Apache, Nginx e Servidores',
         lines:[
           'Salve! Sou o Apache Web — sirvo páginas desde 1995!',
           'Apache HTTP Server foi o primeiro grande projeto open source da web.',
@@ -1564,7 +1564,13 @@ document.addEventListener('keydown', e => {
       gs.terminal.input = gs.terminal.histIdx >= 0 ? gs.terminal.history[gs.terminal.histIdx] : '';
       e.preventDefault(); return;
     }
-    if (e.key.length === 1) { gs.terminal.input += e.key; e.preventDefault(); return; }
+    if (e.key.length === 1) {
+      if (gs.terminal.input.length < 60) {
+        gs.terminal.input += e.key;
+      }
+      e.preventDefault();
+      return;
+    }
     e.preventDefault(); return;
   }
   if (!held[e.code]) newk.add(e.code);
@@ -1974,26 +1980,26 @@ function drawGlossary(now) {
 
   // Título
   ctx.textAlign = 'center';
-  ctx.font = 'bold 14px monospace';
+  ctx.font = 'bold 18px monospace';
   ctx.fillStyle = '#00ffcc';
-  ctx.fillText('GLOSSÁRIO DE TECNOLOGIA', CVW/2, 36);
-  ctx.font = '9px monospace';
+  ctx.fillText('GLOSSÁRIO DE TECNOLOGIA', CVW/2, 38);
+  ctx.font = '14px monospace';
   ctx.fillStyle = '#87afd4';
-  ctx.fillText(`${gs.learned.size} de ${allNpcs.length} conceitos aprendidos`, CVW/2, 52);
+  ctx.fillText(`${gs.learned.size} de ${allNpcs.length} conceitos aprendidos`, CVW/2, 64);
 
   // Barra de progresso
   ctx.fillStyle = '#0a1a2a';
-  ctx.fillRect(40, 58, CVW-80, 6);
+  ctx.fillRect(40, 72, CVW-80, 6);
   ctx.fillStyle = gs.learned.size === allNpcs.length ? '#00ffcc' : '#ffdd44';
-  ctx.fillRect(40, 58, (CVW-80)*(gs.learned.size/allNpcs.length), 6);
+  ctx.fillRect(40, 72, (CVW-80)*(gs.learned.size/allNpcs.length), 6);
   ctx.strokeStyle = '#1a3a5a'; ctx.lineWidth = 1;
-  ctx.strokeRect(40, 58, CVW-80, 6);
+  ctx.strokeRect(40, 72, CVW-80, 6);
 
   // Lista de termos (2 colunas)
-  const itemH = 44;
+  const itemH = 48;
   const cols = 2;
   const colW = (CVW - 40) / cols;
-  const startY = 80;
+  const startY = 94;
   const visibleRows = Math.floor((CVH - startY - 30) / itemH);
   const maxScroll = Math.max(0, Math.ceil(allNpcs.length / cols) - visibleRows);
   gs.glossaryScroll = Math.max(0, Math.min(gs.glossaryScroll, maxScroll));
@@ -2026,12 +2032,12 @@ function drawGlossary(now) {
     ctx.fillText(learned ? '✓' : '?', ix+8, iy+18);
 
     // Nome do NPC
-    ctx.font = `bold 10px monospace`;
+    ctx.font = `bold 14px monospace`;
     ctx.fillStyle = learned ? npc.color : '#2a3a4a';
-    ctx.fillText(npc.name, ix+22, iy+18);
+    ctx.fillText(npc.name, ix+22, iy+20);
 
     // Tópico
-    ctx.font = '9px monospace';
+    ctx.font = '12px monospace';
     ctx.fillStyle = learned ? '#aacccc' : '#1a2a3a';
     // Quebra o tópico se for longo
     const maxW = colW - 36;
@@ -2039,14 +2045,14 @@ function drawGlossary(now) {
     if (ctx.measureText(topic).width > maxW) {
       topic = topic.slice(0, 28) + '...';
     }
-    ctx.fillText(topic, ix+22, iy+31);
+    ctx.fillText(topic, ix+22, iy+36);
   });
 
   ctx.restore();
 
   // Rodapé
   ctx.textAlign = 'center';
-  ctx.font = '11px monospace';
+  ctx.font = '16px monospace';
   ctx.fillStyle = '#87afd4';
   ctx.fillText('↑↓ rolar  •  G ou ESC fechar', CVW/2, CVH-24);
 }
@@ -2155,9 +2161,9 @@ function drawTerminal(now) {
   ctx.fillText('AVENTURA DIGITAL TERMINAL — ESC para fechar', CVW/2, by+15);
  
   // Calcular scroll
-  ctx.font='11px monospace';
+  ctx.font='12px monospace';
   ctx.textAlign='left';
-  const lineH=14, startY=by+36, maxLines=Math.floor((bh-50)/lineH);
+  const lineH=14, startY=by+36, maxLines=Math.floor((bh-58)/lineH);
   const totalLines = gs.terminal.lines.length;
   const maxScroll = Math.max(0, totalLines - maxLines);
   gs.terminal.scroll = Math.max(0, Math.min(gs.terminal.scroll, maxScroll));
@@ -2202,20 +2208,20 @@ function drawTerminal(now) {
       ctx.fillStyle = `rgba(0,255,100,${p})`;
       ctx.font = '9px monospace';
       ctx.textAlign = 'right';
-      ctx.fillText('PgUp/PgDn para rolar', bx+bw-14, by+bh-22);
+      ctx.fillText('PgUp/PgDn para rolar', bx+bw-16, by+bh-38);
     }
   }
  
   // Linha de input
   const inputY = by+bh-20;
   ctx.fillStyle='#001800';
-  ctx.fillRect(bx+2, inputY-12, bw-4, 16);
+  ctx.fillRect(bx+2, inputY-12, bw-4, 20);
   ctx.fillStyle='#00ff44';
-  ctx.font='11px monospace';
+  ctx.font='12px monospace';
   ctx.textAlign='left';
   const promptTxt='user@aventura:~$ ';
   const cursor = Math.sin(now*0.006) > 0 ? '█' : ' ';
-  ctx.fillText(promptTxt + gs.terminal.input + cursor, bx+10, inputY);
+  ctx.fillText(promptTxt + gs.terminal.input + cursor, bx+10, inputY + 2);
 }
 
 // ── NPC Drawing ───────────────────────
@@ -2331,7 +2337,7 @@ function drawDialog(dlg, now) {
   ctx.textAlign='left'; ctx.font='bold 12px monospace';
   ctx.fillStyle=npc.color;
   ctx.fillText(npc.name, bx+76, by+20);
-  ctx.font='9px monospace'; ctx.fillStyle='#ffdd44';
+  ctx.font='11px monospace'; ctx.fillStyle='#ffdd44';
   ctx.fillText('Lição: ' + npc.topic, bx+76, by+35);
 
   // Dialog text (wrapped)
