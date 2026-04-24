@@ -710,7 +710,7 @@ const MAPS = {
       [W,G,G,G,T,G,G,B,B,B,B,G,G,G,G,T,T,G,G,AR,AR,G,G,G,W],
       [W,G,G,G,G,G,G,B,F,F,B,G,G,G,G,G,T,G,G,G,G,G,G,G,W],
       [W,G,T,G,G,G,G,B,F,F,B,G,G,G,P,P,P,P,P,G,I,G,G,G,W],
-      [W,G,G,G,G,G,G,B,B,P,B,G,G,G,P,G,G,G,P,P,P,G,G,G,W],
+      [W,G,G,G,G,G,G,B,B,P,B,G,G,G,P,G,G,G,P,P,P,TC,G,G,W],
       [W,G,G,G,P,P,P,P,P,P,P,P,P,P,P,G,G,G,P,G,T,G,G,G,W],
       [W,G,G,G,P,G,G,G,G,G,G,G,G,P,G,G,G,G,P,G,G,G,G,G,W],
       [W,T,G,G,P,G,G,I,I,T,AR,G,G,P,G,G,G,G,G,G,G,G,G,G,W],
@@ -1518,14 +1518,14 @@ const MAPS = {
       { x:22, y:3, name:'Comp Grafi', color:'#dd88ff', hat:'#aa44cc',
         topic:'Computação Gráfica',
         lines:[
-          'Oi! Sou a Comp Grafi — crio mundos digitais a partir da matemática! 🎨',
+          'Oi! Sou a Comp Grafi — crio mundos digitais a partir da matemática!',
           'Computação Gráfica = gerar imagens digitais através de algoritmos.',
           'Rasterização: converte modelos 3D em pixels 2D na sua tela.',
           'Ray Tracing: simula trajetos de raios de luz. Gera imagens FOTO-REALISTAS!',
           'Shader: programa que roda na GPU controlando cor, luz e sombra de cada pixel.',
           'Transformações: matrizes movem, rotacionam e escalonam objetos 3D.',
           'Texturas colam imagens em modelos 3D. Sem texturas, seria tudo liso e sem graça.',
-          'Todo filme da Pixar, todo jogo 3D, todo efeito especial usa computação gráfica! 🎬',
+          'Todo filme da Pixar, todo jogo 3D, todo efeito especial usa computação gráfica!',
         ]},
     ],
   },
@@ -2154,16 +2154,16 @@ function drawTerminal(now) {
  
   // Barra de título
   ctx.fillStyle='#003300';
-  ctx.fillRect(bx+2, by+2, bw-4, 18);
+  ctx.fillRect(bx+2, by+2, bw-4, 22);
   ctx.textAlign='center';
-  ctx.font='bold 10px monospace';
+  ctx.font='bold 14px monospace';
   ctx.fillStyle='#00ff44';
-  ctx.fillText('AVENTURA DIGITAL TERMINAL — ESC para fechar', CVW/2, by+15);
+  ctx.fillText('AVENTURA DIGITAL TERMINAL — ESC para fechar', CVW/2, by+18);
  
   // Calcular scroll
   ctx.font='12px monospace';
   ctx.textAlign='left';
-  const lineH=14, startY=by+36, maxLines=Math.floor((bh-58)/lineH);
+  const lineH=14, startY=by+40, maxLines=Math.floor((bh-58)/lineH);
   const totalLines = gs.terminal.lines.length;
   const maxScroll = Math.max(0, totalLines - maxLines);
   gs.terminal.scroll = Math.max(0, Math.min(gs.terminal.scroll, maxScroll));
@@ -2305,9 +2305,9 @@ function drawHUD(map, now) {
   if (done === total) {
     const p = 0.5+0.5*Math.sin(now*0.003);
     ctx.textAlign='center';
-    ctx.font='bold 11px monospace';
+    ctx.font='bold 14px monospace';
     ctx.fillStyle=`rgba(0,255,200,${p})`;
-    ctx.fillText('PARABÉNS! Você aprendeu todos os conceitos!', CVW/2, 470);
+    ctx.fillText('PARABÉNS! Você aprendeu todos os conceitos!', CVW/2, 468);
   }
 }
 
@@ -2355,9 +2355,9 @@ function drawDialog(dlg, now) {
 
   // Continue hint
   const pls = 0.5+0.5*Math.sin(now*0.005);
-  ctx.textAlign='right'; ctx.font='9px monospace';
+  ctx.textAlign='right'; ctx.font='13px monospace';
   ctx.fillStyle=`rgba(0,255,180,${pls})`;
-  ctx.fillText(cur<total ? '[E] continuar ▶' : '[E] fechar ✓', bx+bw-8, by+bh-8);
+  ctx.fillText(cur<total ? '[E] continuar ▶' : '[E] fechar ✓', bx+bw-10, by+bh-10);
 }
 
 function wrapText(text, x, y, maxW, lh) {
