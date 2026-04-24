@@ -1419,7 +1419,7 @@ const MAPS = {
       { x:4,  y:3,  name:'Graf Teoria',  color:'#cc88ff', hat:'#6622cc',
         topic:'Teoria dos Grafos',
         lines:[
-          'Olá! Sou o Graf Teória — conecto tudo com nós e arestas! 🕸️',
+          'Olá! Sou o Graf Teória — conecto tudo com nós e arestas!',
           'Grafo = conjunto de vértices (nós) ligados por arestas (conexões).',
           'Grafos modelam: redes sociais, mapas, internet, moléculas e muito mais!',
           'Grafo direcionado: arestas têm sentido (A→B ≠ B→A). Ex: seguidores no Twitter.',
@@ -2079,9 +2079,9 @@ function drawTitle(now) {
   ctx.shadowBlur = 0;
 
   // Subtítulo
-  ctx.font = '14px monospace';
+  ctx.font = '16px monospace';
   ctx.fillStyle = '#4a6a88';
-  ctx.fillText('RPG Educativo — Explore o mundo da tecnologia!', CVW/2, CVH/2 - 20);
+  ctx.fillText('RPG Educativo — Explore o mundo da tecnologia!', CVW/2, CVH/2 - 18);
 
   // Prompt piscante
   const blink = Math.sin(now * 0.004) > 0;
@@ -2206,9 +2206,9 @@ function drawTerminal(now) {
     if (gs.terminal.scroll > 0) {
       const p = 0.5 + 0.5*Math.sin(now*0.005);
       ctx.fillStyle = `rgba(0,255,100,${p})`;
-      ctx.font = '9px monospace';
+      ctx.font = '13px monospace';
       ctx.textAlign = 'right';
-      ctx.fillText('PgUp/PgDn para rolar', bx+bw-16, by+bh-38);
+      ctx.fillText('PgUp/PgDn para rolar', bx+bw-18, by+bh-41);
     }
   }
  
@@ -2279,27 +2279,27 @@ function drawHUD(map, now) {
 
   // Map name
   ctx.textAlign = 'left';
-  ctx.font = 'bold 13px monospace';
+  ctx.font = 'bold 15px monospace';
   ctx.fillStyle = '#00ffcc';
-  ctx.fillText(map.name, 10, 20);
-  ctx.font = '10px monospace';
+  ctx.fillText(map.name, 10, 23);
+  ctx.font = '13px monospace';
   ctx.fillStyle = '#87afd4';
-  ctx.fillText(map.sub, 10, 35);
+  ctx.fillText(map.sub, 10, 39);
 
   // Lessons progress (top right)
   const total = Object.values(MAPS).reduce((s,m)=>s+m.npcs.length,0);
   const done = gs.learned.size;
   ctx.textAlign = 'right';
-  ctx.font = 'bold 11px monospace';
+  ctx.font = 'bold 13px monospace';
   ctx.fillStyle = '#ffdd44';
   ctx.fillText(`${done}/${total} lições`, CVW-10, 19);
   // Progress bar
   ctx.fillStyle = '#1a2a3a';
-  ctx.fillRect(CVW-114, 25, 104, 7);
+  ctx.fillRect(CVW-114, 26, 104, 7);
   ctx.fillStyle = done === total ? '#00ffcc' : '#ffdd44';
-  ctx.fillRect(CVW-114, 25, 104*(done/total), 7);
+  ctx.fillRect(CVW-114, 26, 104*(done/total), 7);
   ctx.strokeStyle = '#334455'; ctx.lineWidth = 1;
-  ctx.strokeRect(CVW-114, 25, 104, 7);
+  ctx.strokeRect(CVW-114, 26, 104, 7);
 
   // All learned celebration
   if (done === total) {
@@ -2334,15 +2334,15 @@ function drawDialog(dlg, now) {
   ctx.fillStyle='#2a1a0a'; ctx.fillRect(ax+22,ay+20,3,3); ctx.fillRect(ax+32,ay+20,3,3);
 
   // Name + topic
-  ctx.textAlign='left'; ctx.font='bold 12px monospace';
+  ctx.textAlign='left'; ctx.font='bold 15px monospace';
   ctx.fillStyle=npc.color;
-  ctx.fillText(npc.name, bx+76, by+20);
-  ctx.font='11px monospace'; ctx.fillStyle='#ffdd44';
-  ctx.fillText('Lição: ' + npc.topic, bx+76, by+35);
+  ctx.fillText(npc.name, bx+76, by+22);
+  ctx.font='14px monospace'; ctx.fillStyle='#ffdd44';
+  ctx.fillText('Lição: ' + npc.topic, bx+76, by+41);
 
   // Dialog text (wrapped)
-  ctx.fillStyle='#d8e8ff'; ctx.font='13px monospace';
-  wrapText(line, bx+76, by+57, bw-90, 17);
+  ctx.fillStyle='#d8e8ff'; ctx.font='14px monospace';
+  wrapText(line, bx+76, by+65, bw-90, 17);
 
   // Progress dots
   const dotY = by+bh-14;
