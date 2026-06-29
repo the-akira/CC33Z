@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Treinamento de Edição - Curso de Informática</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    overflow-x: hidden;
+    color: #273E74;
+  }
+
+  header {
+    background-color: #5c6d82;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    border-bottom: solid 5.5px #273E74;
+  }
+
+  .computer {
+    width: 80px;
+    margin: 5px auto 10px;
+    display: block;
+  }
+
+  h1 {
+    margin-top: 12px;
+    margin-bottom: 20px;
+    font-size: 2.3rem;
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  header p.subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 15px;
+  }
+
+  #indexBtn {
+    margin-bottom: 15px;
+    margin-top: 5px;
+    background: white;
+    color: #273E74;
+    border: 3.3px solid #273E74;
+    padding: 9px 12px;
+    font-size: 1.025rem;
+    font-weight: bold;
+    user-select: none;
+  }
+
+  #indexBtn:hover {
+    background-color: #273E74;
+    color: white;
+    border: 3.3px solid white;
+    cursor: pointer;
+  }
+
+  /* ===================== */
+  /* BARRA DE PROGRESSO     */
+  /* ===================== */
+
+  .progress-wrap {
+    max-width: 900px;
+    width: 92%;
+    margin: 25px auto 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #273E74;
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+
+  .progress-bar-bg {
+    width: 100%;
+    height: 22px;
+    background: white;
+    border: 3px solid #273E74;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #5c6d82, #273E74);
+    transition: width 0.4s ease;
+  }
+
+  /* ===================== */
+  /* CONTAINER GERAL        */
+  /* ===================== */
+
+  .main-wrap {
+    max-width: 900px;
+    width: 92%;
+    margin: 25px auto 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .mission {
+    background: white;
+    border: 3px solid #273E74;
+    padding: 25px;
+    position: relative;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .mission.locked {
+    opacity: 0.45;
+    pointer-events: none;
+    filter: grayscale(60%);
+  }
+
+  .mission.completed {
+    border-color: #27ae60;
+  }
+
+  .mission-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .mission-number {
+    background: #273E74;
+    color: white;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+    flex-shrink: 0;
+  }
+
+  .mission.completed .mission-number {
+    background: #27ae60;
+  }
+
+  .mission-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #273E74;
+  }
+
+  .mission-badge {
+    margin-left: auto;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border: 2px solid #273E74;
+    color: #273E74;
+    background: #F2F2F2;
+    white-space: nowrap;
+  }
+
+  .mission.completed .mission-badge {
+    border-color: #27ae60;
+    color: #27ae60;
+    background: #eafaf1;
+  }
+
+  .mission-desc {
+    color: #444;
+    margin-bottom: 18px;
+    line-height: 1.5;
+    font-size: 0.97rem;
+  }
+
+  .mission-desc kbd {
+    background: #273E74;
+    color: white;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .mission-status {
+    margin-top: 14px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    min-height: 20px;
+  }
+
+  .mission-status.ok { color: #27ae60; }
+  .mission-status.err { color: #e74c3c; }
+  .mission-status.info { color: #5c6d82; }
+
+  .hint-btn {
+    margin-top: 12px;
+    background: white;
+    color: #273E74;
+    border: 2px solid #5c6d82;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    background: #F2F2F2;
+  }
+
+  .hint-btn:hover {
+    background: #5c6d82;
+    color: white;
+  }
+
+  .hint-text {
+    display: none;
+    background: #e8f4f8;
+    border-left: 4px solid #273E74;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: #273E74;
+    line-height: 1.3;
+  }
+
+  .hint-text.show {
+    display: block;
+  }
+
+  /* ===================== */
+  /* CAIXAS DE TEXTO        */
+  /* ===================== */
+
+  .box-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .text-box-container {
+    flex: 1;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .text-box-label {
+    font-size: 0.82rem;
+    font-weight: bold;
+    color: #5c6d82;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  textarea.text-box {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 2px solid #273E74;
+    font-size: 1rem;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    resize: vertical;
+    color: #222;
+    resize: none;
+  }
+
+  textarea.text-box:focus {
+    outline: none;
+    border-color: #5c6d82;
+    background: white;
+  }
+
+  textarea.text-box.target-box {
+    background: #fffbe6;
+  }
+
+  textarea.text-box.target-box.filled-ok {
+    background: #eafaf1;
+    border-color: #27ae60;
+  }
+
+  .arrow-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #273E74;
+    font-weight: bold;
+    padding: 0 4px;
+  }
+
+  @media (max-width: 600px) {
+    .box-row {
+      flex-direction: column;
+    }
+    .arrow-icon {
+      transform: rotate(90deg);
+      padding: 4px 0;
+    }
+  }
+
+  /* ===================== */
+  /* SELECIONAR TUDO        */
+  /* ===================== */
+
+  .select-demo-box {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #273E74;
+    background: #f2f2f2;
+    font-size: 1.05rem;
+    user-select: text;
+    cursor: text;
+  }
+
+  .select-demo-box:focus {
+    outline: none;
+    border-color: #5c6d82;
+    background: white;
+  }
+
+  .select-demo-box.selected-ok {
+    background: #eafaf1;
+    border-color: #27ae60;
+  }
+
+  /* ===================== */
+  /* ARRASTAR E SOLTAR      */
+  /* ===================== */
+
+  .dnd-zone {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    min-height: 160px;
+  }
+
+  .drag-source {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .drag-item {
+    background: white;
+    border: 3px solid #273E74;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: grab;
+    font-weight: bold;
+    font-size: 0.9rem;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+
+  .drag-item:active {
+    cursor: grabbing;
+  }
+
+  .drag-item.dragging {
+    opacity: 0.4;
+  }
+
+  .drag-item svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .drop-targets {
+    display: flex;
+    gap: 16px;
+    flex: 2;
+    flex-wrap: wrap;
+  }
+
+  .drop-folder {
+    flex: 1;
+    min-width: 120px;
+    min-height: 130px;
+    border: 3px dashed #5c6d82;
+    background: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.88rem;
+    color: #5c6d82;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .drop-folder.over {
+    background: #dce6f5;
+    border-color: #273E74;
+    border-style: solid;
+  }
+
+  .drop-folder.correct-fill {
+    background: #eafaf1;
+    border-color: #27ae60;
+    border-style: solid;
+    color: #27ae60;
+  }
+
+  .drop-folder svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* ===================== */
+  /* DUPLO CLIQUE           */
+  /* ===================== */
+
+  .dbl-click-icon {
+    width: 90px;
+    margin: 10px auto 14px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .dbl-click-icon svg {
+    width: 64px;
+    height: 64px;
+  }
+
+  .dbl-click-icon .icon-name {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #273E74;
+    margin-top: 4px;
+  }
+
+  .dbl-click-icon.opened svg rect.folder-body {
+    fill: #27ae60;
+  }
+
+  .window-result {
+    display: none;
+    background: #e8f4f8;
+    border: 2px solid #273E74;
+    padding: 14px;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #273E74;
+  }
+
+  .window-result.show {
+    display: block;
+  }
+
+  /* ===================== */
+  /* DESFAZER / REFAZER     */
+  /* ===================== */
+
+  .undo-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .undo-controls button {
+    background-color: #5c6d82;
+    color: white;
+    border: 3px solid #273E74;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .undo-controls button:hover {
+    background-color: #273E74;
+  }
+
+  .undo-controls button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .canvas-paint {
+    width: 100%;
+    height: 160px;
+    background: white;
+    border: 2px solid #273E74;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  .paint-block {
+    width: 36px;
+    height: 36px;
+    background: #f5576c;
+    flex-shrink: 0;
+  }
+
+  .paint-colors {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .paint-color {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #273E74;
+    cursor: pointer;
+  }
+
+  /* ===================== */
+  /* MENU DE CONTEXTO       */
+  /* ===================== */
+
+  .context-target {
+    user-select: text;
+    cursor: text;
+  }
+
+  .custom-context-menu {
+    position: fixed;
+    z-index: 1000;
+    background: white;
+    border: 2px solid #273E74;
+    box-shadow: 3px 3px 0 rgba(39, 62, 116, 0.25);
+    min-width: 180px;
+    max-width: 90vw;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .custom-context-menu.show {
+    display: flex;
+  }
+
+  .custom-context-menu button {
+    background: white;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 0.92rem;
+    font-weight: bold;
+    color: #273E74;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .custom-context-menu button:last-child {
+    border-bottom: none;
+  }
+
+  .custom-context-menu button:hover:not(:disabled) {
+    background: #273E74;
+    color: white;
+  }
+
+  .custom-context-menu button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .custom-context-menu button svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ===================== */
+  /* TELA FINAL             */
+  /* ===================== */
+
+  .final-screen {
+    display: none;
+    max-width: 900px;
+    width: 92%;
+    margin: 0px auto;
+    background: white;
+    border: 4px solid #27ae60;
+    padding: 35px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .final-screen.show {
+    display: block;
+  }
+
+  .final-screen h2 {
+    color: #27ae60;
+    font-size: 2rem;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 15px;
+  }
+
+  .final-screen p {
+    color: #273E74;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .final-screen .trophy {
+    width: 70px;
+    margin-bottom: 10px;
+  }
+
+  .final-screen button {
+    background-color: #5c6d82;
+    color: white;
+    border: 3px solid #273E74;
+    padding: 14px 22px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .final-screen button:hover {
+    background-color: #273E74;
+  }
+
+  @media only screen and (max-width: 600px) {
+    h1 {
+      font-size: 1.7rem;
+    }
+    .mission {
+      padding: 18px;
+    }
+    .mission-title {
+      font-size: 1.1rem;
+    }
+    .mission-badge {
+      margin-left: 0;
+      flex-basis: 100%;
+      text-align: center;
+    }
+  }
+
+  @media only screen and (max-width: 320px) {
+    .text-box-container {
+      min-width: auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header id="pageHeader">
+  <svg class="computer" viewBox="0 0 64 64" fill="white">
+    <rect x="8" y="12" width="48" height="32" rx="2" fill="white"/>
+    <rect x="12" y="16" width="40" height="24" fill="#273E74"/>
+    <rect x="20" y="44" width="24" height="3" fill="white"/>
+    <rect x="16" y="47" width="32" height="5" rx="1" fill="white"/>
+  </svg>
+  <h1>Treinamento de Edição</h1>
+  <p class="subtitle">Pratique copiar, recortar, colar, selecionar e mover — habilidades essenciais para usar o computador</p>
+  <button class="btn" id="indexBtn" onclick="openIndex()">Página Inicial</button>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Progresso</span>
+    <span id="progressText">0 / 9 missões concluídas</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="main-wrap" id="mainWrap">
+
+  <!-- MISSÃO 1: COPIAR E COLAR -->
+  <div class="mission" id="mission1" data-mission="1">
+    <div class="mission-header">
+      <div class="mission-number">1</div>
+      <div class="mission-title">Copiar e Colar</div>
+      <div class="mission-badge" id="badge1">Pendente</div>
+    </div>
+    <div class="mission-desc">
+      Selecione todo o texto na caixa da esquerda, copie com <kbd>CTRL + C</kbd>, clique na caixa da direita e cole com <kbd>CTRL + V</kbd>.
+      Repare que o texto original <strong>continua</strong> na primeira caixa — copiar não remove nada!
+    </div>
+    <div class="box-row">
+      <div class="text-box-container">
+        <div class="text-box-label">Caixa de Origem</div>
+        <textarea class="text-box" id="copySource" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">Informática é o estudo e uso de computadores.</textarea>
+      </div>
+      <div class="arrow-icon">→</div>
+      <div class="text-box-container">
+        <div class="text-box-label">Cole Aqui</div>
+        <textarea class="text-box target-box" id="copyTarget" placeholder="Cole o texto aqui..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+    </div>
+    <div class="mission-status" id="status1"></div>
+    <button class="hint-btn" onclick="toggleHint('hint1')">Dica</button>
+    <div class="hint-text" id="hint1">
+      1. Clique dentro da caixa de origem.<br>
+      2. Pressione <kbd>CTRL + A</kbd> para selecionar tudo (ou arraste o mouse sobre o texto).<br>
+      3. Pressione <kbd>CTRL + C</kbd> para copiar.<br>
+      4. Clique na caixa da direita e pressione <kbd>CTRL + V</kbd> para colar.
+    </div>
+  </div>
+
+  <!-- MISSÃO 2: RECORTAR E COLAR -->
+  <div class="mission locked" id="mission2" data-mission="2">
+    <div class="mission-header">
+      <div class="mission-number">2</div>
+      <div class="mission-title">Recortar e Colar</div>
+      <div class="mission-badge" id="badge2">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Agora selecione o texto da esquerda e recorte com <kbd>CTRL + X</kbd> (em vez de copiar). Depois cole na caixa da direita com <kbd>CTRL + V</kbd>.
+      Recortar <strong>remove</strong> o texto da origem — é assim que você move um texto de um lugar para outro.
+    </div>
+    <div class="box-row">
+      <div class="text-box-container">
+        <div class="text-box-label">Caixa de Origem</div>
+        <textarea class="text-box" id="cutSource" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">Este texto deve ser movido para a caixa da direita.</textarea>
+      </div>
+      <div class="arrow-icon">→</div>
+      <div class="text-box-container">
+        <div class="text-box-label">Cole Aqui</div>
+        <textarea class="text-box target-box" id="cutTarget" placeholder="Cole o texto recortado aqui..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+    </div>
+    <div class="mission-status" id="status2"></div>
+    <button class="hint-btn" onclick="toggleHint('hint2')">Dica</button>
+    <div class="hint-text" id="hint2">
+      1. Selecione o texto na caixa da esquerda (<kbd>CTRL + A</kbd> seleciona tudo).<br>
+      2. Pressione <kbd>CTRL + X</kbd> para recortar — o texto vai desaparecer da origem.<br>
+      3. Clique na caixa da direita e pressione <kbd>CTRL + V</kbd> para colar.
+    </div>
+  </div>
+
+  <!-- MISSÃO 3: SELECIONAR TUDO -->
+  <div class="mission locked" id="mission3" data-mission="3">
+    <div class="mission-header">
+      <div class="mission-number">3</div>
+      <div class="mission-title">Selecionar Tudo</div>
+      <div class="mission-badge" id="badge3">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Clique dentro da caixa abaixo e pressione <kbd>CTRL + A</kbd> para selecionar <strong>todo</strong> o conteúdo de uma vez, sem precisar arrastar o mouse.
+    </div>
+    <div class="select-demo-box" id="selectDemo" contenteditable="false" tabindex="0" spellcheck="false">
+      Use o atalho CTRL + A para selecionar rapidamente todo este texto. Esse comando funciona em quase qualquer programa: editores de texto, navegadores, planilhas e muito mais.
+    </div>
+    <div class="mission-status" id="status3"></div>
+    <button class="hint-btn" onclick="toggleHint('hint3')">Dica</button>
+    <div class="hint-text" id="hint3">
+      1. Clique uma vez dentro da caixa de texto acima.<br>
+      2. Pressione <kbd>CTRL + A</kbd>.<br>
+      3. Todo o texto deve ficar destacado (selecionado) em azul.
+    </div>
+  </div>
+
+  <!-- MISSÃO 4: ARRASTAR E SOLTAR -->
+  <div class="mission locked" id="mission4" data-mission="4">
+    <div class="mission-header">
+      <div class="mission-number">4</div>
+      <div class="mission-title">Arrastar e Soltar (Drag and Drop)</div>
+      <div class="mission-badge" id="badge4">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Clique e <strong>arraste</strong> cada arquivo até a pasta correta. Mantenha o botão esquerdo pressionado, mova o mouse e solte sobre a pasta certa.
+    </div>
+    <div class="dnd-zone">
+      <div class="drag-source" id="dragSource">
+        <div class="drag-item" draggable="true" data-type="image" id="dragImg">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" fill="#4facfe"/><circle cx="8.5" cy="8.5" r="1.5" fill="white"/><path d="M21 15l-5-5L5 21" stroke="white" stroke-width="1.5"/></svg>
+          foto.jpg
+        </div>
+        <div class="drag-item" draggable="true" data-type="document" id="dragDoc">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 2h9l5 5v15H6V2z" fill="#f5576c"/><path d="M15 2v5h5" fill="#d63447"/></svg>
+          relatorio.docx
+        </div>
+      </div>
+      <div class="drop-targets">
+        <div class="drop-folder" data-accepts="image" id="folderImages">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M2 6a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="#5c6d82"/></svg>
+          Pasta Imagens
+        </div>
+        <div class="drop-folder" data-accepts="document" id="folderDocs">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M2 6a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="#5c6d82"/></svg>
+          Pasta Documentos
+        </div>
+      </div>
+    </div>
+    <div class="mission-status" id="status4"></div>
+    <button class="hint-btn" onclick="toggleHint('hint4')">Dica</button>
+    <div class="hint-text" id="hint4">
+      1. Posicione o mouse sobre "foto.jpg" e pressione o botão esquerdo sem soltar.<br>
+      2. Arraste até a "Pasta Imagens" e solte o botão.<br>
+      3. Faça o mesmo com "relatorio.docx" até a "Pasta Documentos".
+    </div>
+  </div>
+
+  <!-- MISSÃO 5: CLIQUE DUPLO -->
+  <div class="mission locked" id="mission5" data-mission="5">
+    <div class="mission-header">
+      <div class="mission-number">5</div>
+      <div class="mission-title">Clique Duplo</div>
+      <div class="mission-badge" id="badge5">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Dê um <strong>clique duplo</strong> (dois cliques rápidos e seguidos) na pasta abaixo para abri-la, assim como você faria no computador para abrir uma pasta ou programa.
+    </div>
+    <div class="dbl-click-icon" id="dblClickFolder">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path class="folder-body" d="M2 6a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="#5c6d82"/>
+      </svg>
+      <div class="icon-name">Meus Documentos</div>
+    </div>
+    <div class="window-result" id="dblClickResult">Pasta aberta com sucesso! Dentro dela: trabalho.docx, foto.jpg, planilha.xlsx</div>
+    <div class="mission-status" id="status5"></div>
+    <button class="hint-btn" onclick="toggleHint('hint5')">Dica</button>
+    <div class="hint-text" id="hint5">
+      Clique duas vezes rapidamente, sem mover o mouse entre os cliques. Se nada acontecer, tente clicar um pouco mais rápido.
+    </div>
+  </div>
+
+  <!-- MISSÃO 6: DESFAZER E REFAZER -->
+  <div class="mission locked" id="mission6" data-mission="6">
+    <div class="mission-header">
+      <div class="mission-number">6</div>
+      <div class="mission-title">Desfazer e Refazer</div>
+      <div class="mission-badge" id="badge6">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Clique nas cores abaixo para "pintar" o quadrado. Depois use <kbd>CTRL + Z</kbd> (Desfazer) para voltar uma ação e <kbd>CTRL + Y</kbd> (Refazer) para repetir uma ação desfeita.
+      Pinte com pelo menos uma cor diferente, desfaça uma vez e refaça uma vez para completar a missão.
+    </div>
+    <div class="canvas-paint">
+      <div class="paint-block" id="paintBlock"></div>
+    </div>
+    <div class="paint-colors">
+      <div class="paint-color" style="background:#f5576c" onclick="paintColor('#f5576c')"></div>
+      <div class="paint-color" style="background:#4facfe" onclick="paintColor('#4facfe')"></div>
+      <div class="paint-color" style="background:#f6c343" onclick="paintColor('#f6c343')"></div>
+      <div class="paint-color" style="background:#27ae60" onclick="paintColor('#27ae60')"></div>
+    </div>
+    <div class="undo-controls">
+      <button onclick="paintUndo()" id="undoBtn">↶ Desfazer (CTRL+Z)</button>
+      <button onclick="paintRedo()" id="redoBtn">↷ Refazer (CTRL+Y)</button>
+    </div>
+    <div class="mission-status" id="status6"></div>
+    <button class="hint-btn" onclick="toggleHint('hint6')">Dica</button>
+    <div class="hint-text" id="hint6">
+      1. Clique em duas cores diferentes para pintar o quadrado duas vezes.<br>
+      2. Pressione <kbd>CTRL + Z</kbd> (ou clique em Desfazer) — a cor deve voltar para a anterior.<br>
+      3. Pressione <kbd>CTRL + Y</kbd> (ou clique em Refazer) — a cor deve avançar novamente.
+    </div>
+  </div>
+
+  <!-- MISSÃO 7: DESAFIO FINAL -->
+  <div class="mission locked" id="mission7" data-mission="7">
+    <div class="mission-header">
+      <div class="mission-number">7</div>
+      <div class="mission-title">Organizando Parágrafos</div>
+      <div class="mission-badge" id="badge7">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Na caixa da esquerda está um pequeno texto sobre a história do computador pessoal, mas os <strong>parágrafos estão fora de ordem</strong> (cada um começa com um número entre colchetes, tipo <kbd>[3]</kbd>, só para você identificar — esses números não fazem parte do texto final).
+      Sua missão: mover os parágrafos um por um para a caixa da direita, na <strong>ordem correta da história</strong> (1, 2, 3 e 4). Use <kbd>CTRL + A</kbd>, <kbd>CTRL + C</kbd>, <kbd>CTRL + X</kbd> e <kbd>CTRL + V</kbd> como preferir — você pode selecionar só um parágrafo por vez (clique e arraste o mouse sobre o trecho) em vez de selecionar tudo.
+    </div>
+    <div class="box-row">
+      <div class="text-box-container">
+        <div class="text-box-label">Parágrafos fora de ordem</div>
+        <textarea class="text-box" id="finalSource" style="min-height:220px;" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">[3] Foi só nos anos 2000 que os computadores se tornaram realmente portáteis e acessíveis, com os notebooks caindo de preço e os smartphones surgindo como verdadeiros computadores de bolso.
+
+[1] Nas décadas de 1940 e 1950, os primeiros computadores ocupavam salas inteiras, pesavam toneladas e eram usados apenas por governos, universidades e grandes empresas.
+
+[4] Hoje, carregamos no bolso um poder de processamento muito maior do que aquele que levou o homem à Lua, e usamos o computador para quase tudo: estudar, trabalhar, criar e se comunicar.
+
+[2] Na década de 1980, com o lançamento de modelos mais baratos e compactos, o computador pessoal começou a chegar nas casas e escritórios das famílias comuns.</textarea>
+      </div>
+      <div class="arrow-icon">→</div>
+      <div class="text-box-container">
+        <div class="text-box-label">Texto na ordem correta</div>
+        <textarea class="text-box target-box" id="finalTarget" placeholder="Monte aqui o texto na ordem certa, um parágrafo por vez..." style="min-height:220px;" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+    </div>
+    <div class="mission-status" id="status7"></div>
+    <button class="hint-btn" onclick="toggleHint('hint7')">Dica</button>
+    <div class="hint-text" id="hint7">
+      1. Encontre o parágrafo marcado com <kbd>[1]</kbd> na caixa da esquerda.<br>
+      2. Clique no início do parágrafo e arraste o mouse até o fim dele para selecionar só aquele trecho (não use CTRL+A aqui, ou vai selecionar tudo).<br>
+      3. Recorte com <kbd>CTRL + X</kbd>, clique na caixa da direita e cole com <kbd>CTRL + V</kbd>.<br>
+      4. Repita o processo para os parágrafos <kbd>[2]</kbd>, <kbd>[3]</kbd> e <kbd>[4]</kbd>, sempre colando um abaixo do outro na ordem certa.
+    </div>
+  </div>
+
+  <!-- MISSÃO 8: SELECIONAR APENAS UM TRECHO -->
+  <div class="mission locked" id="mission8" data-mission="8">
+    <div class="mission-header">
+      <div class="mission-number">8</div>
+      <div class="mission-title">Selecionando Apenas um Trecho</div>
+      <div class="mission-badge" id="badge8">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Nem sempre você quer copiar um texto inteiro — às vezes precisa de só um pedaço específico no meio de um texto grande. Na caixa abaixo, selecione <strong>apenas esta frase</strong>, sem nenhuma palavra antes ou depois dela:
+      <br><br>
+      <em style="color:#273E74;">"A Internet é uma rede mundial de computadores interligados."</em>
+      <br><br>
+      Depois copie (<kbd>CTRL + C</kbd>) e cole (<kbd>CTRL + V</kbd>) na caixa da direita. Capricho aqui: pegue a frase completa, sem cortar nenhuma palavra e sem deixar espaços sobrando antes ou depois.
+    </div>
+    <div class="box-row">
+      <div class="text-box-container">
+        <div class="text-box-label">Texto completo</div>
+        <textarea class="text-box" id="snippetSource" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" style="min-height:240px;">O computador é uma máquina capaz de processar informações seguindo instruções. Ele é formado por hardware, que são as peças físicas, e software, que são os programas. Desde sua invenção, o computador revolucionou a forma como as pessoas trabalham e se comunicam.
+
+A Internet é uma rede mundial de computadores interligados. Por meio dela, é possível enviar mensagens, acessar sites, assistir vídeos e trocar arquivos com pessoas em qualquer parte do planeta, quase instantaneamente.
+
+Para usar bem um computador, é importante conhecer comandos básicos do teclado e do mouse, como copiar, colar, recortar e selecionar texto. Esses comandos economizam tempo e tornam o trabalho no computador muito mais eficiente no dia a dia.</textarea>
+      </div>
+      <div class="arrow-icon">→</div>
+      <div class="text-box-container">
+        <div class="text-box-label">Cole apenas a frase aqui</div>
+        <textarea class="text-box target-box" id="snippetTarget" placeholder="Cole só a frase pedida..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" style="min-height:240px;"></textarea>
+      </div>
+    </div>
+    <div class="mission-status" id="status8"></div>
+    <button class="hint-btn" onclick="toggleHint('hint8')">Dica</button>
+    <div class="hint-text" id="hint8">
+      1. Localize a frase no segundo parágrafo do texto da esquerda.<br>
+      2. Clique bem no início da palavra "A" (antes do "A Internet...") e, sem soltar o botão do mouse, arraste até depois do ponto final "interligados."<br>
+      3. Solte o botão — só aquela frase deve ficar destacada em azul.<br>
+      4. Copie com <kbd>CTRL + C</kbd>, clique na caixa da direita e cole com <kbd>CTRL + V</kbd>.<br>
+      5. Dica extra: para ajustar a seleção com mais precisão, você pode segurar <kbd>SHIFT</kbd> e usar as setas do teclado, ou <kbd>SHIFT + clique</kbd> no ponto exato onde quer terminar a seleção.
+    </div>
+  </div>
+
+  <!-- MISSÃO 9: CLIQUE DIREITO E MENU DE CONTEXTO -->
+  <div class="mission locked" id="mission9" data-mission="9">
+    <div class="mission-header">
+      <div class="mission-number">9</div>
+      <div class="mission-title">Clique Direito e Menu de Contexto</div>
+      <div class="mission-badge" id="badge9">Bloqueada</div>
+    </div>
+    <div class="mission-desc">
+      Quem esquece os atalhos de teclado pode usar o <strong>botão direito do mouse</strong>! Ao clicar com ele sobre um texto selecionado, aparece um pequeno menu com opções como Copiar, Recortar e Colar — é o chamado <strong>menu de contexto</strong>.
+      <br><br>
+      Nesta missão, use <strong>apenas o menu de contexto</strong> (clique direito), sem usar CTRL+C ou CTRL+V: selecione o texto da caixa da esquerda, clique com o botão direito e escolha <strong>"Copiar"</strong> no menu. Depois clique com o botão direito dentro da caixa da direita e escolha <strong>"Colar"</strong>.
+    </div>
+    <div class="box-row">
+      <div class="text-box-container">
+        <div class="text-box-label">Selecione e clique com o botão direito</div>
+        <textarea class="text-box context-target" id="contextSource" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">O menu de contexto aparece ao clicar com o botão direito do mouse.</textarea>
+      </div>
+      <div class="arrow-icon">→</div>
+      <div class="text-box-container">
+        <div class="text-box-label">Clique direito aqui e escolha Colar</div>
+        <textarea class="text-box target-box context-target" id="contextTarget" placeholder="Use o menu de contexto para colar aqui..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+    </div>
+    <div class="mission-status" id="status9"></div>
+    <button class="hint-btn" onclick="toggleHint('hint9')">Dica</button>
+    <div class="hint-text" id="hint9">
+      1. Selecione todo o texto da caixa da esquerda (pode usar CTRL+A ou arrastar o mouse).<br>
+      2. Clique com o <strong>botão direito</strong> do mouse sobre a seleção — um menu deve aparecer.<br>
+      3. Clique em "Copiar" no menu.<br>
+      4. Clique com o botão direito dentro da caixa da direita.<br>
+      5. Clique em "Colar" no menu que aparecer.<br>
+      <em>Obs: nesta missão o atalho de teclado CTRL+C/CTRL+V foi desativado de propósito, para te obrigar a praticar o menu de contexto.</em>
+    </div>
+  </div>
+
+</div>
+
+<div class="custom-context-menu" id="customContextMenu">
+  <button id="ctxCopyBtn">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="1" stroke="currentColor" stroke-width="2"/><rect x="4" y="4" width="12" height="12" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+    Copiar
+  </button>
+  <button id="ctxCutBtn">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="6" r="2.5" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="18" r="2.5" stroke="currentColor" stroke-width="2"/><path d="M8.5 7.5L20 19M20 5L8.5 16.5" stroke="currentColor" stroke-width="2"/></svg>
+    Recortar
+  </button>
+  <button id="ctxPasteBtn">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="17" rx="1" stroke="currentColor" stroke-width="2"/><rect x="9" y="2" width="6" height="4" rx="1" fill="currentColor"/></svg>
+    Colar
+  </button>
+  <button id="ctxSelectAllBtn">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="1" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2"/></svg>
+    Selecionar Tudo
+  </button>
+</div>
+
+<div class="final-screen" id="finalScreen">
+  <h2>Parabéns!</h2>
+  <p>Você concluiu o Treinamento de Edição e já domina os comandos essenciais: copiar, recortar, colar, selecionar (tudo ou só um trecho), arrastar, desfazer e até usar o menu de contexto (clique direito). Essas habilidades vão te ajudar em qualquer programa do computador!</p>
+  <button onclick="restartTraining()">Refazer Treinamento</button>
+</div>
+
+<script>
+  // ============================
+  // ESTADO GERAL / PROGRESSO
+  // ============================
+
+  const TOTAL_MISSIONS = 9;
+  let completed = new Set();
+
+  function markCompleted(num) {
+    if (completed.has(num)) return;
+    completed.add(num);
+
+    const mission = document.getElementById('mission' + num);
+    mission.classList.add('completed');
+    document.getElementById('badge' + num).textContent = 'Concluída';
+
+    unlockNext(num);
+    updateProgress();
+
+    if (completed.size === TOTAL_MISSIONS) {
+      setTimeout(() => {
+        document.getElementById('finalScreen').classList.add('show');
+        document.getElementById('finalScreen').scrollIntoView({ behavior: 'smooth' });
+      }, 600);
+    }
+  }
+
+  function unlockNext(num) {
+    const next = document.getElementById('mission' + (num + 1));
+    if (next) {
+      next.classList.remove('locked');
+      const badge = document.getElementById('badge' + (num + 1));
+      if (badge) badge.textContent = 'Pendente';
+    }
+  }
+
+  function updateProgress() {
+    const pct = Math.round((completed.size / TOTAL_MISSIONS) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = completed.size + ' / ' + TOTAL_MISSIONS + ' missões concluídas';
+  }
+
+  function setStatus(num, text, type) {
+    const el = document.getElementById('status' + num);
+    el.textContent = text;
+    el.className = 'mission-status ' + (type || '');
+  }
+
+  function toggleHint(id) {
+    document.getElementById(id).classList.toggle('show');
+  }
+
+  function openIndex() {
+    window.location.href = "/";
+  }
+
+  // Trava uma textarea contra edição (digitar, apagar, colar, recortar),
+  // mas mantém cursor visível, navegação e seleção/cópia funcionando normalmente.
+  // Usado no lugar do atributo "readonly", que em alguns navegadores
+  // impede o cursor piscante de aparecer.
+  function lockTextareaFromEditing(textarea) {
+    const allowedKeys = new Set([
+      'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+      'Home', 'End', 'PageUp', 'PageDown',
+      'Shift', 'Control', 'Meta', 'Alt', 'Tab', 'Escape'
+    ]);
+
+    textarea.addEventListener('keydown', (e) => {
+      const isCopy = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c';
+      const isSelectAll = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a';
+
+      if (isCopy || isSelectAll || allowedKeys.has(e.key)) {
+        return; // permite normalmente
+      }
+      e.preventDefault(); // bloqueia digitar, apagar, recortar (CTRL+X), colar (CTRL+V), etc.
+    });
+
+    textarea.addEventListener('paste', (e) => e.preventDefault());
+    textarea.addEventListener('cut', (e) => e.preventDefault());
+    textarea.addEventListener('drop', (e) => e.preventDefault());
+  }
+
+  // ============================
+  // MISSÃO 1: COPIAR E COLAR
+  // ============================
+
+  const copySource = document.getElementById('copySource');
+  const copyTarget = document.getElementById('copyTarget');
+  const expectedCopyText = copySource.value.trim();
+  lockTextareaFromEditing(copySource);
+
+  copyTarget.addEventListener('input', () => {
+    if (completed.has(1)) return;
+
+    const sourceStillIntact = copySource.value.trim() === expectedCopyText;
+    const targetMatches = copyTarget.value.trim() === expectedCopyText;
+
+    if (targetMatches && sourceStillIntact) {
+      copyTarget.classList.add('filled-ok');
+      setStatus(1, 'Perfeito! Você copiou o texto e ele continua na origem também.', 'ok');
+      markCompleted(1);
+    } else if (targetMatches && !sourceStillIntact) {
+      setStatus(1, 'Quase! Parece que você recortou (CTRL+X) em vez de copiar (CTRL+C). A origem deveria continuar com o texto.', 'err');
+    } else if (copyTarget.value.trim().length > 0) {
+      setStatus(1, 'Texto incompleto ou diferente. Selecione tudo com CTRL+A antes de copiar.', 'err');
+    } else {
+      setStatus(1, '', '');
+    }
+  });
+
+  // ============================
+  // MISSÃO 2: RECORTAR E COLAR
+  // ============================
+
+  const cutSource = document.getElementById('cutSource');
+  const cutTarget = document.getElementById('cutTarget');
+  const expectedCutText = cutSource.value.trim();
+
+  function checkCutMission() {
+    if (completed.has(2)) return; 
+
+    const sourceEmpty = cutSource.value.trim().length === 0;
+    const targetMatches = cutTarget.value.trim() === expectedCutText;
+
+    if (targetMatches && sourceEmpty) {
+      cutTarget.classList.add('filled-ok');
+      setStatus(2, 'Ótimo! Você recortou o texto (saiu da origem) e colou no destino.', 'ok');
+      markCompleted(2);
+    } else if (targetMatches && !sourceEmpty) {
+      setStatus(2, 'O texto está no destino, mas ainda está na origem também — isso foi uma cópia (CTRL+C), não um recorte (CTRL+X). Desfaça e tente recortar.', 'err');
+    } else if (cutTarget.value.trim().length > 0) {
+      setStatus(2, 'Texto incompleto ou diferente do esperado.', 'err');
+    } else {
+      setStatus(2, '', '');
+    }
+  }
+
+  cutSource.addEventListener('input', checkCutMission);
+  cutTarget.addEventListener('input', checkCutMission);
+
+  // ============================
+  // MISSÃO 3: SELECIONAR TUDO
+  // ============================
+
+  const selectDemo = document.getElementById('selectDemo');
+  selectDemo.setAttribute('contenteditable', 'true');
+  selectDemo.setAttribute('spellcheck', 'false');
+
+  selectDemo.addEventListener('keydown', (e) => {
+    e.preventDefault();
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+      const range = document.createRange();
+      range.selectNodeContents(selectDemo);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  });
+
+  document.addEventListener('selectionchange', () => {
+    const sel = window.getSelection();
+    if (sel.rangeCount === 0) return;
+    if (!selectDemo.contains(sel.anchorNode)) return;
+
+    const selectedText = sel.toString().trim();
+    const fullText = selectDemo.textContent.trim();
+
+    if (selectedText.length > 0 && selectedText.length >= fullText.length - 2) {
+      selectDemo.classList.add('selected-ok');
+      setStatus(3, 'Todo o texto foi selecionado com sucesso!', 'ok');
+      markCompleted(3);
+    }
+  });
+
+  // ============================
+  // MISSÃO 4: ARRASTAR E SOLTAR
+  // ============================
+
+  let dndPlaced = { image: false, document: false };
+
+  document.querySelectorAll('.drag-item').forEach(item => {
+    item.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', item.dataset.type);
+      item.classList.add('dragging');
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+    });
+  });
+
+  document.querySelectorAll('.drop-folder').forEach(folder => {
+    folder.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      folder.classList.add('over');
+    });
+    folder.addEventListener('dragleave', () => {
+      folder.classList.remove('over');
+    });
+    folder.addEventListener('drop', (e) => {
+      e.preventDefault();
+      folder.classList.remove('over');
+      const type = e.dataTransfer.getData('text/plain');
+
+      if (type === folder.dataset.accepts) {
+        folder.classList.add('correct-fill');
+        dndPlaced[type] = true;
+
+        const draggedEl = type === 'image' ? document.getElementById('dragImg') : document.getElementById('dragDoc');
+        if (draggedEl && draggedEl.parentElement) draggedEl.remove();
+
+        if (dndPlaced.image && dndPlaced.document) {
+          setStatus(4, 'Os dois arquivos foram movidos para as pastas corretas!', 'ok');
+          markCompleted(4);
+        } else {
+          setStatus(4, 'Bom! Agora mova o outro arquivo para a pasta correta.', 'info');
+        }
+      } else {
+        setStatus(4, 'Pasta errada! Esse tipo de arquivo não pertence a essa pasta. Tente novamente.', 'err');
+      }
+    });
+  });
+
+  // ============================
+  // MISSÃO 5: CLIQUE DUPLO
+  // ============================
+
+  const dblFolder = document.getElementById('dblClickFolder');
+  let singleClickTimer = null;
+ 
+  dblFolder.addEventListener('dblclick', () => {
+    // cancela o aviso de "clique único" agendado, já que o duplo clique foi confirmado
+    clearTimeout(singleClickTimer);
+ 
+    dblFolder.classList.add('opened');
+    document.getElementById('dblClickResult').classList.add('show');
+    setStatus(5, 'Você abriu a pasta com um clique duplo!', 'ok');
+    markCompleted(5);
+  });
+ 
+  dblFolder.addEventListener('click', () => {
+    if (completed.has(5)) return;
+ 
+    // espera um instante para ver se um segundo clique vai virar um "dblclick";
+    // se virar, o listener de dblclick acima cancela este timer antes dele disparar
+    clearTimeout(singleClickTimer);
+    singleClickTimer = setTimeout(() => {
+      if (!completed.has(5)) {
+        setStatus(5, 'Foi só um clique. Tente clicar duas vezes rapidamente, sem mover o mouse.', 'info');
+      }
+    }, 350);
+  });
+
+  // ============================
+  // MISSÃO 6: DESFAZER / REFAZER
+  // ============================
+
+  const paintBlock = document.getElementById('paintBlock');
+  let paintHistory = ['#f5576c'];
+  let paintIndex = 0;
+  let distinctColorsUsed = new Set(['#f5576c']);
+  let undoCount = 0;
+  let redoCount = 0;
+
+  function renderPaint() {
+    paintBlock.style.background = paintHistory[paintIndex];
+    document.getElementById('undoBtn').disabled = paintIndex <= 0;
+    document.getElementById('redoBtn').disabled = paintIndex >= paintHistory.length - 1;
+  }
+
+  function paintColor(color) {
+    paintHistory = paintHistory.slice(0, paintIndex + 1);
+    paintHistory.push(color);
+    paintIndex++;
+    distinctColorsUsed.add(color);
+    renderPaint();
+    checkPaintMission();
+  }
+
+  function paintUndo() {
+    if (paintIndex > 0) {
+      paintIndex--;
+      undoCount++;
+      renderPaint();
+      checkPaintMission();
+    }
+  }
+
+  function paintRedo() {
+    if (paintIndex < paintHistory.length - 1) {
+      paintIndex++;
+      redoCount++;
+      renderPaint();
+      checkPaintMission();
+    }
+  }
+
+  function checkPaintMission() {
+    if (distinctColorsUsed.size >= 2 && undoCount >= 1 && redoCount >= 1) {
+      setStatus(6, 'Você pintou, desfez e refez ações como um profissional!', 'ok');
+      markCompleted(6);
+    } else {
+      let missing = [];
+      // if (distinctColorsUsed.size < 2) missing.push('pintar com 2 cores diferentes');
+      if (undoCount < 1) missing.push('usar Desfazer (CTRL+Z)');
+      if (redoCount < 1) missing.push('usar Refazer (CTRL+Y)');
+      if (missing.length > 0 && missing.length < 3) {
+        setStatus(6, 'Falta apenas: ' + missing.join(' e ') + '.', 'info');
+      }
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('mission6').classList.contains('locked')) return;
+
+    const tag = document.activeElement ? document.activeElement.tagName : '';
+    const isEditableFocus = tag === 'TEXTAREA' || tag === 'INPUT' || document.activeElement?.isContentEditable;
+    if (isEditableFocus) return;
+
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      paintUndo();
+    } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+      e.preventDefault();
+      paintRedo();
+    }
+  });
+
+  renderPaint();
+
+  // ============================
+  // MISSÃO 7: DESAFIO FINAL
+  // ============================
+
+  const finalSource = document.getElementById('finalSource');
+  const finalTarget = document.getElementById('finalTarget');
+
+  // Texto "puro" de cada parágrafo (sem o marcador [n]), na ordem correta da história
+  const finalParagraphs = [
+    'Nas décadas de 1940 e 1950, os primeiros computadores ocupavam salas inteiras, pesavam toneladas e eram usados apenas por governos, universidades e grandes empresas.',
+    'Na década de 1980, com o lançamento de modelos mais baratos e compactos, o computador pessoal começou a chegar nas casas e escritórios das famílias comuns.',
+    'Foi só nos anos 2000 que os computadores se tornaram realmente portáteis e acessíveis, com os notebooks caindo de preço e os smartphones surgindo como verdadeiros computadores de bolso.',
+    'Hoje, carregamos no bolso um poder de processamento muito maior do que aquele que levou o homem à Lua, e usamos o computador para quase tudo: estudar, trabalhar, criar e se comunicar.'
+  ];
+
+  // normaliza: remove marcadores [n], espaços extras, e baixa caixa, p/ comparar com tolerância
+  function normalize(text) {
+    return text
+      .replace(/\[\s*\d+\s*\]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }
+
+  function splitIntoParagraphs(text) {
+    return text
+      .split(/\n+/)
+      .map(p => normalize(p))
+      .filter(p => p.length > 0);
+  }
+
+  // NOVA FUNÇÃO
+  function matchParagraphsLoosely(targetRawText, expectedNormalizedList) {
+    const wholeNormalized = normalize(targetRawText);
+    let cursor = 0;
+    let matchedCount = 0;
+
+    for (const expectedParagraph of expectedNormalizedList) {
+      const remaining = wholeNormalized.slice(cursor).trimStart();
+      if (remaining.startsWith(expectedParagraph)) {
+        cursor = wholeNormalized.length - remaining.length + expectedParagraph.length;
+        matchedCount++;
+      } else {
+        break;
+      }
+    }
+
+    const remainderAfterMatches = wholeNormalized.slice(cursor).trim();
+    return {
+      matchedCount,
+      hasExtra: remainderAfterMatches.length > 0
+    };
+  }
+
+  function checkFinalMission() {
+    if (completed.has(7)) return;
+
+    const expectedNormalized = finalParagraphs.map(normalize);
+    const rawTarget = finalTarget.value;
+
+    if (rawTarget.trim().length === 0) {
+      setStatus(7, '', '');
+      finalTarget.classList.remove('filled-ok');
+      return;
+    }
+
+    // Tentativa 1: por linha (igual antes)
+    const targetParagraphs = splitIntoParagraphs(rawTarget);
+    let matchedCount = 0;
+    let progressOk = true;
+    for (let i = 0; i < targetParagraphs.length; i++) {
+      if (i >= expectedNormalized.length || targetParagraphs[i] !== expectedNormalized[i]) {
+        progressOk = false;
+        break;
+      }
+      matchedCount++;
+    }
+
+    let hasExtra = false;
+
+    if (progressOk && targetParagraphs.length > 0) {
+      matchedCount = targetParagraphs.length;
+      hasExtra = false;
+    } else {
+      // NOVO: Tentativa 2, sem depender de quebra de linha
+      const looseResult = matchParagraphsLoosely(rawTarget, expectedNormalized);
+      matchedCount = looseResult.matchedCount;
+      hasExtra = looseResult.hasExtra;
+
+      if (matchedCount === 0) {
+        setStatus(7, 'Algum parágrafo está fora de ordem ou incompleto. Confira e ajuste.', 'err');
+        finalTarget.classList.remove('filled-ok');
+        return;
+      }
+    }
+
+    const allFour = matchedCount === 4 && !hasExtra;
+
+    if (allFour) {
+      finalTarget.classList.add('filled-ok');
+      setStatus(7, 'Excelente! Os 4 parágrafos estão na ordem certa!', 'ok');
+      markCompleted(7);
+    } else {
+      setStatus(7, `Até agora certo! ${matchedCount} de 4 parágrafos na ordem correta. Continue movendo os próximos.`, 'info');
+      finalTarget.classList.remove('filled-ok');
+    }
+  }
+
+  finalSource.addEventListener('input', checkFinalMission);
+  finalTarget.addEventListener('input', checkFinalMission);
+
+  // ============================
+  // MISSÃO 8: SELECIONAR APENAS UM TRECHO
+  // ============================
+
+  const snippetSource = document.getElementById('snippetSource');
+  const snippetTarget = document.getElementById('snippetTarget');
+  const expectedSnippet = 'A Internet é uma rede mundial de computadores interligados.';
+  lockTextareaFromEditing(snippetSource);
+
+  function normalizeSnippet(text) {
+    return text.replace(/\s+/g, ' ').trim();
+  }
+
+  snippetTarget.addEventListener('input', () => {
+    const pasted = normalizeSnippet(snippetTarget.value);
+    if (completed.has(8)) return;
+
+    if (pasted.length === 0) {
+      setStatus(8, '', '');
+      snippetTarget.classList.remove('filled-ok');
+      return;
+    }
+
+    if (pasted === expectedSnippet) {
+      snippetTarget.classList.add('filled-ok');
+      setStatus(8, 'Perfeito! Você selecionou exatamente a frase pedida, nem mais nem menos.', 'ok');
+      markCompleted(8);
+      return;
+    }
+
+    snippetTarget.classList.remove('filled-ok');
+
+    if (expectedSnippet.includes(pasted) && pasted.length > 3) {
+      setStatus(8, 'Você selecionou só uma parte da frase. Inclua o trecho completo, do início ao ponto final.', 'err');
+    } else if (pasted.includes(expectedSnippet)) {
+      setStatus(8, 'A frase certa está aí, mas sobrou texto antes ou depois dela. Ajuste a seleção para pegar só a frase pedida.', 'err');
+    } else {
+      setStatus(8, 'Esse não é o trecho pedido. Releia a frase em destaque e tente selecionar exatamente ela.', 'err');
+    }
+  });
+
+  // ============================
+  // MISSÃO 9: CLIQUE DIREITO E MENU DE CONTEXTO
+  // ============================
+
+  const contextSource = document.getElementById('contextSource');
+  const contextTarget = document.getElementById('contextTarget');
+  const contextMenu = document.getElementById('customContextMenu');
+  const expectedContextText = contextSource.value.trim();
+
+  let internalClipboard = '';
+  let activeContextTextarea = null;
+  let usedContextMenu = { copy: false, paste: false };
+
+  function getSelectionBounds(textarea) {
+    return { start: textarea.selectionStart, end: textarea.selectionEnd };
+  }
+
+  function showContextMenu(x, y, textarea) {
+    activeContextTextarea = textarea;
+    const { start, end } = getSelectionBounds(textarea);
+    const hasSelection = start !== end;
+
+    document.getElementById('ctxCopyBtn').disabled = !hasSelection;
+    document.getElementById('ctxCutBtn').disabled = !hasSelection;
+    document.getElementById('ctxPasteBtn').disabled = internalClipboard.length === 0;
+
+    contextMenu.classList.add('show');
+
+    // ajusta posição para não vazar da tela
+    const menuRect = contextMenu.getBoundingClientRect();
+    const maxX = window.innerWidth - menuRect.width - 8;
+    const maxY = window.innerHeight - menuRect.height - 8;
+    contextMenu.style.left = Math.min(x, maxX) + 'px';
+    contextMenu.style.top = Math.min(y, maxY) + 'px';
+  }
+
+  function hideContextMenu() {
+    contextMenu.classList.remove('show');
+  }
+
+  document.querySelectorAll('.context-target').forEach(textarea => {
+    textarea.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      textarea.focus();
+      showContextMenu(e.clientX, e.clientY, textarea);
+    });
+
+    // Suporte a toque longo (long-press) em celulares/tablets, já que não existe "botão direito" no touch
+    let longPressTimer = null;
+    let touchMoved = false;
+
+    textarea.addEventListener('touchstart', (e) => {
+      touchMoved = false;
+      const touch = e.touches[0];
+      longPressTimer = setTimeout(() => {
+        if (!touchMoved) {
+          textarea.focus();
+          showContextMenu(touch.clientX, touch.clientY, textarea);
+        }
+      }, 500);
+    }, { passive: true });
+
+    textarea.addEventListener('touchmove', () => {
+      touchMoved = true;
+      clearTimeout(longPressTimer);
+    }, { passive: true });
+
+    textarea.addEventListener('touchend', () => {
+      clearTimeout(longPressTimer);
+    });
+
+    // dentro destas caixas, desativa os atalhos de teclado para forçar o uso do menu
+    textarea.addEventListener('keydown', (e) => {
+      const isCtrlCmd = e.ctrlKey || e.metaKey;
+      if (isCtrlCmd && ['c', 'x', 'v'].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+        setStatus(9, 'Nesta missão os atalhos de teclado estão desativados — use o clique direito do mouse.', 'info');
+      }
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!contextMenu.contains(e.target)) {
+      hideContextMenu();
+    }
+  });
+
+  document.getElementById('ctxCopyBtn').addEventListener('click', () => {
+    if (!activeContextTextarea) return;
+    const { start, end } = getSelectionBounds(activeContextTextarea);
+    if (start !== end) {
+      internalClipboard = activeContextTextarea.value.slice(start, end);
+      usedContextMenu.copy = true;
+      setStatus(9, 'Texto copiado pelo menu de contexto! Agora clique com o botão direito na caixa da direita.', 'info');
+    }
+    hideContextMenu();
+  });
+
+  document.getElementById('ctxCutBtn').addEventListener('click', () => {
+    if (!activeContextTextarea) return;
+    const { start, end } = getSelectionBounds(activeContextTextarea);
+    if (start !== end) {
+      internalClipboard = activeContextTextarea.value.slice(start, end);
+      activeContextTextarea.focus();
+      activeContextTextarea.setSelectionRange(start, end);
+      const ok = document.execCommand('delete');
+      if (!ok) {
+        activeContextTextarea.value = activeContextTextarea.value.slice(0, start) + activeContextTextarea.value.slice(end);
+      }
+      usedContextMenu.copy = true;
+      activeContextTextarea.dispatchEvent(new Event('input'));
+    }
+    hideContextMenu();
+  });
+
+  document.getElementById('ctxPasteBtn').addEventListener('click', () => {
+    if (!activeContextTextarea || internalClipboard.length === 0) {
+      hideContextMenu();
+      return;
+    }
+    const { start, end } = getSelectionBounds(activeContextTextarea);
+    activeContextTextarea.focus();
+    activeContextTextarea.setSelectionRange(start, end);
+    const ok = document.execCommand('insertText', false, internalClipboard);
+    if (!ok) {
+      const value = activeContextTextarea.value;
+      activeContextTextarea.value = value.slice(0, start) + internalClipboard + value.slice(end);
+      activeContextTextarea.selectionStart = activeContextTextarea.selectionEnd = start + internalClipboard.length;
+    }
+    usedContextMenu.paste = true;
+    activeContextTextarea.dispatchEvent(new Event('input'));
+    hideContextMenu();
+    checkContextMission();
+  });
+
+  document.getElementById('ctxSelectAllBtn').addEventListener('click', () => {
+    if (!activeContextTextarea) return;
+    activeContextTextarea.focus();
+    activeContextTextarea.selectionStart = 0;
+    activeContextTextarea.selectionEnd = activeContextTextarea.value.length;
+    hideContextMenu();
+  });
+
+  function checkContextMission() {
+    const targetMatches = contextTarget.value.trim() === expectedContextText;
+
+    if (targetMatches && usedContextMenu.copy && usedContextMenu.paste) {
+      contextTarget.classList.add('filled-ok');
+      setStatus(9, 'Muito bem! Você usou o menu de contexto para copiar e colar, sem precisar de atalhos de teclado.', 'ok');
+      markCompleted(9);
+    } else if (targetMatches) {
+      setStatus(9, 'O texto está certo, mas confirme se usou o botão direito do mouse (e não atalhos de teclado) em todo o processo.', 'info');
+    }
+  }
+
+  contextTarget.addEventListener('input', () => {
+    if (completed.has(9)) return; 
+    if (contextTarget.value.trim().length === 0) {
+      setStatus(9, '', '');
+      contextTarget.classList.remove('filled-ok');
+    } else if (contextTarget.value.trim() !== expectedContextText) {
+      setStatus(9, 'Texto incompleto ou diferente do esperado.', 'err');
+      contextTarget.classList.remove('filled-ok');
+    } else {
+      checkContextMission();
+    }
+  });
+
+  // ============================
+  // REINICIAR TREINAMENTO
+  // ============================
+
+  function restartTraining() {
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
