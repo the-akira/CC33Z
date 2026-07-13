@@ -116,6 +116,10 @@
   <span><kbd>ESC</kbd> fechar janelas</span>
   <span>·</span>
   <span><kbd>PgUp</kbd> / <kbd>PgDn</kbd> rolar terminal</span>
+  <span>·</span>
+  <span><kbd>N</kbd> ligar/desligar narração</span>
+  <span>·</span>
+  <span><kbd>-/+</kbd> volume narração</span>
 </div>
 
 <div class="selectGroup">
@@ -1593,8 +1597,60 @@ const gs = {
   glossary: false,
   glossaryScroll: 0,
   terminal: null,   // { lines:[], input:'', history:[], histIdx:-1 }
+  narrationOn: false,
+  narrationVolume: 1.0, // 0.0 a 1.0
 };
 const MOVE_DELAY = 150; // ms between tile moves
+
+// ── Narração (Web Speech API) ──────────
+(function () {
+  try {
+    const saved = localStorage.getItem('AVENTURA_DIGITAL_narracao');
+    if (saved !== null) gs.narrationOn = saved === '1';
+    const savedVol = localStorage.getItem('AVENTURA_DIGITAL_narracao_volume');
+    if (savedVol !== null) gs.narrationVolume = parseFloat(savedVol);
+  } catch (e) { /* localStorage indisponível, mantém padrão */ }
+})();
+
+let narracaoVoz = null;
+function escolherVoz() {
+  if (!('speechSynthesis' in window)) return null;
+  const vozes = speechSynthesis.getVoices();
+  return vozes.find(v => v.lang === 'pt-BR') ||
+         vozes.find(v => v.lang && v.lang.startsWith('pt')) ||
+         vozes[0] || null;
+}
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => { narracaoVoz = escolherVoz(); };
+  narracaoVoz = escolherVoz();
+}
+
+function ajustarVolume(delta) {
+  gs.narrationVolume = Math.max(0, Math.min(1, gs.narrationVolume + delta));
+  try { localStorage.setItem('AVENTURA_DIGITAL_narracao_volume', gs.narrationVolume.toFixed(2)); } catch (e) {}
+}
+
+function falar(texto) {
+  if (!gs.narrationOn || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(texto);
+  utter.lang = 'pt-BR';
+  if (narracaoVoz) utter.voice = narracaoVoz;
+  utter.rate = 1.0;
+  utter.pitch = 1.0;
+  utter.volume = gs.narrationVolume;
+  speechSynthesis.speak(utter);
+}
+
+function pararNarracao() {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+
+function alternarNarracao() {
+  gs.narrationOn = !gs.narrationOn;
+  if (!gs.narrationOn) pararNarracao();
+  try { localStorage.setItem('AVENTURA_DIGITAL_narracao', gs.narrationOn ? '1' : '0'); } catch (e) {}
+}
 
 // ── Helpers ───────────────────────────
 function tileAt(mapId, tx, ty) {
@@ -1638,6 +1694,25 @@ function update(dt, just) {
 
   // ── Dialog input ──
   if (gs.dialog) {
+    if (just.has('KeyN')) alternarNarracao();
+    if (just.has('Equal') || just.has('NumpadAdd')) ajustarVolume(0.1);
+    if (just.has('Minus') || just.has('NumpadSubtract')) ajustarVolume(-0.1);
+    if (just.has('KeyE') || just.has('Space') || just.has('Enter')) {
+      gs.dialog.line++;
+      if (gs.dialog.line >= gs.dialog.npc.lines.length) {
+        gs.learned.add(gs.dialog.npc.topic);
+        gs.dialog = null;
+        pararNarracao();
+      } else {
+        falar(gs.dialog.npc.lines[gs.dialog.line]);
+      }
+    }
+    if (just.has('Escape')) { gs.dialog = null; pararNarracao(); }
+    return;
+  }
+
+  // ── Dialog input ──
+  if (gs.dialog) {
     if (just.has('KeyE') || just.has('Space') || just.has('Enter')) {
       gs.dialog.line++;
       if (gs.dialog.line >= gs.dialog.npc.lines.length) {
@@ -1648,6 +1723,10 @@ function update(dt, just) {
     if (just.has('Escape')) gs.dialog = null;
     return;
   }
+
+  if (just.has('KeyN')) alternarNarracao();
+  if (just.has('Equal') || just.has('NumpadAdd')) ajustarVolume(0.1);
+  if (just.has('Minus') || just.has('NumpadSubtract')) ajustarVolume(-0.1);
 
   if (just.has('KeyG')) {
     gs.glossary = !gs.glossary;
@@ -1698,7 +1777,7 @@ function update(dt, just) {
     if (!foundTerminal) {
       for (const d of dirs) {
         const n = npcAt(gs.mapId, d.x, d.y);
-        if (n) { gs.dialog = {npc:n, line:0}; break; }
+        if (n) { gs.dialog = {npc:n, line:0}; falar(n.lines[0]); break; }
       }
     }
   }
@@ -2358,6 +2437,23 @@ function drawDialog(dlg, now) {
   ctx.textAlign='right'; ctx.font='13px monospace';
   ctx.fillStyle=`rgba(0,255,180,${pls})`;
   ctx.fillText(cur<total ? '[E] continuar ▶' : '[E] fechar ✓', bx+bw-10, by+bh-10);
+
+  // Indicador de narração
+  ctx.textAlign='right'; ctx.font='12px monospace';
+  ctx.fillStyle = gs.narrationOn ? 'rgba(0,255,180,0.85)' : 'rgba(150,150,150,0.6)';
+  ctx.fillText((gs.narrationOn ? '🔊' : '🔇') + ' [N] narração', bx+bw-10, by+18);
+
+  // Barra de volume (só faz sentido mostrar se a narração estiver ligada)
+  if (gs.narrationOn) {
+    const barW = 60, barH = 5, barX = bx+bw-10-barW, barY = by+26;
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(barX, barY, barW, barH);
+    ctx.fillStyle = 'rgba(0,255,180,0.85)';
+    ctx.fillRect(barX, barY, barW * gs.narrationVolume, barH);
+    ctx.textAlign='right'; ctx.font='10px monospace';
+    ctx.fillStyle = 'rgba(200,220,255,0.7)';
+    ctx.fillText('[-/+] volume ' + Math.round(gs.narrationVolume*100) + '%', bx+bw-10, by+42);
+  }
 }
 
 function wrapText(text, x, y, maxW, lh) {
