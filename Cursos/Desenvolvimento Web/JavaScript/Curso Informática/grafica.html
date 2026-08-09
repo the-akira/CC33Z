@@ -386,6 +386,30 @@
       input[type="range"] { min-width: 150px; }
       .color-swatch { width: 110px; height: 110px; }
     }
+
+    @media only screen and (max-width: 410px) {
+      .color-row {
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        grid-template-rows: auto auto;
+        gap: 15px 10px;
+        margin-bottom: 20px;
+      }
+
+      .color-row label {
+        grid-row: 1;
+      }
+
+      .value-display {
+        grid-row: 1;
+        justify-self: end;
+      }
+
+      .color-row input[type="range"] {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+    }
   </style>
 </head>
 <body>
@@ -426,7 +450,7 @@
   </header>
 
   <h1 class="subtitle">Computação Gráfica</h1>
-  <div class="gc-description" style="margin-bottom: 0px; margin-top: 20px;">
+  <div class="gc-description" style="margin-bottom: 0px; margin-top: 20px; margin-right: 20px; margin-left: 20px;">
     Explore de forma visual os conceitos fundamentais que fazem jogos, animações e interfaces gráficas funcionarem: curvas, transformações, rasterização, cor e projeção 3D.
   </div>
 
@@ -759,7 +783,7 @@
           <input type="range" id="gSlider" min="0" max="255" value="62" step="1">
           <div class="value-display" id="gValue">62</div>
         </div>
-        <div class="color-row">
+        <div class="color-row" style="margin-bottom: 0px;">
           <label>B</label>
           <input type="range" id="bSlider" min="0" max="255" value="116" step="1">
           <div class="value-display" id="bValue">116</div>
@@ -911,7 +935,7 @@
           <input type="range" id="sSlider" min="0" max="100" value="66" step="1">
           <div class="value-display" id="sValue">66%</div>
         </div>
-        <div class="color-row">
+        <div class="color-row" style="margin-bottom: 0px;">
           <label>V</label>
           <input type="range" id="vSlider" min="0" max="100" value="46" step="1">
           <div class="value-display" id="vValue">46%</div>
@@ -957,7 +981,7 @@
           <input type="range" id="cmykYSlider" min="0" max="100" value="0" step="1">
           <div class="value-display" id="cmykYValue">0%</div>
         </div>
-        <div class="color-row">
+        <div class="color-row" style="margin-bottom: 0px;">
           <label>K</label>
           <input type="range" id="cmykKSlider" min="0" max="100" value="25" step="1">
           <div class="value-display" id="cmykKValue">25%</div>
@@ -1453,7 +1477,6 @@
       <label>Fórmula — <span class="bz-badge" id="nbDegreeBadge">Grau 3</span></label>
       <div class="formula-box formula-pre" id="nbFormulaBox"></div>
       <p id="nbExplainFormula" style="color:#5c6d82;margin:10px 0 0;text-align:center;"></p>
-    </div>
     </div>
 
     <div class="bz-explain-box">
