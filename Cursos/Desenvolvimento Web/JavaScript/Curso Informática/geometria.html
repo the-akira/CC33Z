@@ -1743,7 +1743,7 @@
           const lightness = 25 + rf.brightness * 48;
           ctx3D.fillStyle = `hsl(${objectColorHSL3D.h}, ${objectColorHSL3D.s}%, ${lightness}%)`;
           ctx3D.fill();
-          ctx3D.strokeStyle = '#273E74';
+          ctx3D.strokeStyle = `hsl(${objectColorHSL3D.h}, ${objectColorHSL3D.s}%, 15%)`;
           ctx3D.lineWidth = 1;
           ctx3D.stroke();
         } else {
