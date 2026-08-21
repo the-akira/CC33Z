@@ -641,8 +641,13 @@
               node.x, node.y, 0,
               node.x, node.y, 12
             );
-            glowGradient.addColorStop(0, `rgba(92, 109, 130, ${0.6})`);
-            glowGradient.addColorStop(1, 'rgba(92, 109, 130, 0)');
+            if (effects.hueShift) {
+              glowGradient.addColorStop(0, `hsla(${nodeHue}, 70%, 60%, 0.6)`);
+              glowGradient.addColorStop(1, `hsla(${nodeHue}, 70%, 60%, 0)`);
+            } else {
+              glowGradient.addColorStop(0, `rgba(92, 109, 130, ${0.6})`);
+              glowGradient.addColorStop(1, 'rgba(92, 109, 130, 0)');
+            }
             ctx.fillStyle = glowGradient;
           }
           
@@ -662,13 +667,15 @@
           gradient.addColorStop(0, `hsl(${nodeHue}, 70%, 70%)`);
           gradient.addColorStop(1, `hsl(${nodeHue}, 70%, 45%)`);
           ctx.fillStyle = gradient;
+        } else if (effects.hueShift) {
+          ctx.fillStyle = `hsl(${nodeHue}, 70%, 55%)`;
         } else {
           ctx.fillStyle = '#5c6d82';
         }
         
         if (effects.glow) {
           ctx.shadowBlur = 15;
-          ctx.shadowColor = effects.gradient ? 
+          ctx.shadowColor = (effects.gradient || effects.hueShift) ? 
             `hsl(${nodeHue}, 70%, 50%)` : 
             'rgba(92, 109, 130, 0.8)';
         } else {
@@ -679,7 +686,7 @@
         
         // Border
         ctx.shadowBlur = 0;
-        ctx.strokeStyle = '#273E74';
+        ctx.strokeStyle = effects.hueShift ? `hsl(${nodeHue}, 60%, 40%)` : '#273E74';
         ctx.lineWidth = 3;
         ctx.stroke();
         
