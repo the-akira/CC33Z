@@ -35,7 +35,7 @@
       opacity: 0.9;
     }
 
-    #indexBtn {
+    #historyBtn {
       margin-top: 15px;
       margin-bottom: 0px;
       background: white;
@@ -47,7 +47,7 @@
       font-weight: bold;
     }
 
-    #indexBtn:hover {
+    #historyBtn:hover {
       background-color: #273E74;
       color: white;
       border: 3.3px solid white;
@@ -371,12 +371,12 @@
   <header>
     <h1>Museu dos Computadores</h1>
     <div class="subtitle">Uma linha do tempo com os computadores que marcaram a história</div>
-    <button id="indexBtn" onclick="openIndex()">Página Inicial</button>
+    <button id="historyBtn" onclick="openHistory()">Página Inicial</button>
   </header>
 
   <section class="intro-section">
     <h2>Sobre esta galeria</h2>
-    <p>Esta página reúne <strong id="total-pcs"></strong> computadores marcantes, da <strong>Bombe</strong> (1940) ao <strong>iMac G3</strong> (1998), organizados em ordem cronológica. Clique em qualquer computador da galeria para ver sua foto (ou fotos) ampliada e conhecer um pouco da sua história.</p>
+    <p>Esta página reúne <strong id="total-pcs"></strong> computadores marcantes, da <strong id="pc-1"></strong> ao <strong id="pc-last"></strong>, organizados em ordem cronológica. Clique em qualquer computador da galeria para ver sua foto (ou fotos) ampliada e conhecer um pouco da sua história.</p>
     <p style="font-size:0.85rem; color:#5C6D82;">Fotos: Wikimedia Commons. Conteúdo histórico baseado em fontes públicas, incluindo o acervo do <a href="https://www.computerhistory.org/timeline/computers/" target="_blank" rel="noopener">Computer History Museum</a>.</p>
   </section>
 
@@ -790,6 +790,8 @@
     }).join("");
 
     document.getElementById('total-pcs').innerHTML = COMPUTADORES.length;
+    document.getElementById('pc-1').innerHTML = `${COMPUTADORES[0].nome} (${COMPUTADORES[0].ano})`;
+    document.getElementById('pc-last').innerHTML = `${COMPUTADORES.at(-1).nome} (${COMPUTADORES.at(-1).ano})`;
 
     renderPaginacao(totalPaginas);
   }
@@ -948,8 +950,8 @@
   ───────────────────────────────────────────────────── */
   renderGaleria();
 
-  function openIndex() {
-    window.location.href = "historia.html";
+  function openHistory() {
+    window.location.href = "historia";
   }
 </script>
 </body>
