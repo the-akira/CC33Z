@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Museu dos Computadores - Curso de Informática</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      background: #5c6d82;
+      border-bottom: 5.5px solid #273E74;
+      margin-bottom: 30px;
+      color: white;
+    }
+
+    header > h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    header > .subtitle {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    #indexBtn {
+      margin-top: 15px;
+      margin-bottom: 0px;
+      background: white;
+      color: #273E74;
+      border: 3.3px solid #273E74;
+      padding: 9px 12px;
+      font-size: 1.025rem;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+    }
+
+    #indexBtn:hover {
+      background-color: #273E74;
+      color: white;
+      border: 3.3px solid white;
+      cursor: pointer;
+    }
+
+    /* ════ Layout geral ════ */
+    .intro-section {
+      max-width: 1100px;
+      margin: 0 auto 30px auto;
+      padding: 0 20px;
+    }
+    .intro-section h2 {
+      color: #273E74;
+      border-left: 5px solid #5C6D82;
+      padding-left: 12px;
+      margin-bottom: 14px;
+      font-size: 1.35rem;
+    }
+    .intro-section p { line-height: 1.75; color: #222; margin-bottom: 10px; }
+    .intro-section a { color: #273E74; }
+
+    .separador {
+      max-width: 1100px;
+      margin: 0 auto 30px auto;
+      border: none;
+      border-top: 2px solid #273E74;
+    }
+
+    /* ════ Busca ════ */
+    .busca-wrapper {
+      max-width: 1100px;
+      margin: 0 auto 20px auto;
+      padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .busca-wrapper input[type="text"] {
+      flex: 1 1 280px;
+      padding: 10px 14px;
+      font-size: 1rem;
+      border: 2px solid #273E74;
+      font-family: Arial, sans-serif;
+      color: #273E74;
+    }
+    .busca-wrapper input:focus { outline: none; border-color: #5C6D82; }
+    .busca-info { font-size: 0.85rem; color: #5C6D82; font-style: italic; }
+
+    /* ════ Galeria ════ */
+    .galeria-wrapper {
+      max-width: 1100px;
+      margin: 0 auto 20px auto;
+      padding: 0 20px;
+    }
+    .galeria-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 900px) { .galeria-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .galeria-grid { grid-template-columns: 1fr; } }
+
+    .computador-card {
+      background: #f2f2f2;
+      border: 2px solid #273E74;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .computador-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 4px 4px 0px #5C6D82;
+    }
+    .computador-card .foto-wrapper {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 2px solid #273E74;
+    }
+    .computador-card .foto-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .computador-card .card-info {
+      padding: 12px 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .computador-card .card-nome {
+      color: #273E74;
+      font-weight: bold;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+    .computador-card .card-ano {
+      font-size: 0.85rem;
+      color: white;
+      background: #5C6D82;
+      display: inline-block;
+      padding: 2px 8px;
+      align-self: flex-start;
+      font-weight: bold;
+    }
+    .computador-card .card-resumo {
+      font-size: 0.82rem;
+      color: #444;
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+
+    /* ════ Paginação ════ */
+    .paginacao {
+      max-width: 1100px;
+      margin: 25px auto 25px auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .paginacao button {
+      background: white;
+      color: #273E74;
+      border: 2.5px solid #273E74;
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      min-width: 42px;
+    }
+    .paginacao button:hover:not(:disabled) {
+      background: #273E74;
+      color: white;
+    }
+    .paginacao button.ativa {
+      background: #273E74;
+      color: white;
+    }
+    .paginacao button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ════ Modal de detalhes ════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 26, 38, 0.72);
+      z-index: 100;
+      padding: 30px 16px;
+      overflow-y: auto;
+    }
+    .modal-overlay.aberto { display: block; }
+
+    .modal-box {
+      background: white;
+      max-width: 780px;
+      margin: 0 auto;
+      border: 3px solid #273E74;
+      position: relative;
+    }
+    .modal-fechar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #273E74;
+      color: white;
+      border: none;
+      width: 34px;
+      height: 34px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 34px;
+      text-align: center;
+      z-index: 2;
+    }
+    .modal-fechar:hover { background: #5C6D82; }
+
+    .modal-foto {
+      width: 100%;
+      max-height: 380px;
+      background: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 3px solid #273E74;
+      position: relative;
+    }
+    .modal-foto img {
+      width: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+    }
+
+    .galeria-seta {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(39, 62, 116, 0.82);
+      color: white;
+      border: none;
+      width: 38px;
+      height: 38px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 3;
+      line-height: 38px;
+      text-align: center;
+      padding: 0;
+    }
+    .galeria-seta:hover { background: #273E74; }
+    .galeria-seta.esquerda { left: 10px; }
+    .galeria-seta.direita { right: 10px; }
+
+    .galeria-contador {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(39, 62, 116, 0.82);
+      color: white;
+      font-size: 0.78rem;
+      font-weight: bold;
+      padding: 3px 10px;
+      z-index: 3;
+    }
+
+    .galeria-pontos {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 3;
+    }
+    .galeria-pontos .ponto {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      border: 1.5px solid #273E74;
+      cursor: pointer;
+      padding: 0;
+    }
+    .galeria-pontos .ponto.ativo {
+      background: #273E74;
+    }
+
+    .modal-conteudo { padding: 24px 28px 30px 28px; }
+    .modal-conteudo h2 {
+      color: #273E74;
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+    .modal-ano-badge {
+      display: inline-block;
+      background: #5C6D82;
+      color: white;
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 3px 10px;
+      margin-bottom: 14px;
+    }
+    .modal-conteudo p {
+      color: #222;
+      line-height: 1.75;
+      margin-bottom: 12px;
+      font-size: 0.98rem;
+    }
+    .modal-specs {
+      background: #f2f2f2;
+      border-left: 4px solid #5C6D82;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #333;
+      margin-top: 6px;
+    }
+    .modal-specs strong { color: #273E74; }
+
+    .nenhum-resultado {
+      text-align: center;
+      color: #5C6D82;
+      font-style: italic;
+      padding: 40px 20px;
+      grid-column: 1 / -1;
+    }
+
+    footer.creditos {
+      max-width: 1100px;
+      margin: 0 auto 40px auto;
+      padding: 0 20px;
+      font-size: 0.78rem;
+      color: #777;
+      line-height: 1.6;
+    }
+    footer.creditos a { color: #5C6D82; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Museu dos Computadores</h1>
+    <div class="subtitle">Uma linha do tempo com os computadores que marcaram a história</div>
+    <button id="indexBtn" onclick="openIndex()">Página Inicial</button>
+  </header>
+
+  <section class="intro-section">
+    <h2>Sobre esta galeria</h2>
+    <p>Esta página reúne <strong id="total-pcs"></strong> computadores marcantes, da <strong>Bombe</strong> (1940) ao <strong>iMac G3</strong> (1998), organizados em ordem cronológica. Clique em qualquer computador da galeria para ver sua foto (ou fotos) ampliada e conhecer um pouco da sua história.</p>
+    <p style="font-size:0.85rem; color:#5C6D82;">Fotos: Wikimedia Commons. Conteúdo histórico baseado em fontes públicas, incluindo o acervo do <a href="https://www.computerhistory.org/timeline/computers/" target="_blank" rel="noopener">Computer History Museum</a>.</p>
+  </section>
+
+  <hr class="separador">
+
+  <div class="busca-wrapper">
+    <input type="text" id="buscaInput" placeholder="Buscar por nome, ano ou palavra-chave..." oninput="filtrarComputadores()">
+    <span class="busca-info" id="buscaInfo"></span>
+  </div>
+
+  <div class="galeria-wrapper">
+    <div class="galeria-grid" id="galeriaGrid"></div>
+  </div>
+
+  <div class="paginacao" id="paginacao"></div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="fecharModalFundo(event)">
+    <div class="modal-box">
+      <button class="modal-fechar" onclick="fecharModal()">×</button>
+      <div class="modal-foto">
+        <button class="galeria-seta esquerda" id="setaEsquerda" onclick="mudarImagem(-1)">‹</button>
+        <img id="modalImg" src="" alt="">
+        <button class="galeria-seta direita" id="setaDireita" onclick="mudarImagem(1)">›</button>
+        <div class="galeria-pontos" id="galeriaPontos"></div>
+      </div>
+      <div class="modal-conteudo">
+        <h2 id="modalNome"></h2>
+        <span class="modal-ano-badge" id="modalAno"></span>
+        <p id="modalHistoria"></p>
+        <div class="modal-specs" id="modalSpecs"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* ─────────────────────────────────────────────────────
+     DADOS DOS COMPUTADORES
+  ───────────────────────────────────────────────────── */
+  const COMPUTADORES = [
+    {
+      nome: "Bombe",
+      ano: 1940,
+      imagens: ["Bletchley Park Bombe13.jpg", "Wartime picture of a Bletchley Park Bombe.jpg"],
+      resumo: "Máquina eletromecânica britânica que ajudou a quebrar a cifra Enigma.",
+      historia: "Desenvolvida em Bletchley Park a partir de um projeto do matemático britânico Alan Turing (que se baseou em trabalhos anteriores de criptoanalistas poloneses), a Bombe não era um computador de uso geral, mas uma máquina eletromecânica especializada em testar rapidamente milhares de configurações possíveis da máquina de cifragem alemã Enigma. Dezenas de unidades foram construídas e operadas ao longo da Segunda Guerra Mundial, ajudando os Aliados a decifrar comunicações militares alemãs e sendo considerada um marco importante na história da criptoanálise e da computação automatizada.",
+      specs: "<strong>Origem:</strong> Reino Unido (Bletchley Park) &middot; <strong>Projetista:</strong> Alan Turing (com base em trabalho polonês anterior) &middot; <strong>Função:</strong> decifrar mensagens da máquina Enigma"
+    },
+    {
+      nome: "Zuse Z3",
+      ano: 1941,
+      imagens: ["Z3 Deutsches Museum.jpg"],
+      resumo: "Considerado o primeiro computador programável e totalmente automático do mundo.",
+      historia: "Construído pelo engenheiro alemão Konrad Zuse em seu próprio apartamento em Berlim, o Z3 é considerado por muitos historiadores o primeiro computador programável e totalmente automático do mundo. Diferente das máquinas eletrônicas que viriam depois, ele usava milhares de relés eletromecânicos e lia suas instruções de uma fita de filme perfurada. A máquina original foi destruída em um bombardeio durante a Segunda Guerra Mundial; a réplica funcional exibida hoje em um museu de Munique foi construída pelo próprio Zuse nos anos 1960.",
+      specs: "<strong>Origem:</strong> Alemanha &middot; <strong>Criador:</strong> Konrad Zuse &middot; <strong>Tecnologia:</strong> relés eletromecânicos &middot; <strong>Peso:</strong> ~1 tonelada"
+    },
+    {
+      nome: "Colossus",
+      ano: 1944,
+      imagens: ["Colossus.jpg"],
+      resumo: "Computador secreto britânico usado para quebrar códigos nazistas.",
+      historia: "Construído em segredo pelos britânicos durante a Segunda Guerra Mundial, o Colossus foi o primeiro computador eletrônico digital programável do mundo, ainda que não fosse de uso geral. Operado em Bletchley Park, ele ajudava a decifrar mensagens de alto escalão do exército alemão, cifradas pela máquina Lorenz, fornecendo aos Aliados informações estratégicas valiosas. Sua existência permaneceu em segredo por décadas após o fim da guerra.",
+      specs: "<strong>Origem:</strong> Reino Unido (Bletchley Park) &middot; <strong>Função:</strong> quebra de códigos &middot; <strong>Peso:</strong> ~5 toneladas"
+    },
+    {
+      nome: "Harvard Mark I",
+      ano: 1944,
+      imagens: ["Harvard Mark I.jpg"],
+      resumo: "Gigantesca calculadora eletromecânica construída pela IBM com Harvard.",
+      historia: "Também conhecido como Automatic Sequence Controlled Calculator, o Harvard Mark I foi construído pela IBM em parceria com a Universidade Harvard e o engenheiro Howard Aiken. Media cerca de 16 metros de comprimento e foi usado pela Marinha americana para cálculos balísticos durante a Segunda Guerra Mundial. A pioneira da computação Grace Hopper foi uma das primeiras programadoras a trabalhar nessa máquina.",
+      specs: "<strong>Origem:</strong> EUA (IBM / Universidade Harvard) &middot; <strong>Comprimento:</strong> ~16 metros &middot; <strong>Programadora:</strong> Grace Hopper"
+    },
+    {
+      nome: "ENIAC",
+      ano: 1946,
+      imagens: ["Classic shot of the ENIAC.jpg", "Two women operating ENIAC (full resolution).jpg"],
+      resumo: "O primeiro computador eletrônico digital de uso geral.",
+      historia: "Construído por John Mauchly e J. Presper Eckert na Universidade da Pensilvânia (EUA), o ENIAC foi encomendado pelo Exército americano para calcular tabelas de tiro de artilharia durante a Segunda Guerra Mundial. Ocupava uma sala inteira, usava cerca de 18 mil válvulas e pesava quase 30 toneladas. Diferente dos computadores atuais, ele era \"programado\" fisicamente, através de cabos e chaves que precisavam ser reconfigurados para cada novo cálculo.",
+      specs: "<strong>Origem:</strong> EUA &middot; <strong>Criadores:</strong> John Mauchly e J. Presper Eckert &middot; <strong>Peso:</strong> ~27 toneladas &middot; <strong>Componentes:</strong> ~18.000 válvulas"
+    },
+    {
+      nome: "Manchester Baby (SSEM)",
+      ano: 1948,
+      imagens: ["SSEM Replica.jpg"],
+      resumo: "Primeiro computador a executar um programa armazenado em memória.",
+      historia: "Construído na Universidade de Manchester, no Reino Unido, por Frederic Williams, Tom Kilburn e Geoff Tootill, o \"Baby\" foi projetado principalmente para testar um novo tipo de memória eletrônica. Em junho de 1948 ele rodou o primeiro programa da história armazenado inteiramente em memória eletrônica — a ideia central por trás de praticamente todos os computadores construídos desde então.",
+      specs: "<strong>Origem:</strong> Reino Unido (Universidade de Manchester) &middot; <strong>Memória:</strong> 1024 bits &middot; <strong>Marco:</strong> primeiro computador de programa armazenado"
+    },
+    {
+      nome: "EDSAC",
+      ano: 1949,
+      imagens: ["EDSAC (19).jpg"],
+      resumo: "Um dos primeiros computadores do mundo usados na prática do dia a dia.",
+      historia: "Construído na Universidade de Cambridge por Maurice Wilkes, o EDSAC foi um dos primeiros computadores do mundo a funcionar de forma prática e regular como um verdadeiro computador de programa armazenado. Muitos historiadores consideram que, na prática, ele foi o primeiro computador realmente \"útil\" no dia a dia de uma instituição, usado por pesquisadores para uma ampla variedade de cálculos científicos.",
+      specs: "<strong>Origem:</strong> Reino Unido (Universidade de Cambridge) &middot; <strong>Criador:</strong> Maurice Wilkes &middot; <strong>Marco:</strong> um dos primeiros computadores de uso prático regular"
+    },
+    {
+      nome: "UNIVAC I",
+      ano: 1951,
+      imagens: ["UNIVAC-I-BRL61-0977.jpg"],
+      resumo: "Primeiro computador comercial de uso geral fabricado nos EUA.",
+      historia: "Criado pelos mesmos inventores do ENIAC, o UNIVAC I foi o primeiro computador vendido comercialmente nos Estados Unidos, voltado tanto para aplicações científicas quanto administrativas. Ficou nacionalmente famoso em 1952, quando foi usado por uma emissora de TV para prever corretamente, ao vivo, o resultado da eleição presidencial americana, surpreendendo o público com a ideia de que uma máquina pudesse \"prever o futuro\".",
+      specs: "<strong>Origem:</strong> EUA &middot; <strong>Fabricante:</strong> Remington Rand &middot; <strong>Peso:</strong> ~13 toneladas &middot; <strong>Preço:</strong> mais de US$ 1 milhão"
+    },
+    {
+      nome: "IBM 701",
+      ano: 1953,
+      imagens: ["IBM 701console.jpg"],
+      resumo: "Primeiro computador comercial da IBM voltado à área científica.",
+      historia: "Apelidado internamente de \"Defense Calculator\" por ter sido lançado durante a Guerra da Coreia, o IBM 701 foi o primeiro computador comercial da IBM, voltado principalmente para aplicações científicas e de engenharia. Cerca de vinte unidades foram fabricadas, alugadas principalmente para laboratórios de pesquisa, agências governamentais e grandes empresas — foi o ponto de partida da IBM no mercado de computadores comerciais.",
+      specs: "<strong>Origem:</strong> EUA (IBM) &middot; <strong>Apelido:</strong> \"Defense Calculator\" &middot; <strong>Unidades fabricadas:</strong> ~20"
+    },
+    {
+      nome: "IBM 650",
+      ano: 1954,
+      imagens: ["IBM 650 EMMA.jpg"],
+      resumo: "O primeiro computador produzido em massa da história.",
+      historia: "Com quase 2.000 unidades vendidas, o IBM 650 foi o primeiro computador fabricado em escala industrial, tornando a computação eletrônica acessível a um número muito maior de empresas e universidades do que antes. Usava um tambor magnético giratório como memória principal e foi, para toda uma geração, a primeira máquina em que aprenderam a programar.",
+      specs: "<strong>Origem:</strong> EUA (IBM) &middot; <strong>Memória:</strong> tambor magnético &middot; <strong>Unidades vendidas:</strong> ~2.000"
+    },
+    {
+      nome: "DEC PDP-1",
+      ano: 1960,
+      imagens: ["PDP-1.jpg"],
+      resumo: "Computador que popularizou a ideia do minicomputador acessível.",
+      historia: "Lançado pela recém-criada Digital Equipment Corporation (DEC), o PDP-1 custava uma fração do preço dos grandes mainframes da época e podia ser operado por uma única pessoa. Ficou famoso entre os primeiros hackers do MIT, que o usaram para criar o \"Spacewar!\", um dos primeiros videogames interativos da história.",
+      specs: "<strong>Origem:</strong> EUA (DEC) &middot; <strong>Preço de lançamento:</strong> ~US$ 120.000 &middot; <strong>Curiosidade:</strong> rodou o jogo Spacewar!"
+    },
+    {
+      nome: "IBM System/360",
+      ano: 1964,
+      imagens: ["IBM system 360.jpg"],
+      resumo: "Família de mainframes que unificou o hardware da IBM.",
+      historia: "O System/360 foi um dos maiores investimentos da história da IBM: em vez de vender máquinas incompatíveis entre si, a empresa lançou uma família inteira de computadores, de pequeno a grande porte, todos capazes de rodar o mesmo software. Essa ideia de compatibilidade entre modelos se tornou um padrão seguido pela indústria até hoje.",
+      specs: "<strong>Origem:</strong> EUA (IBM) &middot; <strong>Investimento inicial:</strong> ~US$ 5 bilhões &middot; <strong>Marco:</strong> primeira família de computadores compatível entre si"
+    },
+    {
+      nome: "DEC PDP-8",
+      ano: 1965,
+      imagens: ["DEC PDP-8-I Minicomputer.jpg"],
+      resumo: "Primeiro minicomputador comercialmente bem-sucedido.",
+      historia: "Vendido por cerca de um quinto do preço de um mainframe pequeno, o PDP-8 é considerado o primeiro minicomputador de sucesso comercial, com mais de 50 mil unidades vendidas ao longo de sua produção. Sua combinação de baixo custo, tamanho reduzido e velocidade o tornou popular em fábricas, pequenas empresas e laboratórios científicos.",
+      specs: "<strong>Origem:</strong> EUA (DEC) &middot; <strong>Preço de lançamento:</strong> ~US$ 18.500 &middot; <strong>Unidades vendidas:</strong> mais de 50.000"
+    },
+    {
+      nome: "Kenbak-1",
+      ano: 1971,
+      imagens: ["Kenbak1.jpg"],
+      resumo: "Considerado por vários museus o primeiro computador pessoal do mundo.",
+      historia: "Projetado por John Blankenbaker antes mesmo da invenção do microprocessador, o Kenbak-1 é considerado por instituições como o Computer History Museum o primeiro computador pessoal comercialmente vendido no mundo. Não usava um chip de processador único, mas sim uma combinação de circuitos integrados simples; era programado diretamente por uma série de botões e chaves, e mostrava resultados através de luzes. Apenas cerca de 40 unidades foram fabricadas, voltadas principalmente para fins educacionais.",
+      specs: "<strong>Origem:</strong> EUA &middot; <strong>Criador:</strong> John Blankenbaker &middot; <strong>Memória:</strong> 256 bytes &middot; <strong>Unidades fabricadas:</strong> ~40"
+    },
+    {
+      nome: "Xerox Alto",
+      ano: 1973,
+      imagens: ["Xerox Alto.jpg"],
+      resumo: "Pioneiro na interface gráfica com janelas, ícones e mouse.",
+      historia: "Desenvolvido no centro de pesquisas Xerox PARC, o Alto nunca foi vendido comercialmente em larga escala, mas foi extremamente influente: introduziu a interface gráfica com janelas e ícones controlada por mouse, além de rede local e um editor de texto que mostrava na tela exatamente como o documento ficaria impresso. Steve Jobs visitou o PARC em 1979 e se inspirou fortemente no Alto para desenvolver o Lisa e o Macintosh da Apple.",
+      specs: "<strong>Origem:</strong> EUA (Xerox PARC) &middot; <strong>Marco:</strong> pioneiro da interface gráfica com mouse &middot; <strong>Influência direta:</strong> Apple Lisa e Macintosh"
+    },
+    {
+      nome: "Altair 8800",
+      ano: 1975,
+      imagens: ["Altair8800.jpg"],
+      resumo: "O kit que deu início à revolução dos computadores pessoais.",
+      historia: "Vendido como kit de montagem por correio, o Altair 8800 apareceu na capa da revista Popular Electronics e recebeu um volume de pedidos muito maior do que sua fabricante esperava. Foi para essa máquina que os jovens Bill Gates e Paul Allen escreveram um interpretador da linguagem BASIC, negócio que deu origem à empresa que se tornaria a Microsoft.",
+      specs: "<strong>Origem:</strong> EUA (MITS) &middot; <strong>Preço de lançamento:</strong> US$ 297 (kit) &middot; <strong>Curiosidade:</strong> origem do primeiro produto da Microsoft"
+    },
+    {
+      nome: "Cray-1",
+      ano: 1976,
+      imagens: ["Cray-1-p1010221.jpg"],
+      resumo: "Supercomputador projetado por Seymour Cray, famoso pelo formato em \"C\".",
+      historia: "Projetado por Seymour Cray, o Cray-1 foi o supercomputador mais rápido de sua época. Seu formato curvo em \"C\" não era apenas estético: reduzia o comprimento dos cabos internos, o que aumentava a velocidade de processamento. Cada unidade levava cerca de um ano para ser montada e testada, e a máquina foi usada em áreas como previsão do tempo e simulações para defesa nacional.",
+      specs: "<strong>Origem:</strong> EUA (Cray Research) &middot; <strong>Projetista:</strong> Seymour Cray &middot; <strong>Preço:</strong> ~US$ 7,9 milhões (1977)"
+    },
+    {
+      nome: "Apple I",
+      ano: 1976,
+      imagens: ["Apple I Computer.jpg"],
+      resumo: "O primeiro computador da Apple, vendido como placa nua.",
+      historia: "Projetado por Steve Wozniak e vendido com a ajuda de seu amigo Steve Jobs, o Apple I era apenas uma placa de circuito, sem gabinete, teclado ou monitor — o comprador precisava fornecer o resto. Cerca de 200 unidades foram fabricadas antes de a dupla lançar o Apple II, um ano depois, já como computador pronto para uso.",
+      specs: "<strong>Origem:</strong> EUA (Apple) &middot; <strong>Criador:</strong> Steve Wozniak &middot; <strong>Preço de lançamento:</strong> US$ 666,66 &middot; <strong>Unidades produzidas:</strong> ~200"
+    },
+    {
+      nome: "Apple II",
+      ano: 1977,
+      imagens: ["Apple-II.jpg"],
+      resumo: "Um dos pioneiros dos computadores pessoais prontos para uso.",
+      historia: "Diferente do Apple I, o Apple II já vinha completo, com gabinete, teclado e gráficos coloridos quando ligado a uma televisão. Ao lado do Commodore PET e do TRS-80, ele integra a chamada \"trindade de 1977\", os três computadores que ajudaram a levar a computação pessoal para dentro das casas e escolas.",
+      specs: "<strong>Origem:</strong> EUA (Apple) &middot; <strong>Processador:</strong> MOS 6502 &middot; <strong>Produção:</strong> 1977–1993"
+    },
+    {
+      nome: "Commodore PET",
+      ano: 1977,
+      imagens: ["Pet2001.jpg"],
+      resumo: "Computador tudo-em-um muito usado em escolas.",
+      historia: "O PET reunia em um único gabinete a tela, o teclado e um gravador de fitas cassete para armazenamento. Fazendo parte da \"trindade de 1977\" junto com o Apple II e o TRS-80, foi especialmente popular em escolas, onde ajudou a introduzir milhares de estudantes ao mundo da programação.",
+      specs: "<strong>Origem:</strong> EUA/Canadá (Commodore) &middot; <strong>Memória:</strong> 4 ou 8 KB &middot; <strong>Uso comum:</strong> educação"
+    },
+    {
+      nome: "TRS-80",
+      ano: 1977,
+      imagens: ["Radio Shack Tandy TRS-80 Model I.jpg"],
+      resumo: "Computador vendido pela rede de lojas Radio Shack.",
+      historia: "Vendido pela popular rede de lojas americana Radio Shack, o TRS-80 superou em muito as projeções de vendas da empresa: em apenas um mês, dez mil unidades foram vendidas. Seu preço relativamente baixo e a ampla rede de lojas físicas ajudaram a levar computadores para muitas casas e escolas dos Estados Unidos pela primeira vez.",
+      specs: "<strong>Origem:</strong> EUA (Tandy/Radio Shack) &middot; <strong>Preço de lançamento:</strong> US$ 599,95 &middot; <strong>Memória:</strong> 4 KB"
+    },
+    {
+      nome: "Atari 800",
+      ano: 1979,
+      imagens: ["Atari 800.jpg"],
+      resumo: "Computador doméstico da Atari com gráficos e som avançados para a época.",
+      historia: "Aproveitando parte da tecnologia desenvolvida para os consoles de videogame da empresa, o Atari 800 trouxe gráficos coloridos e som avançados para os padrões domésticos do final dos anos 1970, disputando diretamente o mercado com o Apple II e, mais tarde, o Commodore 64.",
+      specs: "<strong>Origem:</strong> EUA (Atari) &middot; <strong>Memória:</strong> 48 KB (expansível) &middot; <strong>Diferencial:</strong> gráficos e som avançados para a época"
+    },
+    {
+      nome: "IBM PC 5150",
+      ano: 1981,
+      imagens: ["IBM PC 5150.jpg"],
+      resumo: "O computador que definiu o padrão \"PC compatível\".",
+      historia: "Apoiado na força da marca IBM, o modelo 5150 foi o primeiro \"PC\" oficial da empresa e rapidamente se tornou o padrão de fato do mercado corporativo. Ele deu origem a um enorme mercado de computadores \"compatíveis com IBM PC\", fabricados por outras empresas, que moldou a indústria de computadores pessoais por décadas.",
+      specs: "<strong>Origem:</strong> EUA (IBM) &middot; <strong>Processador:</strong> Intel 8088 a 4,77 MHz &middot; <strong>Sistema operacional:</strong> MS-DOS"
+    },
+    {
+      nome: "BBC Micro",
+      ano: 1981,
+      imagens: ["BBC Micro Front Restored.jpg"],
+      resumo: "Computador educacional que ensinou toda uma geração britânica a programar.",
+      historia: "Encomendado pela emissora pública BBC como parte de um projeto de educação em informática, o BBC Micro, fabricado pela empresa Acorn, se tornou o computador mais usado nas escolas do Reino Unido durante os anos 1980, ensinando toda uma geração de estudantes britânicos a programar em BASIC.",
+      specs: "<strong>Origem:</strong> Reino Unido (Acorn Computers) &middot; <strong>Uso:</strong> educação, adotado pelas escolas britânicas &middot; <strong>Linguagem:</strong> BBC BASIC"
+    },
+    {
+      nome: "TI-99/4A",
+      ano: 1981,
+      imagens: ["Texas Instruments TI-99-4A (white bg).jpg"],
+      resumo: "Computador doméstico da Texas Instruments com processador de 16 bits.",
+      historia: "Lançado pela Texas Instruments, o TI-99/4A foi um dos primeiros computadores domésticos a usar um processador de 16 bits em uma máquina voltada ao consumidor comum. Protagonizou uma disputa de preços acirrada com a Commodore no início dos anos 1980, o que ajudou a baixar bastante o custo dos computadores pessoais na época.",
+      specs: "<strong>Origem:</strong> EUA (Texas Instruments) &middot; <strong>Processador:</strong> TMS9900 de 16 bits &middot; <strong>Produção:</strong> 1981–1984"
+    },
+    {
+      nome: "Xerox Star",
+      ano: 1981,
+      imagens: ["Xerox Star 8010 ViewPoint.jpg"],
+      resumo: "Primeiro computador comercial com interface gráfica completa, ícones e mouse.",
+      historia: "Herdeiro direto do Xerox Alto, o Xerox Star (oficialmente Xerox 8010 Information System) foi o primeiro computador comercial a reunir, de forma integrada, tecnologias que hoje são padrão: tela com interface gráfica de janelas, ícones, pastas, mouse de dois botões e rede local Ethernet com servidores de arquivo e impressão compartilhados. Seu preço elevado limitou muito as vendas, mas suas ideias influenciaram diretamente o Macintosh da Apple e, mais tarde, o Windows da Microsoft.",
+      specs: "<strong>Origem:</strong> EUA (Xerox) &middot; <strong>Preço de lançamento:</strong> ~US$ 16.600 &middot; <strong>Marco:</strong> primeiro sistema comercial com desktop gráfico completo"
+    },
+    {
+      nome: "Osborne 1",
+      ano: 1981,
+      imagens: ["Osborne 1 open.jpg"],
+      resumo: "O primeiro computador portátil produzido em massa.",
+      historia: "Pesando cerca de 11 kg, o Osborne 1 foi anunciado como o primeiro computador \"portátil\" (na verdade, mais \"carregável\" do que portátil) vendido em larga escala. Vinha acompanhado de um pacote de programas cujo valor chegava a se igualar ao preço da própria máquina, e foi divulgado como o único computador que cabia debaixo do assento de um avião.",
+      specs: "<strong>Origem:</strong> EUA (Osborne Computer Corporation) &middot; <strong>Peso:</strong> ~11 kg &middot; <strong>Preço:</strong> US$ 1.795"
+    },
+    {
+      nome: "Sinclair ZX Spectrum",
+      ano: 1982,
+      imagens: ["Sinclair ZX Spectrum.jpg"],
+      resumo: "Computador doméstico de baixo custo muito popular na Europa.",
+      historia: "Criado pelo empresário britânico Clive Sinclair, o ZX Spectrum foi um computador doméstico de baixo custo extremamente popular no Reino Unido e em vários outros países europeus. A combinação de preço acessível com uma enorme biblioteca de jogos o transformou em porta de entrada para toda uma geração de programadores e criadores de jogos europeus.",
+      specs: "<strong>Origem:</strong> Reino Unido (Sinclair Research) &middot; <strong>Memória:</strong> 16 ou 48 KB &middot; <strong>Marco:</strong> grande influência na cena europeia de jogos"
+    },
+    {
+      nome: "Sun-1",
+      ano: 1982,
+      imagens: ["Computer Museum Sun-1.jpg"],
+      resumo: "Primeira estação de trabalho da Sun Microsystems.",
+      historia: "Primeira estação de trabalho lançada pela recém-fundada Sun Microsystems, o Sun-1 foi baseado em um projeto criado por Andy Bechtolsheim enquanto ele ainda era estudante de pós-graduação em Stanford. A máquina ajudou a popularizar o conceito de estação de trabalho individual rodando Unix em rede, muito usada depois em universidades e empresas de tecnologia.",
+      specs: "<strong>Origem:</strong> EUA (Sun Microsystems) &middot; <strong>Processador:</strong> Motorola 68000 &middot; <strong>Sistema operacional:</strong> SunOS (baseado em Unix)"
+    },
+    {
+      nome: "Commodore 64",
+      ano: 1982,
+      imagens: ["Commodore64.jpg"],
+      resumo: "O computador doméstico mais vendido da história.",
+      historia: "Reconhecido pelo Guinness Book como o computador pessoal mais vendido de todos os tempos, o Commodore 64 vendeu mais de 22 milhões de unidades até ser descontinuado em 1993. Sua combinação de preço acessível e capacidades gráficas e sonoras avançadas para a época gerou milhares de jogos e programas.",
+      specs: "<strong>Origem:</strong> EUA (Commodore) &middot; <strong>Memória:</strong> 64 KB &middot; <strong>Unidades vendidas:</strong> mais de 22 milhões"
+    },
+    {
+      nome: "Apple Lisa",
+      ano: 1983,
+      imagens: ["Apple Lisa.jpg"],
+      resumo: "Primeiro computador pessoal comercial com interface gráfica.",
+      historia: "Inspirado nas pesquisas vistas por Steve Jobs no Xerox PARC, o Lisa foi o primeiro computador pessoal comercial a oferecer uma interface gráfica completa, controlada por mouse. Apesar da inovação, seu preço elevado limitou muito as vendas, e a máquina acabou sendo ofuscada, um ano depois, pelo Macintosh — mais barato e mais bem-sucedido.",
+      specs: "<strong>Origem:</strong> EUA (Apple) &middot; <strong>Processador:</strong> Motorola 68000 &middot; <strong>Memória:</strong> 1 MB de RAM"
+    },
+    {
+      nome: "Compaq Portable",
+      ano: 1983,
+      imagens: ["Compaq portable.jpg"],
+      resumo: "Um dos primeiros computadores verdadeiramente \"compatíveis\" com o IBM PC.",
+      historia: "Primeiro produto da Compaq, esse computador foi criado por meio de engenharia reversa do BIOS da IBM, o que permitia rodar exatamente o mesmo software do IBM PC original. Seu sucesso — mais de US$ 100 milhões em vendas já no primeiro ano — abriu caminho para o enorme mercado de \"clones\" de PC que dominaria a indústria nas décadas seguintes.",
+      specs: "<strong>Origem:</strong> EUA (Compaq) &middot; <strong>Processador:</strong> Intel 8088 &middot; <strong>Peso:</strong> ~13 kg"
+    },
+    {
+      nome: "Apple Macintosh",
+      ano: 1984,
+      imagens: ["Macintosh 128k.jpg", "Macintosh 128K - Macintosh mouse (3655725631).jpg"],
+      resumo: "Primeiro computador pessoal de sucesso comercial controlado por mouse.",
+      historia: "Apresentado ao público em um famoso comercial de TV exibido durante o Super Bowl de 1984, o Macintosh original foi o primeiro computador pessoal com interface gráfica e mouse a fazer sucesso comercial de fato. Vinha com aplicativos como o editor MacPaint e o processador de texto MacWrite, que mostrava na tela exatamente como o documento ficaria impresso.",
+      specs: "<strong>Origem:</strong> EUA (Apple) &middot; <strong>Processador:</strong> Motorola 68000 &middot; <strong>Preço de lançamento:</strong> US$ 2.500"
+    },
+    {
+      nome: "Amiga 1000",
+      ano: 1985,
+      imagens: ["Amiga 1000.jpg"],
+      resumo: "Computador com capacidades gráficas e de áudio à frente de seu tempo.",
+      historia: "Lançado pela Commodore em um evento badalado no Lincoln Center de Nova York, o Amiga 1000 impressionava pelos recursos de vídeo e som, muito superiores aos da maioria dos computadores pessoais da época. Isso o tornou muito popular entre artistas digitais, músicos e desenvolvedores de jogos, criando uma base de fãs fiel até hoje.",
+      specs: "<strong>Origem:</strong> EUA (Commodore) &middot; <strong>Processador:</strong> Motorola 68000 &middot; <strong>Preço de lançamento:</strong> US$ 1.295 (sem monitor)"
+    },
+    {
+      nome: "Acorn Archimedes",
+      ano: 1987,
+      imagens: ["Acorn Archimedes A310 with mouse and keyboard.jpg"],
+      resumo: "Primeiro computador pessoal do mundo baseado em processador ARM.",
+      historia: "Criado pela empresa britânica Acorn (a mesma por trás do BBC Micro), o Archimedes foi o primeiro computador pessoal do mundo a usar um processador com arquitetura ARM, desenvolvida pela própria Acorn para ser mais simples, eficiente e rápida do que os chips concorrentes da época. Essa mesma família de processadores ARM, aperfeiçoada ao longo das décadas seguintes, viria a se tornar a base de praticamente todos os smartphones e tablets do mundo atual.",
+      specs: "<strong>Origem:</strong> Reino Unido (Acorn Computers) &middot; <strong>Processador:</strong> ARM (arquitetura criada pela própria Acorn) &middot; <strong>Legado:</strong> origem da família de processadores ARM"
+    },
+    {
+      nome: "NeXT Cube",
+      ano: 1988,
+      imagens: ["NeXTcube.jpg"],
+      resumo: "Estação de trabalho em formato de cubo criada por Steve Jobs.",
+      historia: "Depois de deixar a Apple, Steve Jobs fundou a NeXT e lançou essa estação de trabalho com um gabinete cúbico de magnésio. O sistema operacional NeXTSTEP, avançado para a época, foi usado por Tim Berners-Lee no CERN para criar o primeiro servidor web da história, em 1990 — um marco fundamental para o nascimento da internet como a conhecemos.",
+      specs: "<strong>Origem:</strong> EUA (NeXT) &middot; <strong>Processador:</strong> Motorola 68040 &middot; <strong>Curiosidade:</strong> usado para criar o primeiro servidor web do mundo"
+    },
+    {
+      nome: "PowerBook 100",
+      ano: 1991,
+      imagens: ["Powerbook 100 pose.jpg"],
+      resumo: "Notebook da Apple que definiu o layout clássico dos laptops modernos.",
+      historia: "Um dos três primeiros notebooks da linha PowerBook da Apple, o PowerBook 100 foi o modelo que definiu o layout clássico de laptop usado até hoje: teclado recuado para trás e um apoio para as mãos na parte da frente, com o trackball centralizado logo abaixo do teclado. Esse design, revolucionário para a época, influenciou praticamente todos os notebooks fabricados depois dele.",
+      specs: "<strong>Origem:</strong> EUA (Apple) &middot; <strong>Processador:</strong> Motorola 68000 &middot; <strong>Marco:</strong> definiu o layout moderno de laptop"
+    },
+    {
+      nome: "IBM ThinkPad 701C",
+      ano: 1995,
+      imagens: ["IBM ThinkPad 701 Butterfly 04.jpg"],
+      resumo: "Notebook famoso pelo teclado \"borboleta\" que se expandia ao abrir.",
+      historia: "O ThinkPad 701C ficou famoso pelo teclado \"borboleta\" (TrackWrite), que se expandia para um tamanho maior que o próprio corpo da máquina quando aberto e se dobrava para dentro ao fechar a tela — uma solução criativa para caber um teclado de tamanho quase normal em um notebook compacto. O design foi tão elogiado que chegou a fazer parte do acervo permanente do Museu de Arte Moderna de Nova York (MoMA).",
+      specs: "<strong>Origem:</strong> EUA (IBM) &middot; <strong>Diferencial:</strong> teclado expansível \"borboleta\" (TrackWrite) &middot; <strong>Reconhecimento:</strong> peça do acervo do MoMA"
+    },
+    {
+      nome: "Palm Pilot",
+      ano: 1996,
+      imagens: ["3ComPalmPilot.jpg"],
+      resumo: "Um dos primeiros assistentes pessoais digitais (PDAs) de sucesso.",
+      historia: "O PalmPilot ajudou a popularizar a ideia de um \"organizador pessoal\" eletrônico de bolso, com agenda, contatos e lista de tarefas. Usava um sistema de reconhecimento de escrita chamado Graffiti, em que o usuário escrevia letras simplificadas na tela com uma caneta especial, e podia sincronizar seus dados com um computador.",
+      specs: "<strong>Origem:</strong> EUA (Palm Computing) &middot; <strong>Processador:</strong> Motorola 68328 a 16 MHz &middot; <strong>Peso:</strong> ~160 g"
+    },
+    {
+      nome: "iMac G3",
+      ano: 1998,
+      imagens: ["IMac Bondi Blue.jpg"],
+      resumo: "Computador colorido e translúcido que marcou o retorno de Steve Jobs à Apple.",
+      historia: "Lançado logo após o retorno de Steve Jobs à Apple, o iMac G3 rompeu com o visual tradicional dos computadores da época graças ao seu gabinete colorido e translúcido, na cor \"Bondi Blue\". A máquina abandonou o disquete em favor do CD-ROM e adotou USB como padrão de conexão, ajudando a popularizar essa tecnologia — e teve um papel importante na recuperação financeira da Apple.",
+      specs: "<strong>Origem:</strong> EUA (Apple) &middot; <strong>Processador:</strong> PowerPC G3 a 233 MHz &middot; <strong>Marco:</strong> popularizou o uso de portas USB"
+    }
+  ];
+
+  /* ─────────────────────────────────────────────────────
+     CONFIGURAÇÃO E ESTADO
+  ───────────────────────────────────────────────────── */
+  const POR_PAGINA = 8;
+  let listaFiltrada = COMPUTADORES;
+  let paginaAtual = 1;
+
+  function wikiImg(nomeArquivo) {
+    return "https://en.wikipedia.org/wiki/Special:FilePath/" + encodeURIComponent(nomeArquivo.replace(/ /g, "_"));
+  }
+
+  function fullPath(nomeArquivo) {
+    return "computadores/" + encodeURIComponent(nomeArquivo.replace(/ /g, "_"));
+  }
+
+  /* ─────────────────────────────────────────────────────
+     RENDERIZAÇÃO DA GALERIA
+  ───────────────────────────────────────────────────── */
+  function renderGaleria() {
+    const grid = document.getElementById("galeriaGrid");
+
+    if (listaFiltrada.length === 0) {
+      grid.innerHTML = '<div class="nenhum-resultado">Nenhum computador encontrado para essa busca.</div>';
+      document.getElementById("paginacao").innerHTML = "";
+      return;
+    }
+
+    const totalPaginas = Math.ceil(listaFiltrada.length / POR_PAGINA);
+    if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+    if (paginaAtual < 1) paginaAtual = 1;
+
+    const inicio = (paginaAtual - 1) * POR_PAGINA;
+    const itensPagina = listaFiltrada.slice(inicio, inicio + POR_PAGINA);
+
+    grid.innerHTML = itensPagina.map(comp => {
+      const idx = COMPUTADORES.indexOf(comp);
+      return `
+        <div class="computador-card" onclick="abrirModal(${idx})">
+          <div class="foto-wrapper">
+            <img src="${fullPath(comp.imagens[0])}" alt="${comp.nome}" loading="lazy">
+          </div>
+          <div class="card-info">
+            <span class="card-ano">${comp.ano}</span>
+            <span class="card-nome">${comp.nome}</span>
+            <span class="card-resumo">${comp.resumo}</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById('total-pcs').innerHTML = COMPUTADORES.length;
+
+    renderPaginacao(totalPaginas);
+  }
+
+  function renderPaginacao(totalPaginas) {
+    const container = document.getElementById("paginacao");
+    container.innerHTML = "";
+    if (totalPaginas <= 1) return;
+ 
+    const maxVisiveis = 5;
+ 
+    const criarBotao = (texto, pagina, desabilitado = false, ativo = false) => {
+      const btn = document.createElement("button");
+      btn.textContent = texto;
+      if (desabilitado) btn.disabled = true;
+      if (ativo) btn.classList.add("ativa");
+      btn.addEventListener("click", () => {
+        if (!desabilitado && pagina !== paginaAtual) irParaPagina(pagina);
+      });
+      return btn;
+    };
+ 
+    const criarReticencias = () => {
+      const span = document.createElement("span");
+      span.textContent = "...";
+      span.className = "paginacao-reticencias";
+      return span;
+    };
+ 
+    container.appendChild(criarBotao("« Primeira", 1, paginaAtual === 1));
+    container.appendChild(criarBotao("‹", paginaAtual - 1, paginaAtual === 1));
+ 
+    let inicio = Math.max(1, paginaAtual - Math.floor(maxVisiveis / 2));
+    let fim = Math.min(totalPaginas, inicio + maxVisiveis - 1);
+    if (fim - inicio < maxVisiveis - 1) {
+      inicio = Math.max(1, fim - maxVisiveis + 1);
+    }
+ 
+    if (inicio > 1) {
+      container.appendChild(criarBotao("1", 1));
+      if (inicio > 2) container.appendChild(criarReticencias());
+    }
+ 
+    for (let i = inicio; i <= fim; i++) {
+      container.appendChild(criarBotao(String(i), i, false, i === paginaAtual));
+    }
+ 
+    if (fim < totalPaginas) {
+      if (fim < totalPaginas - 1) container.appendChild(criarReticencias());
+      container.appendChild(criarBotao(String(totalPaginas), totalPaginas));
+    }
+ 
+    container.appendChild(criarBotao("›", paginaAtual + 1, paginaAtual === totalPaginas));
+    container.appendChild(criarBotao("Última »", totalPaginas, paginaAtual === totalPaginas));
+  }
+
+  function irParaPagina(n) {
+    paginaAtual = n;
+    renderGaleria();
+    document.querySelector(".galeria-wrapper").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  /* ─────────────────────────────────────────────────────
+     BUSCA
+  ───────────────────────────────────────────────────── */
+  function filtrarComputadores() {
+    const q = document.getElementById("buscaInput").value.toLowerCase().trim();
+    listaFiltrada = q
+      ? COMPUTADORES.filter(c =>
+          c.nome.toLowerCase().includes(q) ||
+          String(c.ano).includes(q) ||
+          c.resumo.toLowerCase().includes(q) ||
+          c.historia.toLowerCase().includes(q))
+      : COMPUTADORES;
+
+    document.querySelector('.busca-wrapper').style.gap = q ? '10px' : '0px';
+
+    paginaAtual = 1;
+    document.getElementById("buscaInfo").textContent = q
+      ? `${listaFiltrada.length} resultado(s) encontrado(s)`
+      : "";
+    renderGaleria();
+  }
+
+  /* ─────────────────────────────────────────────────────
+     MODAL DE DETALHES (com galeria de imagens)
+  ───────────────────────────────────────────────────── */
+  let compAtualIdx = null;
+  let imagemAtualIdx = 0;
+
+  function abrirModal(idx) {
+    const comp = COMPUTADORES[idx];
+    compAtualIdx = idx;
+    imagemAtualIdx = 0;
+
+    document.getElementById("modalNome").textContent = comp.nome;
+    document.getElementById("modalAno").textContent = comp.ano;
+    document.getElementById("modalHistoria").textContent = comp.historia;
+    document.getElementById("modalSpecs").innerHTML = comp.specs;
+
+    renderImagemModal();
+    document.getElementById("modalOverlay").classList.add("aberto");
+    document.body.style.overflow = "hidden";
+  }
+
+  function renderImagemModal() {
+    const comp = COMPUTADORES[compAtualIdx];
+    const imagens = comp.imagens;
+    const temVarias = imagens.length > 1;
+
+    document.getElementById("modalImg").src = fullPath(imagens[imagemAtualIdx]);
+    document.getElementById("modalImg").alt = comp.nome + (temVarias ? ` (foto ${imagemAtualIdx + 1} de ${imagens.length})` : "");
+
+    document.getElementById("setaEsquerda").style.display = temVarias ? "block" : "none";
+    document.getElementById("setaDireita").style.display = temVarias ? "block" : "none";
+
+    const pontosContainer = document.getElementById("galeriaPontos");
+    if (temVarias) {
+      pontosContainer.innerHTML = imagens.map((_, i) =>
+        `<button class="ponto ${i === imagemAtualIdx ? "ativo" : ""}" onclick="irParaImagem(${i})" aria-label="Foto ${i + 1}"></button>`
+      ).join("");
+    } else {
+      pontosContainer.innerHTML = "";
+    }
+  }
+
+  function mudarImagem(direcao) {
+    const total = COMPUTADORES[compAtualIdx].imagens.length;
+    imagemAtualIdx = (imagemAtualIdx + direcao + total) % total;
+    renderImagemModal();
+  }
+
+  function irParaImagem(i) {
+    imagemAtualIdx = i;
+    renderImagemModal();
+  }
+
+  function fecharModal() {
+    document.getElementById("modalOverlay").classList.remove("aberto");
+    document.body.style.overflow = "";
+  }
+
+  function fecharModalFundo(event) {
+    if (event.target.id === "modalOverlay") fecharModal();
+  }
+
+  document.addEventListener("keydown", function(e) {
+    if (!document.getElementById("modalOverlay").classList.contains("aberto")) return;
+    if (e.key === "Escape") fecharModal();
+    if (e.key === "ArrowLeft") mudarImagem(-1);
+    if (e.key === "ArrowRight") mudarImagem(1);
+  });
+
+  /* ─────────────────────────────────────────────────────
+     INÍCIO
+  ───────────────────────────────────────────────────── */
+  renderGaleria();
+
+  function openIndex() {
+    window.location.href = "historia.html";
+  }
+</script>
+</body>
+</html>
