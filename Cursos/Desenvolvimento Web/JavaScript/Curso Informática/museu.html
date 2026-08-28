@@ -258,6 +258,30 @@
       object-fit: contain;
       display: block;
       user-select: none;
+      transition: opacity 0.15s ease;
+    }
+    .modal-foto.carregando img {
+      opacity: 0.35;
+    }
+    .modal-spinner {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      margin: -17px 0 0 -17px;
+      border: 4px solid rgba(39, 62, 116, 0.25);
+      border-top-color: #273E74;
+      border-radius: 50%;
+      animation: girarSpinner 0.7s linear infinite;
+      z-index: 4;
+    }
+    .modal-foto.carregando .modal-spinner {
+      display: block;
+    }
+    @keyframes girarSpinner {
+      to { transform: rotate(360deg); }
     }
 
     .galeria-seta {
@@ -400,6 +424,7 @@
       <div class="modal-foto">
         <button class="galeria-seta esquerda" id="setaEsquerda" onclick="mudarImagem(-1)">‹</button>
         <img id="modalImg" src="" alt="">
+        <div class="modal-spinner" id="modalSpinner"></div>
         <button class="galeria-seta direita" id="setaDireita" onclick="mudarImagem(1)">›</button>
         <div class="galeria-pontos" id="galeriaPontos"></div>
       </div>
@@ -776,7 +801,7 @@
     grid.innerHTML = itensPagina.map(comp => {
       const idx = COMPUTADORES.indexOf(comp);
       return `
-        <div class="computador-card" onclick="abrirModal(${idx})">
+        <div class="computador-card" onclick="abrirModal(${idx})" onmouseenter="preloadImagens(COMPUTADORES[${idx}].imagens)">
           <div class="foto-wrapper">
             <img src="${fullPath(comp.imagens[0])}" alt="${comp.nome}" loading="lazy">
           </div>
@@ -881,6 +906,17 @@
   ───────────────────────────────────────────────────── */
   let compAtualIdx = null;
   let imagemAtualIdx = 0;
+  const imagensPrecarregadas = new Set();
+
+  function preloadImagens(imagens) {
+    imagens.forEach(nome => {
+      const caminho = fullPath(nome);
+      if (imagensPrecarregadas.has(caminho)) return;
+      imagensPrecarregadas.add(caminho);
+      const img = new Image();
+      img.src = caminho;
+    });
+  }
 
   function abrirModal(idx) {
     const comp = COMPUTADORES[idx];
@@ -892,6 +928,7 @@
     document.getElementById("modalHistoria").textContent = comp.historia;
     document.getElementById("modalSpecs").innerHTML = comp.specs;
 
+    preloadImagens(comp.imagens);
     renderImagemModal();
     document.getElementById("modalOverlay").classList.add("aberto");
     document.body.style.overflow = "hidden";
@@ -901,9 +938,26 @@
     const comp = COMPUTADORES[compAtualIdx];
     const imagens = comp.imagens;
     const temVarias = imagens.length > 1;
+    const caminho = fullPath(imagens[imagemAtualIdx]);
+    const imgEl = document.getElementById("modalImg");
+    const fotoWrapper = document.querySelector(".modal-foto");
 
-    document.getElementById("modalImg").src = fullPath(imagens[imagemAtualIdx]);
-    document.getElementById("modalImg").alt = comp.nome + (temVarias ? ` (foto ${imagemAtualIdx + 1} de ${imagens.length})` : "");
+    imgEl.alt = comp.nome + (temVarias ? ` (foto ${imagemAtualIdx + 1} de ${imagens.length})` : "");
+
+    if (imgEl.getAttribute("data-src-atual") !== caminho) {
+      imgEl.setAttribute("data-src-atual", caminho);
+      // Se a imagem já está em cache do navegador, ela carrega "instantaneamente"
+      // (complete === true) e nem chega a mostrar o spinner.
+      const jaEmCache = imagensPrecarregadas.has(caminho);
+      if (!jaEmCache) {
+        preloadImagens([imagens[imagemAtualIdx]]);
+        fotoWrapper.classList.add("carregando");
+      }
+      imgEl.onload = () => fotoWrapper.classList.remove("carregando");
+      imgEl.onerror = () => fotoWrapper.classList.remove("carregando");
+      imgEl.src = caminho;
+      if (imgEl.complete) fotoWrapper.classList.remove("carregando");
+    }
 
     document.getElementById("setaEsquerda").style.display = temVarias ? "block" : "none";
     document.getElementById("setaDireita").style.display = temVarias ? "block" : "none";
