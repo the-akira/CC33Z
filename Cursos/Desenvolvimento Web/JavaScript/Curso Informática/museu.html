@@ -243,7 +243,7 @@
 
     .modal-foto {
       width: 100%;
-      max-height: 380px;
+      height: 380px;
       background: #f2f2f2;
       display: flex;
       align-items: center;
@@ -263,6 +263,9 @@
     .modal-foto.carregando img {
       opacity: 0.35;
     }
+    .modal-foto.sem-foto img {
+      opacity: 0;
+    }
     .modal-spinner {
       display: none;
       position: absolute;
@@ -277,7 +280,8 @@
       animation: girarSpinner 0.7s linear infinite;
       z-index: 4;
     }
-    .modal-foto.carregando .modal-spinner {
+    .modal-foto.carregando .modal-spinner,
+    .modal-foto.sem-foto .modal-spinner {
       display: block;
     }
     @keyframes girarSpinner {
@@ -906,14 +910,15 @@
   ───────────────────────────────────────────────────── */
   let compAtualIdx = null;
   let imagemAtualIdx = 0;
-  const imagensPrecarregadas = new Set();
+  const imagensCarregadas = new Set();
+  let cargaAtualId = 0;
 
   function preloadImagens(imagens) {
     imagens.forEach(nome => {
       const caminho = fullPath(nome);
-      if (imagensPrecarregadas.has(caminho)) return;
-      imagensPrecarregadas.add(caminho);
+      if (imagensCarregadas.has(caminho)) return;
       const img = new Image();
+      img.onload = () => imagensCarregadas.add(caminho);
       img.src = caminho;
     });
   }
@@ -941,22 +946,50 @@
     const caminho = fullPath(imagens[imagemAtualIdx]);
     const imgEl = document.getElementById("modalImg");
     const fotoWrapper = document.querySelector(".modal-foto");
-
-    imgEl.alt = comp.nome + (temVarias ? ` (foto ${imagemAtualIdx + 1} de ${imagens.length})` : "");
+    const altTexto = comp.nome + (temVarias ? ` (foto ${imagemAtualIdx + 1} de ${imagens.length})` : "");
 
     if (imgEl.getAttribute("data-src-atual") !== caminho) {
       imgEl.setAttribute("data-src-atual", caminho);
-      // Se a imagem já está em cache do navegador, ela carrega "instantaneamente"
-      // (complete === true) e nem chega a mostrar o spinner.
-      const jaEmCache = imagensPrecarregadas.has(caminho);
-      if (!jaEmCache) {
-        preloadImagens([imagens[imagemAtualIdx]]);
-        fotoWrapper.classList.add("carregando");
+
+      // Só existe uma imagem "anterior" para mostrar por baixo do spinner
+      // se este <img> já exibiu alguma foto com sucesso antes.
+      const jaExibiuAlgumaFoto = imgEl.getAttribute("src");
+
+      // Cada navegação recebe um "ticket". Se o usuário trocar de imagem de novo
+      // antes desta terminar de carregar, o resultado antigo é descartado ao chegar.
+      const meuTicket = ++cargaAtualId;
+
+      if (imagensCarregadas.has(caminho)) {
+        // Confirmadamente já carregada antes: troca na hora, sem spinner.
+        fotoWrapper.classList.remove("carregando", "sem-foto");
+        imgEl.alt = altTexto;
+        imgEl.src = caminho;
+      } else {
+        // Ainda não temos confirmação de que terminou: mostra o spinner.
+        // Se já existe uma foto anterior visível, ela fica só "esmaecida" por
+        // baixo do spinner; se é a primeiríssima foto do modal, escondemos o
+        // <img> por completo para não aparecer o ícone de imagem quebrada + alt.
+        if (jaExibiuAlgumaFoto) {
+          fotoWrapper.classList.add("carregando");
+        } else {
+          imgEl.alt = "";
+          fotoWrapper.classList.add("sem-foto");
+        }
+
+        const carregador = new Image();
+        carregador.onload = () => {
+          imagensCarregadas.add(caminho);
+          if (meuTicket !== cargaAtualId) return; // usuário já foi para outra imagem
+          imgEl.alt = altTexto;
+          imgEl.src = caminho;
+          fotoWrapper.classList.remove("carregando", "sem-foto");
+        };
+        carregador.onerror = () => {
+          if (meuTicket !== cargaAtualId) return;
+          fotoWrapper.classList.remove("carregando", "sem-foto");
+        };
+        carregador.src = caminho;
       }
-      imgEl.onload = () => fotoWrapper.classList.remove("carregando");
-      imgEl.onerror = () => fotoWrapper.classList.remove("carregando");
-      imgEl.src = caminho;
-      if (imgEl.complete) fotoWrapper.classList.remove("carregando");
     }
 
     document.getElementById("setaEsquerda").style.display = temVarias ? "block" : "none";
