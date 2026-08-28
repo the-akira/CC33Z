@@ -261,9 +261,6 @@
       transition: opacity 0.15s ease;
     }
     .modal-foto.carregando img {
-      opacity: 0.35;
-    }
-    .modal-foto.sem-foto img {
       opacity: 0;
     }
     .modal-spinner {
@@ -280,8 +277,7 @@
       animation: girarSpinner 0.7s linear infinite;
       z-index: 4;
     }
-    .modal-foto.carregando .modal-spinner,
-    .modal-foto.sem-foto .modal-spinner {
+    .modal-foto.carregando .modal-spinner {
       display: block;
     }
     @keyframes girarSpinner {
@@ -951,30 +947,21 @@
     if (imgEl.getAttribute("data-src-atual") !== caminho) {
       imgEl.setAttribute("data-src-atual", caminho);
 
-      // Só existe uma imagem "anterior" para mostrar por baixo do spinner
-      // se este <img> já exibiu alguma foto com sucesso antes.
-      const jaExibiuAlgumaFoto = imgEl.getAttribute("src");
-
       // Cada navegação recebe um "ticket". Se o usuário trocar de imagem de novo
       // antes desta terminar de carregar, o resultado antigo é descartado ao chegar.
       const meuTicket = ++cargaAtualId;
 
       if (imagensCarregadas.has(caminho)) {
         // Confirmadamente já carregada antes: troca na hora, sem spinner.
-        fotoWrapper.classList.remove("carregando", "sem-foto");
+        fotoWrapper.classList.remove("carregando");
         imgEl.alt = altTexto;
         imgEl.src = caminho;
       } else {
-        // Ainda não temos confirmação de que terminou: mostra o spinner.
-        // Se já existe uma foto anterior visível, ela fica só "esmaecida" por
-        // baixo do spinner; se é a primeiríssima foto do modal, escondemos o
-        // <img> por completo para não aparecer o ícone de imagem quebrada + alt.
-        if (jaExibiuAlgumaFoto) {
-          fotoWrapper.classList.add("carregando");
-        } else {
-          imgEl.alt = "";
-          fotoWrapper.classList.add("sem-foto");
-        }
+        // Ainda não temos confirmação de que terminou: esconde a imagem por
+        // completo (nada de foto anterior "fantasma" nem ícone quebrado) e
+        // mostra só o spinner até o carregamento terminar de verdade.
+        imgEl.alt = "";
+        fotoWrapper.classList.add("carregando");
 
         const carregador = new Image();
         carregador.onload = () => {
@@ -982,11 +969,11 @@
           if (meuTicket !== cargaAtualId) return; // usuário já foi para outra imagem
           imgEl.alt = altTexto;
           imgEl.src = caminho;
-          fotoWrapper.classList.remove("carregando", "sem-foto");
+          fotoWrapper.classList.remove("carregando");
         };
         carregador.onerror = () => {
           if (meuTicket !== cargaAtualId) return;
-          fotoWrapper.classList.remove("carregando", "sem-foto");
+          fotoWrapper.classList.remove("carregando");
         };
         carregador.src = caminho;
       }
