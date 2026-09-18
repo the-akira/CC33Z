@@ -170,6 +170,7 @@
       padding: 30px;
       display: flex;
       justify-content: center;
+      flex-direction: column;
       align-items: center;
     }
     
@@ -216,6 +217,21 @@
       margin-bottom: 25px;
       color: #5c6d82;
       font-size: 1.1em;
+    }
+
+    #perspective {
+      padding: 10px 12px;
+      border: 2px solid #273E74;
+      background-color: #5C6D82;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 15px;
+    }
+
+    #perspective:hover {
+      background-color: #273E74;
     }
     
     @media only screen and (max-width: 768px) {
@@ -462,6 +478,7 @@
 
       <div class="canvas-wrapper">
         <canvas id="canvas3D" width="800" height="800"></canvas>
+        <button id="perspective" onclick="openPerspective()">Perspectiva</button>
       </div>
 
       <div class="info-display">
@@ -1920,6 +1937,10 @@
       requestAnimationFrame(animate3D);
     }
     requestAnimationFrame(animate3D);
+
+    function openPerspective() {
+      window.location.href = "perspectiva";
+    }
   </script>
 </body>
 </html>

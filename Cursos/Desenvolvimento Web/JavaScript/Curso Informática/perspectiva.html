@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perspectiva - Curso de Informática</title>
+<style>
+  :root{
+    --navy:#273E74;
+    --slate:#5C6D82;
+    --bg:#ffffff;
+    --panel:#f2f2f2;
+    --text:#222222;
+    --text-muted:#5C6D82;
+    --text-faint:#777777;
+    --border:#273E74;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial, sans-serif;
+    line-height:1.5;
+  }
+
+  header{
+    text-align:center;
+    padding:40px 20px;
+    background:var(--slate);
+    border-bottom:5.5px solid var(--navy);
+    margin-bottom:30px;
+    color:#fff;
+  }
+  header h1{
+    font-size:2.5em;
+    margin:0 0 10px;
+    font-weight:bold;
+  }
+  header .subtitle{
+    font-size:1.2em;
+    opacity:.9;
+  }
+
+  nav.tabs{
+    max-width:1100px;
+    margin:0 auto 30px auto;
+    padding:0 20px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .tab{
+    background:#fff;
+    color:var(--navy);
+    border:2.5px solid var(--navy);
+    padding:9px 14px;
+    font-size:.92rem;
+    font-family:Arial, sans-serif;
+    font-weight:bold;
+    cursor:pointer;
+  }
+  .tab:hover{background:var(--panel);}
+  .tab.active{
+    background:var(--navy);
+    color:#fff;
+  }
+
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+  .panel{
+    display:none;
+    flex-direction:column;
+    gap:26px;
+    margin-bottom:30px;
+  }
+  .panel.active{display:flex;}
+
+  .stage{
+    background:var(--panel);
+    border:2px solid var(--navy);
+    padding:16px;
+  }
+  .stage canvas{display:block;width:100%;height:auto;background:#fff;}
+
+  .controls{margin-top:16px;display:grid;gap:14px;}
+  .control label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:.88rem; color:#273E74; margin-bottom:5px; font-weight:bold;
+  }
+  .control label .val{
+    font-family:Arial, sans-serif;
+    background:var(--slate);
+    color:#fff;
+    font-size:.78rem;
+    font-weight:bold;
+    padding:2px 8px;
+  }
+  input[type=range]{
+    width:100%; accent-color:var(--navy);
+    height:8px;
+    background: #5c6d82;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: #ffffff;
+    border: 2px solid #273E74;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  }
+  .segbtns{display:flex; gap:8px; flex-wrap:wrap;}
+  .segbtns button{
+    flex:1 1 auto;
+    font-family:Arial, sans-serif;
+    font-size:.82rem;
+    font-weight:bold;
+    padding:9px 12px;
+    border:2.5px solid var(--navy);
+    background:#fff;
+    color:var(--navy);
+    cursor:pointer;
+  }
+  .segbtns button:hover{background:var(--panel);}
+  .segbtns button.on{
+    background:var(--navy);
+    color:#fff;
+  }
+
+  aside.info{
+    border-left:5px solid var(--slate);
+    padding-left:16px;
+  }
+  aside.info h2{
+    font-family:Arial, sans-serif;
+    font-weight:bold;
+    font-size:1.35rem;
+    margin:0 0 14px;
+    color:var(--navy);
+  }
+  aside.info p{color:var(--text); font-size:.98rem; line-height:1.75;}
+  .glossary{list-style:none; margin:16px 0 0; padding:0; display:grid; gap:12px;}
+  .glossary li{
+    font-size:.92rem; color:var(--text);
+    padding-left:18px; position:relative; line-height:1.6;
+  }
+  .glossary li::before{
+    content:"";
+    position:absolute; left:0; top:.4em;
+    width:9px; height:9px;
+    background:var(--chip, var(--navy));
+    border:1px solid var(--navy);
+  }
+  .glossary b{font-weight:bold; color:var(--navy);}
+  .swatch-blue::before{background:var(--navy) !important;}
+  .swatch-sanguine::before{background:var(--slate) !important;}
+  .swatch-graphite::before{background:#777 !important;}
+
+  .caption{
+    margin-top:12px;
+    font-family:Arial, sans-serif;
+    font-size:.85rem;
+    font-style:italic;
+    color:var(--slate);
+    min-height:1.2em;
+    margin-bottom: 0px;
+  }
+
+  #geometryBtn {
+    margin-top: 15px;
+    margin-bottom: 0px;
+    background: white;
+    color: #273E74;
+    border: 3.3px solid #273E74;
+    padding: 9px 12px;
+    font-size: 1.025rem;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+  }
+
+  #geometryBtn:hover {
+    background-color: #273E74;
+    color: white;
+    border: 3.3px solid white;
+    cursor: pointer;
+  }
+
+  footer{
+    max-width:1100px; margin:0 auto 40px auto; padding:0 20px;
+    color:var(--text-faint); font-size:.78rem; line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Perspectiva</h1>
+  <div class="subtitle">Um apoio interativo para treinar o olho no desenho de observação</div>
+  <button class="btn" id="geometryBtn" onclick="openGeometry()">Página Inicial</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="fundamentos">Fundamentos</button>
+  <button class="tab" data-tab="angulos">Vários Ângulos</button>
+  <button class="tab" data-tab="p1">1 Ponto de Fuga</button>
+  <button class="tab" data-tab="p2">2 Pontos de Fuga</button>
+  <button class="tab" data-tab="p3">3 Pontos de Fuga</button>
+  <button class="tab" data-tab="luz">Luz e Sombra</button>
+</nav>
+
+<main>
+
+  <!-- ===================== FUNDAMENTOS ===================== -->
+  <section id="fundamentos" class="panel active">
+    <div class="stage">
+      <canvas id="cv-fund" width="640" height="420"></canvas>
+      <div class="controls">
+        <div class="control">
+          <label>Linha do horizonte (altura dos seus olhos) <span class="val" id="v-fund-h"></span></label>
+          <input type="range" id="s-fund-h" min="30" max="390" value="120">
+        </div>
+      </div>
+      <p class="caption" id="cap-fund"></p>
+    </div>
+    <aside class="info">
+      <h2>Vocabulário essencial</h2>
+      <p>Todo desenho em perspectiva parte de três ideias. Domine-as antes de tocar nos pontos de fuga.</p>
+      <ul class="glossary">
+        <li class="swatch-sanguine"><b>Linha do horizonte:</b> a altura dos seus olhos, não do céu. Suba a linha e você passa a ver de cima; desça-a e passa a ver de baixo.</li>
+        <li class="swatch-blue"><b>Ponto de fuga:</b> onde linhas paralelas na realidade parecem se encontrar na sua folha.</li>
+        <li class="swatch-blue"><b>Ortogonais:</b> as linhas de construção que correm até um ponto de fuga — o guia que você apaga depois.</li>
+        <li class="swatch-graphite"><b>Plano do quadro:</b> a própria folha de papel, a "vidraça" imaginária entre você e a cena.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ===================== VÁRIOS ÂNGULOS ===================== -->
+  <section id="angulos" class="panel">
+    <div class="stage">
+      <canvas id="cv-ang" width="640" height="460"></canvas>
+      <div class="controls">
+        <div class="control">
+          <label>Forma</label>
+          <div class="segbtns" id="ang-shapes">
+            <button data-shape="cubo" class="on">Cubo</button>
+            <button data-shape="piramide">Pirâmide</button>
+            <button data-shape="cone">Cone</button>
+            <button data-shape="cilindro">Cilindro</button>
+            <button data-shape="esfera">Esfera</button>
+          </div>
+        </div>
+        <div class="control">
+          <label>Guias visuais</label>
+          <div class="segbtns" id="ang-guides">
+            <button data-guide="eixos" class="on">Eixos</button>
+            <button data-guide="grade" class="on">Grade</button>
+            <button data-guide="horizonte">Horizonte</button>
+            <button data-guide="paralelas">Linhas da forma</button>
+          </div>
+        </div>
+        <div class="control">
+          <label>Girar (arraste a forma com o mouse) <span class="val" id="v-ang-yaw"></span></label>
+          <input type="range" id="s-ang-yaw" min="0" max="360" value="35">
+        </div>
+        <div class="control">
+          <label>Inclinar (cima / baixo) <span class="val" id="v-ang-pitch"></span></label>
+          <input type="range" id="s-ang-pitch" min="-85" max="85" value="-24">
+        </div>
+        <div class="control">
+          <label>Ângulos prontos</label>
+          <div class="segbtns" id="ang-presets">
+            <button data-yaw="0" data-pitch="0">Frontal</button>
+            <button data-yaw="35" data-pitch="-24" class="on">3/4</button>
+            <button data-yaw="90" data-pitch="0">Perfil</button>
+            <button data-yaw="35" data-pitch="-70">De cima</button>
+            <button data-yaw="35" data-pitch="70">De baixo</button>
+            <button data-yaw="45" data-pitch="-35">Isométrica</button>
+          </div>
+        </div>
+      </div>
+      <p class="caption" id="cap-ang"></p>
+    </div>
+    <aside class="info">
+      <h2>As 5 formas básicas do desenho</h2>
+      <p>Cubo, pirâmide, cone, cilindro e esfera são os "blocos de montar" de praticamente qualquer objeto complexo — uma xícara é um cilindro, uma árvore é uma esfera sobre um cone, um rosto começa numa esfera. Arraste a forma (ou use os controles) para treinar o olho a reconhecer seu volume em qualquer ângulo.</p>
+      <ul class="glossary">
+        <li style="--chip:#B98A3E"><b>No cubo:</b> cada face tem uma cor fixa, para você identificar frente, lado e topo em qualquer rotação.</li>
+        <li class="swatch-blue"><b>Nas outras formas:</b> uma variação de tom (claro → escuro) mostra onde a luz bate mais e onde a superfície se curva para longe dela.</li>
+        <li class="swatch-sanguine"><b>Repare</b> como o contorno externo (a silhueta) muda de forma conforme o ângulo — é esse achatamento, o <b>escorço</b>, que dá volume ao desenho.</li>
+        <li><b>Eixos e grade</b> ajudam a situar a forma no espaço; a <b>linha do horizonte</b> reage à inclinação, do jeito que você vê o objeto de cima, de baixo ou de frente.</li>
+        <li><b>Linhas da forma:</b> mostra quais arestas são paralelas de verdade (cubo, cilindro) e quais convergem para um ponto — igual aos pontos de fuga das outras abas (pirâmide, cone, e os meridianos da esfera).</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ===================== 1 PONTO ===================== -->
+  <section id="p1" class="panel">
+    <div class="stage">
+      <canvas id="cv-p1" width="640" height="420"></canvas>
+      <div class="controls">
+        <div class="control">
+          <label>Posição horizontal do ponto de fuga <span class="val" id="v-p1-x"></span></label>
+          <input type="range" id="s-p1-x" min="0" max="640" value="320">
+        </div>
+        <div class="control">
+          <label>Altura da linha do horizonte <span class="val" id="v-p1-y"></span></label>
+          <input type="range" id="s-p1-y" min="30" max="390" value="140">
+        </div>
+        <div class="control">
+          <label>Profundidade do cubo <span class="val" id="v-p1-t"></span></label>
+          <input type="range" id="s-p1-t" min="10" max="70" value="38">
+        </div>
+        <div class="control">
+          <label>Tamanho do cubo <span class="val" id="v-p1-s"></span></label>
+          <input type="range" id="s-p1-s" min="80" max="220" value="150">
+        </div>
+      </div>
+      <p class="caption" id="cap-p1"></p>
+    </div>
+    <aside class="info">
+      <h2>Perspectiva de 1 ponto de fuga</h2>
+      <p>Usada quando uma face do objeto fica paralela ao papel — um corredor, uma caixa vista de frente, os trilhos de um trem. Desenhe primeiro o quadrado <b>da frente em tamanho real</b>; todas as outras arestas correm até o único ponto de fuga, sobre a linha do horizonte.</p>
+      <ul class="glossary">
+        <li class="swatch-graphite">Traço escuro = arestas reais do cubo (o que fica no desenho final).</li>
+        <li class="swatch-blue">Traço azul = construção até o ponto de fuga (apaga-se depois).</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ===================== 2 PONTOS ===================== -->
+  <section id="p2" class="panel">
+    <div class="stage">
+      <canvas id="cv-p2" width="760" height="420"></canvas>
+      <div class="controls">
+        <div class="control">
+          <label>Linha do horizonte <span class="val" id="v-p2-h"></span></label>
+          <input type="range" id="s-p2-h" min="30" max="390" value="150">
+        </div>
+        <div class="control">
+          <label>Abertura entre os pontos de fuga <span class="val" id="v-p2-spread"></span></label>
+          <input type="range" id="s-p2-spread" min="260" max="620" value="420">
+        </div>
+        <div class="control">
+          <label>Altura da caixa <span class="val" id="v-p2-hgt"></span></label>
+          <input type="range" id="s-p2-hgt" min="60" max="220" value="140">
+        </div>
+        <div class="control">
+          <label>Profundidade — lado esquerdo <span class="val" id="v-p2-tl"></span></label>
+          <input type="range" id="s-p2-tl" min="15" max="65" value="35">
+        </div>
+        <div class="control">
+          <label>Profundidade — lado direito <span class="val" id="v-p2-tr"></span></label>
+          <input type="range" id="s-p2-tr" min="15" max="65" value="42">
+        </div>
+      </div>
+      <p class="caption" id="cap-p2"></p>
+    </div>
+    <aside class="info">
+      <h2>Perspectiva de 2 pontos de fuga</h2>
+      <p>A mais comum no dia a dia: nenhuma face fica paralela ao papel, então cada lado corre até seu próprio ponto de fuga no horizonte. As arestas verticais continuam verticais — só elas escapam da convergência.</p>
+      <ul class="glossary">
+        <li class="swatch-graphite">Linhas contínuas = arestas visíveis.</li>
+        <li class="swatch-graphite">Linhas tracejadas = a aresta escondida atrás da caixa — ela existe, só não aparece.</li>
+        <li class="swatch-blue">Linhas azuis = as ortogonais até cada ponto de fuga.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ===================== 3 PONTOS ===================== -->
+  <section id="p3" class="panel">
+    <div class="stage">
+      <canvas id="cv-p3" width="760" height="460"></canvas>
+      <div class="controls">
+        <div class="control">
+          <label>Ponto de vista</label>
+          <div class="segbtns">
+            <button id="btn-worm" class="on">De baixo (terrestre)</button>
+            <button id="btn-bird">De cima (aérea)</button>
+          </div>
+        </div>
+        <div class="control">
+          <label>Linha do horizonte <span class="val" id="v-p3-h"></span></label>
+          <input type="range" id="s-p3-h" min="20" max="440" value="380">
+        </div>
+        <div class="control">
+          <label>Abertura entre PF1 e PF2 <span class="val" id="v-p3-spread"></span></label>
+          <input type="range" id="s-p3-spread" min="260" max="620" value="420">
+        </div>
+        <div class="control">
+          <label>Distância do 3º ponto de fuga <span class="val" id="v-p3-dist"></span></label>
+          <input type="range" id="s-p3-dist" min="140" max="520" value="300">
+        </div>
+        <div class="control">
+          <label>Altura da caixa <span class="val" id="v-p3-hgt"></span></label>
+          <input type="range" id="s-p3-hgt" min="60" max="200" value="120">
+        </div>
+        <div class="control">
+          <label>Profundidade da caixa <span class="val" id="v-p3-t"></span></label>
+          <input type="range" id="s-p3-t" min="15" max="60" value="34">
+        </div>
+      </div>
+      <p class="caption" id="cap-p3"></p>
+    </div>
+    <aside class="info">
+      <h2>Perspectiva de 3 pontos de fuga</h2>
+      <p>Aparece quando você inclina a cabeça: olhando de baixo para cima (visão terrestre), as verticais convergem para um 3º ponto <b>acima</b> do horizonte; olhando de cima para baixo (visão aérea), convergem para um ponto <b>abaixo</b>. Prédios altos vistos da calçada são o exemplo clássico.</p>
+      <ul class="glossary">
+        <li class="swatch-blue">Mesmo princípio dos 2 pontos — só que agora nem as verticais escapam da convergência.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ===================== LUZ E SOMBRA ===================== -->
+  <section id="luz" class="panel">
+    <div class="stage">
+      <canvas id="cv-luz" width="640" height="460"></canvas>
+      <div class="controls">
+        <div class="control">
+          <label>Direção da luz (azimute) <span class="val" id="v-luz-az"></span></label>
+          <input type="range" id="s-luz-az" min="0" max="360" value="35">
+        </div>
+        <div class="control">
+          <label>Altura da luz (elevação) <span class="val" id="v-luz-el"></span></label>
+          <input type="range" id="s-luz-el" min="8" max="82" value="42">
+        </div>
+        <div class="control">
+          <label>Girar o cubo <span class="val" id="v-luz-rot"></span></label>
+          <input type="range" id="s-luz-rot" min="0" max="360" value="35">
+        </div>
+      </div>
+      <p class="caption" id="cap-luz"></p>
+    </div>
+    <aside class="info">
+      <h2>Os 5 elementos da luz</h2>
+      <p>O mesmo vocabulário vale para um cubo, uma maçã ou um rosto — o que muda é só a superfície.</p>
+      <ul class="glossary">
+        <li class="swatch-graphite"><b>Luz direta:</b> a face que recebe a luz de frente — a mais clara do desenho.</li>
+        <li class="swatch-graphite"><b>Sombra própria:</b> a face do próprio objeto que a luz não alcança.</li>
+        <li class="swatch-sanguine"><b>Sombra projetada:</b> a sombra que o objeto lança no chão, na direção oposta à luz.</li>
+        <li class="swatch-blue"><b>Penumbra:</b> a transição suave na borda da sombra projetada — nunca um contorno duro.</li>
+        <li class="swatch-blue"><b>Reflexo (luz refletida):</b> um leve clareamento perto da base da sombra própria, causado pela luz que quica no chão. Nunca é mais clara que a luz direta.</li>
+      </ul>
+    </aside>
+  </section>
+
+</main>
+
+<footer>Ferramenta de estudo — arraste os controles deslizantes e observe como cada elemento reage.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- generic helpers ---------- */
+  function setupCanvas(canvas){
+    // O canvas guarda seu sistema de coordenadas "lógico" nos atributos width/height do HTML
+    // (ex.: 640x420) — todo o código de desenho usa sempre esses valores fixos.
+    // A resolução real do buffer é recalculada para bater com o tamanho exibido em tela,
+    // evitando tanto o desperdício de um buffer grande demais quanto o borrão de esticar
+    // um buffer pequeno demais.
+    //
+    // Importante: fixamos o tamanho EXIBIDO via CSS aspect-ratio (não pela razão
+    // width/height "natural" do canvas). Assim, quando o fit() abaixo muda os atributos
+    // width/height para ajustar a resolução do buffer, isso não altera o tamanho exibido —
+    // e não retroalimenta o próprio ResizeObserver que está observando esse tamanho
+    // (o que causaria o erro "ResizeObserver loop completed with undelivered notifications").
+    const logicalW = canvas.width, logicalH = canvas.height;
+    canvas.style.aspectRatio = logicalW + ' / ' + logicalH;
+    const ctx = canvas.getContext('2d');
+    ctx._logicalW = logicalW; ctx._logicalH = logicalH;
+    ctx._fit = function(){
+      const cssW = canvas.getBoundingClientRect().width;
+      if(cssW < 1) return false; // painel oculto (display:none) — nada para medir ainda
+      const dpr = window.devicePixelRatio || 1;
+      const scale = cssW / logicalW;
+      const newW = Math.max(1, Math.round(logicalW*scale*dpr));
+      const newH = Math.max(1, Math.round(logicalH*scale*dpr));
+      if(canvas.width === newW && canvas.height === newH) return false; // já está no tamanho certo
+      canvas.width = newW; canvas.height = newH;
+      ctx.setTransform(scale*dpr, 0, 0, scale*dpr, 0, 0);
+      // setar canvas.width/height acima reseta TODO o estado do contexto 2D
+      // (incluindo lineJoin/lineCap) — por isso essas propriedades precisam
+      // ser reaplicadas aqui, e não apenas uma vez logo após getContext().
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      return true;
+    };
+    return ctx;
+  }
+  const lerp = (a,b,t)=> a+(b-a)*t;
+  const lerpP = (P,Q,t)=> ({x:lerp(P.x,Q.x,t), y:lerp(P.y,Q.y,t)});
+  function lineIntersect(p1,p2,p3,p4){
+    const d1x=p2.x-p1.x, d1y=p2.y-p1.y, d2x=p4.x-p3.x, d2y=p4.y-p3.y;
+    const den = d1x*d2y - d1y*d2x;
+    if(Math.abs(den) < 1e-9) return {x:(p1.x+p3.x)/2, y:(p1.y+p3.y)/2};
+    const t = ((p3.x-p1.x)*d2y - (p3.y-p1.y)*d2x)/den;
+    return {x:p1.x+d1x*t, y:p1.y+d1y*t};
+  }
+  function alongVert(base, vp3, dist){
+    if(!vp3) return {x:base.x, y:base.y+dist};
+    const dx=vp3.x-base.x, dy=vp3.y-base.y, len=Math.hypot(dx,dy)||1;
+    return {x:base.x+(dx/len)*dist, y:base.y+(dy/len)*dist};
+  }
+  function vertIntersect(base, vp3, A, B){
+    const other = vp3 ? vp3 : {x:base.x, y:base.y+2000};
+    return lineIntersect(base, other, A, B);
+  }
+  function extendTo(from, to, canvasW){
+    // extend a ray from `from` through `to` until it exits a canvas of width canvasW (for drawing full construction lines)
+    const dx=to.x-from.x, dy=to.y-from.y;
+    if(Math.abs(dx) < 1e-6) return {x:to.x, y: to.y + Math.sign(dy||1)*2000};
+    const t = dx>0 ? (canvasW+200-from.x)/dx : (-200-from.x)/dx;
+    return {x:from.x+dx*t, y:from.y+dy*t};
+  }
+  function extendToV(from, to, canvasH){
+    // variant of extendTo for near-vertical rays: extends until it exits a canvas of height canvasH
+    // (used for the construction lines that converge on a 3rd vanishing point above/below the horizon)
+    const dx=to.x-from.x, dy=to.y-from.y;
+    if(Math.abs(dy) < 1e-6) return {x: to.x + Math.sign(dx||1)*2000, y: to.y};
+    const t = dy>0 ? (canvasH+200-from.y)/dy : (-200-from.y)/dy;
+    return {x:from.x+dx*t, y:from.y+dy*t};
+  }
+
+  function drawDashedLine(ctx,p1,p2){
+    ctx.save(); ctx.setLineDash([6,5]); ctx.beginPath();
+    ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke(); ctx.restore();
+  }
+  function drawLine(ctx,p1,p2){
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+  }
+  function labelVP(ctx, p, text){
+    ctx.save();
+    ctx.fillStyle = '#273E74';
+    ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();
+    ctx.font = "600 11px 'JetBrains Mono', monospace";
+    ctx.fillText(text, p.x+7, p.y-7);
+    ctx.restore();
+  }
+  function horizonLine(ctx, y, w){
+    ctx.save();
+    ctx.strokeStyle = 'rgba(39,62,116,0.35)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2,4]);
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+    ctx.font = "11px 'JetBrains Mono', monospace";
+    ctx.fillStyle = 'rgba(39,62,116,0.4)';
+    ctx.setLineDash([]);
+    ctx.fillText('linha do horizonte', 8, y-6);
+    ctx.restore();
+  }
+
+  const COL_INK = '#273E74';
+  const COL_BLUE = '#5C6D82';
+
+  /* ==================================================================
+     FUNDAMENTOS
+  ================================================================== */
+  (function(){
+    const canvas = document.getElementById('cv-fund');
+    const ctx = setupCanvas(canvas);
+    const W = ctx._logicalW, H = ctx._logicalH;
+    const sH = document.getElementById('s-fund-h');
+    const vH = document.getElementById('v-fund-h');
+    const cap = document.getElementById('cap-fund');
+
+    // a fixed simple box (2-point-like) used purely as a visual reference
+    const vpL = {x:110, y:0}, vpR = {x:W-110, y:0};
+    const near = {x: W*0.5, y:0};
+    const boxTop = 70, boxBot = 210;
+
+    function draw(){
+      const hY = +sH.value;
+      vpL.y = hY; vpR.y = hY;
+      ctx.clearRect(0,0,W,H);
+
+      // sky / ground tint
+      // ctx.fillStyle = 'rgba(39,62,116,0.05)';
+      // ctx.fillRect(0,0,W,hY);
+      // ctx.fillStyle = 'rgba(92,109,130,0.07)';
+      // ctx.fillRect(0,hY,W,H-hY);
+
+      horizonLine(ctx, hY, W);
+
+      // eye icon on the horizon
+      ctx.save();
+      ctx.strokeStyle = COL_INK; ctx.fillStyle = '#fff'; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.ellipse(70,hY,11,6,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=COL_INK; ctx.beginPath(); ctx.arc(70,hY,3,0,Math.PI*2); ctx.fill();
+      ctx.font = "11px 'JetBrains Mono', monospace"; ctx.fillText('você', 56, hY+22);
+      ctx.restore();
+
+      const nearTop = {x:near.x, y:boxTop}, nearBot = {x:near.x, y:boxBot};
+      const t = 0.32;
+      const ltf = lerpP(nearTop, vpL, t), rtf = lerpP(nearTop, vpR, t);
+      const lbf = {x:ltf.x, y:ltf.y + (boxBot-boxTop)};
+      const rbf = {x:rtf.x, y:rtf.y + (boxBot-boxTop)};
+      const farTop = lineIntersect(ltf,vpR,rtf,vpL);
+      const farBot = {x:farTop.x, y:farTop.y+(boxBot-boxTop)};
+
+      // construction (faint)
+      ctx.strokeStyle = 'rgba(39,62,116,0.4)'; ctx.lineWidth=1;
+      [ [nearTop,vpL],[nearTop,vpR],[nearBot,vpL],[nearBot,vpR] ].forEach(([a,b])=>drawLine(ctx,a,b));
+
+      // solid edges
+      ctx.strokeStyle = COL_INK; ctx.lineWidth = 1.8;
+      [[nearTop,nearBot],[nearTop,ltf],[nearTop,rtf],[ltf,lbf],[rtf,rbf],
+       [nearBot,lbf],[nearBot,rbf],[ltf,farTop],[rtf,farTop]].forEach(([a,b])=>drawLine(ctx,a,b));
+      ctx.strokeStyle = 'rgba(39,62,116,0.4)';
+      drawDashedLine(ctx,farTop,farBot); drawDashedLine(ctx,lbf,farBot); drawDashedLine(ctx,rbf,farBot);
+
+      // agora os pontos de fuga ficam dentro do canvas — mostra a bolinha + rótulo
+      labelVP(ctx, vpL, ''); labelVP(ctx, vpR, '');
+
+      let msg;
+      if(hY < boxTop-10) msg = 'A linha do horizonte está acima da caixa → você está vendo de cima: o topo aparece bem largo.';
+      else if(hY > boxBot+10) msg = 'A linha do horizonte está abaixo da caixa → você está vendo de baixo: a base aparece bem larga.';
+      else msg = 'A linha do horizonte cruza a caixa → você está praticamente na mesma altura do objeto.';
+      cap.textContent = msg;
+      vH.textContent = hY+'px';
+    }
+    sH.addEventListener('input', draw);
+    let ROraf = null;
+    new ResizeObserver(()=>{
+      if(ROraf) cancelAnimationFrame(ROraf);
+      ROraf = requestAnimationFrame(()=>{ if(ctx._fit()) draw(); });
+    }).observe(canvas);
+    ctx._fit(); draw();
+  })();
+
+  /* ==================================================================
+     1 PONTO DE FUGA
+  ================================================================== */
+  (function(){
+    const canvas = document.getElementById('cv-p1');
+    const ctx = setupCanvas(canvas);
+    const W = ctx._logicalW, H = ctx._logicalH;
+    const sx=document.getElementById('s-p1-x'), sy=document.getElementById('s-p1-y'),
+          st=document.getElementById('s-p1-t'), ss=document.getElementById('s-p1-s');
+    const vx=document.getElementById('v-p1-x'), vy=document.getElementById('v-p1-y'),
+          vt=document.getElementById('v-p1-t'), vs=document.getElementById('v-p1-s');
+    const cap = document.getElementById('cap-p1');
+
+    function draw(){
+      const vp = {x:+sx.value, y:+sy.value};
+      const t = (+st.value)/100;
+      const size = +ss.value;
+      ctx.clearRect(0,0,W,H);
+      horizonLine(ctx, vp.y, W);
+
+      const fx = W/2 - size/2, fy = H/2 - size/2 + 20;
+      const front = { tl:{x:fx,y:fy}, tr:{x:fx+size,y:fy}, br:{x:fx+size,y:fy+size}, bl:{x:fx,y:fy+size} };
+      const back = {};
+      for(const k in front) back[k] = lerpP(front[k], vp, t);
+
+      // construction lines (extended to vp, drawn full)
+      ctx.strokeStyle = 'rgba(39,62,116,0.45)'; ctx.lineWidth=1;
+      Object.keys(front).forEach(k=>drawLine(ctx, front[k], vp));
+
+      // front face (solid)
+      ctx.strokeStyle = COL_INK; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(front.tl.x,front.tl.y); ctx.lineTo(front.tr.x,front.tr.y);
+      ctx.lineTo(front.br.x,front.br.y); ctx.lineTo(front.bl.x,front.bl.y); ctx.closePath();
+      ctx.stroke();
+
+      // depth edges (solid)
+      ctx.lineWidth = 1.8;
+      Object.keys(front).forEach(k=>drawLine(ctx, front[k], back[k]));
+
+      // back face (dashed — hidden face)
+      ctx.strokeStyle = 'rgba(39,62,116,0.4)';
+      drawDashedLine(ctx, back.tl, back.tr); drawDashedLine(ctx, back.tr, back.br);
+      drawDashedLine(ctx, back.br, back.bl); drawDashedLine(ctx, back.bl, back.tl);
+
+      labelVP(ctx, vp, 'PF');
+
+      vx.textContent = vp.x+'px'; vy.textContent = vp.y+'px';
+      vt.textContent = Math.round(t*100)+'%'; vs.textContent = size+'px';
+      cap.textContent = 'A face da frente é desenhada em tamanho real; tudo o mais nasce das linhas até o ponto de fuga.';
+    }
+    [sx,sy,st,ss].forEach(el=>el.addEventListener('input',draw));
+    let ROraf = null;
+    new ResizeObserver(()=>{
+      if(ROraf) cancelAnimationFrame(ROraf);
+      ROraf = requestAnimationFrame(()=>{ if(ctx._fit()) draw(); });
+    }).observe(canvas);
+    ctx._fit(); draw();
+  })();
+
+  /* ==================================================================
+     shared box builder for 2 & 3 point perspective
+  ================================================================== */
+  function buildBox({vpL, vpR, vp3, near, hTop, hBottom, tL, tR}){
+    const nearTop = alongVert(near, vp3, hTop);
+    const nearBot = alongVert(near, vp3, hBottom);
+    const leftTopFar = lerpP(nearTop, vpL, tL);
+    const rightTopFar = lerpP(nearTop, vpR, tR);
+    const leftBotFar = vertIntersect(leftTopFar, vp3, nearBot, vpL);
+    const rightBotFar = vertIntersect(rightTopFar, vp3, nearBot, vpR);
+    const farTop = lineIntersect(leftTopFar, vpR, rightTopFar, vpL);
+    const farBot = vertIntersect(farTop, vp3, leftBotFar, vpR);
+    return {nearTop, nearBot, leftTopFar, leftBotFar, rightTopFar, rightBotFar, farTop, farBot};
+  }
+  function renderBox(ctx, box, {vpL, vpR, vp3, W, H, showConstruction=true}){
+    const b = box;
+    if(showConstruction){
+      ctx.strokeStyle = 'rgba(39,62,116,0.4)'; ctx.lineWidth = 1;
+      [[b.nearTop,vpL],[b.nearTop,vpR],[b.nearBot,vpL],[b.nearBot,vpR]].forEach(([a,c])=>{
+        drawLine(ctx, a, extendTo(a,c,W));
+      });
+      // linhas de construção que convergem no 3º ponto de fuga (as arestas verticais
+      // da caixa já são colineares com vp3 por construção; aqui só as prolongamos)
+      if(vp3 && H!=null){
+        [[b.nearTop,b.nearBot],[b.leftTopFar,b.leftBotFar],[b.rightTopFar,b.rightBotFar]].forEach(([top,bot])=>{
+          const dTop = Math.hypot(top.x-vp3.x, top.y-vp3.y);
+          const dBot = Math.hypot(bot.x-vp3.x, bot.y-vp3.y);
+          const base = dTop > dBot ? top : bot; // ponto mais distante do PF3 = ponto de partida da linha
+          drawLine(ctx, base, extendToV(base, vp3, H));
+        });
+      }
+    }
+    ctx.strokeStyle = COL_INK; ctx.lineWidth = 1.9;
+    [[b.nearTop,b.nearBot],[b.nearTop,b.leftTopFar],[b.nearTop,b.rightTopFar],
+     [b.leftTopFar,b.leftBotFar],[b.rightTopFar,b.rightBotFar],
+     [b.nearBot,b.leftBotFar],[b.nearBot,b.rightBotFar],
+     [b.leftTopFar,b.farTop],[b.rightTopFar,b.farTop]].forEach(([a,c])=>drawLine(ctx,a,c));
+
+    ctx.strokeStyle = 'rgba(39,62,116,0.4)'; ctx.lineWidth=1.4;
+    drawDashedLine(ctx,b.farTop,b.farBot);
+    drawDashedLine(ctx,b.leftBotFar,b.farBot);
+    drawDashedLine(ctx,b.rightBotFar,b.farBot);
+  }
+
+  /* ==================================================================
+     2 PONTOS DE FUGA
+  ================================================================== */
+  (function(){
+    const canvas = document.getElementById('cv-p2');
+    const ctx = setupCanvas(canvas);
+    const W = ctx._logicalW, H = ctx._logicalH;
+    const sH=document.getElementById('s-p2-h'), sSpread=document.getElementById('s-p2-spread'),
+          sHgt=document.getElementById('s-p2-hgt'), sTl=document.getElementById('s-p2-tl'), sTr=document.getElementById('s-p2-tr');
+    const vH=document.getElementById('v-p2-h'), vSpread=document.getElementById('v-p2-spread'),
+          vHgt=document.getElementById('v-p2-hgt'), vTl=document.getElementById('v-p2-tl'), vTr=document.getElementById('v-p2-tr');
+    const cap = document.getElementById('cap-p2');
+
+    function draw(){
+      const hY = +sH.value, spread = +sSpread.value, hgt = +sHgt.value;
+      const tL = (+sTl.value)/100, tR = (+sTr.value)/100;
+      const cx = W/2;
+      const vpL = {x:cx-spread/2, y:hY}, vpR = {x:cx+spread/2, y:hY};
+      const near = {x:cx, y:hY};
+
+      ctx.clearRect(0,0,W,H);
+      horizonLine(ctx, hY, W);
+
+      const box = buildBox({vpL, vpR, vp3:null, near, hTop:-hgt/2, hBottom:hgt/2, tL, tR});
+      renderBox(ctx, box, {vpL, vpR, vp3:null, W});
+
+      labelVP(ctx, vpL, 'PF1'); labelVP(ctx, vpR, 'PF2');
+
+      vH.textContent=hY+'px'; vSpread.textContent=spread+'px'; vHgt.textContent=hgt+'px';
+      vTl.textContent=Math.round(tL*100)+'%'; vTr.textContent=Math.round(tR*100)+'%';
+      cap.textContent = 'As verticais permanecem verticais — só as duas famílias de linhas horizontais fogem para PF1 e PF2.';
+    }
+    [sH,sSpread,sHgt,sTl,sTr].forEach(el=>el.addEventListener('input',draw));
+    let ROraf = null;
+    new ResizeObserver(()=>{
+      if(ROraf) cancelAnimationFrame(ROraf);
+      ROraf = requestAnimationFrame(()=>{ if(ctx._fit()) draw(); });
+    }).observe(canvas);
+    ctx._fit(); draw();
+  })();
+
+  /* ==================================================================
+     3 PONTOS DE FUGA
+  ================================================================== */
+  (function(){
+    const canvas = document.getElementById('cv-p3');
+    const ctx = setupCanvas(canvas);
+    const W = ctx._logicalW, H = ctx._logicalH;
+    const sH=document.getElementById('s-p3-h'), sSpread=document.getElementById('s-p3-spread'),
+          sDist=document.getElementById('s-p3-dist'), sHgt=document.getElementById('s-p3-hgt'), sT=document.getElementById('s-p3-t');
+    const vH=document.getElementById('v-p3-h'), vSpread=document.getElementById('v-p3-spread'),
+          vDist=document.getElementById('v-p3-dist'), vHgt=document.getElementById('v-p3-hgt'), vT=document.getElementById('v-p3-t');
+    const cap = document.getElementById('cap-p3');
+    const btnWorm = document.getElementById('btn-worm'), btnBird = document.getElementById('btn-bird');
+    let mode = 'worm';
+
+    function draw(){
+      const hY = +sH.value, spread = +sSpread.value, dist = +sDist.value, hgt=+sHgt.value;
+      const t = (+sT.value)/100;
+      const cx = W/2;
+      const vpL = {x:cx-spread/2, y:hY}, vpR = {x:cx+spread/2, y:hY};
+      const vp3 = mode==='worm' ? {x:cx, y:hY-dist} : {x:cx, y:hY+dist};
+      const near = {x:cx, y: mode==='worm' ? hY - dist*0.28 : hY + dist*0.28};
+
+      ctx.clearRect(0,0,W,H);
+      horizonLine(ctx, hY, W);
+
+      const box = buildBox({vpL, vpR, vp3, near, hTop:-hgt/2, hBottom:hgt/2, tL:t, tR:t});
+      renderBox(ctx, box, {vpL, vpR, vp3, W, H});
+
+      labelVP(ctx, vpL, 'PF1'); labelVP(ctx, vpR, 'PF2'); labelVP(ctx, vp3, 'PF3');
+
+      vH.textContent=hY+'px'; vSpread.textContent=spread+'px'; vDist.textContent=dist+'px';
+      vHgt.textContent=hgt+'px'; vT.textContent=Math.round(t*100)+'%';
+      cap.textContent = mode==='worm'
+        ? 'Visão de baixo: as verticais sobem convergindo para o PF3, acima do horizonte.'
+        : 'Visão de cima: as verticais descem convergindo para o PF3, abaixo do horizonte.';
+    }
+    btnWorm.addEventListener('click', ()=>{mode='worm'; btnWorm.classList.add('on'); btnBird.classList.remove('on'); draw();});
+    btnBird.addEventListener('click', ()=>{mode='bird'; btnBird.classList.add('on'); btnWorm.classList.remove('on'); draw();});
+    [sH,sSpread,sDist,sHgt,sT].forEach(el=>el.addEventListener('input',draw));
+    let ROraf = null;
+    new ResizeObserver(()=>{
+      if(ROraf) cancelAnimationFrame(ROraf);
+      ROraf = requestAnimationFrame(()=>{ if(ctx._fit()) draw(); });
+    }).observe(canvas);
+    ctx._fit(); draw();
+  })();
+
+  /* ==================================================================
+     VÁRIOS ÂNGULOS — cubo 3D com rotação livre (arrastar) + presets
+  ================================================================== */
+  (function(){
+    const canvas = document.getElementById('cv-ang');
+    const ctx = setupCanvas(canvas);
+    const W = ctx._logicalW, H = ctx._logicalH;
+    const sYaw=document.getElementById('s-ang-yaw'), sPitch=document.getElementById('s-ang-pitch');
+    const vYaw=document.getElementById('v-ang-yaw'), vPitch=document.getElementById('v-ang-pitch');
+    const cap = document.getElementById('cap-ang');
+    const presetsWrap = document.getElementById('ang-presets');
+    const shapesWrap = document.getElementById('ang-shapes');
+
+    /* ---- geradores de malha 3D (vértices + faces) ---- */
+    function faceNormal(verts, idx){
+      const a=verts[idx[0]], b=verts[idx[1]], c=verts[idx[2]];
+      const u={x:b.x-a.x,y:b.y-a.y,z:b.z-a.z};
+      const v={x:c.x-a.x,y:c.y-a.y,z:c.z-a.z};
+      const n={x:u.y*v.z-u.z*v.y, y:u.z*v.x-u.x*v.z, z:u.x*v.y-u.y*v.x};
+      const len=Math.hypot(n.x,n.y,n.z)||1;
+      return {x:n.x/len,y:n.y/len,z:n.z/len};
+    }
+    // garante que cada normal aponte para fora da forma (a forma é convexa e centrada na origem)
+    function fixWinding(verts, faces){
+      return faces.map(f=>{
+        let n = faceNormal(verts, f.idx);
+        const c = f.idx.reduce((acc,i)=>({x:acc.x+verts[i].x,y:acc.y+verts[i].y,z:acc.z+verts[i].z}),{x:0,y:0,z:0});
+        const cx=c.x/f.idx.length, cy=c.y/f.idx.length, cz=c.z/f.idx.length;
+        if(n.x*cx+n.y*cy+n.z*cz < -1e-6){ return {idx:f.idx.slice().reverse(), n:{x:-n.x,y:-n.y,z:-n.z}}; }
+        return {idx:f.idx, n};
+      });
+    }
+
+    function buildCubo(){
+      const verts = [
+        {x:-1,y:-1,z:-1},{x:1,y:-1,z:-1},{x:1,y:1,z:-1},{x:-1,y:1,z:-1},
+        {x:-1,y:-1,z:1},{x:1,y:-1,z:1},{x:1,y:1,z:1},{x:-1,y:1,z:1}
+      ];
+      // faces com cor fixa por eixo, para identificar frente/lado/topo em qualquer rotação
+      const faces = [
+        {idx:[4,5,6,7], n:{x:0,y:0,z:1},  label:'frente', fill:'#F2F2F2'},
+        {idx:[1,0,3,2], n:{x:0,y:0,z:-1}, label:'trás',   fill:'#E4E4E4'},
+        {idx:[5,1,2,6], n:{x:1,y:0,z:0},  label:'lado direito', fill:'#D6DEEA'},
+        {idx:[0,4,7,3], n:{x:-1,y:0,z:0}, label:'lado esquerdo', fill:'#C7D2E2'},
+        {idx:[7,6,2,3], n:{x:0,y:1,z:0},  label:'topo', fill:'#DDE2E8'},
+        {idx:[0,1,5,4], n:{x:0,y:-1,z:0}, label:'base', fill:'#CCD3DC'}
+      ];
+      return {verts, faces, shaded:false};
+    }
+    function buildPiramide(){
+      const verts = [
+        {x:-1,y:-1,z:-1},{x:1,y:-1,z:-1},{x:1,y:-1,z:1},{x:-1,y:-1,z:1},
+        {x:0,y:1,z:0}
+      ];
+      const faces = [ {idx:[0,1,2,3]}, {idx:[0,1,4]}, {idx:[1,2,4]}, {idx:[2,3,4]}, {idx:[3,0,4]} ];
+      return {verts, faces:fixWinding(verts,faces), shaded:true};
+    }
+    function buildCone(N){
+      N = N||24;
+      const verts=[{x:0,y:1,z:0}];
+      for(let i=0;i<N;i++){ const th=2*Math.PI*i/N; verts.push({x:Math.cos(th), y:-1, z:Math.sin(th)}); }
+      const faces=[]; const baseIdx=[]; for(let i=0;i<N;i++) baseIdx.push(1+i);
+      faces.push({idx:baseIdx});
+      for(let i=0;i<N;i++) faces.push({idx:[0, 1+i, 1+((i+1)%N)]});
+      return {verts, faces:fixWinding(verts,faces), shaded:true, N};
+    }
+    function buildCilindro(N){
+      N = N||24;
+      const verts=[];
+      for(let i=0;i<N;i++){ const th=2*Math.PI*i/N; verts.push({x:Math.cos(th),y:1,z:Math.sin(th)}); }
+      for(let i=0;i<N;i++){ const th=2*Math.PI*i/N; verts.push({x:Math.cos(th),y:-1,z:Math.sin(th)}); }
+      const faces=[];
+      const topIdx=[]; for(let i=0;i<N;i++) topIdx.push(i);
+      const botIdx=[]; for(let i=0;i<N;i++) botIdx.push(N+i);
+      faces.push({idx:topIdx}); faces.push({idx:botIdx});
+      for(let i=0;i<N;i++){ const ni=(i+1)%N; faces.push({idx:[i, ni, N+ni, N+i]}); }
+      return {verts, faces:fixWinding(verts,faces), shaded:true, N};
+    }
+    function buildEsfera(latSeg, lonSeg){
+      latSeg=latSeg||8; lonSeg=lonSeg||16;
+      const verts=[];
+      for(let r=0;r<=latSeg;r++){
+        const lat = -Math.PI/2 + Math.PI*r/latSeg;
+        for(let c=0;c<lonSeg;c++){
+          const lon = 2*Math.PI*c/lonSeg;
+          verts.push({x:Math.cos(lat)*Math.cos(lon), y:Math.sin(lat), z:Math.cos(lat)*Math.sin(lon)});
+        }
+      }
+      const idxOf=(r,c)=> r*lonSeg + (((c%lonSeg)+lonSeg)%lonSeg);
+      const faces=[];
+      for(let r=0;r<latSeg;r++) for(let c=0;c<lonSeg;c++)
+        faces.push({idx:[idxOf(r,c), idxOf(r,c+1), idxOf(r+1,c+1), idxOf(r+1,c)]});
+      return {verts, faces:fixWinding(verts,faces), shaded:true, latSeg, lonSeg};
+    }
+
+    const SHAPES = { cubo:buildCubo, piramide:buildPiramide, cone:buildCone, cilindro:buildCilindro, esfera:buildEsfera };
+    let shapeName = 'cubo';
+    let mesh = SHAPES[shapeName]();
+
+    const LIGHT = (function(){ const x=-0.45,y=0.55,z=0.7,l=Math.hypot(x,y,z); return {x:x/l,y:y/l,z:z/l}; })();
+    function shadeTone(t){
+      const amb = 0.30 + 0.68*Math.max(0,Math.min(1,t));
+      const v = Math.round(70 + amb*175);
+      return `rgb(${v},${v},${Math.min(255,v+4)})`;
+    }
+
+    const UNIT = 78, ORIGIN = {x:W/2, y:H/2};
+    let yaw = (+sYaw.value)*Math.PI/180, pitch = (+sPitch.value)*Math.PI/180;
+    const guidesWrap = document.getElementById('ang-guides');
+    const guides = {eixos:true, grade:true, horizonte:false, paralelas:false};
+
+    function rotY(p, a){ const c=Math.cos(a), s=Math.sin(a); return {x:p.x*c+p.z*s, y:p.y, z:-p.x*s+p.z*c}; }
+    function rotX(p, a){ const c=Math.cos(a), s=Math.sin(a); return {x:p.x, y:p.y*c-p.z*s, z:p.y*s+p.z*c}; }
+    function project(p){
+      const sx = ORIGIN.x + p.x*UNIT;
+      const sy = ORIGIN.y - (p.y*UNIT*0.86 + p.z*UNIT*0.18);
+      return {x:sx, y:sy, depth:p.z};
+    }
+    function transform(p){ return rotX(rotY(p, yaw), pitch); }
+    function extend3D(from, to, factor){
+      return {x: to.x+(to.x-from.x)*factor, y: to.y+(to.y-from.y)*factor, z: to.z+(to.z-from.z)*factor};
+    }
+    function seg(ctx, a3d, b3d, style, dash){
+      const A = project(transform(a3d)), B = project(transform(b3d));
+      ctx.save();
+      ctx.strokeStyle = style.color; ctx.lineWidth = style.width;
+      if(dash) ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ---- eixos X/Y/Z centrados na forma, giram junto com ela ---- */
+    function drawAxes(){
+      const L = 1.7;
+      seg(ctx, {x:-L,y:0,z:0}, {x:L,y:0,z:0}, {color:'rgba(92,109,130,0.7)', width:1.1}, [5,4]);
+      seg(ctx, {x:0,y:-L,z:0}, {x:0,y:L,z:0},  {color:'rgba(39,62,116,0.75)', width:1.3});
+      seg(ctx, {x:0,y:0,z:-L}, {x:0,y:0,z:L},  {color:'rgba(92,109,130,0.7)', width:1.1}, [1,3]);
+      ['X','Y','Z'].forEach((label,i)=>{
+        const p3 = [{x:L,y:0,z:0},{x:0,y:L,z:0},{x:0,y:0,z:L}][i];
+        const P = project(transform(p3));
+        ctx.font = "600 11px Arial, sans-serif";
+        ctx.fillStyle = '#273E74';
+        ctx.fillText(label, P.x+5, P.y+4);
+      });
+    }
+
+    /* ---- grade do chão: plano fixo, gira só com a inclinação (não com o giro da forma) ---- */
+    function drawGrid(){
+      const y0=-1.35, half=2.3, N=6;
+      for(let i=0;i<=N;i++){
+        const t = -half + (2*half)*i/N;
+        const A = rotX({x:-half,y:y0,z:t}, pitch), B = rotX({x:half,y:y0,z:t}, pitch);
+        const C = rotX({x:t,y:y0,z:-half}, pitch), D = rotX({x:t,y:y0,z:half}, pitch);
+        [[A,B],[C,D]].forEach(([p,q])=>{
+          const P=project(p), Q=project(q);
+          ctx.save();
+          ctx.strokeStyle = 'rgba(92,109,130,0.32)'; ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(P.x,P.y); ctx.lineTo(Q.x,Q.y); ctx.stroke();
+          ctx.restore();
+        });
+      }
+    }
+
+    /* ---- linha do horizonte: sobe/desce com a inclinação, simplificação didática ---- */
+    function drawHorizon(){
+      const range = (H/2 - 20);
+      const hy = ORIGIN.y + range*Math.sin(pitch);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(39,62,116,0.5)'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
+      ctx.beginPath(); ctx.moveTo(0,hy); ctx.lineTo(W,hy); ctx.stroke();
+      ctx.restore();
+      ctx.font = "11px Arial, sans-serif";
+      ctx.fillStyle = 'rgba(39,62,116,0.7)';
+      ctx.fillText('linha do horizonte', 8, hy-6);
+    }
+
+    /* ---- linhas-guia: paralelas de verdade vs. convergentes, conforme a forma ---- */
+    function drawGuides(){
+      const PAR = {color:'#5C6D82', width:1.6};
+      const CONV = {color:'#273E74', width:1.4};
+      const dashConv = [4,3];
+      if(shapeName === 'cubo'){
+        const v = mesh.verts;
+        [[0,1],[3,2],[4,5],[7,6]].forEach(([a,b])=>seg(ctx, v[a], v[b], PAR));
+        [[0,3],[1,2],[4,7],[5,6]].forEach(([a,b])=>seg(ctx, v[a], v[b], {color:'#273E74', width:1.6}));
+        [[0,4],[1,5],[2,6],[3,7]].forEach(([a,b])=>seg(ctx, v[a], v[b], PAR, [1,3]));
+      } else if(shapeName === 'piramide'){
+        const v = mesh.verts, apex = v[4];
+        [[0,1],[3,2]].forEach(([a,b])=>seg(ctx, v[a], v[b], PAR));
+        [0,1,2,3].forEach(i=>{
+          seg(ctx, v[i], apex, CONV, dashConv);
+          seg(ctx, apex, extend3D(v[i], apex, 0.2), CONV, [1,3]);
+        });
+      } else if(shapeName === 'cone'){
+        const N = mesh.N, v = mesh.verts, apex = v[0];
+        const step = Math.max(1, Math.round(N/8));
+        for(let i=0;i<N;i+=step){
+          const base = v[1+i];
+          seg(ctx, base, apex, CONV, dashConv);
+          seg(ctx, apex, extend3D(base, apex, 0.2), CONV, [1,3]);
+        }
+      } else if(shapeName === 'cilindro'){
+        const N = mesh.N, v = mesh.verts;
+        const step = Math.max(1, Math.round(N/8));
+        for(let i=0;i<N;i+=step){
+          const top = v[i], bot = v[N+i];
+          seg(ctx, top, bot, PAR);
+          seg(ctx, bot, extend3D(top, bot, 0.15), PAR, [1,3]);
+          seg(ctx, top, extend3D(bot, top, 0.15), PAR, [1,3]);
+        }
+      } else if(shapeName === 'esfera'){
+        const latSeg = mesh.latSeg, lonSeg = mesh.lonSeg, v = mesh.verts;
+        const idxOf=(r,c)=> r*lonSeg + (((c%lonSeg)+lonSeg)%lonSeg);
+        // meridianos (convergem nos polos) — 4 amostras
+        for(let c=0;c<lonSeg;c+=Math.max(1,Math.round(lonSeg/4))){
+          for(let r=0;r<latSeg;r++) seg(ctx, v[idxOf(r,c)], v[idxOf(r+1,c)], CONV, dashConv);
+        }
+        // paralelos (nunca convergem) — equador + 2 amostras
+        for(let r=1;r<latSeg;r+=Math.max(1,Math.round(latSeg/3))){
+          for(let c=0;c<lonSeg;c++) seg(ctx, v[idxOf(r,c)], v[idxOf(r,c+1)], PAR);
+        }
+      }
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      if(guides.grade) drawGrid();
+      if(guides.horizonte) drawHorizon();
+
+      const world = mesh.verts.map(transform);
+      const screen = world.map(project);
+
+      const rendered = mesh.faces.map(f=>{
+        const n = rotX(rotY(f.n, yaw), pitch);
+        const pts = f.idx.map(i=>screen[i]);
+        const avgDepth = pts.reduce((s,p)=>s+p.depth,0)/pts.length;
+        const centroid = {x:pts.reduce((s,p)=>s+p.x,0)/pts.length, y:pts.reduce((s,p)=>s+p.y,0)/pts.length};
+        const intensity = mesh.shaded ? Math.max(0, n.x*LIGHT.x+n.y*LIGHT.y+n.z*LIGHT.z) : 0;
+        return {pts, avgDepth, centroid, facing:n.z, label:f.label, fill: mesh.shaded ? shadeTone(intensity) : f.fill};
+      });
+      rendered.sort((a,b)=>a.avgDepth-b.avgDepth);
+
+      rendered.forEach(f=>{
+        ctx.beginPath();
+        ctx.moveTo(f.pts[0].x,f.pts[0].y);
+        for(let i=1;i<f.pts.length;i++) ctx.lineTo(f.pts[i].x,f.pts[i].y);
+        ctx.closePath();
+        ctx.fillStyle = f.fill;
+        ctx.fill();
+        ctx.strokeStyle = mesh.shaded ? 'rgba(39,62,116,0.22)' : 'rgba(39,62,116,0.55)';
+        ctx.lineWidth = mesh.shaded ? 0.8 : 1.6;
+        ctx.stroke();
+      });
+
+      if(guides.paralelas) drawGuides();
+      if(guides.eixos) drawAxes();
+
+      // nomes de face só existem para o cubo (frente/lado/topo...); outras formas não têm rótulo
+      const visible = rendered.filter(f=>f.facing > 0.05 && f.label);
+      if(visible.length){
+        ctx.font = "600 11px 'JetBrains Mono', monospace";
+        ctx.fillStyle = 'rgba(39,62,116,0.8)';
+        visible.forEach(f=>{
+          const w = ctx.measureText(f.label).width;
+          ctx.fillText(f.label, f.centroid.x - w/2, f.centroid.y+4);
+        });
+      }
+
+      if(shapeName === 'cubo'){
+        const names = visible.map(f=>f.label);
+        cap.textContent = names.length
+          ? 'Faces visíveis agora: ' + names.join(', ') + '.'
+          : 'Gire o cubo para revelar suas faces.';
+      } else {
+        cap.textContent = 'Repare como a variação de tom acompanha a curva da superfície ao girar.';
+      }
+      vYaw.textContent = Math.round((yaw*180/Math.PI+360)%360)+'°';
+      vPitch.textContent = Math.round(pitch*180/Math.PI)+'°';
+    }
+
+    guidesWrap.querySelectorAll('button').forEach(btn=>{
+      btn.classList.toggle('on', guides[btn.dataset.guide]);
+      btn.addEventListener('click', ()=>{
+        const key = btn.dataset.guide;
+        guides[key] = !guides[key];
+        btn.classList.toggle('on', guides[key]);
+        draw();
+      });
+    });
+
+    function setShape(name){
+      shapeName = name;
+      mesh = SHAPES[name]();
+      shapesWrap.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.shape===name));
+      draw();
+    }
+    shapesWrap.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=> setShape(btn.dataset.shape));
+    });
+
+    function setAngles(y,p){
+      yaw = y*Math.PI/180;
+      pitch = Math.max(-85,Math.min(85,p))*Math.PI/180;
+      sYaw.value = Math.round((y%360+360)%360);
+      sPitch.value = Math.round(Math.max(-85,Math.min(85,p)));
+      draw();
+    }
+
+    sYaw.addEventListener('input', ()=>{ yaw=(+sYaw.value)*Math.PI/180; draw(); });
+    sPitch.addEventListener('input', ()=>{ pitch=(+sPitch.value)*Math.PI/180; draw(); });
+
+    presetsWrap.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        presetsWrap.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+        btn.classList.add('on');
+        setAngles(+btn.dataset.yaw, +btn.dataset.pitch);
+      });
+    });
+
+    // arraste direto na forma para girar
+    let dragging=false, lastX=0, lastY=0, startYawDeg=0, startPitchDeg=0;
+    function toLocalXY(evt){
+      const r = canvas.getBoundingClientRect();
+      const scale = ctx._logicalW / r.width;
+      return {x:(evt.clientX-r.left)*scale, y:(evt.clientY-r.top)*scale};
+    }
+    canvas.style.cursor = 'grab';
+    canvas.addEventListener('pointerdown', (e)=>{
+      dragging = true;
+      canvas.style.cursor = 'grabbing';
+      const p = toLocalXY(e); lastX=p.x; lastY=p.y;
+      startYawDeg = yaw*180/Math.PI; startPitchDeg = pitch*180/Math.PI;
+      presetsWrap.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e)=>{
+      if(!dragging) return;
+      const p = toLocalXY(e);
+      const dx = p.x-lastX, dy = p.y-lastY;
+      setAngles(startYawDeg + dx*0.4, startPitchDeg - dy*0.4);
+    });
+    ['pointerup','pointercancel','pointerleave'].forEach(ev=>{
+      canvas.addEventListener(ev, ()=>{ dragging=false; canvas.style.cursor='grab'; });
+    });
+    let ROraf = null;
+    new ResizeObserver(()=>{
+      if(ROraf) cancelAnimationFrame(ROraf);
+      ROraf = requestAnimationFrame(()=>{ if(ctx._fit()) draw(); });
+    }).observe(canvas);
+    ctx._fit(); draw();
+  })();
+
+  /* ==================================================================
+     LUZ E SOMBRA — cubo 3D com sombreamento e sombra projetada
+  ================================================================== */
+  (function(){
+    const canvas = document.getElementById('cv-luz');
+    const ctx = setupCanvas(canvas);
+    const W = ctx._logicalW, H = ctx._logicalH;
+    const sAz=document.getElementById('s-luz-az'), sEl=document.getElementById('s-luz-el'), sRot=document.getElementById('s-luz-rot');
+    const vAz=document.getElementById('v-luz-az'), vEl=document.getElementById('v-luz-el'), vRot=document.getElementById('v-luz-rot');
+    const cap = document.getElementById('cap-luz');
+
+    const cubeVerts = [
+      {x:-1,y:-1,z:-1},{x:1,y:-1,z:-1},{x:1,y:1,z:-1},{x:-1,y:1,z:-1},
+      {x:-1,y:-1,z:1},{x:1,y:-1,z:1},{x:1,y:1,z:1},{x:-1,y:1,z:1}
+    ];
+    const faces = [
+      {idx:[4,5,6,7], n:{x:0,y:0,z:1}},
+      {idx:[1,0,3,2], n:{x:0,y:0,z:-1}},
+      {idx:[5,1,2,6], n:{x:1,y:0,z:0}},
+      {idx:[0,4,7,3], n:{x:-1,y:0,z:0}},
+      {idx:[7,6,2,3], n:{x:0,y:1,z:0}},
+      {idx:[0,1,5,4], n:{x:0,y:-1,z:0}}
+    ];
+    const PHI = -0.42; // fixed camera tilt
+    const cosPhi = Math.cos(PHI), sinPhi=Math.sin(PHI);
+    const UNIT = 62, ORIGIN = {x:W/2, y:H/2-30};
+    const FLOOR_Y = -1.55;
+
+    function rotY(p, theta){
+      const c=Math.cos(theta), s=Math.sin(theta);
+      return {x:p.x*c+p.z*s, y:p.y, z:-p.x*s+p.z*c};
+    }
+    function tiltAndProject(p){
+      // fixed X tilt
+      const ry = p.y*cosPhi - p.z*sinPhi;
+      const rz = p.y*sinPhi + p.z*cosPhi;
+      const rx = p.x;
+      // oblique (cavalier-ish) projection
+      const sx = ORIGIN.x + (rx - rz*0.5)*UNIT;
+      const sy = ORIGIN.y - (ry + rz*0.35)*UNIT;
+      return {x:sx, y:sy, depth: rz};
+    }
+    function convexHull(pts){
+      const p = pts.slice().sort((a,b)=> a.x-b.x || a.y-b.y);
+      const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);
+      const lower=[]; for(const pt of p){ while(lower.length>=2 && cross(lower[lower.length-2],lower[lower.length-1],pt)<=0) lower.pop(); lower.push(pt); }
+      const upper=[]; for(let i=p.length-1;i>=0;i--){ const pt=p[i]; while(upper.length>=2 && cross(upper[upper.length-2],upper[upper.length-1],pt)<=0) upper.pop(); upper.push(pt); }
+      lower.pop(); upper.pop();
+      return lower.concat(upper);
+    }
+    function shade(t){
+      const amb = 0.14 + 0.82*t;
+      const v = Math.round(46 + amb*170);
+      return `rgb(${v},${v},${Math.min(255,v+3)})`;
+    }
+
+    function draw(){
+      const az = (+sAz.value)*Math.PI/180;
+      const el = (+sEl.value)*Math.PI/180;
+      const rot = (+sRot.value)*Math.PI/180;
+
+      // light direction pointing TOWARD the light source
+      const Ldir = {x:Math.cos(el)*Math.cos(az), y:Math.sin(el), z:Math.cos(el)*Math.sin(az)};
+
+      ctx.clearRect(0,0,W,H);
+
+      // ---- floor ----
+      const floorPts3D = [{x:-2.6,y:FLOOR_Y,z:-2.6},{x:2.6,y:FLOOR_Y,z:-2.6},{x:2.6,y:FLOOR_Y,z:2.6},{x:-2.6,y:FLOOR_Y,z:2.6}];
+      const floorScreen = floorPts3D.map(tiltAndProject);
+      ctx.fillStyle = '#E4DCC8';
+      ctx.beginPath(); ctx.moveTo(floorScreen[0].x,floorScreen[0].y);
+      floorScreen.slice(1).forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fill();
+
+      // ---- rotated cube (world space, after spin) ----
+      const worldV = cubeVerts.map(v=>rotY(v, rot));
+
+      // ---- cast shadow (world space -> floor -> screen), via convex hull of all 8 shadow points ----
+      const shadowPts3D = worldV.map(p=>{
+        const denom = -Ldir.y;
+        const t = Math.abs(denom) < 1e-6 ? 0 : (FLOOR_Y - p.y)/denom;
+        return {x:p.x - Ldir.x*t, y:FLOOR_Y, z:p.z - Ldir.z*t};
+      });
+      const shadowScreen = shadowPts3D.map(tiltAndProject);
+      const hull = convexHull(shadowScreen);
+      // soft penumbra: blurred outer pass then solid core
+      ctx.save();
+      ctx.filter = 'blur(6px)';
+      ctx.fillStyle = 'rgba(20,26,38,0.30)';
+      ctx.beginPath(); ctx.moveTo(hull[0].x,hull[0].y); hull.slice(1).forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = 'rgba(20,26,38,0.40)';
+      ctx.beginPath(); ctx.moveTo(hull[0].x,hull[0].y); hull.slice(1).forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fill();
+
+      // shadow / penumbra labels
+      const hullCx = hull.reduce((s,p)=>s+p.x,0)/hull.length;
+      const hullMaxY = Math.max(...hull.map(p=>p.y));
+      ctx.font = "600 11px 'JetBrains Mono', monospace";
+      ctx.fillStyle = '#273E74';
+      ctx.fillText('sombra projetada', hullCx-40, hullMaxY+16);
+
+      // ---- cube faces: project, compute intensity, depth-sort, draw back-to-front ----
+      const screenV = worldV.map(tiltAndProject);
+      const rendered = faces.map(f=>{
+        const nrm = rotY(f.n, rot);
+        const intensity = Math.max(0, nrm.x*Ldir.x + nrm.y*Ldir.y + nrm.z*Ldir.z);
+        const pts = f.idx.map(i=>screenV[i]);
+        const avgDepth = f.idx.reduce((s,i)=>s+worldV[i].z,0)/4 + (nrm.z*0.01);
+        const worldAvgDepth = pts.reduce((s,p)=>s+p.depth,0)/4;
+        const centroid = {x:pts.reduce((s,p)=>s+p.x,0)/4, y:pts.reduce((s,p)=>s+p.y,0)/4};
+        // a face is actually visible to the camera when its normal, tilted the same way
+        // as the points, points toward the viewer (same convention as tiltAndProject's depth)
+        const facingCam = nrm.y*sinPhi + nrm.z*cosPhi;
+        return {pts, intensity, worldAvgDepth, centroid, facingCam};
+      });
+      rendered.sort((a,b)=>a.worldAvgDepth-b.worldAvgDepth);
+
+      // "brightest"/"darkest" only make sense among the faces we can actually see —
+      // the true darkest face (usually the underside, since the light is always
+      // above the horizon) is normally hidden from this camera angle, so picking
+      // it made the reflected-light strip land on a face nobody ever sees.
+      const visible = rendered.filter(f=>f.facingCam>0);
+      let brightest = visible[0] || rendered[0], darkest = visible[0] || rendered[0];
+      visible.forEach(f=>{ if(f.intensity>brightest.intensity) brightest=f; if(f.intensity<darkest.intensity) darkest=f; });
+
+      rendered.forEach(f=>{
+        ctx.beginPath();
+        ctx.moveTo(f.pts[0].x,f.pts[0].y);
+        for(let i=1;i<4;i++) ctx.lineTo(f.pts[i].x,f.pts[i].y);
+        ctx.closePath();
+        ctx.fillStyle = shade(f.intensity);
+        ctx.fill();
+
+        // reflected-light strip on the darkest face, near its lower edge
+        if(f===darkest){
+          const lowY = Math.max(...f.pts.map(p=>p.y));
+          const grad = ctx.createLinearGradient(0, lowY-18, 0, lowY);
+          grad.addColorStop(0,'rgba(0,0,0,0)');
+          grad.addColorStop(1,'rgba(237,230,214,0.22)');
+          ctx.save(); ctx.clip();
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, lowY-18, W, 18);
+          ctx.restore();
+        }
+
+        ctx.strokeStyle = 'rgba(39,62,116,0.55)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      });
+
+      ctx.font = "600 11px 'JetBrains Mono', monospace";
+      ctx.fillStyle = COL_INK;
+      ctx.fillText('luz direta', brightest.centroid.x-22, brightest.centroid.y);
+      ctx.fillStyle = '#fff';
+      ctx.fillText('sombra própria', darkest.centroid.x-30, darkest.centroid.y+1);
+      // ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      // ctx.fillText('sombra própria', darkest.centroid.x-31, darkest.centroid.y);
+
+      vAz.textContent = (+sAz.value)+'°'; vEl.textContent=(+sEl.value)+'°'; vRot.textContent=(+sRot.value)+'°';
+      cap.textContent = 'Gire o cubo e mova a luz: repare como a sombra própria e a projetada sempre ficam do lado oposto à luz.';
+    }
+    [sAz,sEl,sRot].forEach(el=>el.addEventListener('input',draw));
+    let ROraf = null;
+    new ResizeObserver(()=>{
+      if(ROraf) cancelAnimationFrame(ROraf);
+      ROraf = requestAnimationFrame(()=>{ if(ctx._fit()) draw(); });
+    }).observe(canvas);
+    ctx._fit(); draw();
+  })();
+
+  /* ---------- tabs ---------- */
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+})();
+
+function openGeometry() {
+  window.location.href = "geometria";
+}
+</script>
+</body>
+</html>
