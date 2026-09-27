@@ -196,6 +196,7 @@
       <option value="nomeZA">Nome (Z–A)</option>
     </select>
     <button id="clearBtn">Limpar Filtros</button>
+    <button onclick="openPage()">Diretórios e Arquivos</button>
   </div>
 
   <div class="stats" id="statsDiv"></div>
@@ -433,6 +434,10 @@
     });
 
     renderFiles();
+
+    function openPage() {
+      window.location.href = "diretorios";
+    }
   </script>
 </body>
 </html>
