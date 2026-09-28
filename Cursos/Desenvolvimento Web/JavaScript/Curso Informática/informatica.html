@@ -74,7 +74,7 @@
     .nota { max-width: 950px; margin: -15px auto 30px auto; padding: 0 20px; font-size: 0.85rem; color: #5C6D82; text-align: center; }
 
     /* Binário */
-    .bin-box { max-width: 950px; margin: 0 auto 25px auto; padding: 0 20px; }
+    .bin-box { max-width: 1000px; margin: 0 auto 25px auto; padding: 0 20px; }
     .bin-inner { background: #f2f2f2; border: 2px solid #273E74; padding: 20px; text-align: center; }
     .bits { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
     .bit { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.75rem; color: #5C6D82; font-weight: bold; }
@@ -114,7 +114,7 @@
   <p class="intro-text">
     <strong>Informática</strong> é a ciência que trata da informação e de seu processamento automático por computadores.
     Já a <strong>computação</strong> estuda como os computadores funcionam e como fazê-los resolver problemas.
-    Nesta página você vai conhecer as peças que formam um computador, como ele processa dados e como tudo é
+    Nesta página você vai conhecer os componentes que formam um computador, como ele processa dados e como tudo é
     representado por <strong>zeros e uns</strong>.
   </p>
 
@@ -162,18 +162,18 @@
 
   <section class="block-title">
     <h2>Explorador de Componentes</h2>
-    <p class="sub" style="margin-bottom:15px;">Clique em uma peça para ver o que ela faz e uma analogia para entender</p>
+    <p class="sub" style="margin-bottom:15px;">Clique em um componente para ver o que ela faz e uma analogia para entender</p>
   </section>
 
   <div class="explorer-wrap">
     <div class="panel list-panel">
-      <div class="panel-header">Peças do Computador</div>
+      <div class="panel-header">Componentes do Computador</div>
       <div class="list-scroll"><ul class="list" id="partList"></ul></div>
     </div>
     <div class="panel details-panel">
-      <div class="panel-header">Detalhes da Peça</div>
+      <div class="panel-header">Detalhes do Componente</div>
       <div class="details-body" id="partDetails">
-        <p class="placeholder">Clique em uma peça na lista ao lado para ver as informações aqui.</p>
+        <p class="placeholder">Clique em um componente na lista ao lado para ver as informações aqui.</p>
       </div>
     </div>
   </div>
@@ -282,7 +282,7 @@
     // ===== Peças do computador =====
     const PARTS = [
       { name:'CPU / Processador', cat:'O cérebro',
-        desc:'A Unidade Central de Processamento executa as instruções dos programas, faz cálculos e coordena as outras peças.',
+        desc:'A Unidade Central de Processamento executa as instruções dos programas, faz cálculos e coordena os outros componentes.',
         analogia:'É o cérebro do computador: recebe ordens, pensa e decide o que fazer.',
         ex:'Intel Core, AMD Ryzen. Sua velocidade é medida em GHz e ela tem vários núcleos (cores).' },
       { name:'Memória RAM', cat:'Memória temporária',
@@ -305,10 +305,14 @@
         desc:'Converte a corrente alternada da tomada em corrente contínua de baixa tensão e distribui energia para todas as peças.',
         analogia:'É o coração que bombeia energia para todo o corpo do computador.',
         ex:'Sua potência é medida em watts (W). Uma fonte fraca demais causa travamentos e desligamentos.' },
-      { name:'Periféricos', cat:'Ao redor do computador',
-        desc:'São os dispositivos ligados ao computador para entrada, saída ou ambos.',
-        analogia:'São os sentidos e a voz do computador: ele "vê" pela câmera, "ouve" pelo microfone e "fala" pela caixa de som.',
-        ex:'Entrada: teclado, mouse, scanner, microfone. Saída: monitor, impressora, caixa de som. Entrada e saída: pendrive, tela touch.' }
+      { name:'Periféricos de entrada', cat:'Ao redor do computador',
+        desc:'São os dispositivos que levam informações do mundo externo para o computador. Você fornece dados e comandos, e a CPU passa a processá-los.',
+        analogia:'São os sentidos do computador: ele "vê" pela câmera, "ouve" pelo microfone e "sente" o toque pelo teclado e pelo mouse.',
+        ex:'Teclado, mouse, scanner, microfone, webcam, tela touch (também é de saída) e leitor de código de barras.' },
+      { name:'Periféricos de saída', cat:'Ao redor do computador',
+        desc:'São os dispositivos que mostram ao usuário o resultado do processamento, em forma de imagem, som ou papel.',
+        analogia:'São a voz e o rosto do computador: ele "fala" pela caixa de som e "mostra" o que pensa pelo monitor e pela impressora.',
+        ex:'Monitor, impressora, caixa de som, fone de ouvido e projetor. Alguns dispositivos, como pendrive e tela touch, fazem entrada e saída ao mesmo tempo.' }
     ];
 
     const partList = document.getElementById('partList');
