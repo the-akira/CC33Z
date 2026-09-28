@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Fundamentos da Informática - Curso de Informática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/x-icon" href="images/pc.png">
+  <style>
+    body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #fff; }
+
+    header {
+      text-align: center; padding: 40px 20px; background: #5c6d82;
+      border-bottom: 5.5px solid #273E74; margin-bottom: 30px; color: white;
+    }
+    header > h1 { font-size: 2.5em; margin: 0 0 10px 0; }
+    header > .subtitle { font-size: 1.2em; opacity: 0.9; }
+    #homeBtn {
+      margin-top: 15px; background: white; color: #273E74; border: 3.3px solid #273E74;
+      padding: 9px 12px; font-size: 1.025rem; font-family: Arial, sans-serif; font-weight: bold;
+    }
+    #homeBtn:hover { background-color: #273E74; color: white; border-color: white; cursor: pointer; }
+
+    .intro-text { max-width: 900px; margin: 10px auto 25px auto; padding: 0 20px; color: #273E74; line-height: 1.6; text-align: center; }
+    section.block-title { max-width: 950px; margin: 0 auto 10px auto; padding: 0 20px; }
+    section.block-title h2 { color: #273E74; text-align: center; margin: 0 0 15px 0; }
+    section.block-title p.sub { text-align: center; color: #616A75; font-size: 1rem; margin: -5px 0 15px 0; }
+    .separador { max-width: 1100px; margin: 0 auto 30px auto; border: none; border-top: 2px solid #273E74; }
+
+    /* Painéis */
+    .explorer-wrap { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin: 0 20px 25px 20px; }
+    .panel { background: #f2f2f2; border: 2px solid #273E74; }
+    .panel-header { background: #273E74; color: white; font-weight: bold; padding: 10px 14px; font-size: 1rem; }
+    .list-panel { width: 340px; max-width: 100%; }
+    .details-panel { width: 500px; max-width: 100%; }
+    .list-scroll { padding: 10px 8px; }
+    ul.list { list-style: none; margin: 0; padding: 0; }
+    .node {
+      display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 10px; margin: 2px 0;
+      border: 2px solid transparent; font-size: 0.95rem; color: #273E74; user-select: none;
+    }
+    .node:hover { background: #e3e6ec; }
+    .node.selected { background: #273E74; color: white; }
+    .node .icon { font-size: 1.15rem; }
+    .details-body { padding: 14px 16px; min-height: 330px; background: #fff; }
+    .details-body .placeholder { color: #5C6D82; font-style: italic; font-size: 0.9rem; }
+    .details-body h3 { color: #273E74; margin: 0 0 10px 0; }
+    .details-body p { line-height: 1.55; font-size: 0.95rem; margin: 0 0 10px 0; }
+    .details-body .info-row { font-size: 0.9rem; margin: 8px 0; line-height: 1.4; }
+    .details-body .info-row strong { color: #273E74; }
+    .badge-dark { background: #273E74; color: white; padding: 6px 10px; font-weight: bold; display: inline-block; margin: 0 6px 10px 0; font-size: 0.85rem; }
+    .badge-light { background: #5C6D82; color: white; padding: 6px 10px; font-size: 0.8rem; display: inline-block; margin-bottom: 10px; }
+
+    /* Diagrama */
+    .levels-wrap { max-width: 950px; margin: 10px auto 25px auto; padding: 0 20px; }
+    .levels-svg-box { background: #f2f2f2; border: 2px solid #273E74; padding: 15px; overflow-x: auto; padding-bottom:10px; }
+    .levels-svg-box svg { display: block; margin: 0 auto; }
+
+    /* Cards */
+    .glossary-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 20px 20px 25px 20px; }
+    .glossary-card { background: #f2f2f2; border: 2px solid #273E74; width: 280px; padding: 18px; }
+    .glossary-card .term-icon { font-size: 1.6rem; float: right; }
+    .glossary-card h3 { color: #273E74; margin: 8px 0 12px 0; font-size: 17px; }
+    .glossary-card p { font-size: 0.975rem; line-height: 1.5; margin: 0; overflow-wrap: anywhere; }
+    .glossary-card code { font-family: monospace; overflow-wrap: anywhere; }
+
+    /* Tabelas */
+    .table-wrap { max-width: 1000px; margin: 0 auto 25px auto; padding: 0 20px; overflow-x: auto; }
+    table.tab { width: 100%; border-collapse: collapse; background: #f2f2f2; border: 2px solid #273E74; font-size: 0.92rem; }
+    table.tab th { background: #273E74; color: white; text-align: left; padding: 10px 12px; }
+    table.tab td { padding: 9px 12px; border-top: 1px solid #b8c0cc; line-height: 1.4; }
+    table.tab td:first-child { color: #273E74; font-weight: bold; white-space: nowrap; }
+    table.tab tr:nth-child(even) td { background: #e9ecf1; }
+    .nota { max-width: 950px; margin: -15px auto 30px auto; padding: 0 20px; font-size: 0.85rem; color: #5C6D82; text-align: center; }
+
+    /* Binário */
+    .bin-box { max-width: 950px; margin: 0 auto 25px auto; padding: 0 20px; }
+    .bin-inner { background: #f2f2f2; border: 2px solid #273E74; padding: 20px; text-align: center; }
+    .bits { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .bit { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.75rem; color: #5C6D82; font-weight: bold; }
+    .bit button {
+      width: 46px; height: 54px; font-size: 1.5rem; font-family: monospace; font-weight: bold; cursor: pointer;
+      background: white; color: #273E74; border: 2.5px solid #273E74;
+    }
+    .bit button.on { background: #273E74; color: white; }
+    .bin-result { font-size: 1.05rem; color: #273E74; margin: 10px 0 4px 0; line-height: 1.6; }
+    .bin-result strong { font-size: 1.4rem; }
+    .bin-inner button.act {
+      padding: 8px 12px; border: 2px solid #273E74; background: #5C6D82; color: white; cursor: pointer; font-weight: bold; font-size: 0.85rem; margin: 4px;
+    }
+    .bin-inner button.act:hover { background: #273E74; }
+    .txt-row { margin-top: 18px; padding-top: 16px; border-top: 2px solid #273E74; }
+    .txt-row input { padding: 9px 12px; font-size: 1rem; border: 2px solid #273E74; color: #273E74; width: 220px; max-width: 80%; font-family: Arial, sans-serif; }
+    .txt-row input:focus { outline: none; border-color: #5C6D82; }
+    #txtOut { font-family: monospace; color: #273E74; margin-top: 12px; line-height: 1.9; overflow-wrap: anywhere; }
+    #txtOut span { background: white; border: 1.5px solid #273E74; padding: 2px 6px; margin: 2px; display: inline-block; }
+
+    footer.creditos { max-width: 950px; margin: 0 auto 40px auto; padding: 0 20px; font-size: 0.78rem; color: #777; }
+
+    @media only screen and (max-width: 480px) {
+      .list-panel, .details-panel { width: 100%; }
+      .bit button { width: 34px; height: 46px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Fundamentos da Informática</h1>
+    <div class="subtitle">Entenda o que existe dentro e ao redor de um computador</div>
+    <button id="homeBtn" onclick="openHome()">Página Inicial</button>
+  </header>
+
+  <h2 style="text-align:center; font-size:1.6rem; margin-bottom:15px; color:#273E74;">O que é Informática?</h2>
+  <p class="intro-text">
+    <strong>Informática</strong> é a ciência que trata da informação e de seu processamento automático por computadores.
+    Já a <strong>computação</strong> estuda como os computadores funcionam e como fazê-los resolver problemas.
+    Nesta página você vai conhecer as peças que formam um computador, como ele processa dados e como tudo é
+    representado por <strong>zeros e uns</strong>.
+  </p>
+
+  <section class="block-title">
+    <h2>O Ciclo do Computador</h2>
+    <p class="sub">Todo computador, do celular ao supercomputador, repete estas etapas</p>
+  </section>
+
+  <div class="levels-wrap">
+    <div class="levels-svg-box">
+      <svg viewBox="0 0 900 365" width="900" height="365" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+        <rect x="290" y="8" width="320" height="229" fill="white" stroke="#273E74" stroke-width="3"/>
+        <g stroke="#5C6D82" stroke-width="3" fill="none">
+          <line x1="250" y1="67" x2="276" y2="67"/>
+          <line x1="611.5" y1="67" x2="636" y2="67"/>
+          <line x1="450" y1="126" x2="450" y2="153"/>
+          <line x1="450" y1="251" x2="450" y2="279"/>
+        </g>
+        <g fill="#5C6D82">
+          <polygon points="289,67 274,59 274,75"/>
+          <polygon points="650,67 634,59 634,75"/>
+          <polygon points="450,112 442,128 458,128"/>
+          <polygon points="450,167 442,151 458,151"/>
+          <polygon points="450,238 442,253 458,253"/>
+          <polygon points="450,293 442,277 458,277"/>
+        </g>
+        <rect x="20" y="27" width="230" height="80" fill="#5C6D82"/>
+        <text x="135" y="59" text-anchor="middle" fill="white" font-size="17" font-weight="bold">ENTRADA</text>
+        <text x="135" y="84" text-anchor="middle" fill="white" font-size="14.5">teclado, mouse, microfone</text>
+        <rect x="310" y="22" width="280" height="90" fill="#273E74"/>
+        <text x="450" y="56" text-anchor="middle" fill="white" font-size="18" font-weight="bold">PROCESSAMENTO</text>
+        <text x="450" y="86" text-anchor="middle" fill="white" font-size="14.5">CPU (processador)</text>
+        <rect x="650" y="27" width="230" height="80" fill="#5C6D82"/>
+        <text x="765" y="59" text-anchor="middle" fill="white" font-size="17" font-weight="bold">SAÍDA</text>
+        <text x="765" y="84" text-anchor="middle" fill="white" font-size="14.5">monitor, caixa de som</text>
+        <rect x="310" y="167" width="280" height="56" fill="#616a75"/>
+        <text x="450" y="191" text-anchor="middle" fill="white" font-size="17" font-weight="bold">MEMÓRIA RAM</text>
+        <text x="450" y="212" text-anchor="middle" fill="white" font-size="14.5">memória de trabalho (temporária)</text>
+        <rect x="290" y="294" width="320" height="56" fill="white" stroke="#273E74" stroke-width="2.5"/>
+        <text x="450" y="317" text-anchor="middle" fill="#273E74" font-size="17" font-weight="bold">ARMAZENAMENTO</text>
+        <text x="450" y="338" text-anchor="middle" fill="#273E74" font-size="14.5">HD, SSD, pendrive (memória permanente)</text>
+      </svg>
+    </div>
+  </div>
+
+  <section class="block-title">
+    <h2>Explorador de Componentes</h2>
+    <p class="sub" style="margin-bottom:15px;">Clique em uma peça para ver o que ela faz e uma analogia para entender</p>
+  </section>
+
+  <div class="explorer-wrap">
+    <div class="panel list-panel">
+      <div class="panel-header">Peças do Computador</div>
+      <div class="list-scroll"><ul class="list" id="partList"></ul></div>
+    </div>
+    <div class="panel details-panel">
+      <div class="panel-header">Detalhes da Peça</div>
+      <div class="details-body" id="partDetails">
+        <p class="placeholder">Clique em uma peça na lista ao lado para ver as informações aqui.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="block-title">
+    <h2>Hardware × Software</h2>
+    <p class="sub">A parte que você toca e a parte que você não toca</p>
+  </section>
+
+  <div class="glossary-grid">
+    <div class="glossary-card">
+      <h3 style="margin-top: 0px;">Hardware</h3>
+      <p>É a parte <strong>física</strong> do computador: tudo o que se pode tocar. Processador, memória, teclado, monitor e cabos são hardware.</p>
+    </div>
+    <div class="glossary-card">
+      <h3 style="margin-top: 0px;">Software</h3>
+      <p>É a parte <strong>lógica</strong>: os programas e instruções que dizem ao hardware o que fazer. Windows, navegador e jogos são software.</p>
+    </div>
+    <div class="glossary-card">
+      <h3 style="margin-top: 0px;">Um depende do outro</h3>
+      <p>Hardware sem software é uma máquina sem instruções; software sem hardware não tem onde rodar. Como o corpo e a mente: um precisa do outro.</p>
+    </div>
+  </div>
+
+  <section class="block-title">
+    <h2>Armazenamento: HD, SSD e Pendrive</h2>
+    <p class="sub">Todos guardam dados mesmo com o computador desligado, mas de jeitos diferentes</p>
+  </section>
+
+  <div class="table-wrap">
+    <table class="tab">
+      <thead><tr><th>Tipo</th><th>Como funciona</th><th>Velocidade</th><th>Uso comum</th></tr></thead>
+      <tbody>
+        <tr><td>HD</td><td>Discos magnéticos giratórios com uma cabeça de leitura (partes mecânicas)</td><td>Mais lenta</td><td>Guardar muitos dados por preço menor</td></tr>
+        <tr><td>SSD</td><td>Chips de memória flash, sem partes móveis</td><td>Muito rápida</td><td>Instalar o sistema e os programas</td></tr>
+        <tr><td>Pendrive</td><td>Memória flash portátil, ligada pela porta USB</td><td>Média</td><td>Transportar e copiar arquivos</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <section class="block-title">
+    <h2>Bits, Bytes e Unidades de Informação</h2>
+    <p class="sub">O computador só entende dois estados: ligado (1) e desligado (0)</p>
+  </section>
+
+  <div class="table-wrap">
+    <table class="tab">
+      <thead><tr><th>Unidade</th><th>Equivale a</th><th>Exemplo</th></tr></thead>
+      <tbody>
+        <tr><td>Bit (b)</td><td>0 ou 1</td><td>A menor informação possível</td></tr>
+        <tr><td>Byte (B)</td><td>8 bits</td><td>Uma letra, como "A"</td></tr>
+        <tr><td>Kilobyte (KB)</td><td>1.024 bytes</td><td>Um texto curto</td></tr>
+        <tr><td>Megabyte (MB)</td><td>1.024 KB</td><td>Uma foto ou uma música</td></tr>
+        <tr><td>Gigabyte (GB)</td><td>1.024 MB</td><td>Um filme em boa qualidade</td></tr>
+        <tr><td>Terabyte (TB)</td><td>1.024 GB</td><td>Milhares de fotos e vários filmes</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="nota" style="margin-bottom: 25px;">Observação: fabricantes de HD e SSD costumam usar 1.000 em vez de 1.024, por isso um disco de "500 GB" aparece com um pouco menos no Windows.</p>
+
+  <section class="block-title">
+    <h2>Noções de Binário</h2>
+    <p class="sub">Clique nos bits para ligar (1) ou desligar (0) e veja o número e o caractere formados</p>
+  </section>
+
+  <div class="bin-box">
+    <div class="bin-inner">
+      <div class="bits" id="bits"></div>
+      <div class="bin-result" id="binResult"></div>
+      <button class="act" onclick="zerarBits()">Zerar</button>
+      <button class="act" onclick="setBits(65)">Exemplo: "A"</button>
+      <button class="act" onclick="setBits(255)">Máximo (255)</button>
+      <div class="txt-row">
+        <strong style="color:#273E74;">Texto em binário:</strong><br><br>
+        <input type="text" id="txtIn" value="PC" maxlength="12" oninput="textoBinario()">
+        <div id="txtOut"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="block-title">
+    <h2>Arquivos e Dados Digitais</h2>
+    <p class="sub">Tudo o que o computador guarda é, no fim, uma sequência de bits</p>
+  </section>
+
+  <div class="glossary-grid" style="margin-bottom: 30px;">
+    <div class="glossary-card">
+      <h3 style="margin-top: 0px;">Dado</h3>
+      <p>É a informação em estado bruto, como o número <code>25</code> ou a palavra "Ana". Sozinho, ele ainda não tem significado completo.</p>
+    </div>
+    <div class="glossary-card">
+      <h3 style="margin-top: 0px;">Arquivo</h3>
+      <p>É um conjunto de dados guardado com um nome, como <code>foto.jpg</code>. A <strong>extensão</strong> (<code>.jpg</code>, <code>.mp3</code>, <code>.docx</code>) indica o tipo do arquivo.</p>
+    </div>
+    <div class="glossary-card">
+      <h3 style="margin-top: 0px;">Tudo vira número</h3>
+      <p>Textos, imagens, sons e vídeos são convertidos em números binários. Uma imagem, por exemplo, é uma grade de pontos (pixels), cada um com um número de cor.</p>
+    </div>
+    <div class="glossary-card">
+      <h3 style="margin-top: 0px;">Compressão</h3>
+      <p>É a técnica que reduz o tamanho de um arquivo. Formatos como <code>.zip</code>, <code>.jpg</code> e <code>.mp3</code> guardam a mesma informação ocupando menos espaço.</p>
+    </div>
+  </div>
+
+  <script>
+    // ===== Peças do computador =====
+    const PARTS = [
+      { name:'CPU / Processador', cat:'O cérebro',
+        desc:'A Unidade Central de Processamento executa as instruções dos programas, faz cálculos e coordena as outras peças.',
+        analogia:'É o cérebro do computador: recebe ordens, pensa e decide o que fazer.',
+        ex:'Intel Core, AMD Ryzen. Sua velocidade é medida em GHz e ela tem vários núcleos (cores).' },
+      { name:'Memória RAM', cat:'Memória temporária',
+        desc:'Guarda os dados e programas que estão em uso no momento, para a CPU acessar rapidamente. É volátil: quando o computador desliga, tudo o que estava nela se perde.',
+        analogia:'É a mesa de trabalho: quanto maior, mais coisas você deixa abertas ao mesmo tempo.',
+        ex:'Módulos de 8 GB, 16 GB, 32 GB. Mais RAM ajuda a abrir muitos programas juntos.' },
+      { name:'Armazenamento (HD, SSD, pendrive)', cat:'Memória permanente',
+        desc:'Guarda arquivos e programas de forma duradoura, mesmo com o computador desligado.',
+        analogia:'É o armário ou arquivo: guarda tudo com segurança, mas buscar leva mais tempo do que pegar algo da mesa (RAM).',
+        ex:'HD de 1 TB, SSD de 512 GB, pendrive de 32 GB.' },
+      { name:'Placa-mãe', cat:'A base de tudo',
+        desc:'É a grande placa onde todos os componentes são encaixados e se comunicam: CPU, RAM, armazenamento, placa de vídeo e portas.',
+        analogia:'É o sistema de ruas e avenidas de uma cidade, que conecta todos os prédios.',
+        ex:'Contém soquete da CPU, slots de RAM, conectores SATA/M.2, portas USB e chipset.' },
+      { name:'GPU / Placa de vídeo', cat:'Especialista em imagens',
+        desc:'Processa imagens, vídeos e gráficos 3D. Tem milhares de pequenos núcleos que trabalham juntos. Também é usada em inteligência artificial.',
+        analogia:'É um time de artistas desenhando ao mesmo tempo, enquanto a CPU é um único gênio muito versátil.',
+        ex:'NVIDIA GeForce, AMD Radeon. Pode ser integrada ao processador ou dedicada (placa separada).' },
+      { name:'Fonte de alimentação', cat:'Energia',
+        desc:'Converte a corrente alternada da tomada em corrente contínua de baixa tensão e distribui energia para todas as peças.',
+        analogia:'É o coração que bombeia energia para todo o corpo do computador.',
+        ex:'Sua potência é medida em watts (W). Uma fonte fraca demais causa travamentos e desligamentos.' },
+      { name:'Periféricos', cat:'Ao redor do computador',
+        desc:'São os dispositivos ligados ao computador para entrada, saída ou ambos.',
+        analogia:'São os sentidos e a voz do computador: ele "vê" pela câmera, "ouve" pelo microfone e "fala" pela caixa de som.',
+        ex:'Entrada: teclado, mouse, scanner, microfone. Saída: monitor, impressora, caixa de som. Entrada e saída: pen drive, tela touch.' }
+    ];
+
+    const partList = document.getElementById('partList');
+    const partDetails = document.getElementById('partDetails');
+    let selEl = null;
+
+    PARTS.forEach(p => {
+      const li = document.createElement('li');
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.innerHTML = `<span>${p.name}</span>`;
+      node.addEventListener('click', () => {
+        if (selEl) selEl.classList.remove('selected');
+        node.classList.add('selected');
+        selEl = node;
+        partDetails.innerHTML = `
+          <span class="badge-light">${p.cat}</span>
+          <h3>${p.name}</h3>
+          <p>${p.desc}</p>
+          <div class="info-row"><strong>Analogia:</strong> ${p.analogia}</div>
+          <div class="info-row"><strong>Exemplos:</strong> ${p.ex}</div>`;
+      });
+      li.appendChild(node);
+      partList.appendChild(li);
+    });
+
+    // ===== Binário =====
+    const bits = new Array(8).fill(0);
+    const bitsEl = document.getElementById('bits');
+    const pesos = [128, 64, 32, 16, 8, 4, 2, 1];
+
+    function renderBits() {
+      bitsEl.innerHTML = '';
+      bits.forEach((b, i) => {
+        const d = document.createElement('div');
+        d.className = 'bit';
+        d.innerHTML = `<button class="${b ? 'on' : ''}">${b}</button><span>${pesos[i]}</span>`;
+        d.querySelector('button').addEventListener('click', () => { bits[i] = b ? 0 : 1; renderBits(); });
+        bitsEl.appendChild(d);
+      });
+      const n = bits.reduce((s, b, i) => s + b * pesos[i], 0);
+      const soma = bits.map((b, i) => b ? pesos[i] : null).filter(x => x !== null);
+      const ch = (n >= 33 && n <= 126) ? `"${String.fromCharCode(n)}"` : (n === 32 ? 'espaço' : 'sem caractere visível');
+      document.getElementById('binResult').innerHTML =
+        `<div>Binário: <strong>${bits.join('')}</strong> = <strong>${n}</strong> em decimal</div>` +
+        `<div style="font-size:0.9rem; color:#5C6D82;">Soma: ${soma.length ? soma.join(' + ') : '0'} · Na tabela ASCII: ${ch}</div>`;
+    }
+    function setBits(n) { for (let i = 0; i < 8; i++) bits[i] = (n >> (7 - i)) & 1; renderBits(); }
+    function zerarBits() { setBits(0); }
+
+    function textoBinario() {
+      const t = document.getElementById('txtIn').value;
+      document.getElementById('txtOut').innerHTML = [...t].map(c => {
+        const code = c.charCodeAt(0);
+        return code < 256 ? `<span>${c === ' ' ? '␣' : c} = ${code.toString(2).padStart(8, '0')}</span>` : '';
+      }).join('');
+    }
+
+    function openHome() { window.location.href = "index"; }
+
+    renderBits();
+    textoBinario();
+  </script>
+</body>
+</html>
