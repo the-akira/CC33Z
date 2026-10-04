@@ -15,36 +15,84 @@
       </div>
       <h1>Curso de Informática</h1>
       <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
-      <nav>
-        <a class="menu" href="index">Material</a>
-        <a class="menu" href="websites">Websites</a>
-        <a class="menu" href="ferramentas">Ferramentas</a>
-        <a class="menu" href="informatica.html">Informática</a>
-        <a class="menu" href="dicionario">Dicionário</a>
-        <a class="menu" href="quiz.html">Quiz</a>
-        <a class="menu" href="simulador.html">Simulador</a>
-        <a class="menu" href="biblioteca.html">Biblioteca</a>
-        <a class="menu" href="informacao.html">Unidades de Informação</a>
-        <a class="menu" href="arquivos.html">Tipos de Arquivos</a>
-        <a class="menu" href="historia.html">História da Computação</a>
-        <a class="menu" href="contato.html">Contato</a>
-        <a class="menu" href="faq.html">Perguntas Frequentes</a>
-        <a class="menu" href="digitacao.html">Treinamento Digitação</a>
-        <a class="menu" href="mouse.html">Treinamento Mouse</a>
-        <a class="menu" href="edicao.html">Treinamento Edição</a>
-        <a class="menu" href="algoritmos.html">Algoritmos</a>
-        <a class="menu" href="games.html">Games</a>
-        <a class="menu" href="portas.html">Portas Lógicas</a>
-        <a class="menu" href="interpretador.html">Interpretador Python</a>
-        <a class="menu" href="geometria.html">Geometria</a>
-        <a class="menu" href="criptografia.html">Criptografia</a>
-        <a class="menu" href="editor.html">Editor Web</a>
-        <a class="menu" href="estatistica.html">Estatística</a>
-        <a class="menu" href="aventura.html">Aventura Digital</a>
-        <a class="menu" href="grafica.html">Computação Gráfica</a>
-        <a class="menu" href="matematica.html">Matemática</a>
-      </nav>
     </header>
+    <nav class="navbar" aria-label="Navegação principal">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list">
+        <span class="burger"></span>Menu
+      </button>
+
+      <ul class="nav-list" id="nav-list">
+        <li><a class="nav-link" href="index">Material</a></li>
+
+        <li class="dropdown">
+          <button class="nav-link" aria-expanded="false" aria-haspopup="true">Aprender <span class="caret"></span></button>
+          <ul class="dd-menu">
+            <li><a href="informatica.html">Informática</a></li>
+            <li><a href="informacao.html">Unidades de Informação</a></li>
+            <li><a href="arquivos.html">Tipos de Arquivos</a></li>
+            <li><a href="historia.html">História da Computação</a></li>
+            <li><a href="dicionario">Dicionário</a></li>
+            <li><a href="biblioteca.html">Biblioteca</a></li>
+            <li><a href="websites">Websites</a></li>
+            <li><a href="ferramentas">Ferramentas</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <button class="nav-link" aria-expanded="false" aria-haspopup="true">Treinamento <span class="caret"></span></button>
+          <ul class="dd-menu">
+            <li><a href="digitacao.html">Digitação</a></li>
+            <li><a href="mouse.html">Mouse</a></li>
+            <li><a href="edicao.html">Edição</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <button class="nav-link" aria-expanded="false" aria-haspopup="true">Programação <span class="caret"></span></button>
+          <ul class="dd-menu">
+            <li><a href="algoritmos.html">Algoritmos</a></li>
+            <li><a href="interpretador.html">Interpretador Python</a></li>
+            <li><a href="editor.html">Editor Web</a></li>
+            <li><a href="portas.html">Portas Lógicas</a></li>
+            <li><a href="grafica.html">Computação Gráfica</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <button class="nav-link" aria-expanded="false" aria-haspopup="true">Exatas <span class="caret"></span></button>
+          <ul class="dd-menu">
+            <li><a href="matematica.html">Matemática</a></li>
+            <li><a href="geometria.html">Geometria</a></li>
+            <li><a href="estatistica.html">Estatística</a></li>
+            <li><a href="criptografia.html">Criptografia</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <button class="nav-link" aria-expanded="false" aria-haspopup="true">Praticar <span class="caret"></span></button>
+          <ul class="dd-menu align-right">
+            <li><a href="quiz.html">Quiz</a></li>
+            <li><a href="simulador.html">Simulador</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <button class="nav-link" aria-expanded="false" aria-haspopup="true">Games <span class="caret"></span></button>
+          <ul class="dd-menu align-right">
+            <li><a href="games.html">Conteúdos Online</a></li>
+            <li><a href="aventura.html">Aventura Digital</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <button class="nav-link" aria-expanded="false" aria-haspopup="true">Ajuda <span class="caret"></span></button>
+          <ul class="dd-menu align-right">
+            <li><a href="faq.html">Perguntas Frequentes</a></li>
+            <li><a href="contato.html">Contato</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
     <h1 class="subtitle">Ferramentas Úteis</h1>
     <main>
       <article>
@@ -124,4 +172,5 @@
       </article>
     </main>
   </body>
+  <script src="menu.js"></script>
 </html>

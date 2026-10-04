@@ -14,7 +14,6 @@ header {
   padding-left: 20px;
   padding-right: 20px;
   text-align: center;
-  border-bottom: solid 5.5px #273E74;
 }
 
 main {
@@ -91,33 +90,169 @@ a.button:hover {
   background-color: #273E74;
 }
 
-nav {
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: #273E74;
+  border-top: 4px solid white;
+  border-bottom: 4px solid #5c6d82;
+}
+
+.nav-list,
+.dd-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 15px;
-  margin-top: 28px;
-  margin-left: 20px;
-  margin-right: 20px;
-  gap: 15px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-a.menu {
-  background-color: white;
-  color: #273E74;
-  display: inline-block;
-  padding: 9px 12px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 1.1rem;
+.nav-list > li {
+  position: relative;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  border-bottom: 4px solid transparent;
+  margin-bottom: -4px;
+  color: white;
+  font: inherit;
+  font-size: 1.05rem;
   font-weight: bold;
-  border: 3.3px solid #273E74;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-a.menu:hover {
+.nav-link:hover,
+.dropdown.open > .nav-link {
+  background-color: #5c6d82;
+}
+
+.nav-link.active,
+.nav-link.has-active {
+  border-bottom-color: #fff;
+}
+
+.nav-link:focus-visible,
+.dd-menu a:focus-visible,
+.nav-toggle:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
+}
+
+.caret {
+  width: 7px;
+  height: 7px;
+  border-right: 2.5px solid currentColor;
+  border-bottom: 2.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform .2s;
+}
+
+.dropdown.open .caret {
+  transform: rotate(225deg) translateY(2px);
+}
+
+.dd-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 250px;
+  background: white;
+  border: 3.3px solid #273E74;
+  border-top: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, .25);
+}
+
+.dd-menu.align-right {
+  left: auto;
+  right: 0;
+}
+
+.dropdown.open > .dd-menu {
+  display: block;
+}
+
+.dd-menu a {
+  display: block;
+  padding: 12px 18px;
+  color: #273E74;
+  font-weight: bold;
+  text-decoration: none;
+  border-left: 5px solid transparent;
+}
+
+.dd-menu li + li {
+  border-top: 1px solid #d6dbe4;
+}
+
+.dd-menu li:has(> a.active),
+.dd-menu li:has(> a.active) + li {
+  border-top: none;
+}
+
+.dd-menu a:hover {
   background-color: #273E74;
   color: white;
-  border: 3.3px solid white;
+  border-left-color: #5c6d82;
+}
+
+.dd-menu a.active {
+  background-color: #e6e9f0;
+  border-left-color: #273E74;
+}
+
+.dd-menu a.active {
+  color: #273E74;
+}
+
+.nav-toggle {
+  display: none;
+  width: 100%;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  color: white;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: left;
+  cursor: pointer;
+}
+
+.burger {
+  display: inline-block;
+  vertical-align: middle;
+  width: 22px;
+  height: 3px;
+  margin-right: 12px;
+  background: white;
+  box-shadow: 0 -7px 0 white, 0 7px 0 white;
+}
+
+@media (hover: hover) and (min-width: 1071px) {
+  .dropdown:hover > .dd-menu {
+    display: block;
+  }
+  .dropdown:hover > .nav-link {
+    background-color: #5c6d82;
+  }
 }
 
 .button, h2 {
@@ -153,6 +288,61 @@ a.menu:hover {
   .logo {
     width: 85%;
     height: auto;
+  }
+}
+
+@media only screen and (max-width: 1070px) {
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-list {
+    display: none;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .nav-list.open {
+    display: flex;
+  }
+
+  .nav-list > li {
+    border-top: 1px solid rgba(255, 255, 255, .2);
+  }
+
+  .nav-link {
+    margin-bottom: 0;
+    border-bottom: none;
+    border-left: 5px solid transparent;
+    justify-content: space-between;
+  }
+
+  .nav-link.active,
+  .nav-link.has-active {
+    border-bottom: none;
+    border-left-color: #fff;
+  }
+
+  .dd-menu,
+  .dd-menu.align-right {
+    position: static;
+    min-width: 0;
+    border: none;
+    box-shadow: none;
+    background: white;
+  }
+
+  .dd-menu a {
+    color: #1d2f59;
+    padding-left: 34px;
+  }
+
+  .dd-menu li + li {
+    border-top: 1px solid #d6dbe4;
+  }
+
+  .dd-menu a.active {
+    background-color: #e6e9f0;
   }
 }
 
