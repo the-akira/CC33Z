@@ -151,8 +151,15 @@ a.button:hover {
 .nav-link:focus-visible,
 .dd-menu a:focus-visible,
 .nav-toggle:focus-visible {
-  outline: 3px solid #fff;
-  outline-offset: -3px;
+  background-color: #273E74;
+  color: white;
+  border-left-color: #5c6d82;
+  outline: none;
+}
+
+.nav-toggle:focus-visible,
+.nav-link:focus-visible {
+  background-color: #5c6d82;
 }
 
 .caret {

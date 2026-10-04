@@ -7,6 +7,12 @@
   // true quando é desktop com mouse (hover disponível)
   var desktop = window.matchMedia('(hover: hover) and (min-width: 1071px)');
 
+  desktop.addEventListener('change', function () {
+    closeAll();
+    list.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+  });
+
   function setOpen(dd, open) {
     dd.classList.toggle('open', open);
     dd.querySelector('.nav-link').setAttribute('aria-expanded', open);
