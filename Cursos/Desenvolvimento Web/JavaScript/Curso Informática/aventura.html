@@ -126,8 +126,8 @@
 <div class="selectGroup">
   <label for="scaleSelect">ZOOM:</label>
   <select id="scaleSelect" onchange="SCALE = parseFloat(this.value)">
-    <option value="1" selected>100%</option>
-    <option value="1.5">150%</option>
+    <option value="1">100%</option>
+    <option value="1.5" selected>150%</option>
     <option value="2">200%</option>
     <option value="2.5">250%</option>
   </select>
@@ -163,7 +163,7 @@
 // ═══════════════════════════════════════
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-let SCALE = 1;
+let SCALE = 1.5;
 const CVW = 640, CVH = 480;
 const TS = 32;          // tile size px
 const MC = 25, MR = 18; // map cols, rows
