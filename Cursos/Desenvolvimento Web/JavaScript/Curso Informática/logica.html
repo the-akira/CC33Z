@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Curso de Informática - Lógica com Blocos</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="images/pc.png">
+<style>
+/* ===== Tokens ===== */
+:root{
+  --navy:#273E74; --slate:#5c6d82; --bg:#fff; --ink:#1b1f27;
+  --floor:#fff; --wall:#5c6d82; --line:#c9cfda;
+  --ok:#2a7f8e; --gold:#e0a500; --err:#b3261e; --good:#1e7a4a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+
+/* ===== Página ===== */
+body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:var(--ink)}
+header{text-align:center;padding:40px 20px;background:var(--slate);border-bottom:5.5px solid var(--navy);margin-bottom:30px;color:#fff}
+h1{font-size:2.5em;margin:0 0 10px;font-family:sans-serif}
+.subtitle{font-size:1.2em;opacity:.9}
+#homeBtn{margin-top:15px;background:#fff;color:var(--navy);border:3.3px solid var(--navy);padding:9px 12px;font:bold 1.025rem Arial,sans-serif;cursor:pointer}
+#homeBtn:hover{background:var(--navy);color:#fff;border-color:#fff}
+.intro-title{text-align:center;font-size:1.6rem;margin-bottom:15px;color:var(--navy)}
+.intro-text{max-width:900px;margin:10px auto 25px;padding:0 20px;color:var(--navy);line-height:1.6;text-align:center}
+section.block-title{max-width:950px;margin:0 auto 10px;padding:0 20px}
+section.block-title h2{color:var(--navy);text-align:center;margin:0 0 15px;font-size:1.35em}
+section.block-title p.sub{text-align:center;color:#616A75;margin:-5px 0 15px}
+p{margin:0 0 10px}
+small{font-size:.75em;font-weight:normal;color: white; opacity: 0.85; margin-left: 5px;}
+.hide{display:none}
+
+/* ===== Cartões ===== */
+main{display:flex;flex-direction:column;gap:20px;align-items:center;margin:0 20px 25px; margin-bottom: 30px;}
+main>article{min-width:0}
+article{background:#f2f2f2;border:2px solid var(--navy);width:min(860px,100%);box-sizing:border-box}
+article>h2{background:var(--navy);color:#fff;font-size:1.1rem;margin:0;padding:12px 18px}
+.pb{padding:18px 22px;background:#fff;text-align:left}
+.pb.mid{text-align:center}
+
+/* ===== Botões e navegação de fases ===== */
+.btn{padding:8px 12px;border:2px solid var(--navy);background:var(--slate);color:#fff;cursor:pointer;font:bold .85rem Arial,sans-serif;margin:6px 4px 0}
+.btn:hover{background:var(--navy)}
+.btn.alt{background:#fff;color:var(--navy)}
+.btn.alt:hover{background:var(--navy);color:#fff}
+button:focus-visible,select:focus-visible{outline:3px solid #f5b301;outline-offset:2px}
+.nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.nav button{width:44px;height:44px;font:inherit;font-weight:bold;border:2px solid var(--navy);background:var(--bg);color:var(--navy);cursor:pointer}
+.nav button.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.nav button.cur{box-shadow:0 0 0 3px var(--slate)}
+.nav button:disabled{opacity:.4;cursor:not-allowed}
+
+/* ===== Mapa (canvas: ocupa a largura do cartão e mantém a proporção) ===== */
+#board{display:block;width:100%;max-width:640px;margin:10px auto;box-shadow:0 0 0 2px var(--navy);background:var(--floor)}
+.stat{font-weight:bold;color:var(--navy);margin:14px 0 4px;}
+#msg{margin-top:16px;font-weight:bold; color:#273E74;}
+#msg.err{color:var(--err)} #msg.good{color:var(--good)}
+
+/* ===== Programa: áreas e blocos ===== */
+.lbl{text-align:left;font-weight:bold;color:var(--navy);margin:12px 0 4px}
+.lane{min-height:90px;border:2px solid var(--line);background:var(--floor);padding:6px;text-align:left}
+.lane:empty::before{content:'Toque nos blocos acima para montar o programa';color:var(--slate);font-size:.9rem}
+.lane.on{border-color:var(--navy);outline:2px dashed var(--navy);outline-offset:2px}
+#pal{display:flex;flex-wrap:wrap;gap:6px}
+#pal.del{outline:3px dashed var(--err);outline-offset:3px}
+
+.blk{display:block;color:#fff;border-radius:6px;padding:8px 12px;margin:5px 0;font:inherit;font-weight:bold;font-size:1rem;text-align:left;border:0;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);user-select:none}
+.blk:not(.cb){display:flex;align-items:center;gap:6px}
+#pal .blk{margin:0;padding:10px 12px;cursor:pointer;touch-action:none}
+.lane .blk{cursor:grab}
+.move{background:var(--navy)} .turn{background:var(--slate)} .rep{background:var(--ok)} .if{background:#b8741a} .call{background:#6b4e9b}
+
+.hd{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.hd select{font:inherit;padding:2px 4px;max-width:100%}
+.grip{cursor:grab;touch-action:none;opacity:.75;padding:0 4px 0 0}
+.x{margin-left:auto;flex:none;background:rgba(0,0,0,.25);color:#fff;border:0;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:1rem;line-height:1}
+.body{margin:6px 0 2px 10px;padding:4px 6px;min-height:34px;background:rgba(255,255,255,.18);border-left:4px solid rgba(255,255,255,.5);border-radius:4px}
+.body:empty::before{content:'vazio';font-size:.85rem;opacity:.8}
+.body.on{outline:2px dashed #fff}
+.else{margin:6px 0 0 10px;font-size:.85rem}
+
+/* ===== Arrastar e soltar ===== */
+.ghost{position:fixed;z-index:1000;pointer-events:none;margin:0;opacity:.92;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.ph{height:8px;background:#f5b301;border-radius:4px;margin:3px 0}
+body.dragging{cursor:grabbing;user-select:none}
+
+</style>
+</head>
+<body>
+<header>
+  <h1>Lógica com Blocos</h1>
+  <div class="subtitle">Programe o robô até a estrela</div>
+  <button id="homeBtn" onclick="window.location.href='/'">Página Inicial</button>
+</header>
+
+<h2 class="intro-title">O que é lógica de programação?</h2>
+<p class="intro-text">Programar é dar instruções específicas e claras, em ordem, para uma máquina poder executá-las. Aqui você monta um programa com blocos e vê o robô executá-lo. Em cada fase você aprende um conceito: <strong>sequência</strong>, <strong>repetição</strong>, <strong>condição</strong>, <strong>laço com condição</strong>, <strong>variável</strong>, <strong>função</strong> e <strong>algoritmo</strong>.</p>
+<section class="block-title"><h2>Monte seu Programa</h2><p class="sub">Toque nos blocos, aperte Executar e acompanhe o robô</p></section>
+
+<main>
+  <article>
+    <h2 id="ttl"></h2>
+    <div class="pb">
+      <p id="txt" style="margin-bottom: 16px;"></p>
+      <div class="nav" id="nav"></div>
+    </div>
+  </article>
+
+  <article>
+    <h2>Mapa do Robô</h2>
+    <div class="pb mid">
+      <canvas id="board" role="img" aria-label="Mapa do robô"></canvas>
+      <p class="stat" id="stat" hidden></p>
+      <button class="btn" id="run">Executar</button>
+      <button class="btn alt" id="reset">Reiniciar robô</button>
+      <p id="msg" role="status" aria-live="polite"></p>
+      <button class="btn hide" id="next">Próxima fase</button>
+    </div>
+  </article>
+
+  <article id="prog">
+    <h2>Programa <small id="cnt"></small></h2>
+    <div class="pb">
+      <div id="pal"></div>
+      <p class="lbl" style="margin-bottom: 10px;">Programa principal</p>
+      <div class="lane" id="main" data-cont="main"></div>
+      <div id="fnwrap"><p class="lbl" id="fnlbl"></p><div class="lane" id="fn" data-cont="fn"></div></div>
+      <button class="btn alt" style="margin-top: 16px;" id="clr">Limpar tudo</button>
+      <p style="font-size:.85rem;margin-top:10px;color:var(--slate); margin-bottom:0px;">Arraste os blocos para montar e reordenar o programa. Arraste um bloco de volta à paleta para removê-lo. Ao tocar em um bloco da paleta, ele entra na área com borda tracejada.</p>
+    </div>
+  </article>
+</main>
+
+<script>
+/* =====================================================================
+   1. CONFIGURAÇÃO
+   ===================================================================== */
+const GRID = {cols: 10, rows: 8};          // tamanho padrão de TODOS os mapas
+const TICK_MS = 400;                       // tempo entre duas ações do robô
+const MAX_STEPS = 500;                     // limite de ações por execução
+const MAX_LOOP = 500;                      // voltas de um "Repetir enquanto" sem ação
+const STORE_KEY = 'lb-done-v2';
+const REP_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12];
+const DIR = [[1, 0], [0, 1], [-1, 0], [0, -1]];   // leste, sul, oeste, norte
+
+/* =====================================================================
+   2. BLOCOS E CONDIÇÕES
+   box = bloco que contém outros blocos
+   ===================================================================== */
+const BLOCKS = {
+  move:  {label: 'Andar',             cls: 'move'},
+  left:  {label: 'Virar à esquerda',  cls: 'turn'},
+  right: {label: 'Virar à direita',   cls: 'turn'},
+  call:  {label: 'Chamar',            cls: 'call'},
+  rep:   {label: 'Repetir',           cls: 'rep', box: true},
+  while: {label: 'Repetir enquanto',  cls: 'rep', box: true},
+  if:    {label: 'Se',                cls: 'if',  box: true},
+  ifelse:{label: 'Se / Senão',        cls: 'if',  box: true}
+};
+
+/* Condições: test() lê o estado atual do robô (R) */
+const COND = {
+  wall:      {text: 'há parede à frente',       test: () => !open(0)},
+  free:      {text: 'o caminho está livre',     test: () => open(0)},
+  leftFree:  {text: 'há caminho à esquerda',    test: () => open(-1)},
+  rightFree: {text: 'há caminho à direita',     test: () => open(1)},
+  notGoal:   {text: 'não cheguei na estrela',   test: () => cellAt(R.x, R.y) !== 'G'}
+};
+
+/* =====================================================================
+   3. MAPAS E FASES
+   Legenda: # parede · . chão · S início · G estrela · o moeda
+   Todo mapa passa por fit(): fica sempre com GRID.cols x GRID.rows
+   (mapas menores são centralizados e cercados de parede).
+   ===================================================================== */
+function fit(rows) {
+  const h = rows.length, w = rows[0].length;
+  if (w > GRID.cols || h > GRID.rows || rows.some(r => r.length !== w)) throw new Error('Mapa inválido');
+  const left = (GRID.cols - w) >> 1, top = (GRID.rows - h) >> 1;
+  return Array.from({length: GRID.rows}, (_, y) => {
+    const r = rows[y - top];
+    return r ? '#'.repeat(left) + r + '#'.repeat(GRID.cols - w - left) : '#'.repeat(GRID.cols);
+  });
+}
+
+/* Escada de n degraus: (k,k) → (k+1,k) → (k+1,k+1) */
+function stairs(n) {
+  const g = Array.from({length: GRID.rows}, () => Array(GRID.cols).fill('#'));
+  for (let k = 0; k < n; k++) { g[k][k] = g[k][k + 1] = g[k + 1][k + 1] = '.'; }
+  g[0][0] = 'S'; g[n][n] = 'G';
+  return g.map(r => r.join(''));
+}
+
+const LEVELS = [
+  {
+    name: 'Sequência',
+    text: 'Um programa é uma lista de instruções executadas uma após a outra. Leve o robô até a estrela.',
+    win: 'A ordem dos blocos muda o resultado.',
+    map: fit([
+      'S....#####',
+      '####.#####',
+      '####.#####',
+      '####...G##']),
+    blocks: ['move', 'left', 'right'], conds: [], max: 14, need: []
+  },
+  {
+    name: 'Repetição',
+    text: 'Para repetir uma ação, use um laço. Aqui você tem só 2 blocos: o laço e o Andar. Quantas vezes o robô precisa andar?',
+    win: 'Um laço evita copiar o mesmo bloco várias vezes.',
+    map: fit([
+      '..........',
+      '..##..##..',
+      '..........',
+      'S........G',
+      '..........',
+      '..##..##..',
+      '..........',
+      '..........']),
+    blocks: ['move', 'rep'], conds: [], max: 2, need: ['rep']
+  },
+  {
+    name: 'Padrões',
+    text: 'Dentro de um laço cabe mais de um bloco. Descubra o padrão da escada e repita-o.',
+    win: 'Um padrão que se repete vira um laço com vários blocos.',
+    map: fit(stairs(6)),
+    blocks: ['move', 'left', 'right', 'rep'], conds: [], max: 6, need: ['rep']
+  },
+  {
+    name: 'Condições',
+    text: 'O bloco Se só executa o que está dentro dele quando a condição é verdadeira. Faça o robô decidir sozinho quando virar.',
+    win: 'Condições deixam o programa reagir ao mapa.',
+    map: fit([
+      'S....',
+      '####.',
+      '####.',
+      '#G...']),
+    blocks: ['move', 'right', 'rep', 'if'], conds: ['wall'], max: 6, need: ['if']
+  },
+  {
+    name: 'Repetir enquanto',
+    text: 'Nem sempre sabemos quantas vezes repetir. O bloco Repetir enquanto continua até a condição deixar de ser verdadeira. Use "não cheguei na estrela" e siga a espiral.',
+    win: 'Um laço com condição repete quantas vezes forem necessárias.',
+    map: fit([
+      'S.........',
+      '#########.',
+      '........#.',
+      '.######.#.',
+      '.#G####.#.',
+      '.#......#.',
+      '.########.',
+      '..........']),
+    blocks: ['move', 'right', 'if', 'while'], conds: ['notGoal', 'wall'], max: 4, need: ['while']
+  },
+  {
+    name: 'Se / Senão',
+    text: 'Se / Senão escolhe entre dois caminhos. Aqui as curvas vão para os dois lados, e dentro de um Se / Senão cabe outro Se / Senão. Se há parede à frente, vire; para qual lado depende de onde há caminho.',
+    win: 'Decisões encadeadas fazem o robô se adaptar a qualquer curva.',
+    map: fit([
+      'S.........',
+      '#########.',
+      '..........',
+      '.#########',
+      '..........',
+      '#########.',
+      'G.........',
+      '##########']),
+    blocks: ['move', 'left', 'right', 'while', 'ifelse'], conds: ['notGoal', 'wall', 'rightFree', 'leftFree'], max: 7, need: ['ifelse']
+  },
+  {
+    name: 'Variáveis',
+    text: 'Uma variável guarda um valor que muda durante o programa. Aqui o contador de moedas é uma variável: a estrela só funciona depois que todas forem coletadas. Use laços para não repetir blocos.',
+    win: 'O programa mudou o valor da variável a cada moeda coletada.',
+    map: fit([
+      'S.o.o.o.o.',
+      '..........',
+      'G.o.o.o...']),
+    blocks: ['move', 'left', 'right', 'rep'], conds: [], max: 12, need: ['rep']
+  },
+  {
+    name: 'Funções',
+    text: 'Uma função guarda um trecho de programa com um nome. Monte o Degrau na área da função e chame-o no programa principal, quantas vezes precisar. O limite de blocos só fecha com a função.',
+    win: 'Funções reutilizam um trecho sem reescrevê-lo.',
+    map: fit([
+      'S.########',
+      '#..#######',
+      '##..######',
+      '###....###',
+      '######..##',
+      '#######..#',
+      '########G#',
+      '##########']),
+    blocks: ['move', 'left', 'right', 'rep', 'call'], conds: [], max: 10, need: ['call'], fn: 'Degrau'
+  },
+  {
+    name: 'Algoritmo do labirinto',
+    text: 'Um algoritmo é um passo a passo que resolve um problema. A regra da mão direita resolve labirintos: se há caminho à direita, vire e ande; senão, se o caminho está livre, ande; senão, vire à esquerda. Repita até chegar na estrela.',
+    win: 'Um bom algoritmo funciona em qualquer labirinto desse tipo, não só neste.',
+    map: fit([
+      '##########',
+      '#S.......#',
+      '##.#.#.#.#',
+      '##.#.###.#',
+      '##.#...#.#',
+      '####.###.#',
+      '####...#G#',
+      '##########']),
+    blocks: ['move', 'left', 'right', 'while', 'ifelse'], conds: ['notGoal', 'rightFree', 'free', 'wall'], max: 8, need: ['while', 'ifelse']
+  },
+  {
+    name: 'Desafio final',
+    text: 'Combine tudo: laço, decisões e algoritmo. Colete todas as moedas e só então chegue à estrela. Se o robô chegar nela cedo demais, reveja a regra do seu algoritmo.',
+    win: 'Você uniu sequência, laços, decisões e variáveis em um único algoritmo.',
+    map: fit([
+      '##########',
+      '#S..##..o#',
+      '#.#.##.#.#',
+      '#.#....#.#',
+      '#.####.#.#',
+      '#.####.#.#',
+      '#...o#o#G#',
+      '##########']),
+    blocks: ['move', 'left', 'right', 'while', 'ifelse'], conds: ['notGoal', 'rightFree', 'free', 'wall'], max: 8, need: ['while', 'ifelse']
+  }
+];
+
+/* =====================================================================
+   4. ESTADO
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+let lv = 0;                 // fase atual
+let P;                      // programa: {main: [...], fn: [...]}
+let R;                      // robô: {x, y, d (direção), a (ângulo visual), got (moedas)}
+let sel = 'main';           // área que recebe o próximo bloco ('main', 'fn', 'id' ou 'id:alt')
+let uid = 0, timer = null, it = null, steps = 0;
+let done = loadDone();
+
+const level = () => LEVELS[lv];
+function loadDone() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); } catch (e) { return []; } }
+function saveDone() { try { localStorage.setItem(STORE_KEY, JSON.stringify(done)); } catch (e) {} }
+
+/* =====================================================================
+   5. ÁRVORE DO PROGRAMA (busca e contagem)
+   ===================================================================== */
+const slots = b => [b.body, b.alt].filter(Boolean);        // listas dentro de um bloco
+const cnt = a => a.reduce((s, b) => s + 1 + slots(b).reduce((t, l) => t + cnt(l), 0), 0);
+const has = (t, a = [...P.main, ...P.fn]) => a.some(b => b.t === t || slots(b).some(l => has(t, l)));
+
+function find(id, lists = [P.main, P.fn]) {
+  for (const a of lists) for (let i = 0; i < a.length; i++) {
+    const b = a[i];
+    if (String(b.id) === String(id)) return {a, i, b};
+    const r = find(id, slots(b));
+    if (r) return r;
+  }
+}
+function listOf(id) {
+  if (id === 'main') return P.main;
+  if (id === 'fn') return P.fn;
+  const [bid, part] = String(id).split(':');
+  const b = find(bid)?.b;
+  return b ? (part === 'alt' ? b.alt : b.body) : P.main;
+}
+const validSel = id => id === 'main' || id === 'fn' || !!find(String(id).split(':')[0]);
+const inFn = id => id === 'fn' || !!find(String(id).split(':')[0], [P.fn]);
+
+/* =====================================================================
+   6. MOTOR DE EXECUÇÃO (sem acesso ao DOM)
+   ===================================================================== */
+const cellAt = (x, y) => LEVELS[lv].map[y]?.[x] ?? '#';   // fora do mapa = parede
+const isWall = (x, y) => cellAt(x, y) === '#';
+const look = (turn = 0) => { const [dx, dy] = DIR[(R.d + turn + 4) % 4]; return [R.x + dx, R.y + dy]; };
+const open = turn => !isWall(...look(turn));               // turn: 0 frente, 1 direita, -1 esquerda
+const coinTotal = () => LEVELS[lv].map.join('').split('o').length - 1;
+
+function place() {
+  level().map.forEach((row, y) => [...row].forEach((c, x) => {
+    if (c === 'S') R = {x, y, d: 0, a: 0, got: new Set()};
+  }));
+}
+
+/* Executa uma ação do robô. Retorna 'ok' | 'crash' | 'locked' | 'win' */
+function act(a) {
+  if (a === 'left' || a === 'right') {
+    const s = a === 'left' ? -1 : 1;
+    R.d = (R.d + s + 4) % 4; R.a += 90 * s;
+    return 'ok';
+  }
+  const [nx, ny] = look(0);
+  if (isWall(nx, ny)) return 'crash';
+  R.x = nx; R.y = ny;
+  const c = cellAt(nx, ny);
+  if (c === 'o') R.got.add(nx + ',' + ny);
+  if (c === 'G') return R.got.size < coinTotal() ? 'locked' : 'win';
+  return 'ok';
+}
+
+/* Percorre o programa e entrega uma ação por vez ('move', 'left', 'right') */
+function* exec(list, depth) {
+  for (const b of list) {
+    switch (b.t) {
+      case 'rep':
+        for (let i = 0; i < b.n; i++) yield* exec(b.body, depth);
+        break;
+      case 'while':
+        for (let g = 0; COND[b.c].test(); g++) {
+          if (g > MAX_LOOP) throw new Error('loop');
+          yield* exec(b.body, depth);
+        }
+        break;
+      case 'if':
+        if (COND[b.c].test()) yield* exec(b.body, depth);
+        break;
+      case 'ifelse':
+        yield* exec(COND[b.c].test() ? b.body : b.alt, depth);
+        break;
+      case 'call':
+        if (depth < 1) yield* exec(P.fn, depth + 1);
+        break;
+      default:
+        yield b.t;
+    }
+  }
+}
+
+/* =====================================================================
+   7. INTERFACE: mensagens, mapa, navegação
+   ===================================================================== */
+function say(m, c = '') { $('#msg').textContent = m; $('#msg').className = c; }
+function stop() { clearInterval(timer); timer = null; }
+
+/* ---- Mapa em canvas ---- */
+const cv = $('#board'), ctx = cv.getContext('2d');
+const COLORS = {floor: '#ffffff', wall: '#5c6d82', line: '#c9cfda', gold: '#e0a500', goldDark: '#a77a00', bot: '#273E74'};
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let V = {x: 0, y: 0, a: 0};                 // posição "visual" do robô (anima até chegar em R)
+let raf = 0, lastT = 0;
+const eaten = new Set();                    // moedas já "comidas" visualmente (somem quando o robô chega nelas)
+
+/* Ajusta o canvas ao tamanho atual do cartão (nítido em telas de alta densidade) */
+function resizeBoard() {
+  cv.style.aspectRatio = `${GRID.cols} / ${GRID.rows}`;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(cv.clientWidth * dpr);
+  cv.height = Math.round(cv.clientHeight * dpr);
+  paint();
+}
+
+function paintStar(cx, cy, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const rad = i % 2 ? r * 0.45 : r, ang = -Math.PI / 2 + i * Math.PI / 5;
+    ctx[i ? 'lineTo' : 'moveTo'](cx + rad * Math.cos(ang), cy + rad * Math.sin(ang));
+  }
+  ctx.closePath(); ctx.fill();
+}
+
+function paint() {
+  if (!R || !cv.clientWidth) return;
+  const W = cv.clientWidth, H = cv.clientHeight, dpr = cv.width / W;
+  const cw = W / GRID.cols, ch = H / GRID.rows;
+  const edge = (i, size) => Math.round(i * size);          // bordas inteiras: sem frestas
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  if (!R.got.size) eaten.clear();                           // robô reiniciado: moedas voltam
+  R.got.forEach(k => { const [cx, cy] = k.split(',').map(Number); if (Math.hypot(V.x - cx, V.y - cy) <= .5) eaten.add(k); });
+
+  level().map.forEach((row, y) => [...row].forEach((c, x) => {
+    const x0 = edge(x, cw), y0 = edge(y, ch), w = edge(x + 1, cw) - x0, h = edge(y + 1, ch) - y0;
+    ctx.fillStyle = c === '#' ? COLORS.wall : COLORS.floor;
+    ctx.fillRect(x0, y0, w, h);
+    if (c !== '#') { ctx.strokeStyle = COLORS.line; ctx.lineWidth = 1; ctx.strokeRect(x0 + .5, y0 + .5, w - 1, h - 1); }
+    const cx = (x + .5) * cw, cy = (y + .5) * ch;
+    if (c === 'G') { ctx.fillStyle = COLORS.gold; paintStar(cx, cy, Math.min(cw, ch) * .38); }
+    if (c === 'o' && !eaten.has(x + ',' + y)) {
+      ctx.beginPath(); ctx.arc(cx, cy, Math.min(cw, ch) * .17, 0, Math.PI * 2);
+      ctx.fillStyle = COLORS.gold; ctx.fill();
+      ctx.strokeStyle = COLORS.goldDark; ctx.lineWidth = 2; ctx.stroke();
+    }
+  }));
+
+  /* robô: triângulo apontando para a direção em que ele olha */
+  const s = Math.min(cw, ch) * .64;
+  ctx.save();
+  ctx.translate((V.x + .5) * cw, (V.y + .5) * ch);
+  ctx.rotate(V.a * Math.PI / 180);
+  ctx.beginPath(); ctx.moveTo(-s / 2, -s / 2); ctx.lineTo(s / 2, 0); ctx.lineTo(-s / 2, s / 2); ctx.closePath();
+  ctx.fillStyle = COLORS.bot; ctx.fill();
+  ctx.restore();
+}
+
+function animate(t) {
+  const dt = Math.max(0, Math.min(64, t - lastT)); lastT = t;
+  const k = 1 - Math.exp(-dt / 70);
+  V.x += (R.x - V.x) * k; V.y += (R.y - V.y) * k; V.a += (R.a - V.a) * k;
+  const near = Math.abs(R.x - V.x) + Math.abs(R.y - V.y) + Math.abs(R.a - V.a) / 90 < .01;
+  if (near) V = {x: R.x, y: R.y, a: R.a};
+  paint();
+  raf = near ? 0 : requestAnimationFrame(animate);
+}
+
+/* Atualiza o contador e mostra o robô na posição atual (snap = sem animação) */
+function draw(snap) {
+  const total = coinTotal();
+  $('#stat').hidden = !total;
+  $('#stat').textContent = `Moedas (variável): ${R.got.size} / ${total}`;
+  if (snap || reduceMotion) { cancelAnimationFrame(raf); raf = 0; V = {x: R.x, y: R.y, a: R.a}; return paint(); }
+  if (!raf) { lastT = performance.now(); raf = requestAnimationFrame(animate); }
+}
+
+function renderNav() {
+  $('#nav').innerHTML = LEVELS.map((l, i) => {
+    const locked = i > 0 && !done.includes(i - 1) && !done.includes(i);
+    const cls = [i === lv && 'cur', done.includes(i) && 'ok'].filter(Boolean).join(' ');
+    return `<button data-lv="${i}" aria-label="Fase ${i + 1}: ${l.name}" class="${cls}"${locked ? ' disabled' : ''}>${i + 1}</button>`;
+  }).join('');
+}
+
+function load(i) {
+  stop(); lv = i; P = {main: [], fn: []}; sel = 'main'; place();
+  $('#ttl').textContent = `Fase ${i + 1}: ${level().name}`;
+  $('#txt').textContent = level().text;
+  resizeBoard(); draw(true); say('');
+  $('#next').classList.add('hide');
+  renderProgram(); renderNav();
+}
+
+/* =====================================================================
+   8. INTERFACE: blocos e programa
+   ===================================================================== */
+const labelOf = t => t === 'call' ? 'Chamar ' + level().fn : BLOCKS[t].label;
+
+const repSelect = b => `<select data-n="${b.id}" aria-label="Quantas vezes">${
+  REP_OPTIONS.map(n => `<option${n === b.n ? ' selected' : ''}>${n}</option>`).join('')}</select>`;
+const condSelect = b => `<select data-c="${b.id}" aria-label="Condição">${
+  level().conds.map(c => `<option value="${c}"${c === b.c ? ' selected' : ''}>${COND[c].text}</option>`).join('')}</select>`;
+
+const HEAD = {
+  rep:    b => `Repetir ${repSelect(b)} vezes`,
+  while:  b => `Repetir enquanto ${condSelect(b)}`,
+  if:     b => `Se ${condSelect(b)}`,
+  ifelse: b => `Se ${condSelect(b)}`
+};
+
+const renderList = a => a.map(renderBlock).join('');
+const renderSlot = (id, list) => `<div class="body" data-cont="${id}">${renderList(list)}</div>`;
+
+function renderBlock(b) {
+  const def = BLOCKS[b.t];
+  const grip = '<span class="grip">⠿</span>';
+  const del = `<button class="x" data-del="${b.id}" aria-label="Remover bloco">×</button>`;
+  if (!def.box) return `<div class="blk ${def.cls}" data-id="${b.id}">${grip}${labelOf(b.t)}${del}</div>`;
+  const alt = b.alt ? `<div class="else">senão</div>${renderSlot(b.id + ':alt', b.alt)}` : '';
+  return `<div class="blk cb ${def.cls}" data-id="${b.id}"><div class="hd">${grip}${HEAD[b.t](b)}${del}</div>${renderSlot(b.id, b.body)}${alt}</div>`;
+}
+
+function renderProgram() {
+  const l = level();
+  $('#pal').innerHTML = l.blocks.map(t => `<button class="blk ${BLOCKS[t].cls}" data-add="${t}">${labelOf(t)}</button>`).join('');
+  $('#main').innerHTML = renderList(P.main);
+  $('#fn').innerHTML = renderList(P.fn);
+  $('#fnwrap').hidden = !l.fn;
+  $('#fnlbl').textContent = 'Função ' + (l.fn || '');
+  document.querySelectorAll('[data-cont]').forEach(e => e.classList.toggle('on', e.dataset.cont === sel));
+  $('#cnt').textContent = `${cnt(P.main) + cnt(P.fn)}/${l.max} blocos`;
+}
+
+/* =====================================================================
+   9. EDIÇÃO DO PROGRAMA
+   ===================================================================== */
+function defaultCond(t) {
+  const c = level().conds;
+  return t === 'while' && c.includes('notGoal') ? 'notGoal' : (c.find(x => x !== 'notGoal') || c[0]);
+}
+
+function newBlock(t) {
+  const b = {id: ++uid, t};
+  if (t === 'rep') b.n = 3;
+  if (t === 'while' || t === 'if' || t === 'ifelse') b.c = defaultCond(t);
+  if (BLOCKS[t].box) { b.body = []; if (t === 'ifelse') b.alt = []; }
+  return b;
+}
+
+/* at = {list, i, fn} insere numa posição (arrastar); sem "at" entra na área selecionada */
+function add(t, at) {
+  if (cnt(P.main) + cnt(P.fn) >= level().max) return say('Limite de blocos atingido nesta fase.', 'err');
+  if (t === 'call' && (at ? at.fn : inFn(sel))) return say('Uma função não pode chamar a si mesma.', 'err');
+  const b = newBlock(t);
+  if (at) at.list.splice(at.i, 0, b);
+  else { listOf(sel).push(b); if (b.body) sel = b.id; }
+  say(''); renderProgram();
+}
+
+function remove(id) {
+  const r = find(id);
+  r.a.splice(r.i, 1);
+  if (!validSel(sel)) sel = 'main';
+  renderProgram();
+}
+
+$('#prog').addEventListener('click', e => {
+  if (suppressClick) return;
+  const del = e.target.closest('[data-del]');
+  if (del) return remove(del.dataset.del);
+  const add_ = e.target.closest('[data-add]');
+  if (add_) return add(add_.dataset.add);
+  if (e.target.closest('select')) return;
+  const c = e.target.closest('[data-cont]');
+  if (c) { sel = c.dataset.cont; renderProgram(); }
+});
+
+$('#prog').addEventListener('change', e => {
+  const {n, c} = e.target.dataset;
+  if (n) find(n).b.n = +e.target.value;
+  if (c) find(c).b.c = e.target.value;
+});
+
+$('#clr').onclick = () => { stop(); P.main = []; P.fn = []; sel = 'main'; place(); draw(); say(''); renderProgram(); };
+$('#nav').onclick = e => { const b = e.target.closest('[data-lv]'); if (b && !b.disabled) load(+b.dataset.lv); };
+$('#next').onclick = () => load(lv + 1);
+$('#reset').onclick = () => { stop(); place(); draw(); say(''); };
+
+/* =====================================================================
+   10. EXECUTAR
+   ===================================================================== */
+$('#run').onclick = () => {
+  stop(); place(); draw();
+  const l = level();
+  if (!cnt(P.main)) return say('Monte um programa primeiro.', 'err');
+  for (const t of l.need) if (!has(t)) return say(`Nesta fase, use o bloco "${labelOf(t)}".`, 'err');
+  if (l.fn && has('call') && !P.fn.length) return say('A função está vazia. Adicione blocos a ela.', 'err');
+  say('Executando...'); steps = 0; it = exec(P.main, 0);
+  timer = setInterval(tick, TICK_MS);
+};
+
+function tick() {
+  let r;
+  try { r = it.next(); }
+  catch (e) { stop(); return say('Um "Repetir enquanto" nunca termina. Verifique a condição e os blocos dentro dele.', 'err'); }
+  if (r.done) { stop(); return say('O programa terminou, mas o robô não chegou à estrela. Ajuste os blocos e tente de novo.', 'err'); }
+  if (++steps > MAX_STEPS) { stop(); return say('Passos demais. Verifique se o programa não repete sem parar.', 'err'); }
+
+  const res = act(r.value);
+  draw();
+  if (res === 'crash') { stop(); say('O robô bateu na parede. Revise a ordem dos blocos.', 'err'); }
+  else if (res === 'locked') { stop(); say(`A estrela só ativa com todas as moedas (faltam ${coinTotal() - R.got.size}). Revise o caminho do robô.`, 'err'); }
+  else if (res === 'win') win();
+}
+
+function win() {
+  stop();
+  if (!done.includes(lv)) { done.push(lv); saveDone(); }
+  renderNav();
+  const last = lv === LEVELS.length - 1;
+  say(`Você conseguiu! ${level().win}${last ? ' Você completou todas as fases.' : ''}`, 'good');
+  $('#next').classList.toggle('hide', last);
+}
+
+/* =====================================================================
+   11. ARRASTAR E SOLTAR (mouse e toque)
+   ===================================================================== */
+let drag = null, suppressClick = false;
+
+document.addEventListener('pointerdown', e => {
+  if (e.button || e.target.closest('select,.x')) return;
+  const pal = e.target.closest('#pal [data-add]');
+  const el = pal || e.target.closest('#prog .lane .blk');
+  if (!el) return;
+  if (!pal) {
+    if (e.pointerType === 'touch' && !e.target.closest('.grip')) return;   // no toque, só pela alça
+    if (el.classList.contains('cb') && !e.target.closest('.hd')) return;   // blocos-caixa: só pelo cabeçalho
+  }
+  const r = el.getBoundingClientRect();
+  drag = {el, t: pal && pal.dataset.add, id: pal ? null : el.dataset.id,
+          x: e.clientX, y: e.clientY, ox: e.clientX - r.left, oy: e.clientY - r.top, w: r.width};
+});
+
+document.addEventListener('pointermove', e => {
+  if (!drag) return;
+  if (!drag.on) {
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    drag.on = true;
+    const g = drag.el.cloneNode(true);
+    g.classList.add('ghost'); g.style.width = drag.w + 'px';
+    document.body.appendChild(g); drag.g = g;
+    document.body.classList.add('dragging');
+    if (drag.id) drag.el.style.opacity = '.35';
+  }
+  e.preventDefault();
+  drag.g.style.left = e.clientX - drag.ox + 'px';
+  drag.g.style.top = e.clientY - drag.oy + 'px';
+  updateTarget(e.clientX, e.clientY);
+});
+
+/* Descobre a área sob o ponteiro e mostra a marca amarela de inserção */
+function updateTarget(x, y) {
+  drag.ph?.remove(); drag.ph = null; drag.c = null;
+  const under = document.elementFromPoint(x, y);
+  drag.del = !!(drag.id && under && under.closest('#pal'));
+  $('#pal').classList.toggle('del', drag.del);
+  const c = under && under.closest('[data-cont]');
+  if (!c || drag.del) return;
+  if (drag.id && drag.el.contains(c)) return;                 // não solta um bloco dentro de si mesmo
+  const kids = [...c.children].filter(k => k.classList.contains('blk') && k !== drag.el);
+  const ref = kids.find(k => { const r = k.getBoundingClientRect(); return y < r.top + r.height / 2; }) || null;
+  const ph = document.createElement('div');
+  ph.className = 'ph'; c.insertBefore(ph, ref);
+  drag.ph = ph; drag.c = c; drag.i = ref ? kids.indexOf(ref) : kids.length;
+}
+
+function endDrag(drop) {
+  const d = drag; drag = null;
+  if (!d || !d.on) return;
+  d.g.remove(); d.ph?.remove(); d.el.style.opacity = '';
+  document.body.classList.remove('dragging'); $('#pal').classList.remove('del');
+  suppressClick = true; setTimeout(() => suppressClick = false, 0);
+  if (!drop) return;
+  if (d.del) return remove(d.id);                              // soltou na paleta: remove
+  if (!d.c) return;
+
+  const cid = d.c.dataset.cont, list = listOf(cid), fn = inFn(cid);
+  if (!d.id) return add(d.t, {list, i: d.i, fn});              // bloco novo vindo da paleta
+
+  const r = find(d.id);                                        // bloco existente sendo movido
+  const hasCall = b => b.t === 'call' || slots(b).some(l => l.some(hasCall));
+  if (fn && hasCall(r.b)) return say('Uma função não pode chamar a si mesma.', 'err');
+  r.a.splice(r.i, 1);
+  list.splice(d.i, 0, r.b);
+  renderProgram();
+}
+
+document.addEventListener('pointerup', () => endDrag(true));
+document.addEventListener('pointercancel', () => endDrag(false));
+
+/* =====================================================================
+   12. INÍCIO
+   ===================================================================== */
+new ResizeObserver(resizeBoard).observe(cv);     // refaz o desenho quando o cartão muda de tamanho
+load(0);
+</script>
+</body>
+</html>
