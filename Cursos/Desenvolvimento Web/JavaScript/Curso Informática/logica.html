@@ -74,7 +74,12 @@ button:focus-visible,select:focus-visible{outline:3px solid #f5b301;outline-offs
 .move{background:var(--navy)} .turn{background:var(--slate)} .rep{background:var(--ok)} .if{background:#b8741a} .call{background:#6b4e9b}
 
 .hd{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
-.hd select{font:inherit;padding:2px 4px;max-width:100%}
+.hd select{
+  font:inherit; padding:2px 4px; max-width:100%;
+  background-color:#fff; color:var(--ink);
+  border:1px solid rgba(0,0,0,.35); border-radius:4px;
+}
+.hd select option{background:#fff; color:var(--ink)}
 .grip{cursor:grab;touch-action:none;opacity:.75;padding:0 4px 0 0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 @media (pointer:coarse){
   .grip{display:flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;margin:-8px 2px -8px -10px;padding:0}
