@@ -75,7 +75,10 @@ button:focus-visible,select:focus-visible{outline:3px solid #f5b301;outline-offs
 
 .hd{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
 .hd select{font:inherit;padding:2px 4px;max-width:100%}
-.grip{cursor:grab;touch-action:none;opacity:.75;padding:0 4px 0 0}
+.grip{cursor:grab;touch-action:none;opacity:.75;padding:0 4px 0 0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@media (pointer:coarse){
+  .grip{display:flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;margin:-8px 2px -8px -10px;padding:0}
+}
 .x{margin-left:auto;flex:none;background:rgba(0,0,0,.25);color:#fff;border:0;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:1rem;line-height:1}
 .body{margin:6px 0 2px 10px;padding:4px 6px;min-height:34px;background:rgba(255,255,255,.18);border-left:4px solid rgba(255,255,255,.5);border-radius:4px}
 .body:empty::before{content:'vazio';font-size:.85rem;opacity:.8}
@@ -681,7 +684,7 @@ document.addEventListener('pointerdown', e => {
 document.addEventListener('pointermove', e => {
   if (!drag) return;
   if (!drag.on) {
-    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < (e.pointerType === 'touch' ? 12 : 6)) return;
     drag.on = true;
     const g = drag.el.cloneNode(true);
     g.classList.add('ghost'); g.style.width = drag.w + 'px';
@@ -693,6 +696,11 @@ document.addEventListener('pointermove', e => {
   drag.g.style.left = e.clientX - drag.ox + 'px';
   drag.g.style.top = e.clientY - drag.oy + 'px';
   updateTarget(e.clientX, e.clientY);
+  if (e.pointerType === 'touch') {
+    const edge = 90;
+    if (e.clientY < edge) scrollBy(0, -14);
+    else if (e.clientY > innerHeight - edge) scrollBy(0, 14);
+  }
 });
 
 /* Descobre a área sob o ponteiro e mostra a marca amarela de inserção */
