@@ -6309,7 +6309,7 @@ function caixaDialogo() {
   ctx.font = '11px monospace'; ctx.textAlign = 'left';
   let resto = Math.floor(dialogo.n);                        // efeito de máquina de escrever
   quebrar(fala, w - 24).forEach((ln, i) => {
-    ctx.fillStyle = '#fff'; ctx.fillText(ln.slice(0, Math.max(0, resto)), x + 12, y + 33 + i * 13);
+    ctx.fillStyle = '#fff'; ctx.fillText(ln.slice(0, Math.max(0, resto)), x + 11.5, y + 33 + i * 13);
     resto -= ln.length;
   });
   if (dialogo.n >= fala.length) texto('Espaço >', x + w - 10, y + h - 8, '#aaa', 'right', 9);
