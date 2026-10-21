@@ -4784,7 +4784,9 @@ const VIDAS = 3;
 
 const GRAV = 1000, PULO = 400, VEL = 100, COYOTE = 0.1;
 const QUICO = 250;                      // impulso para cima ao pisar num inimigo
-const OLHA_DIREITA = true;              // false se o seu desenho olha para a esquerda
+// Para onde cada desenho olha nas folhas originais: true = direita, false = esquerda.
+// O robô olha para a direita e os inimigos para a esquerda. Se um ator sair virado ao contrário, troque o valor dele.
+const OLHA_DIREITA = { player: true, enemy1: false, enemy2: false, enemy3: false };
 const CORPO = 0.8;                      // quanto da largura do desenho conta como corpo na colisão
 
 // Cada ator tem uma folha de imagem por estado: assets/final/<ator>_<estado>.png
@@ -5213,7 +5215,7 @@ function desenharAtor(ator, estado, tempo, o) {
   const quadro = Math.floor(tempo * FPS[estado]) % s.n;
   ctx.save();
   ctx.translate(Math.round(o.x + o.w / 2), Math.round(o.y + o.h));       // origem = meio dos pés
-  if (o.esq === OLHA_DIREITA) ctx.scale(-1, 1);                          // espelha para olhar para o outro lado
+  if (o.esq === OLHA_DIREITA[ator]) ctx.scale(-1, 1);                    // espelha para olhar para o outro lado
   ctx.drawImage(s.img, quadro * s.qw, 0, s.qw, s.qh, -Math.round(c.ax * s.qw), -Math.round(c.ay * s.qh), s.qw, s.qh);
   ctx.restore();
 }
