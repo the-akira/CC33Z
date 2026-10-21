@@ -171,7 +171,7 @@ button.sw[aria-pressed="true"]{outline:3px solid var(--gold);outline-offset:1px}
 .pxa-msg{padding:0 12px 10px;color:var(--leaf);font-size:14px}
 .pxa-msg:empty{display:none}
 .mpe-tela{padding:12px}
-.mpe-tela canvas{display:block;width:100%;height:auto;margin:0 auto;cursor:crosshair;border:3px solid var(--line);background:#000;touch-action:none}
+.mpe-tela canvas{display:block;box-sizing:content-box;width:100%;height:auto;margin:0 auto;cursor:crosshair;border:3px solid var(--line);background:#000;touch-action:none}
 .mpe-val{padding:0 12px 10px;font-size:14px;color:var(--leaf);min-height:1.4em}
 .mpe-val.ruim{color:#ff8c82}
 button.mpe-t i{display:inline-block;width:14px;height:14px;border:2px solid #000;border-radius:2px;flex:none}
@@ -7640,8 +7640,13 @@ function montarEditorMapas(raiz){
 
   // ---------- desenho ----------
   function desenhar(){
-    const s=lim(Math.floor(1024/C),8,32);                     // tamanho de cada casa no canvas
+    // Cada casa precisa ter um número INTEIRO de pixels na tela. Antes o canvas era esticado pelo CSS até a
+    // largura da caixa; com essa escala quebrada, umas casas saíam com 25 pixels e outras com 26 (casas desiguais).
+    const dpr=window.devicePixelRatio||1;
+    const livre=cv.parentElement.clientWidth-24-6;               // largura livre: a caixa menos o padding (2 × 12) e a borda (2 × 3)
+    const s=lim(Math.floor(livre*dpr/C),4,Math.round(48*dpr));   // lado de cada casa, em pixels do canvas
     if(cv.width!==C*s||cv.height!==L*s){cv.width=C*s;cv.height=L*s}
+    cv.style.width=(C*s/dpr)+'px'; cv.style.height=(L*s/dpr)+'px';   // 1 pixel do canvas = 1 pixel da tela, sem esticar
     const m=arrasto&&arrasto.previa?arrasto.previa:g, a=analise(m);
     ctx.textAlign='center'; ctx.textBaseline='middle';
     for(let y=0;y<L;y++)for(let x=0;x<C;x++){
@@ -7970,6 +7975,8 @@ function montarEditorMapas(raiz){
   // ---------- começar ----------
   carregarSalvo();
   tudo();
+  let larg=0;                                                 // refaz o desenho quando a largura da caixa muda (janela, zoom, celular girando)
+  new ResizeObserver(()=>{const w=cv.parentElement.clientWidth;if(w!==larg){larg=w;desenhar()}}).observe(cv.parentElement);
 }
 
 // ---------- Bônus: Gerador de Sons ----------
