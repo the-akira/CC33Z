@@ -108,7 +108,7 @@ textarea{height:190px;resize:vertical;white-space:pre}
     <div class="row"><select id="mode"><option value="lambert">Lambert (difuso)</option><option value="phong">Phong (com brilho)</option><option value="flat">Flat (face a face)</option><option value="shader">Shader GLSL editável</option></select>
     <label><input type="checkbox" id="wire"> malha</label></div>
     <div id="shaderBox" hidden>
-      <div class="row"><select id="preset"><option value="toon">Toon</option><option value="normals">Normais como cor</option><option value="fresnel">Fresnel (borda)</option><option value="wave">Cor por posição + tempo</option></select>
+      <div class="row"><select id="preset"><option value="toon">Toon</option><option value="normals">Normais como cor</option><option value="fresnel">Fresnel (borda)</option><option value="wave">Cor por posição + tempo</option><option value="pulse">Pulsar (brilho)</option><option value="ripple">Ondas na superfície</option><option value="breath">Fresnel que respira</option></select>
       <button id="comp">Compilar</button><label><input type="checkbox" id="anim"> animar</label></div>
       <textarea id="glsl" spellcheck="false"></textarea><div id="err"></div>
       <p class="h">Variáveis disponíveis: vN (normal no espaço da câmera), vP (posição no espaço da câmera), uLightDir, uColor, uTime.</p>
@@ -215,6 +215,28 @@ wave:`void main(){
   float d=max(dot(normalize(vN),normalize(uLightDir)),0.0);
   vec3 c=0.5+0.5*cos(uTime+vP.xyx*1.5+vec3(0.0,2.0,4.0));
   gl_FragColor=vec4(c*(0.25+0.75*d),1.0);
+}`,
+pulse:`void main(){
+  float d=max(dot(normalize(vN),normalize(uLightDir)),0.0);
+  float p=pow(0.5+0.5*sin(uTime*3.0),2.0);   // 0..1, batida mais "seca" que um seno puro
+  vec3 base=uColor*(0.15+0.85*d);
+  gl_FragColor=vec4(base*(0.55+0.95*p)+vec3(0.12)*p,1.0);
+}`,
+ripple:`void main(){
+  // onda plana que viaja pela tela: fase = k·posição − velocidade·tempo
+  vec2 k=vec2(6.0,3.5);
+  float fase=dot(vP.xy,k)-uTime*3.0;
+  // a inclinação da onda (derivada do seno) entorta a normal
+  vec3 n=normalize(normalize(vN)+0.85*cos(fase)*vec3(normalize(k),0.0));
+  float d=max(dot(n,normalize(uLightDir)),0.0);
+  gl_FragColor=vec4(uColor*(0.2+0.8*d),1.0);
+}`,
+breath:`void main(){
+  vec3 n=normalize(vN),v=normalize(-vP);
+  float r=0.5+0.5*sin(uTime*2.0);            // respiração: 0..1
+  float f=pow(1.0-max(dot(n,v),0.0),mix(4.5,1.5,r));   // a borda abre e fecha
+  float d=max(dot(n,normalize(uLightDir)),0.0);
+  gl_FragColor=vec4(uColor*(0.15+0.85*d)+vec3(0.3,0.7,1.0)*f*(0.5+0.8*r),1.0);
 }`};
 const U={uLightDir:{value:new THREE.Vector3(0,1,0)},uTime:{value:0}};
 function loadPreset(){$('glsl').value=HEAD+PRE[$('preset').value]}
@@ -308,7 +330,7 @@ sl('perfC','Resolução',.25,2,.25,scale,v=>{scale=v;resize()});
 
 $('mode').onchange=e=>{mode=e.target.value;$('shaderBox').hidden=mode!=='shader';applyMaterials()};
 $('wire').onchange=applyMaterials;
-$('preset').onchange=()=>{loadPreset();$('comp').click()};
+$('preset').onchange=()=>{loadPreset();$('anim').checked=PRE[$('preset').value].includes('uTime');dirty=1;$('comp').click()};  // animar liga sozinho nos presets que usam uTime
 $('comp').onclick=()=>{compiled=1;applyMaterials()};
 $('anim').onchange=()=>dirty=1;
 let compiled=0;
