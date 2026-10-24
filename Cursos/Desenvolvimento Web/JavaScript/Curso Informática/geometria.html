@@ -234,6 +234,18 @@
     #perspective:hover {
       background-color: #273E74;
     }
+
+    .buttons-3d {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin-top: 5px;
+    }
+
+    .buttons-3d button {
+        margin-top: 0;
+    }
     
     @media only screen and (max-width: 768px) {
       .effect-options {
@@ -532,7 +544,15 @@
 
       <div class="canvas-wrapper">
         <canvas id="canvas3D" width="800" height="800"></canvas>
-        <button id="perspective" onclick="openPerspective()">Perspectiva</button>
+        <div class="buttons-3d">
+            <button id="perspective" onclick="openPerspective()">
+                Perspectiva
+            </button>
+
+            <button id="perspective" onclick="open3D()">
+                Exploração 3D
+            </button>
+        </div>
       </div>
 
       <div class="info-display">
@@ -1994,6 +2014,10 @@
 
     function openPerspective() {
       window.location.href = "perspectiva";
+    }
+
+    function open3D() {
+      window.location.href = "3d";
     }
   </script>
   <script src="menu.js"></script>
