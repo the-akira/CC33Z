@@ -20,12 +20,28 @@ aside input[type=range]{width:100%;margin:0}
 main{position:relative;min-width:0;overflow:hidden;background:var(--panel);border:2px solid var(--navy)}
 #view{position:absolute;inset:10px;background:#0f1522}
 #view canvas{display:block;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+#fsBtn{border:none;position:absolute;top:20px;right:20px;z-index:5;padding:5px 10px;font-size:12px;background:rgba(255,255,255,.92)}
+#fsBtn:hover{background:var(--navy);color:#fff}
+#fsBar{display:none;position:absolute;top:20px;left:20px;right:180px;z-index:5;gap:6px;flex-wrap:wrap;pointer-events:none}
+main.full #fsBar{display:flex}
+#fsBar button,#fsBar select{pointer-events:auto;padding:5px 10px;font-size:12px;background:rgba(255,255,255,.92)}
+#fsBar select{max-width:200px;padding:5px 6px}
+#fsBar button:hover{background:rgba(255,255,255,.92)}
+#fsBar input[type=color]{pointer-events:auto;width:40px;height:30px;padding:0;border:2.5px solid var(--navy);border-radius:0;background:#fff;cursor:pointer}
+#fsBar input[type=color]:disabled{opacity:.5;cursor:default}
+#fsBar .tool.on,#fsBar .tool.on:hover{background:var(--navy);color:#fff}
+main:fullscreen{border:0;background:#0f1522}
+main:-webkit-full-screen{border:0;background:#0f1522}
+main:fullscreen #view{inset:0}
+main:-webkit-full-screen #view{inset:0}
+main.fs{position:fixed!important;inset:0;width:100%!important;height:100%!important;z-index:1000;border:0;background:#0f1522}
+main.fs #view{inset:0}
 #hud{position:absolute;left:20px;bottom:20px;background:rgba(39,62,116,.92);padding:3px 8px;color:#fff;font:11px monospace;pointer-events:none}
 details{background:var(--panel);border:2px solid var(--navy);padding:10px 12px;margin-bottom:12px}
 details[open]>summary{margin-bottom:8px}
 summary{cursor:pointer;font-weight:bold;font-size:.98rem;color:var(--navy);padding:2px 0}
 p.h{color:var(--slate);margin:8px 0 2px;border-left:4px solid var(--slate);padding-left:10px;font-size:12px;line-height:1.6}
-label.r{display:grid;grid-template-columns:90px minmax(0,1fr) 46px;gap:8px;align-items:center;margin:6px 0;color:var(--navy);font-weight:bold;font-size:12px}
+label.r{display:grid;grid-template-columns:90px minmax(0,1fr) 46px;gap:8px;align-items:center;margin:10px 0;color:var(--navy);font-weight:bold;font-size:12px}
 label.r b{font:bold 11px Arial,sans-serif;background:var(--slate);color:#fff;text-align:center;padding:2px 4px}
 input[type=checkbox]{accent-color:var(--navy)}
 input[type=range]{-webkit-appearance:none;appearance:none;height:8px;background:var(--slate);cursor:pointer;outline:none}
@@ -63,7 +79,8 @@ textarea{height:190px;resize:vertical;white-space:pre}
   cursor: pointer;
 }
 #math { padding: 12px; }
-@media(max-width:1250px){html,body{height:auto}body{display:block}#app{grid-template-columns:1fr;grid-template-rows:55vh auto auto;height:auto}main{height:55vh;order:-1}}
+@media(max-width:1250px){html,body{height:auto}body{display:block}:root{--mh:70vh}#app{grid-template-columns:1fr;grid-template-rows:auto auto auto;height:auto}main{height:var(--mh);min-height:340px;order:-1}#app{gap:0px;} main{margin-bottom:12px;}}
+@supports(height:1svh){@media(max-width:1250px){:root{--mh:70svh}}}
 @media only screen and (max-width: 460px) {
   #hud { display: none; }
 }
@@ -99,7 +116,7 @@ textarea{height:190px;resize:vertical;white-space:pre}
     <p class="h">A cena só é redesenhada quando algo muda. Reduzir a resolução alivia a CPU.</p>
   </details>
 </aside>
-<main><div id="view"></div><div id="hud"></div></main>
+<main><div id="view"></div><div id="hud"></div><div id="fsBar"><button class="tool" data-t="move" title="Mover (W)">Mover</button><button class="tool" data-t="rotate" title="Girar (E)">Girar</button><button class="tool" data-t="scale" title="Escalar (R)">Escalar</button><input type="color" id="fsCol" title="Cor do objeto"><select id="fsKind" title="Tipo do novo objeto"></select><button id="fsAdd" title="Adicionar objeto">+ Adicionar</button></div><button id="fsBtn" title="Tela cheia (F)">Tela cheia</button></main>
 <aside id="right">
   <details open><summary>Iluminação</summary><div id="lightC"></div>
     <p class="h">Modelo difuso (Lambert): I = ambiente + cor · intensidade · max(0, N·L). N é a normal da superfície e L a direção até a luz.</p></details>
@@ -122,6 +139,7 @@ textarea{height:190px;resize:vertical;white-space:pre}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
+let ready=0;   // só desenha direto no resize() depois que a cena inteira foi montada
 const D2R=Math.PI/180;
 // Aparelho de toque (celular/tablet): ponteiro principal "grosso". Lá a GPU é de verdade e a tela tem alta densidade,
 // então usamos resolução proporcional à tela, antialias e precisão alta. No computador mantém-se o modo leve de antes.
@@ -302,7 +320,7 @@ $('col').oninput=e=>{
   const m=sel.material;if(m.uniforms)m.uniforms.uColor.value.set(c);else m.color.set(c);dirty=1;
 };
 function syncTf(){
-  const cp=$('col');cp.disabled=!sel;if(sel)cp.value='#'+sel.userData.color.toString(16).padStart(6,'0');tf.forEach(([k,a,i])=>{i.disabled=!sel;
+  const cp=$('col'),fc=$('fsCol');cp.disabled=fc.disabled=!sel;if(sel)cp.value=fc.value='#'+sel.userData.color.toString(16).padStart(6,'0');tf.forEach(([k,a,i])=>{i.disabled=!sel;
   i.value=sel?(k==='rotation'?sel.rotation[a]/D2R:sel[k][a]).toFixed(2):''})}
 
 /* ---------- Controles deslizantes ---------- */
@@ -516,6 +534,7 @@ function resize(){
   renderer.setPixelRatio(scale);renderer.setSize(w,h);
   cv.style.width='100%';cv.style.height='100%'; // resolução interna menor, exibida esticada
   persp.aspect=w/h;dirty=1;
+  if(ready)draw(performance.now());   // redesenha na hora: setSize apaga o canvas e esperar o próximo quadro faria piscar
 }
 new ResizeObserver(resize).observe(wrap);
 
@@ -553,8 +572,8 @@ function updateMath(){
 
 /* ---------- Loop (renderiza apenas quando necessário) ---------- */
 let frames=0,ms=0;
-function frame(t){
-  requestAnimationFrame(frame);
+function frame(t){requestAnimationFrame(frame);draw(t)}
+function draw(t){
   const anim=mode==='shader'&&$('anim').checked;
   if(!dirty&&!anim)return;
   dirty=0;const t0=performance.now();
@@ -580,7 +599,38 @@ function frame(t){
 }
 
 addObj('box',-2.5,.7,0);addObj('sphere',0,.9,0);addObj('torus',2.5,.9,0);select(objs[1]);
-resize();requestAnimationFrame(frame);
+ready=1;resize();requestAnimationFrame(frame);
+
+/* ---------- Tela cheia (maximizar / voltar ao normal) ---------- */
+const stage=document.querySelector('main'),fsBtn=$('fsBtn');
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+const isFs=()=>!!fsEl()||stage.classList.contains('fs');
+function fsUpdate(){const on=isFs();stage.classList.toggle('full',on);if(on)$('fsKind').value=$('kind').value;fsBtn.textContent=on?'Sair da tela cheia':'Tela cheia';
+  fsBtn.title=on?'Voltar ao normal (F ou Esc)':'Tela cheia (F)';resize();dirty=1}
+function fsFallback(){   // iPhone/Safari antigo: sem API de tela cheia, então preenche a janela
+  stage.classList.add('fs');document.body.style.overflow='hidden';fsUpdate()}
+function toggleFs(){
+  if(isFs()){
+    if(fsEl())(document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    else{stage.classList.remove('fs');document.body.style.overflow='';fsUpdate()}
+    return}
+  const req=stage.requestFullscreen||stage.webkitRequestFullscreen;
+  if(!req){fsFallback();return}
+  try{const p=req.call(stage);if(p&&p.catch)p.catch(fsFallback)}catch(_){fsFallback()}
+}
+fsBtn.onclick=toggleFs;
+$('fsCol').oninput=e=>{$('col').value=e.target.value;$('col').oninput({target:e.target})};   // reaproveita o seletor de cor do painel
+$('fsCol').onchange=e=>e.target.blur();
+$('fsKind').innerHTML=$('kind').innerHTML;$('fsKind').value=$('kind').value;   // mesmos tipos do painel
+$('fsKind').onchange=e=>{$('kind').value=e.target.value;e.target.blur()};
+$('fsAdd').onclick=e=>{$('add').click();e.currentTarget.blur()};   // reaproveita o botão Adicionar do painel
+document.addEventListener('fullscreenchange',fsUpdate);
+document.addEventListener('webkitfullscreenchange',fsUpdate);
+addEventListener('keydown',e=>{
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  if(e.key.toLowerCase()==='f'&&!e.ctrlKey&&!e.metaKey&&!e.altKey)toggleFs();
+  else if(e.key==='Escape'&&stage.classList.contains('fs'))toggleFs();
+});
 
 function openGeometry() {
   window.location.href = "geometria";
