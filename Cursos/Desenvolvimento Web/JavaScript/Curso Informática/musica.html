@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Música e Computação - Curso de Informática</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/x-icon" href="images/pc.png">
+<style>
+[hidden]{display:none!important}
+.tabs,.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:10px 20px}
+.tabs button,.row button,.row select{padding:10px 12px;border:2px solid #273E74;background:#5C6D82;color:#fff;cursor:pointer;font-weight:bold;font-size:1rem}
+.tabs button:hover,.tabs button.on,.row button:hover{background:#273E74}
+.row input[type=number]{padding:10px;border:2px solid #273E74;font-size:1rem;width:110px}
+.row label{color:#273E74;font-weight:bold;font-size:.9rem}
+.row label{min-width:0;max-width:100%}
+.row select{max-width:100%}
+#cex { margin-top: 5px; }
+.box{background:#f2f2f2;border:2px solid #273E74;padding:20px;box-sizing:border-box;width:min(100% - 32px,1004px);margin:20px auto;text-align:left}
+.box h3{color:#273E74;margin:0 0 10px;font-size:17.5px}
+.box p,.box li{font-size:.9rem;line-height:1.5}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:15px 20px; margin: 20px 0px;}
+.ctl label{font-size:.85rem;color:#273E74;font-weight:bold;display:block}
+.ctl>div{min-width:0}
+.ctl input[type="range"]{width:100%;min-width:0;margin:2px 0}
+canvas{width:100%;height:190px;background:#273E74;display:block}
+.scopes{display:flex;flex-wrap:wrap;gap:15px;margin-top:15px}.scopes>div{flex:1 1 380px;min-width:0}
+.scopes h4{margin:0 0 6px;color:#273E74;font-size:.95rem}.scopes small{font-weight:normal;color:#5C6D82}
+#info,#sinfo,#cinfo{color:#273E74;margin-top:10px;font-size:.95rem;line-height:1.6;min-height:1.6em}
+code{background:#273E74;color:#fff;padding:2px 6px;font-family:monospace}
+.piano{position:relative;height:170px;display:flex;user-select:none;touch-action:none}
+.wk{flex:1;background:#fff;border:1px solid #273E74;border-top:2px solid #273E74;display:flex;align-items:flex-end;justify-content:center;font-size:.7rem;color:#5C6D82;padding-bottom:4px;cursor:pointer}
+.bk{position:absolute;top:0;width:4.4%;height:60%;background:#273E74;cursor:pointer;z-index:2}
+.wk.on{background:#5C6D82;color:#fff}.bk.on{background:#5C6D82}
+#deg{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+#deg button{padding:8px 12px;border:2px solid #273E74;background:#fff;color:#273E74;font-weight:bold;cursor:pointer}
+#deg button:hover{background:#5C6D82;color:#fff}
+.grid{display:grid;grid-template-columns:52px repeat(16,1fr);gap:3px;margin-top:10px}
+.grid b{font-size:.7rem;color:#273E74;align-self:center}
+.cell{height:28px;background:#fff;border:1px solid #273E74;cursor:pointer;display:block}
+.cell.q{background:#d9dde6}.cell.on{background:#273E74}.cell.cur{outline:3px solid #5C6D82}
+.cards,.notes{display:flex;flex-wrap:wrap;gap:12px}
+.cards .box,.notes div{margin:0;flex:1 1 280px;max-width:none}
+.cards {width: min(100% - 32px, 1004px);margin: 0 auto;display: grid;grid-template-columns: repeat(2, 1fr);gap: 12px;}
+.cards .box {margin: 0;max-width: none;width:auto;box-sizing: border-box;}
+.notes div{flex:1 1 90px;background:#fff;border:2px solid #273E74;padding:8px;text-align:center;font-size:.8rem;cursor:pointer;color:#273E74}
+.notes div:hover{background:#5C6D82;color:#fff}
+input[type="range"] {flex: 1;min-width: 200px;height: 8px;background: #5c6d82;cursor: pointer;outline: none;-webkit-appearance: none;}
+input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 22px;height: 22px;background: #ffffff;
+  border: 2px solid #273E74;cursor: pointer;box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+input[type="range"]::-moz-range-thumb {width: 22px;height: 22px;background: #273E74;cursor: pointer;border-radius: 50%;
+  border: 3px solid white;box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+.hbars{display:flex;gap:4px;height:150px;margin:10px 0 4px}
+.hb{flex:1;position:relative;background:#fff;border:2px solid #273E74;cursor:ns-resize;touch-action:none}
+.hb i{position:absolute;left:0;right:0;bottom:0;background:#273E74;display:block}
+.hb.neg i{background:#5C6D82}
+.hl{display:flex;gap:4px;margin-bottom:10px}.hl span{flex:1;text-align:center;font-size:.7rem;color:#273E74;font-weight:bold}
+textarea{width:100%;box-sizing:border-box;min-height:210px;font-family:monospace;font-size:.95rem;padding:10px;border:2px solid #273E74;background:#fff;color:#273E74;resize:vertical}
+.err{font-weight:bold;min-height:1.4em;margin:8px 0;display: none;}
+.box > p { margin-bottom:0px; }
+input:focus, select:focus, textarea:focus { outline:none; }
+@media (max-width: 480px) {
+  .cards {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+</style>
+</head>
+<body>
+<header>
+  <img class="logo" src="images/logo.png" alt="Teacher Course Logo">
+  <div class="icon"><img class="computer" src="images/computer.png" alt="Computer"></div>
+  <h1>Curso de Informática</h1>
+  <h2><a id="email" href="mailto:profgabrielfelippe@gmail.com">profgabrielfelippe@gmail.com</a></h2>
+</header>
+
+<nav class="navbar" aria-label="Navegação principal">
+  <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list">
+    <span class="burger"></span>Menu
+  </button>
+
+  <ul class="nav-list" id="nav-list">
+    <li><a class="nav-link" href="index">Material</a></li>
+
+    <li class="dropdown">
+      <button class="nav-link" aria-expanded="false" aria-haspopup="true">Aprender <span class="caret"></span></button>
+      <ul class="dd-menu">
+        <li><a href="informatica.html">Informática</a></li>
+        <li><a href="informacao.html">Unidades de Informação</a></li>
+        <li><a href="arquivos.html">Tipos de Arquivos</a></li>
+        <li><a href="historia.html">História da Computação</a></li>
+        <li><a href="dicionario">Dicionário</a></li>
+        <li><a href="biblioteca.html">Biblioteca</a></li>
+        <li><a href="websites">Websites</a></li>
+        <li><a href="ferramentas">Ferramentas</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <button class="nav-link" aria-expanded="false" aria-haspopup="true">Treinamento <span class="caret"></span></button>
+      <ul class="dd-menu">
+        <li><a href="digitacao.html">Digitação</a></li>
+        <li><a href="mouse.html">Mouse</a></li>
+        <li><a href="edicao.html">Edição</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <button class="nav-link" aria-expanded="false" aria-haspopup="true">Programação <span class="caret"></span></button>
+      <ul class="dd-menu">
+        <li><a href="algoritmos.html">Algoritmos</a></li>
+        <li><a href="interpretador.html">Interpretador Python</a></li>
+        <li><a href="guiac.html">Guia Linguagem C</a></li>
+        <li><a href="editor.html">Editor Web</a></li>
+        <li><a href="portas.html">Portas Lógicas</a></li>
+        <li><a href="logica.html">Lógica com Blocos</a></li>
+        <li><a href="grafica.html">Computação Gráfica</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <button class="nav-link" aria-expanded="false" aria-haspopup="true">Exatas <span class="caret"></span></button>
+      <ul class="dd-menu">
+        <li><a href="matematica.html">Matemática</a></li>
+        <li><a href="geometria.html">Geometria</a></li>
+        <li><a href="estatistica.html">Estatística</a></li>
+        <li><a href="criptografia.html">Criptografia</a></li>
+        <li><a href="musica.html">Música</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <button class="nav-link" aria-expanded="false" aria-haspopup="true">Praticar <span class="caret"></span></button>
+      <ul class="dd-menu align-right">
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="simulador.html">Simulador</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <button class="nav-link" aria-expanded="false" aria-haspopup="true">Games <span class="caret"></span></button>
+      <ul class="dd-menu align-right">
+        <li><a href="games.html">Conteúdos Online</a></li>
+        <li><a href="aventura.html">Aventura Digital</a></li>
+        <li><a href="gamedev.html">Tutorial 2D GameDev</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <button class="nav-link" aria-expanded="false" aria-haspopup="true">Ajuda <span class="caret"></span></button>
+      <ul class="dd-menu align-right">
+        <li><a href="faq.html">Perguntas Frequentes</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<h1 class="subtitle" style="margin-bottom:20px">Música e Computação</h1>
+
+<div class="box">
+  <h3>Instrumento</h3>
+  <div class="row" style="margin:0 0 10px">
+    <label>Forma de onda: <select id="wave"><option value="sine">Senoidal</option><option value="square">Quadrada</option><option value="sawtooth">Dente de serra</option><option value="triangle">Triangular</option></select></label>
+  </div>
+  <div class="row" id="pre" style="margin:0 0 10px"></div>
+  <div class="ctl" id="ctl"></div>
+  <div class="scopes"><div><h4>Osciloscópio <small id="ot">(onda no tempo)</small></h4><canvas id="osc"></canvas></div><div><h4>Espectro <small id="st">(frequências, escala logarítmica)</small></h4><canvas id="spc"></canvas></div></div>
+  <div id="info">Toque uma tecla para ouvir. Veja a onda no osciloscópio e as frequências no espectro.</div>
+</div>
+
+<div class="tabs">
+  <button class="on" data-t="p1">Teclado</button><button data-t="p2">Escalas e Acordes</button>
+  <button data-t="p4">Teoria e Matemática</button><button data-t="p6">Programar Música</button><button onclick="openPage()">Estúdio</button>
+</div>
+
+<div class="box pn" id="p1" style="margin-bottom: 30px;">
+  <h3>Teclado</h3>
+  <div class="row" style="margin:0 0 15px"><button id="od">◀ Oitava</button><b id="ol" style="color:#273E74"></b><button id="ou">Oitava ▶</button></div>
+  <div class="piano" id="piano"></div>
+  <p style="margin-bottom: 0px;">Teclado do computador: <code>A W S E D F T G Y H U J K O L P</code> tocam as notas (as pretas são W, E, T, Y, U, O). <code>Z</code> e <code>X</code> mudam a oitava.</p>
+</div>
+
+<div class="box pn" id="p2" hidden style="margin-bottom: 30px;">
+  <h3>Escalas e Acordes</h3>
+  <div class="row" style="margin:0 0 10px; justify-content: left;">
+    <label>Tônica: <select id="root"></select></label><label>Escala: <select id="scale"></select></label>
+    <button id="ps">▶ Tocar escala</button>
+  </div>
+  <div id="sinfo"></div>
+  <h3 style="margin-top:15px">Acordes de cada grau (campo harmônico)</h3>
+  <div id="deg"></div>
+  <div class="row" style="margin:15px 0 0;justify-content:flex-start"><label>Acorde na tônica: <select id="chord"></select></label><button id="pc">▶ Tocar acorde</button></div>
+  <div id="cinfo" style="display: none;"></div>
+</div>
+
+<div class="pn" id="p4" hidden>
+  <div class="box"><h3>As 12 notas e suas frequências (clique para ouvir)</h3><div class="notes" id="nt"></div></div>
+  <div class="box"><h3>Calculadoras</h3>
+    <div class="row" style="justify-content:flex-start;margin:0 0 10px"><label>Número MIDI (0–127): <input type="number" id="nm" min="0" max="127" value="69"></label><span id="nr" style="color:#273E74"></span></div>
+    <div class="row" style="justify-content:flex-start;margin:0"><label>Frequência (Hz): <input type="number" id="fq" min="20" max="5000" value="450"></label><span id="fr" style="color:#273E74"></span></div>
+  </div>
+  <div class="cards" style="margin-bottom: 30px;">
+    <div class="box"><h3>Som é onda</h3><p>Um som é uma vibração do ar. A <b>frequência</b> (em Hz) é quantas vezes a onda se repete por segundo e define a altura: o Lá central vibra 440 vezes por segundo. A amplitude define o volume.</p></div>
+    <div class="box"><h3>Oitava e semitom</h3><p>Subir uma <b>oitava</b> dobra a frequência (razão 2:1). A oitava é dividida em 12 semitons iguais, então cada semitom multiplica a frequência por 2<sup>1/12</sup> ≈ 1,0595. É o chamado temperamento igual.</p></div>
+    <div class="box"><h3>Fórmula e MIDI</h3><p><code>f = 440 · 2^((n − 69) / 12)</code><br>No padrão MIDI cada nota tem um número de 0 a 127 (7 bits). O Lá4 é o 69 e o Dó central é o 60. Um <b>cent</b> é 1/100 de semitom: cents = 1200 · log₂(f₂/f₁).</p></div>
+    <div class="box"><h3>Do som ao arquivo</h3><p>O computador guarda o som como <b>amostras</b>: medidas da onda tiradas milhares de vezes por segundo. Seu navegador está usando <b><span id="sr">44100 ou 48000</span> amostras/s</b>. Pelo teorema de Nyquist, só dá para representar frequências até a metade desse valor. Um CD usa 44.100 amostras/s × 16 bits × 2 canais = 1.411.200 bits/s. Veja também <a href="arquivos.html">Tipos de Arquivos</a> (.wav, .mp3, .midi).</p></div>
+    <div class="box"><h3>Timbre e ondas</h3><p>Instrumentos diferentes tocando a mesma nota têm <b>harmônicos</b> diferentes (múltiplos da frequência base). A onda senoidal é pura; a quadrada tem só harmônicos ímpares; a dente de serra tem todos; a triangular tem os ímpares, bem fracos. O <b>filtro</b> corta harmônicos agudos e deixa o som mais “abafado”.</p></div>
+    <div class="box"><h3>Envelope ADSR</h3><p>Ataque: tempo para chegar ao volume máximo. Decaimento: queda até o nível de sustentação. Sustentação: nível mantido enquanto a tecla está pressionada. Relaxamento: tempo para silenciar depois de soltar. Um piano tem ataque rápido; um violino pode ter ataque lento.</p></div>
+    <div class="box"><h3>Escalas são números</h3><p>Uma escala é um padrão de semitons. A maior é 2-2-1-2-2-2-1. Em computação, pode ser uma <b>máscara de 12 bits</b>: 1 para as notas que pertencem à escala e 0 para as outras. Veja na aba “Escalas e Acordes”.</p></div>
+    <div class="box"><h3>Ritmo e tempo</h3><p>Com andamento de B batidas por minuto, cada batida dura 60/B segundos. Cada passo do sequenciador é uma semicolcheia, ou seja, 1/4 de batida. Em 120 BPM, são 0,125 s por passo.</p></div>
+  </div>
+</div>
+
+<div class="box pn" id="p6" hidden style="margin-bottom:30px">
+  <h3>Programar música</h3>
+  <p style="margin-bottom: 6px;">Escreva a música como um programa e clique em Tocar. O som usa o instrumento configurado no topo da página.</p>
+  <div class="row" style="margin:0 0 15px;justify-content:flex-start"><label>Exemplos: <select id="cex"></select></label><button style="margin-top: 5px;" id="cp">▶ Tocar</button><label><input type="checkbox" id="clp"> Repetir</label></div>
+  <textarea id="cod" spellcheck="false"></textarea>
+  <div class="err" id="cerr"></div>
+  <p><code>C4</code> nota (letra, # ou b, oitava) · <code>C4:2</code> dura 2 tempos · <code>R:1</code> pausa · <code>[C4 E4 G4]:2</code> acorde · <code>bpm 120</code> andamento · <code>onda square</code> (sine, square, sawtooth ou triangle) · <code>repetir 4 { ... }</code> laço · <code>padrao nome { ... }</code> define um bloco que você usa depois escrevendo só <code>nome</code> · <code>instrumento suave</code> (suave, pluck, pad, baixo ou 8-bit) · <code>junto { voz { ... } voz { ... } }</code> toca várias vozes ao mesmo tempo (defina o <code>bpm</code> antes) · <code>transpor 2 { ... }</code> soma semitons às notas · <code>// comentário</code></p>
+  <p style="margin-bottom: 0px;"><b>Ligação com Algoritmos:</b> as notas escritas em ordem são uma <b>sequência</b> de instruções; <code>repetir</code> é uma <b>estrutura de repetição</b> (laço); <code>padrao</code> é uma <b>função</b> (sub-rotina) reutilizável. <b>Desafio:</b> escreva uma música de 16 compassos usando no máximo 10 linhas.</p>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),L=['Dó','Dó#','Ré','Ré#','Mi','Fá','Fá#','Sol','Sol#','Lá','Lá#','Si'],C=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const hz=m=>440*2**((m-69)/12),nm=m=>L[m%12]+(Math.floor(m/12)-1),cf=m=>C[m%12]+(Math.floor(m/12)-1),fm=x=>x.toFixed(2).replace('.',',');
+const DEF={wave:'sine',a:.01,d:.15,s:.6,r:.3,cut:8000,res:1,vib:0,dly:0,rev:0,vol:.7},P={...DEF};
+let ac,filt,master,an,dly,dg,conv,rg,fb;
+
+function init(){
+  if(ac){ac.state=='suspended'&&ac.resume();return}
+  ac=new(window.AudioContext||webkitAudioContext)();
+  master=ac.createGain();an=ac.createAnalyser();an.fftSize=4096;an.smoothingTimeConstant=.75;an.minDecibels=-90;an.maxDecibels=-20;filt=ac.createBiquadFilter();
+  dly=ac.createDelay(1);dly.delayTime.value=.3;fb=ac.createGain();fb.gain.value=.4;dg=ac.createGain();conv=ac.createConvolver();rg=ac.createGain();
+  const n=ac.sampleRate*1.8|0,b=ac.createBuffer(2,n,ac.sampleRate);
+  for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n)**3}
+  conv.buffer=b;
+  filt.connect(master);filt.connect(dly);dly.connect(fb);fb.connect(dly);dly.connect(dg);dg.connect(master);
+  filt.connect(conv);conv.connect(rg);rg.connect(master);master.connect(an);an.connect(ac.destination);
+  apply();$('#ot').textContent='(janela de '+(NW/ac.sampleRate*1000).toFixed(0)+' ms)';draw();$('#sr').textContent=ac.sampleRate;
+}
+function apply(){if(!ac)return;filt.frequency.value=P.cut;filt.Q.value=P.res;dg.gain.value=P.dly;rg.gain.value=P.rev;master.gain.value=P.vol}
+
+function on(m,t){
+  t=t||ac.currentTime;const o=ac.createOscillator(),g=ac.createGain(),pk=.4;let l;
+  o.type=P.wave;o.frequency.value=hz(m);
+  if(P.vib>0){l=ac.createOscillator();const lg=ac.createGain();l.frequency.value=5.5;lg.gain.value=P.vib;l.connect(lg);lg.connect(o.detune);l.start(t)}
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(pk,t+P.a);g.gain.linearRampToValueAtTime(pk*P.s,t+P.a+P.d);
+  o.connect(g);g.connect(filt);o.start(t);
+  return(e,live)=>{e=e||ac.currentTime;g.gain.cancelScheduledValues(e);g.gain.setValueAtTime(live?g.gain.value:pk*P.s,e);
+    g.gain.linearRampToValueAtTime(0,e+P.r);o.stop(e+P.r+.05);l&&l.stop(e+P.r+.05)}
+}
+const tone=(m,t,d)=>on(m,t)(t+d);
+
+// controles do instrumento
+const CT=[['a','Ataque (s)',.005,1,.005],['d','Decaimento (s)',.01,1,.01],['s','Sustentação',0,1,.01],['r','Relaxamento (s)',.02,2,.01],['cut','Filtro (Hz)',100,12000,10],['res','Ressonância (Q)',.1,20,.1],['vib','Vibrato (cents)',0,100,1],['dly','Eco',0,.8,.01],['rev','Reverb',0,1,.01],['vol','Volume',0,1,.01]];
+$('#ctl').innerHTML=CT.map(([k,n,a,b,s])=>`<div><label>${n}: <span id="v${k}"></span></label><input type="range" id="c${k}" min="${a}" max="${b}" step="${s}"></div>`).join('');
+function sync(){CT.forEach(([k])=>{$('#c'+k).value=P[k];$('#v'+k).textContent=P[k]});$('#wave').value=P.wave}
+CT.forEach(([k])=>$('#c'+k).oninput=e=>{P[k]=+e.target.value;$('#v'+k).textContent=P[k];apply()});
+$('#wave').onchange=e=>P.wave=e.target.value;
+const PR={'Suave':{wave:'sine',a:.02,d:.2,s:.7,r:.4},'Pluck':{wave:'triangle',a:.005,d:.25,s:0,r:.2},'Pad':{wave:'sawtooth',a:.6,d:.4,s:.7,r:1,cut:1800,rev:.5},'Baixo':{wave:'sawtooth',a:.005,d:.2,s:.4,r:.1,cut:700,res:6},'8-bit':{wave:'square',a:.003,d:.08,s:.5,r:.05,dly:.2}};
+$('#pre').innerHTML='<label>Presets:</label>'+Object.keys(PR).map(k=>`<button>${k}</button>`).join('');
+$('#pre').onclick=e=>{if(e.target.tagName=='BUTTON'){Object.assign(P,DEF,PR[e.target.textContent]);sync();apply()}};
+sync();
+
+// visualizador
+const osc=document.getElementById('osc'),cx=osc.getContext('2d'),spc=document.getElementById('spc'),sx=spc.getContext('2d'),NW=1200;let td,fd,lastPk='';
+function fit(c){const r=devicePixelRatio||1,w=Math.round(c.clientWidth*r),h=Math.round(c.clientHeight*r);if(c.width!=w||c.height!=h){c.width=w;c.height=h}return r}
+function draw(){
+  requestAnimationFrame(draw);td=td||new Float32Array(an.fftSize);fd=fd||new Uint8Array(an.frequencyBinCount);
+  an.getFloatTimeDomainData(td);an.getByteFrequencyData(fd);scope();spec();
+}
+function scope(){
+  const r=fit(osc),W=osc.width,H=osc.height,g=cx;g.fillStyle='#273E74';g.fillRect(0,0,W,H);
+  g.lineWidth=1;g.strokeStyle='rgba(255,255,255,.16)';g.beginPath();
+  for(let i=1;i<8;i++){const x=Math.round(i*W/8)+.5;g.moveTo(x,0);g.lineTo(x,H)}
+  for(let i=1;i<4;i++){const y=Math.round(i*H/4)+.5;g.moveTo(0,y);g.lineTo(W,y)}g.stroke();
+  g.strokeStyle='rgba(255,255,255,.4)';g.beginPath();g.moveTo(0,Math.round(H/2)+.5);g.lineTo(W,Math.round(H/2)+.5);g.stroke();
+  let s=0,pk=0;for(let i=1;i<1500;i++)if(td[i-1]<0&&td[i]>=0){s=i;break}
+  for(let i=0;i<NW;i++)pk=Math.max(pk,Math.abs(td[s+i]));
+  const k=.42*H/Math.max(pk,.05);
+  g.strokeStyle='#fff';g.lineWidth=2*r;g.lineJoin='round';g.beginPath();
+  for(let i=0;i<NW;i++){const x=i/(NW-1)*W,y=H/2-td[s+i]*k;i?g.lineTo(x,y):g.moveTo(x,y)}g.stroke();
+}
+function spec(){
+  const r=fit(spc),W=spc.width,H=spc.height,g=sx,sr=ac.sampleRate,n=fd.length,lo=20,hi=8000,h=H-18*r,X=f=>Math.log(f/lo)/Math.log(hi/lo)*W;
+  g.fillStyle='#273E74';g.fillRect(0,0,W,H);g.font=`${11*r}px sans-serif`;g.lineWidth=1;g.strokeStyle='rgba(255,255,255,.16)';g.fillStyle='#c9d3e3';
+  [[50,'50'],[100,'100'],[200,'200'],[500,'500'],[1000,'1k'],[2000,'2k'],[5000,'5k']].forEach(([f,t])=>{const x=Math.round(X(f))+.5;g.beginPath();g.moveTo(x,0);g.lineTo(x,h);g.stroke();g.fillText(t,x+3*r,H-5*r)});
+  g.beginPath();for(let i=1;i<4;i++){const y=Math.round(i*h/4)+.5;g.moveTo(0,y);g.lineTo(W,y)}g.stroke();g.fillText('Hz',W-22*r,H-5*r);
+  let pb=lo/(sr/2)*n,mx=0,pf=0;g.beginPath();
+  for(let x=0;x<=W;x++){const f=lo*Math.pow(hi/lo,x/W),b=f/(sr/2)*n,i=Math.floor(b);
+    let v=(fd[i]*(1-(b-i))+fd[i+1]*(b-i))/255;for(let j=Math.ceil(pb);j<=b;j++)v=Math.max(v,fd[j]/255);pb=b;
+    if(v>mx){mx=v;pf=f}x?g.lineTo(x,h-v*h*.95):g.moveTo(x,h-v*h*.95)}
+  g.strokeStyle='#fff';g.lineWidth=2*r;g.lineJoin='round';g.stroke();
+  g.lineTo(W,h);g.lineTo(0,h);g.closePath();g.fillStyle='rgba(159,176,200,.4)';g.fill();
+  const t=mx>.3?`(pico ≈ ${Math.round(pf)} Hz · ${nm(Math.round(69+12*Math.log2(pf/440)))})`:'';
+  if(t!=lastPk){lastPk=t;$('#st').textContent=t}
+}
+
+// teclado
+let oct=4;const held={},pid={},kd={};
+function build(){
+  const p=$('#piano');p.innerHTML='';let w=0;const base=12*(oct+1);$('#ol').textContent='C'+oct+' a C'+(oct+2);
+  for(let i=0;i<=24;i++){const k=i%12,d=document.createElement('div');d.dataset.m=base+i;
+    if([1,3,6,8,10].includes(k)){d.className='bk';d.style.left=`calc(${w*100/15}% - 2.2%)`}
+    else{d.className='wk';d.textContent=k?'':nm(base+i);w++}
+    p.appendChild(d)}
+}
+function press(m){if(held[m])return;init();held[m]=on(m);const k=document.querySelector(`[data-m="${m}"]`);k&&k.classList.add('on');
+  $('#info').innerHTML=`<b>${nm(m)}</b> (${cf(m)}) · MIDI ${m} · <b>${fm(hz(m))} Hz</b><br>f = 440 · 2<sup>(${m} − 69) / 12</sup>`}
+function lift(m){if(!held[m])return;held[m](0,true);delete held[m];const k=document.querySelector(`[data-m="${m}"]`);k&&k.classList.remove('on')}
+$('#piano').addEventListener('pointerdown',e=>{const m=e.target.dataset.m;if(m){e.preventDefault();press(+m);pid[e.pointerId]=+m}});
+['pointerup','pointercancel'].forEach(t=>addEventListener(t,e=>{if(pid[e.pointerId]!=null){lift(pid[e.pointerId]);delete pid[e.pointerId]}}));
+const KM='awsedftgyhujkolp';
+addEventListener('keydown',e=>{const t=e.target;if(e.repeat||e.ctrlKey||e.metaKey||e.altKey||t.tagName=='SELECT'||(t.tagName=='INPUT'&&t.type!='range'))return;
+  const k=e.key.toLowerCase(),i=KM.indexOf(k);
+  if(i>=0){const m=12*(oct+1)+i;kd[k]=m;press(m)}else if(k=='z'||k=='x'){oct=Math.min(6,Math.max(1,oct+(k=='x'?1:-1)));build()}});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(kd[k]!=null){lift(kd[k]);delete kd[k]}});
+$('#od').onclick=()=>{oct=Math.max(1,oct-1);build()};$('#ou').onclick=()=>{oct=Math.min(6,oct+1);build()};build();
+
+// escalas e acordes
+const SC={'Maior':[0,2,4,5,7,9,11],'Menor natural':[0,2,3,5,7,8,10],'Menor harmônica':[0,2,3,5,7,8,11],'Dórico':[0,2,3,5,7,9,10],'Mixolídio':[0,2,4,5,7,9,10],'Pentatônica maior':[0,2,4,7,9],'Pentatônica menor':[0,3,5,7,10],'Blues':[0,3,5,6,7,10],'Tons inteiros':[0,2,4,6,8,10],'Cromática':[0,1,2,3,4,5,6,7,8,9,10,11]};
+const CH={'Maior':[0,4,7],'Menor':[0,3,7],'Diminuto':[0,3,6],'Aumentado':[0,4,8],'Maior com 7ª maior':[0,4,7,11],'Dominante (7ª)':[0,4,7,10],'Menor com 7ª':[0,3,7,10],'Suspenso (sus4)':[0,5,7]};
+$('#root').innerHTML=L.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+$('#scale').innerHTML=Object.keys(SC).map(k=>`<option>${k}</option>`).join('');
+$('#chord').innerHTML=Object.keys(CH).map(k=>`<option>${k}</option>`).join('');
+const sc=()=>SC[$('#scale').value],rt=()=>+$('#root').value,RM=['I','II','III','IV','V','VI','VII'];
+function showScale(){
+  const r=rt(),s=sc(),mask=[...Array(12)].map((_,i)=>+s.includes(i)).join('');
+  $('#sinfo').innerHTML=`Notas: <b>${s.map(v=>L[(r+v)%12]).join(' – ')}</b><br>Passos (semitons): ${s.map((v,i)=>(s[i+1]??12)-v).join(' · ')}<br>Máscara de 12 bits: <code>${mask}</code>`;
+  $('#deg').innerHTML=s.length==7?s.map((a,i)=>{const b=s[(i+2)%7]+(i+2>6?12:0)-a,c=s[(i+4)%7]+(i+4>6?12:0)-a;
+    const q=b==4&&c==7?'':b==3&&c==7?'m':b==3&&c==6?'dim':b==4&&c==8?'aug':'*';
+    return`<button data-i="${i}">${RM[i]}<br>${L[(r+a)%12]}${q}</button>`}).join(''):'<p>Escolha uma escala de 7 notas para ver os acordes de cada grau.</p>';
+}
+$('#ps').onclick=()=>{init();const s=[...sc(),12],t=ac.currentTime+.05;s.forEach((v,i)=>tone(60+rt()+v,t+i*.3,.28))};
+$('#deg').onclick=e=>{const b=e.target.closest('button');if(!b)return;init();const s=sc(),i=+b.dataset.i,r=60+rt();
+  [0,2,4].forEach(j=>tone(r+s[(i+j)%7]+(i+j>6?12:0),ac.currentTime+.02,1.2))};
+$('#pc').onclick=()=>{init();const c=CH[$('#chord').value],r=60+rt();c.forEach(v=>tone(r+v,ac.currentTime+.02,1.5));
+  $('#cinfo').style.display = 'block';
+  $('#cinfo').innerHTML=`Notas: <b>${c.map(v=>L[(rt()+v)%12]).join(' – ')}</b> · intervalos em semitons: ${c.join(', ')}`};
+function change(){showScale()}
+$('#root').onchange=$('#scale').onchange=change;
+
+// teoria
+$('#nt').innerHTML=L.map((n,i)=>`<div data-m="${60+i}"><b>${n}</b> (${C[i]})<br>${fm(hz(60+i))} Hz<br>× ${(2**(i/12)).toFixed(4).replace('.',',')}</div>`).join('');
+$('#nt').onclick=e=>{const d=e.target.closest('[data-m]');if(d){init();tone(+d.dataset.m,ac.currentTime,1)}};
+$('#nm').oninput=()=>{const m=Math.round(+$('#nm').value);if(m>=0&&m<=127){$('#nr').innerHTML=`${nm(m)} (${cf(m)}) → <b>${fm(hz(m))} Hz</b>`}};
+$('#fq').oninput=()=>{const f=+$('#fq').value;if(f>0){const x=69+12*Math.log2(f/440),m=Math.round(x);$('#fr').innerHTML=`Nota mais próxima: <b>${nm(m)}</b> (MIDI ${m}), desvio de ${(x-m)*100>=0?'+':''}${((x-m)*100).toFixed(1).replace('.',',')} cents`}};
+$('#nm').oninput();$('#fq').oninput();
+
+// abas
+document.querySelectorAll('.tabs button').forEach(b => {
+    if (b.onclick) return;
+
+    b.onclick = () => {
+        document.querySelectorAll('.tabs button').forEach(x =>
+            x.classList.toggle('on', x == b)
+        );
+
+        document.querySelectorAll('.pn').forEach(p =>
+            p.hidden = p.id != b.dataset.t
+        );
+    };
+});
+// programar música
+const EX={
+'Padrões e acordes':`// padrões funcionam como funções\npadrao baixo { C3:0.5 C3:0.5 G3:0.5 C3:0.5 }\npadrao acordes { [C4 E4 G4]:2 [F4 A4 C5]:2 }\nbpm 110\nrepetir 2 {\n  baixo baixo\n  acordes\n}`,
+'Escala de Dó maior':`bpm 120\nC4 D4 E4 F4 G4 A4 B4 C5 B4 A4 G4 F4 E4 D4 C4:2`,
+'Laço (repetir)':`bpm 140\nrepetir 4 {\n  C4:0.5 E4:0.5 G4:0.5 E4:0.5\n}\nR:1\n[C4 E4 G4 C5]:3`,
+'Beethoven – Für Elise (tema)':`// Beethoven - Für Elise, tema principal (domínio público)
+// aqui 1 tempo = 1 semicolcheia, então um compasso de 3/8 tem 6 tempos
+instrumento suave
+onda triangle
+bpm 170
+padrao frase { E5 D#5 E5 B4 D5 C5 }
+padrao ponte1 { A4:2 R:1 C4 E4 A4  B4:2 R:1 E4 G#4 B4 }
+padrao ponte2 { A4:2 R:1 C4 E4 A4  B4:2 R:1 E4 C5 B4 }
+padrao baixoA { A2 E3 A3 R:3 }
+padrao baixoE { E2 E3 G#3 R:3 }
+junto {
+  voz { E5 D#5  frase ponte1  C5:2 R:1 E4 E5 D#5  frase ponte2  A4:6 }   // mão direita
+  voz { R:2  R:6  baixoA baixoE baixoA  R:6  baixoA baixoE  A2:6 }        // mão esquerda
+}`,
+'Mozart – Marcha Turca (tema)':`// Mozart - Rondo alla Turca (Sonata K.331), tema principal (domínio público)
+// aqui 1 tempo = 1 colcheia; semicolcheia = 0.5
+instrumento pluck
+bpm 236
+padrao tema {
+  B4:0.5 A4:0.5 G#4:0.5 A4:0.5 C5:2
+  D5:0.5 C5:0.5 B4:0.5 C5:0.5 E5:2
+  F5:0.5 E5:0.5 D#5:0.5 E5:0.5 B5:0.5 A5:0.5 G#5:0.5 A5:0.5
+  B5:0.5 A5:0.5 G#5:0.5 A5:0.5 C6:2
+}
+padrao acomp {
+  A2 [C3 E3] A2 [C3 E3]   A2 [C3 E3] A2 [C3 E3]
+  E2 [B2 E3 G#3] E2 [B2 E3 G#3]   A2 [C3 E3] A2 [C3 E3]
+}
+junto {
+  voz { repetir 2 { tema } }
+  voz { repetir 2 { acomp } }
+}`,
+'Beethoven – Sonata ao Luar (início)':`// Beethoven - Sonata ao Luar (Op. 27 nº 2), 1º movimento: compassos 1 a 4 (domínio público)
+// aqui 1 tempo = 1 colcheia de tercina, então cada compasso tem 12 tempos
+// atenção: a harmonia dos compassos 2 a 4 foi escrita de memória e pode diferir da partitura
+instrumento suave
+bpm 150
+junto {
+  voz {
+    repetir 4 { G#3 C#4 E4 }
+    repetir 4 { G#3 C#4 E4 }
+    repetir 4 { A3 C#4 E4 }
+    repetir 4 { A3 C#4 F#4 }
+  }
+  voz { [C#2 C#3]:12 [B1 B2]:12 [A1 A2]:12 [F#1 F#2]:12 }
+}`,
+'Bach – Prelúdio em Dó (início)':`// J. S. Bach - Prelúdio em Dó maior (BWV 846), compassos 1 a 8 (domínio público)
+// aqui 1 tempo = 1 semicolcheia; cada compasso tem 16 tempos (o desenho de 8 notas se repete 2 vezes)
+instrumento suave
+onda triangle
+bpm 250
+junto {
+  voz {
+    repetir 2 { C4 E4 G4 C5 E5 G4 C5 E5 }
+    repetir 2 { C4 D4 A4 D5 F5 A4 D5 F5 }
+    repetir 2 { B3 D4 G4 D5 F5 G4 D5 F5 }
+    repetir 2 { C4 E4 G4 C5 E5 G4 C5 E5 }
+    repetir 2 { C4 E4 A4 E5 A5 A4 E5 A5 }
+    repetir 2 { C4 D4 F#4 A4 D5 F#4 A4 D5 }
+    repetir 2 { B3 D4 G4 D5 G5 G4 D5 G5 }
+    repetir 2 { B3 C4 E4 G4 C5 E4 G4 C5 }
+    [C4 E4 G4 C5 E5]:16
+  }
+  voz { C3:16 C3:16 B2:16 C3:16 C3:16 C3:16 B2:16 B2:16 C3:16 }
+}`,
+'Transposição (matemática)':`// transpor soma semitons a cada nota: música é matemática!
+padrao motivo { C4 E4 G4 E4 }
+bpm 140
+motivo
+transpor 2 { motivo }
+transpor 4 { motivo }
+transpor 7 { motivo }
+transpor 12 { [C4 E4 G4]:4 }`,
+'Ode à Alegria':`bpm 110\nE4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 E4:1.5 D4:0.5 D4:2\nE4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 D4:1.5 C4:0.5 C4:2`};
+const PC={c:0,d:2,e:4,f:5,g:7,a:9,b:11},NOTA=/^[a-g][#b]?-?\d$/i;
+function pitch(s){const m=/^([a-g])([#b]?)(-?\d)$/i.exec(s);return 12*(+m[3]+1)+PC[m[1].toLowerCase()]+(m[2]=='#'?1:m[2].toLowerCase()=='b'?-1:0)}
+function parse(src){
+  const tk=src.replace(/\/\/.*$/gm,'').match(/[{}\[\]]|[^\s{}\[\]]+/g)||[],defs={};let i=0;
+  const close=()=>{if(tk[i++]!='}')throw Error('Faltou fechar um "}"')},
+    sh=(e,n)=>e.par?{par:e.par.map(v=>v.map(x=>sh(x,n)))}:e.m?{...e,m:e.m.map(x=>x+n)}:e,
+    cnt=e=>e.par?e.par.reduce((a,v)=>a+v.reduce((b,x)=>b+cnt(x),0),0):1;
+  function blk(){const o=[];
+    while(i<tk.length&&tk[i]!='}'){const t=tk[i++],[h,ds]=t.split(':'),l=h.toLowerCase(),d=ds==null?1:parseFloat(ds);
+      if(!(d>0))throw Error('Duração inválida em "'+t+'"');
+      if(l=='bpm'){const v=+tk[i++];if(!(v>=20&&v<=300))throw Error('bpm deve ficar entre 20 e 300');o.push({bpm:v})}
+      else if(l=='onda'){const w=(tk[i++]||'').toLowerCase();if(!['sine','square','sawtooth','triangle'].includes(w))throw Error('onda: use sine, square, sawtooth ou triangle');o.push({wave:w})}
+      else if(l=='repetir'){const n=+tk[i++];if(!(n>=1&&n<=64)||tk[i++]!='{')throw Error('Use: repetir N { ... } com N de 1 a 64');const b=blk();close();for(let k=0;k<n;k++)o.push(...b)}
+      else if(l=='instrumento'){const nm=(tk[i++]||'').toLowerCase(),k=Object.keys(PR).find(x=>x.toLowerCase()==nm);if(!k)throw Error('instrumento: use '+Object.keys(PR).join(', ').toLowerCase());o.push({inst:k})}
+      else if(l=='junto'){if(tk[i++]!='{')throw Error('Use: junto { voz { ... } voz { ... } }');const vs=[];
+        while(i<tk.length&&tk[i]!='}'){if((tk[i++]||'').toLowerCase()!='voz'||tk[i++]!='{')throw Error('Dentro de "junto" use blocos: voz { ... }');vs.push(blk());close()}close();o.push({par:vs})}
+      else if(l=='transpor'){const n=+tk[i++];if(!Number.isInteger(n)||tk[i++]!='{')throw Error('Use: transpor N { ... } (N em semitons, por exemplo 2 ou -5)');const b=blk();close();o.push(...b.map(e=>sh(e,n)))}
+      else if(l=='padrao'||l=='padrão'){const nm=(tk[i++]||'').toLowerCase();if(!nm||tk[i++]!='{')throw Error('Use: padrao nome { ... }');const b=blk();close();defs[nm]=b}
+      else if(t=='['){const ns=[];while(i<tk.length&&tk[i]!=']'){if(!NOTA.test(tk[i]))throw Error('Nota inválida no acorde: "'+tk[i]+'"');ns.push(pitch(tk[i++]))}
+        if(tk[i++]!=']')throw Error('Faltou fechar um "]"');let dd=1;if(tk[i]&&tk[i][0]==':'){dd=parseFloat(tk[i++].slice(1));if(!(dd>0))throw Error('Duração inválida no acorde')}o.push({m:ns,d:dd})}
+      else if(l=='r'||h=='-')o.push({m:[],d});
+      else if(NOTA.test(h))o.push({m:[pitch(h)],d});
+      else if(defs[l])o.push(...defs[l]);
+      else throw Error('Não entendi "'+t+'"')}
+    return o}
+  const ev=blk();if(i<tk.length)throw Error('Há um "}" sobrando');if(ev.reduce((a,e)=>a+cnt(e),0)>6000)throw Error('Música muito longa (máximo de 6000 notas)');return ev}
+function timeline(ev){const o=[];let end=0;
+  function run(es,t,spb,w){for(const e of es){if(e.bpm)spb=60/e.bpm;else if(e.wave)w=e.wave;else if(e.inst)o.push({t,inst:e.inst});
+    else if(e.par){let m=t;e.par.forEach(v=>{m=Math.max(m,run(v,t,spb,w))});t=m}
+    else{if(e.m.length)o.push({t,m:e.m,d:e.d*spb,w});t+=e.d*spb}}end=Math.max(end,t);return t}
+  run(ev,0,.5,null);o.sort((a,b)=>a.t-b.t);return{o,end}}
+let cpl=0,ctm,ci,cb,cl,cP,bw;
+function cstop(){clearInterval(ctm);cpl=0;$('#cp').textContent='▶ Tocar';if(cP){Object.assign(P,cP);sync();apply();cP=null}}
+function csched(){const now=ac.currentTime;
+  for(;;){if(ci>=cl.o.length){if($('#clp').checked&&cl.end>0){cb+=cl.end;ci=0;continue}if(now>cb+cl.end+.5)cstop();return}
+    const e=cl.o[ci],t=cb+e.t;if(t>now+.15)return;ci++;
+    if(e.inst){Object.assign(P,DEF,PR[e.inst]);sync();apply();bw=P.wave}else{P.wave=e.w||bw;e.m.forEach(m=>tone(m,Math.max(t,now),e.d*.95))}}}
+$('#cp').onclick=()=>{if(cpl){cstop();return}const er=$('#cerr');
+  try{cl=timeline(parse($('#cod').value));const nn=cl.o.filter(e=>e.m).length;if(!nn)throw Error('Escreva algumas notas primeiro.');
+    er.style.display = 'block';er.style.color='#273E74';er.textContent=nn+' notas · duração '+cl.end.toFixed(1).replace('.',',')+' s';
+    init();cP={...P};bw=P.wave;cpl=1;ci=0;cb=ac.currentTime+.1;ctm=setInterval(csched,25);$('#cp').textContent='■ Parar'}
+  catch(e){er.style.display = 'block';er.style.color='#b0392f';er.textContent='Erro: '+e.message}};
+$('#cex').innerHTML=Object.keys(EX).map(k=>`<option>${k}</option>`).join('');
+$('#cex').onchange=()=>{$('#cod').value=EX[$('#cex').value]};$('#cod').value=EX['Padrões e acordes'];
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  if(cpl&&b.dataset.t!='p6')cstop()}));
+
+change();
+
+function openPage() {
+  window.location.href = "estudio";
+}
+</script>
+<script src="menu.js"></script>
+</body>
+</html>
