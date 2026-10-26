@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eletrônica - Curso de Informática</title>
+<link rel="icon" type="image/x-icon" href="images/pc.png">
+<style>
+:root{--navy:#273E74;--slate:#5C6D82;--bg:#fff;--panel:#f2f2f2;--text:#222;--gold:#B98A3E}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.5}
+header{text-align:center;padding:40px 20px;background:var(--slate);border-bottom:5.5px solid var(--navy);margin-bottom:30px;color:#fff}
+header h1{font-size:2.5em;margin:0 0 10px}
+header .subtitle{font-size:1.2em;opacity:.9}
+#homeBtn{margin-top:15px;background:#fff;color:var(--navy);border:3.3px solid var(--navy);padding:9px 12px;font:bold 1rem Arial,sans-serif;cursor:pointer;text-decoration:none;display:inline-block}
+#homeBtn:hover{background:var(--navy);color:#fff;border-color:#fff}
+nav.tabs{max-width:1100px;margin:0 auto 30px;padding:0 20px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.tab,.segbtns button{background:#fff;color:var(--navy);border:2.5px solid var(--navy);padding:9px 14px;font:bold .9rem Arial,sans-serif;cursor:pointer}
+.tab:hover,.segbtns button:hover{background:var(--panel)}
+.tab.active,.segbtns button.on{background:var(--navy);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:0 20px}
+.panel{display:none;flex-direction:column;gap:26px;margin-bottom:30px}
+.panel.active{display:flex}
+.stage{background:var(--panel);border:2px solid var(--navy);padding:16px}
+.stage canvas{display:block;width:100%;height:auto;background:#fff;touch-action:none}
+.controls{margin-top:16px;display:grid;gap:14px}
+.control label{display:flex;justify-content:space-between;font-size:.88rem;color:var(--navy);margin-bottom:5px;font-weight:bold}
+.val{background:var(--slate);color:#fff;font-size:.78rem;padding:2px 8px}
+input[type=range]{width:100%;height:8px;background:var(--slate);cursor:pointer;outline:none;-webkit-appearance:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:#fff;border:2px solid var(--navy);box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.segbtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.segbtns button{font-size:.82rem;padding:8px 11px}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.readout div{background:#fff;border:2px solid var(--navy);padding:8px;text-align:center;color:var(--navy);font-weight:bold}
+.readout span{display:block;font-size:1.3rem}
+.caption{margin:12px 0 0;font-size:.88rem;font-style:italic;color:var(--slate);min-height:1.3em}
+aside.info{border-left:5px solid var(--slate);padding-left:16px}
+aside.info h2{font-size:1.35rem;margin:0 0 14px;color:var(--navy)}
+aside.info p{font-size:.98rem;line-height:1.75}
+.glossary{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:12px}
+.glossary li{font-size:.92rem;padding-left:18px;position:relative;line-height:1.6}
+.glossary li::before{content:"";position:absolute;left:0;top:.4em;width:9px;height:9px;background:var(--navy);border:1px solid var(--navy)}
+.glossary li.g::before{background:var(--slate)}
+.glossary li.o::before{background:var(--gold);border-color:var(--gold)}
+.glossary b{color:var(--navy)}
+footer{max-width:1100px;margin:0 auto 40px;padding:0 20px;color:#777;font-size:.78rem}
+@media(max-width:600px){.readout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Eletrônica</h1>
+  <div class="subtitle">Explore circuitos e componentes de forma interativa</div>
+  <button id="homeBtn" onclick="window.location.href='/'">Página Inicial</button>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="ohm">Lei de Ohm</button>
+  <button class="tab" data-tab="rc">Capacitor (RC)</button>
+  <button class="tab" data-tab="lab">Laboratório</button>
+</nav>
+
+<main>
+<!-- ============ LEI DE OHM ============ -->
+<section id="ohm" class="panel active">
+  <div class="stage">
+    <canvas id="cv-ohm" width="640" height="340"></canvas>
+    <div class="controls">
+      <div class="control"><label>Tensão da bateria (V) <span class="val" id="v-V"></span></label><input type="range" id="s-V" min="1" max="12" step="0.5" value="9"></div>
+      <div class="control"><label>Resistência (R) <span class="val" id="v-R"></span></label><input type="range" id="s-R" min="10" max="1000" step="10" value="330"></div>
+    </div>
+    <div class="readout">
+      <div>Corrente (I)<span id="r-I"></span></div>
+      <div>Potência (P)<span id="r-P"></span></div>
+      <div>Fórmula<span>V = R × I</span></div>
+    </div>
+    <p class="caption" id="cap-ohm"></p>
+  </div>
+  <aside class="info">
+    <h2>A relação mais importante da eletrônica</h2>
+    <p>Pense num circuito como um sistema de água: a bateria é a bomba, os fios são os canos e o resistor é um trecho estreito. Aumente a pressão e mais água passa; estreite o cano e passa menos.</p>
+    <ul class="glossary">
+      <li><b>Tensão (V, volts):</b> a "pressão" que empurra as cargas pelo circuito.</li>
+      <li class="g"><b>Resistência (R, ohms Ω):</b> a dificuldade que o componente impõe à passagem da corrente.</li>
+      <li class="o"><b>Corrente (I, ampères):</b> o fluxo de cargas. Os pontos dourados mostram o sentido convencional, do + para o −.</li>
+      <li class="g"><b>Potência (P = V × I, watts):</b> a energia por segundo que vira calor ou luz no resistor.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ CAPACITOR ============ -->
+<section id="rc" class="panel">
+  <div class="stage">
+    <canvas id="cv-rc" width="640" height="340"></canvas>
+    <div class="controls">
+      <div class="control"><label>Resistência (R) <span class="val" id="v-rcR"></span></label><input type="range" id="s-rcR" min="1" max="100" value="20"></div>
+      <div class="control"><label>Capacitância (C) <span class="val" id="v-rcC"></span></label><input type="range" id="s-rcC" min="1" max="100" value="47"></div>
+      <div class="segbtns"><button id="b-charge" class="on">Carregar</button><button id="b-dis">Descarregar</button></div>
+    </div>
+    <div class="readout">
+      <div>Constante τ = R × C<span id="r-tau"></span></div>
+      <div>Tensão no capacitor<span id="r-vc"></span></div>
+      <div>Carga armazenada<span id="r-q"></span></div>
+    </div>
+    <p class="caption">O eixo horizontal está em segundos: mude R ou C e veja a curva ficar mais rápida ou mais lenta. Em 1 τ o capacitor atinge cerca de 63% da tensão da fonte; em 5 τ, praticamente 100%. A linha tracejada é a curva teórica.</p>
+  </div>
+  <aside class="info">
+    <h2>O capacitor: um pequeno reservatório</h2>
+    <p>Ele guarda carga elétrica entre duas placas separadas por um isolante. Ao carregar, a corrente é grande no início e cai aos poucos, porque a tensão acumulada se opõe à da fonte.</p>
+    <ul class="glossary">
+      <li><b>Resistor maior:</b> a carga entra mais devagar, então τ cresce.</li>
+      <li class="g"><b>Capacitor maior:</b> o reservatório demora mais para encher.</li>
+      <li class="o"><b>Aplicações:</b> filtros de fonte, temporizadores, flash de câmera e circuitos de som.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ LABORATÓRIO ============ -->
+<section id="lab" class="panel">
+  <div class="stage">
+    <div class="segbtns" id="tools"></div>
+    <canvas id="cv-lab" width="880" height="520"></canvas>
+    <div class="controls" id="selbox" style="display:none">
+      <div class="control"><label><span id="sel-name"></span> <span class="val" id="sel-val"></span></label><input type="range" id="s-sel"></div>
+    </div>
+    <div class="segbtns" style="margin:14px 0 0">
+      <button data-ex="0">Exemplo: LED em série</button>
+      <button data-ex="1">Exemplo: Paralelo</button>
+      <button data-ex="2">Exemplo: Chave e lâmpada</button>
+      <button data-ex="3">Exemplo: Transistor como chave</button>
+      <button data-ex="4">Exemplo: Diodos</button>
+      <button id="b-clear">Limpar tudo</button>
+    </div>
+    <p class="caption" id="cap-lab"></p>
+  </div>
+  <aside class="info">
+    <h2>Como usar o laboratório</h2>
+    <p>Clique em <b>+ Componente</b> para adicioná-lo e arraste o bloco para posicioná-lo. Use <b>Girar</b> para mudar a orientação. Para ligar, arraste de um <b>terminal</b> (círculo) até outro terminal: o fio só existe entre dois terminais, sempre em linhas retas com curvas de 90°, e desvia dos blocos sozinho. Terminal vazio aparece branco; ligado, azul. Clique num fio ou bloco para selecioná-lo e em <b>Excluir</b> para apagar. Clique numa chave para abri-la ou fechá-la. Na bateria, o terminal <b>+</b> é o da placa maior; no LED e no diodo, a corrente entra pelo ânodo (lado do triângulo). O transistor tem três terminais: coletor (C), emissor (E) e base (B), que é o de baixo. Selecione a bateria ou um resistor para ajustar o valor.</p>
+    <ul class="glossary">
+      <li><b>Bateria:</b> fornece a tensão e tem uma pequena resistência interna (1 Ω).</li>
+      <li class="g"><b>Resistor:</b> limita a corrente. Sem ele, um LED recebe corrente demais.</li>
+      <li class="o"><b>LED:</b> diodo que emite luz e só conduz num sentido, com queda de cerca de 2 V. Acima de 40 mA ele queima.</li>
+      <li><b>Diodo:</b> deixa a corrente passar só do ânodo para o cátodo, com queda de cerca de 0,7 V. No sentido contrário ele bloqueia.</li>
+      <li class="o"><b>Transistor NPN:</b> uma "torneira elétrica". Uma corrente pequena na base (B) controla uma corrente bem maior entre coletor (C) e emissor (E). Com base sem corrente ele está em corte; com pouca, em zona ativa (Ic = 100 × Ib); com muita, saturado, como uma chave fechada.</li>
+      <li class="g"><b>Lâmpada:</b> resistência que brilha mais quanto mais potência recebe.</li>
+      <li><b>Chave:</b> abre ou fecha o caminho da corrente.</li>
+      <li class="o"><b>Curto-circuito:</b> ligar + e − sem carga no meio gera corrente enorme. Experimente e veja o alerta.</li>
+    </ul>
+  </aside>
+</section>
+</main>
+<footer>Simulação simplificada em corrente contínua, feita para fins didáticos.</footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const NAVY='#273E74',SLATE='#5C6D82',GOLD='#B98A3E';
+let active='ohm';
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab,.panel').forEach(e=>e.classList.remove('active'));
+  b.classList.add('active');active=b.dataset.tab;$('#'+active).classList.add('active');
+});
+const fmtI=i=>i>=1?i.toFixed(2)+' A':(i*1000).toFixed(i*1000<10?1:0)+' mA';
+
+/* ---------- LEI DE OHM ---------- */
+const oh={V:9,R:330,off:0};
+function ohInputs(){
+  oh.V=+$('#s-V').value;oh.R=+$('#s-R').value;
+  const I=oh.V/oh.R;
+  $('#v-V').textContent=oh.V+' V';$('#v-R').textContent=oh.R+' Ω';
+  $('#r-I').textContent=fmtI(I);$('#r-P').textContent=(oh.V*I*1000).toFixed(0)+' mW';
+  $('#cap-ohm').textContent=oh.V+' V ÷ '+oh.R+' Ω = '+fmtI(I)+(I>.5?'  (corrente alta: o resistor esquentaria muito!)':'');
+}
+$('#s-V').oninput=$('#s-R').oninput=ohInputs;ohInputs();
+function loopPt(s){
+  s=((s%1360)+1360)%1360;
+  if(s<200)return[80,270-s];s-=200;
+  if(s<480)return[80+s,70];s-=480;
+  if(s<200)return[560,70+s];s-=200;
+  return[560-s,270];
+}
+/* Nitidez: o buffer do canvas acompanha o tamanho real na tela × devicePixelRatio.
+   O desenho continua em coordenadas lógicas (W×H); só a resolução interna muda. */
+function sharp(c,W,H){
+  const r=c.getBoundingClientRect(),cssW=r.width||W;
+  const s=Math.min(3,Math.max(1,(window.devicePixelRatio||1)*cssW/W));
+  const bw=Math.round(W*s),bh=Math.round(H*s);
+  if(c.width!==bw||c.height!==bh){c.width=bw;c.height=bh;c.style.aspectRatio=W+'/'+H}
+  const g=c.getContext('2d');g.setTransform(bw/W,0,0,bh/H,0,0);
+  g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  return g;
+}
+function drawOhm(dt){
+  const x=sharp($('#cv-ohm'),640,340);x.clearRect(0,0,640,340);
+  const I=oh.V/oh.R;
+  x.strokeStyle=NAVY;x.lineWidth=4;x.strokeRect(80,70,480,200);
+  oh.off+=Math.min(300,25+I*1500)*dt;
+  x.fillStyle='#fff';x.fillRect(65,140,30,60);x.fillRect(250,55,140,30);
+  x.strokeStyle=NAVY;x.lineWidth=4;
+  x.beginPath();x.moveTo(62,150);x.lineTo(98,150);x.stroke();           // placa +
+  x.lineWidth=7;x.beginPath();x.moveTo(70,170);x.lineTo(90,170);x.stroke();
+  x.lineWidth=4;x.beginPath();x.moveTo(80,150);x.lineTo(80,130);x.moveTo(80,170);x.lineTo(80,205);x.stroke();   // terminal − desce até o fio (o retângulo branco esconde o fio de y=140 a 200)
+  x.lineJoin='miter';x.lineCap='butt';
+  x.beginPath();x.moveTo(240,70);x.lineTo(250,70);                         // 10 px sobrepostos ao fio: sem vão na junção
+  for(let i=0;i<6;i++)x.lineTo(260+i*20+10,70+(i%2?-12:12));
+  x.lineTo(390,70);x.lineTo(400,70);x.stroke();
+  // corrente: camada mais alta (por cima de todos os fios), mas recortada para NÃO aparecer dentro da bateria nem do resistor
+  x.save();x.beginPath();x.rect(0,0,640,340);x.rect(65,140,30,60);x.rect(250,55,140,30);x.clip('evenodd');
+  x.fillStyle=GOLD;
+  for(let i=0;i<40;i++){const p=loopPt(oh.off+i*34);x.beginPath();x.arc(p[0],p[1],4.5,0,7);x.fill()}
+  x.restore();
+  x.fillStyle=NAVY;x.font='bold 16px Arial';x.textAlign='center';
+  x.fillText('+',48,152);x.fillText('−',48,182);
+  x.fillText('Bateria '+oh.V+' V',130,195);x.fillText('Resistor '+oh.R+' Ω',320,40);
+  x.fillStyle=SLATE;x.font='14px Arial';x.fillText('Sentido convencional da corrente →',320,300);
+}
+
+/* ---------- RC ---------- */
+const rc={mode:'c',t:0,v0:0,vc:0,tau:1},RCW=5;   // RCW = janela do gráfico, em segundos reais
+function rcInputs(restart){
+  const R=+$('#s-rcR').value,C=+$('#s-rcC').value;
+  $('#v-rcR').textContent=R+' kΩ';$('#v-rcC').textContent=C+' µF';
+  rc.tau=R*C/1000;$('#r-tau').textContent=rc.tau.toFixed(2)+' s';
+  if(restart){rc.v0=rc.mode=='c'?0:10;rc.t=0;rc.vc=rc.v0}
+}
+$('#s-rcR').oninput=$('#s-rcC').oninput=()=>rcInputs(1);rcInputs(1);
+function setMode(m){const g=m=='c'?10:0;rc.mode=m;rc.v0=Math.abs(rc.vc-g)<.05?10-g:rc.vc;rc.t=0;$('#b-charge').classList.toggle('on',m=='c');$('#b-dis').classList.toggle('on',m=='d')}
+$('#b-charge').onclick=()=>setMode('c');$('#b-dis').onclick=()=>setMode('d');
+function drawRC(dt){
+  const x=sharp($('#cv-rc'),640,340);x.clearRect(0,0,640,340);
+  rc.t=Math.min(RCW,rc.t+dt);               // tempo real em segundos
+  const tg=rc.mode=='c'?10:0,f=u=>tg+(rc.v0-tg)*Math.exp(-u/rc.tau);
+  rc.vc=f(rc.t);
+  $('#r-vc').textContent=rc.vc.toFixed(2)+' V';
+  $('#r-q').textContent=(rc.vc*(+$('#s-rcC').value)).toFixed(0)+' µC';
+  // circuito
+  x.strokeStyle=NAVY;x.lineWidth=4;x.lineJoin='miter';x.lineCap='butt';   // reseta: o gráfico usa 'round' e o estado persiste entre quadros
+  // cada metade do circuito é UM caminho contínuo, assim os cantos se unem em quina viva (sem vãos)
+  x.beginPath();x.moveTo(60,130);x.lineTo(60,60);x.lineTo(100,60);                           // bateria → canto sup. esq. → início do resistor
+  for(let i=0;i<6;i++)x.lineTo(110+i*10,60+(i%2?-9:9));                                    // zigue-zague: 6 picos, passo 10, mesma sequência do circuito de Ohm
+  x.lineTo(170,60);x.lineTo(200,60);x.lineTo(200,150);                                     // fim do resistor → canto sup. dir. → placa de cima
+  x.moveTo(60,200);x.lineTo(60,280);x.lineTo(200,280);x.lineTo(200,185);x.stroke();         // bateria → canto inf. esq. → canto inf. dir. → placa de baixo
+  x.beginPath();x.moveTo(40,130);x.lineTo(80,130);x.stroke();x.lineWidth=7;x.beginPath();x.moveTo(48,150);x.lineTo(72,150);x.stroke();
+  x.lineWidth=4;x.beginPath();x.moveTo(60,150);x.lineTo(60,200);x.stroke();
+  x.fillStyle=GOLD;x.globalAlpha=.25+.75*Math.min(1,rc.vc/10);x.fillRect(170,152.5,60,30);x.globalAlpha=1;   // dielétrico: de borda a borda entre as placas
+  x.strokeStyle=NAVY;x.lineWidth=5;x.lineCap='butt';x.beginPath();x.moveTo(170,150);x.lineTo(230,150);x.moveTo(170,185);x.lineTo(230,185);x.stroke();
+  x.fillStyle=NAVY;x.font='bold 15px Arial';x.textAlign='center';
+  x.font='bold 16px Arial';x.fillText('+',26,130);x.fillText('−',26,162);                  // polaridade da fonte: + na placa maior (em cima), − na menor
+  x.font='bold 15px Arial';
+  x.fillText('Fonte 10 V',60,315);x.fillText('Capacitor',200,315);x.fillText(rc.vc.toFixed(1)+' V',200,172);
+  // rótulo do resistor (centro do zigue-zague: x=135)
+  x.fillStyle=NAVY;x.fillText('R',135,40);
+  // gráfico
+  const gx=300,gy=40,gw=310,gh=240;
+  x.strokeStyle=SLATE;x.lineWidth=2;x.beginPath();x.moveTo(gx,gy);x.lineTo(gx,gy+gh);x.lineTo(gx+gw,gy+gh);x.stroke();
+  x.font='12px Arial';x.fillStyle=SLATE;
+  for(let u=0;u<=RCW;u++){x.fillText(u+' s',gx+u*gw/RCW,gy+gh+16)}
+  x.textAlign='right';x.fillText('10 V',gx-6,gy+4);x.fillText('0',gx-6,gy+gh+4);
+  const px=u=>gx+u*gw/RCW,py=v=>gy+gh-v/10*gh,ST=RCW/300;
+  const curve=(u1)=>{x.beginPath();x.moveTo(px(0),py(f(0)));for(let u=ST;u<u1;u+=ST)x.lineTo(px(u),py(f(u)));x.lineTo(px(u1),py(f(u1)))};
+  if(rc.tau<=RCW){                                                   // marcador de τ (t = R·C) sobre a curva
+    x.strokeStyle=SLATE;x.lineWidth=1.5;x.setLineDash([2,4]);x.beginPath();x.moveTo(px(rc.tau),gy+gh);x.lineTo(px(rc.tau),py(f(rc.tau)));x.stroke();x.setLineDash([]);
+    x.fillStyle=SLATE;x.textAlign='left';x.fillText('τ',px(rc.tau)+4,gy+gh-6);
+  }
+  x.lineJoin='round';x.lineCap='round';
+  x.setLineDash([5,4]);curve(RCW);x.stroke();x.setLineDash([]);
+  x.strokeStyle=NAVY;x.lineWidth=3.5;curve(rc.t);x.stroke();x.lineCap='butt';
+  x.fillStyle=GOLD;x.beginPath();x.arc(px(rc.t),py(rc.vc),6,0,7);x.fill();
+}
+
+/* ---------- LABORATÓRIO (componentes isolados + fios entre terminais) ---------- */
+const CELL=40,cv=$('#cv-lab'),lx=cv.getContext('2d');
+const NAMES={bat:'Bateria',res:'Resistor',led:'LED',dio:'Diodo',lamp:'Lâmpada',sw:'Chave',npn:'Transistor NPN'};
+let comps=[],wires=[],sel=null,drag=null,hover=null,msg='',curDt=0,uid=1;
+const BETA=100;
+// eliminação de Gauss completa (matriz aumentada)
+function solveLin(A,z){
+  const N=z.length,M=A.map((r,i)=>[...r,z[i]]);
+  for(let i=0;i<N;i++){
+    let p=i;for(let r=i+1;r<N;r++)if(Math.abs(M[r][i])>Math.abs(M[p][i]))p=r;
+    [M[i],M[p]]=[M[p],M[i]];
+    if(Math.abs(M[i][i])<1e-14)continue;
+    for(let r=0;r<N;r++)if(r!=i){const f=M[r][i]/M[i][i];if(f)for(let c=i;c<=N;c++)M[r][c]-=f*M[i][c]}
+  }
+  return M.map((r,i)=>Math.abs(r[i])<1e-14?0:r[N]/r[i]);
+}
+function solve(){
+  msg='';comps.forEach(e=>{e.I=0;e.V=0;e.Ib=0});wires.forEach(w=>{w.I=0});
+  const bats=comps.filter(e=>e.t=='bat');
+  if(!bats.length){msg='Adicione uma bateria para alimentar o circuito.';return}
+  const els=[...comps,...wires],idx={};let n=0;
+  comps.forEach(e=>{e.ka=e.id+'a';e.kb=e.id+'b';e.kc=e.id+'c'});      // cada terminal é um nó do circuito
+  wires.forEach(w=>{w.ka=w.a[0]+w.a[1];w.kb=w.b[0]+w.b[1]});          // o fio liga dois terminais
+  const gk=bats[0].kb;
+  els.forEach(e=>{const ks=[e.ka,e.kb];if(e.t=='npn')ks.push(e.kc);ks.forEach(k=>{if(!(k in idx))idx[k]=k==gk?-1:n++})});
+  const N=n+bats.length;let X;
+  for(let it=0;it<30;it++){
+    const A=Array.from({length:N},()=>new Array(N).fill(0)),z=new Array(N).fill(0);
+    const st=(a,b,g)=>{if(a>=0)A[a][a]+=g;if(b>=0)A[b][b]+=g;if(a>=0&&b>=0){A[a][b]-=g;A[b][a]-=g}};
+    for(let i=0;i<n;i++)A[i][i]+=1e-9;
+    let bi=0;
+    els.forEach(e=>{
+      const a=idx[e.ka],b=idx[e.kb];
+      if(e.t=='wire'||(e.t=='sw'&&e.on))st(a,b,1000);
+      else if(e.t=='res'||e.t=='lamp')st(a,b,1/e.v);
+      else if((e.t=='led'||e.t=='dio')&&e.lon){const vf=e.t=='led'?2:.7;st(a,b,.2);if(a>=0)z[a]+=vf*.2;if(b>=0)z[b]-=vf*.2}
+      else if(e.t=='npn'&&e.bon){
+        const c=idx[e.kc];
+        st(c,b,.2);if(c>=0)z[c]+=.14;if(b>=0)z[b]-=.14;            // diodo base-emissor (0,7 V)
+        if(!e.sat){const gb=BETA*.2,s=(r,k,v)=>{if(r>=0&&k>=0)A[r][k]+=v};   // fonte controlada: Ic = β·Ib
+          s(a,c,gb);s(a,b,-gb);s(b,c,-gb);s(b,b,gb);if(a>=0)z[a]+=gb*.7;if(b>=0)z[b]-=gb*.7}
+        else{st(a,b,1);if(a>=0)z[a]+=.2;if(b>=0)z[b]-=.2}           // saturado: Vce ≈ 0,2 V
+      }
+      else if(e.t=='bat'){const k=n+bi++;if(a>=0){A[a][k]+=1;A[k][a]+=1}if(b>=0){A[b][k]-=1;A[k][b]-=1}A[k][k]-=1;z[k]=e.v}
+    });
+    X=solveLin(A,z);let ch=false,bj=0;
+    els.forEach(e=>{
+      const a=idx[e.ka],b=idx[e.kb],d=(a<0?0:X[a])-(b<0?0:X[b]);e.V=d;
+      if(e.t=='wire'||(e.t=='sw'&&e.on))e.I=d*1000;
+      else if(e.t=='res'||e.t=='lamp')e.I=d/e.v;
+      else if(e.t=='led'||e.t=='dio'){const vf=e.t=='led'?2:.7;if(e.lon){e.I=(d-vf)/5;if(e.I<0){e.lon=false;e.I=0;ch=true}}else{e.I=0;if(d>vf+.001){e.lon=true;ch=true}}}
+      else if(e.t=='npn'){
+        const c=idx[e.kc],vb=(c<0?0:X[c])-(b<0?0:X[b]);
+        if(!e.bon){if(vb>.701){e.bon=true;ch=true}}
+        else{const ib=(vb-.7)/5;
+          if(ib<0){e.bon=false;e.sat=false;ch=true}
+          else{e.Ib=ib;
+            if(!e.sat){e.I=BETA*ib;if(d<.2){e.sat=true;ch=true}}
+            else{e.I=d-.2;if(e.I<0||e.I>BETA*ib){e.sat=false;ch=true}}}}
+      }
+      else if(e.t=='bat')e.I=X[n+bj++];
+    });
+    if(!ch)break;
+  }
+  const mx=Math.max(...bats.map(b=>Math.abs(b.I)));
+  if(mx>1)msg='⚠ Curto-circuito! Corrente de '+mx.toFixed(1)+' A: fios e bateria esquentariam perigosamente.';
+  else if(comps.some(e=>e.t=='led'&&e.I>.04))msg='⚠ Corrente alta demais no LED (acima de 40 mA): ele queimaria. Adicione um resistor em série.';
+  else if(mx<1e-5)msg='Circuito aberto: sem caminho completo, não há corrente.';
+  else msg='Corrente fornecida pela bateria: '+fmtI(mx)+'.';
+}
+function refresh(){solve();updSel()}
+function drawNpn(e){
+  const PY=14,PW=18,K=19,A=8;                                              // PY: altura da placa · PW: meia largura da placa · K: onde a diagonal sai da linha C/E · A: onde toca a placa
+  lx.strokeStyle='#C7D2E2';lx.lineWidth=1.5;lx.beginPath();lx.arc(0,0,26,0,7);lx.stroke();   // círculo centrado na altura dos terminais C/E
+  lx.strokeStyle=NAVY;lx.lineWidth=3;lx.beginPath();
+  lx.moveTo(-PW,PY);lx.lineTo(PW,PY);lx.moveTo(0,PY);lx.lineTo(0,CELL);    // placa (larga) e terminal da base
+  lx.moveTo(-36,0);lx.lineTo(-K,0);lx.lineTo(-A,PY);                       // coletor
+  lx.moveTo(36,0);lx.lineTo(K,0);lx.lineTo(A,PY);lx.stroke();              // emissor
+  // seta no emissor: aponta para fora, ao longo da diagonal
+  const dx=K-A,dy=-PY,dl=Math.hypot(dx,dy),ux=dx/dl,uy=dy/dl,nx=-uy,ny=ux;  // direção unitária (placa → terminal) e normal
+  const tx=K-ux,ty=-uy,bx=tx-ux*10,by=ty-uy*10;                              // ponta e centro da base da seta (comprimento 10, largura 8)
+  lx.fillStyle=NAVY;lx.beginPath();lx.moveTo(tx,ty);lx.lineTo(bx+nx*4,by+ny*4);lx.lineTo(bx-nx*4,by-ny*4);lx.closePath();lx.fill();
+  if((e.Ib||0)>1e-6){e.ph2=((e.ph2||0)+curDt*Math.min(120,15+e.Ib*4000))%14;lx.fillStyle=GOLD;
+    for(let d=e.ph2;d<CELL-PY;d+=14){lx.beginPath();lx.arc(0,CELL-d,3.2,0,7);lx.fill()}}   // corrente de base
+  // rótulos dos terminais: coletor (esq.), emissor (dir.) e base (ao lado do terminal de baixo); contra-rotação mantém as letras em pé
+  lx.save();lx.fillStyle=NAVY;lx.font='bold 13px Arial';lx.textAlign='center';lx.textBaseline='middle';
+  for(const [ch,px,py] of [['C',-40,-10],['E',40,-10],['B',19,40]]){lx.save();lx.translate(px,py);lx.rotate(-e.rot*Math.PI/2);lx.fillText(ch,0,0);lx.restore()}
+  lx.restore();
+}
+function body(e,L){
+  const h=Math.min({bat:9,res:28,led:14,dio:14,lamp:16,sw:22,npn:34}[e.t],L/2-6);
+  lx.lineWidth=3;lx.strokeStyle=NAVY;lx.fillStyle='#fff';
+  lx.beginPath();lx.moveTo(-L/2,0);lx.lineTo(-h,0);lx.moveTo(h,0);lx.lineTo(L/2,0);lx.stroke();
+  lx.fillRect(-h,-16,2*h,32);
+  if(e.t=='res'){lx.lineJoin='miter';lx.lineCap='butt';lx.beginPath();lx.moveTo(-h-6,0);lx.lineTo(-h,0);for(let i=0;i<7;i++)lx.lineTo(-h+(i+.5)*2*h/7,i%2?-9:9);lx.lineTo(h,0);lx.lineTo(h+6,0);lx.stroke()}   // +6 px sobre os terminais: sem vão
+  if(e.t=='bat'){lx.lineWidth=3;lx.beginPath();lx.moveTo(-8,-16);lx.lineTo(-8,16);lx.stroke();lx.lineWidth=6;lx.beginPath();lx.moveTo(6,-9);lx.lineTo(6,9);lx.stroke();lx.fillStyle=NAVY;lx.font='bold 14px Arial';lx.textAlign='center';lx.textBaseline='middle';
+    for(const [sg,px] of [['+',-16],['−',14]]){lx.save();lx.translate(px,-13);lx.rotate(-e.rot*Math.PI/2);lx.fillText(sg,0,0);lx.restore()}   // contra-rotação: o sinal fica sempre em pé
+    lx.textBaseline='alphabetic'}
+  if(e.t=='led'||e.t=='dio'){
+    const b=e.t=='led'&&e.I>0?Math.min(1,e.I/.015):0;
+    if(b>0){const g=lx.createRadialGradient(0,0,2,0,0,34);g.addColorStop(0,'rgba(255,40,40,'+b+')');g.addColorStop(1,'rgba(255,40,40,0)');lx.fillStyle=g;lx.fillRect(-36,-36,72,72)}
+    lx.fillStyle=b>0?'rgb(255,'+(110-b*70|0)+','+(110-b*70|0)+')':'#fff';lx.beginPath();lx.moveTo(-h,-12);lx.lineTo(-h,12);lx.lineTo(h,0);lx.closePath();lx.fill();lx.stroke();
+    lx.beginPath();lx.moveTo(h,-12);lx.lineTo(h,12);if(e.t=='led'){lx.moveTo(-2,-14);lx.lineTo(6,-24);lx.moveTo(5,-12);lx.lineTo(13,-22)}lx.stroke();
+    if(e.t=='led'&&e.I>.04){lx.strokeStyle='#c00';lx.beginPath();lx.moveTo(-h,-14);lx.lineTo(h,14);lx.moveTo(h,-14);lx.lineTo(-h,14);lx.stroke()}
+  }
+  if(e.t=='lamp'){
+    const b=Math.min(1,(e.V*e.I)/.4);
+    lx.fillStyle='rgba(255,210,60,'+(.1+.9*b)+')';lx.beginPath();lx.arc(0,0,15,0,7);lx.fill();lx.stroke();
+    lx.beginPath();lx.moveTo(-10,-10);lx.lineTo(10,10);lx.moveTo(10,-10);lx.lineTo(-10,10);lx.stroke();
+  }
+  if(e.t=='npn')drawNpn(e);
+  if(e.t=='sw'){lx.fillStyle=NAVY;lx.beginPath();lx.arc(-h,0,4,0,7);lx.arc(h,0,4,0,7);lx.fill();lx.lineWidth=4;lx.beginPath();lx.moveTo(-h,0);e.on?lx.lineTo(h,0):lx.lineTo(h-6,-18);lx.stroke()}
+}
+/* componentes: blocos com terminais (a, b e, no transistor, c = base) */
+function addComp(t,x,y,rot=0,v,on){
+  const c={id:uid++,t,x,y,rot,v:v??(t=='bat'?9:t=='res'?330:t=='lamp'?100:0),on:!!on,lon:false,bon:false,sat:false,ph2:0,I:0,Ib:0,V:0};
+  comps.push(c);return c;
+}
+const rotp=(x,y,r)=>[[x,y],[-y,x],[-x,-y],[y,-x]][r];   // r quartos de volta (sentido horário)
+function terms(c){
+  const L=[['a',-60,0,-1,0],['b',60,0,1,0]];if(c.t=='npn')L.push(['c',0,40,0,1]);
+  return L.map(([k,x,y,dx,dy])=>{const p=rotp(x,y,c.rot),d=rotp(dx,dy,c.rot);return{k,x:c.x+p[0],y:c.y+p[1],dx:d[0],dy:d[1]}});
+}
+const tpos=r=>terms(comps.find(c=>c.id==r[0])).find(t=>t.k==r[1]);
+const eq=(a,b)=>a[0]==b[0]&&a[1]==b[1];
+
+/* toolbar */
+const tb=$('#tools');
+function mkBtn(txt,fn){const b=document.createElement('button');b.textContent=txt;b.onclick=fn;tb.appendChild(b)}
+function freeSpot(){for(const y of[140,260,380])for(const x of[200,360,520,680])
+  if(!comps.some(c=>Math.abs(c.x-x)<100&&Math.abs(c.y-y)<80))return[x,y];return[440,260]}
+Object.keys(NAMES).forEach(k=>mkBtn('+ '+NAMES[k],()=>{const p=freeSpot();sel={kind:'c',ref:addComp(k,p[0],p[1])};refresh()}));
+function rotSel(){if(sel&&sel.kind=='c'){sel.ref.rot=(sel.ref.rot+1)%4;clampComp(sel.ref)}}
+function delSel(){
+  if(!sel)return;
+  if(sel.kind=='c'){const id=sel.ref.id;comps=comps.filter(c=>c!=sel.ref);wires=wires.filter(w=>w.a[0]!=id&&w.b[0]!=id)}
+  else wires=wires.filter(w=>w!=sel.ref);
+  sel=null;refresh();
+}
+mkBtn('Girar (R)',rotSel);mkBtn('Excluir (Del)',delSel);
+$('#b-clear').onclick=()=>{comps=[];wires=[];sel=null;refresh()};
+addEventListener('keydown',e=>{if(active!='lab')return;
+  if(e.key=='Delete'||e.key=='Backspace')delSel();else if(e.key=='r'||e.key=='R')rotSel()});
+
+/* seleção e ajuste de valor */
+const ss=$('#s-sel');
+ss.oninput=()=>{if(sel&&sel.kind=='c'){sel.ref.v=+ss.value;refresh()}};
+function updSel(){
+  const c=sel&&sel.kind=='c'?sel.ref:null,ok=c&&(c.t=='bat'||c.t=='res');
+  $('#selbox').style.display=ok?'grid':'none';
+  if(ok){ss.min=c.t=='bat'?1:10;ss.max=c.t=='bat'?12:2000;ss.step=c.t=='bat'?.5:10;ss.value=c.v;
+    $('#sel-name').textContent=NAMES[c.t]+' selecionado(a): ajuste o valor';$('#sel-val').textContent=c.v+(c.t=='bat'?' V':' Ω')}
+}
+
+/* mouse / toque */
+const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*880/r.width,(e.clientY-r.top)*520/r.height]};
+function hitTerm(p){for(const c of comps)for(const t of terms(c))if(Math.hypot(p[0]-t.x,p[1]-t.y)<11)return{c,t};return null}
+function hitComp(p){
+  for(let i=comps.length-1;i>=0;i--){const c=comps[i],q=rotp(p[0]-c.x,p[1]-c.y,(4-c.rot)%4);
+    if(Math.abs(q[0])<=52&&q[1]>=-32&&q[1]<=(c.t=='npn'?42:32))return c}
+  return null;
+}
+function hitWire(p){
+  for(const w of wires){const q=w.pts||[];
+    for(let i=1;i<q.length;i++){const ax=q[i-1][0],ay=q[i-1][1],dx=q[i][0]-ax,dy=q[i][1]-ay,L2=dx*dx+dy*dy||1,
+      t=Math.max(0,Math.min(1,((p[0]-ax)*dx+(p[1]-ay)*dy)/L2));
+      if(Math.hypot(p[0]-ax-t*dx,p[1]-ay-t*dy)<8)return w}}
+  return null;
+}
+cv.onpointerdown=e=>{
+  const p=pos(e),ht=hitTerm(p);cv.setPointerCapture(e.pointerId);
+  if(ht){drag={mode:'wire',from:[ht.c.id,ht.t.k],x:p[0],y:p[1]};return}       // começa um fio
+  const c=hitComp(p);
+  if(c){sel={kind:'c',ref:c};comps.splice(comps.indexOf(c),1);comps.push(c);   // traz o bloco para a frente
+    drag={mode:'move',c,ox:p[0]-c.x,oy:p[1]-c.y,sx:p[0],sy:p[1],moved:false};updSel();return}
+  const w=hitWire(p);sel=w?{kind:'w',ref:w}:null;updSel();
+};
+cv.onpointermove=e=>{
+  const p=pos(e);hover=hitTerm(p);
+  cv.style.cursor=hover?'crosshair':hitComp(p)?'grab':'default';
+  if(!drag)return;
+  if(drag.mode=='wire'){drag.x=Math.max(LIM.x0,Math.min(LIM.x1,p[0]));drag.y=Math.max(LIM.y0,Math.min(LIM.y1,p[1]));return}
+  if(Math.hypot(p[0]-drag.sx,p[1]-drag.sy)>4)drag.moved=true;
+  if(drag.moved){drag.c.x=p[0]-drag.ox;drag.c.y=p[1]-drag.oy;clampComp(drag.c)}
+};
+cv.onpointerup=e=>{
+  if(!drag)return;const d=drag;drag=null;
+  if(d.mode=='wire'){
+    const ht=hitTerm(pos(e));
+    if(ht){const to=[ht.c.id,ht.t.k];
+      const dup=wires.some(w=>(eq(w.a,d.from)&&eq(w.b,to))||(eq(w.a,to)&&eq(w.b,d.from)));
+      if(!eq(to,d.from)&&!dup){wires.push({t:'wire',id:uid++,a:d.from,b:to,I:0,ph:0,pts:[]});sel=null;refresh()}}
+  }else if(!d.moved&&d.c.t=='sw'){d.c.on=!d.c.on;refresh()}                    // clique na chave alterna aberta/fechada
+};
+cv.onpointerleave=()=>{hover=null};
+
+/* exemplos: [tipo, x, y, giro, valor, chave ligada]  e fios: [comp, terminal, comp, terminal] */
+const EX=[
+ {c:[['bat',110,260,1],['res',300,140,0,330],['led',680,260,1]],
+  w:[[0,'a',1,'a'],[1,'b',2,'a'],[2,'b',0,'b']]},
+ {c:[['bat',110,260,1],['res',330,260,1,330],['lamp',520,260,1],['res',710,160,1,330],['led',710,360,1]],
+  w:[[0,'a',1,'a'],[0,'a',2,'a'],[0,'a',3,'a'],[1,'b',0,'b'],[2,'b',0,'b'],[3,'b',4,'a'],[4,'b',0,'b']]},
+ {c:[['bat',110,260,1],['sw',300,140,0,0,false],['lamp',600,140,0]],
+  w:[[0,'a',1,'a'],[1,'b',2,'a'],[2,'b',0,'b']]},
+ {c:[['bat',100,300,1],['res',420,70,0,330],['led',600,70,0],['sw',240,190,0,0,false],['res',420,190,0,1000],['npn',640,300,1]],
+  w:[[0,'a',1,'a'],[0,'a',3,'a'],[3,'b',4,'a'],[4,'b',5,'c'],[1,'b',2,'a'],[2,'b',5,'a'],[5,'b',0,'b']]},
+ {c:[['bat',110,260,1],['dio',360,170,1],['res',360,330,1],['dio',600,170,3],['res',600,330,1]],
+  w:[[0,'a',1,'a'],[0,'a',3,'b'],[1,'b',2,'a'],[2,'b',0,'b'],[3,'a',4,'a'],[4,'b',0,'b']]}
+];
+function load(n){
+  comps=[];wires=[];sel=null;
+  const cs=EX[n].c.map(a=>addComp(...a));
+  EX[n].w.forEach(a=>wires.push({t:'wire',id:uid++,a:[cs[a[0]].id,a[1]],b:[cs[a[2]].id,a[3]],I:0,ph:0,pts:[]}));
+  refresh();
+}
+document.querySelectorAll('[data-ex]').forEach(b=>b.onclick=()=>load(+b.dataset.ex));
+
+/* desenho */
+/* área útil: fios e blocos ficam dentro desta moldura */
+const LIM={x0:10,y0:10,x1:870,y1:510};
+const fora=p=>p[0]<LIM.x0||p[0]>LIM.x1||p[1]<LIM.y0||p[1]>LIM.y1;
+function clampComp(c){   // mantém o bloco, seus terminais e o início dos fios dentro da moldura
+  const odd=c.rot%2==1,hx=odd?(c.t=='npn'?60:30):80,hy=odd?80:(c.t=='npn'?60:30);
+  const g=v=>Math.round(v/20)*20,lo=(v)=>Math.ceil(v/20)*20,hi=(v)=>Math.floor(v/20)*20;
+  c.x=Math.max(lo(LIM.x0+hx+10),Math.min(hi(LIM.x1-hx-10),g(c.x)));
+  c.y=Math.max(lo(LIM.y0+hy+10),Math.min(hi(Math.min(LIM.y1-hy-10,436)),g(c.y)));   // 436: espaço para o rótulo embaixo
+}
+/* roteamento ortogonal: só linhas horizontais/verticais, com cantos de 90° */
+function limpa(pts){   // remove pontos repetidos e alinhados
+  const o=[];
+  pts.forEach(p=>{
+    const u=o[o.length-1];if(u&&u[0]==p[0]&&u[1]==p[1])return;
+    o.push(p);
+    while(o.length>2){const[q,r,t]=o.slice(-3);
+      if((q[0]==r[0]&&r[0]==t[0])||(q[1]==r[1]&&r[1]==t[1]))o.splice(o.length-2,1);else break}
+  });
+  return o;
+}
+const dirSeg=(p,q)=>[Math.sign(q[0]-p[0]),Math.sign(q[1]-p[1])];
+function batePlaca(p,q,c){   // o trecho atravessa o bloco?
+  const m=6,hw=(c.rot%2?30:48)+m,hh=(c.rot%2?48:30)+m;
+  return Math.min(p[0],q[0])<c.x+hw&&Math.max(p[0],q[0])>c.x-hw&&Math.min(p[1],q[1])<c.y+hh&&Math.max(p[1],q[1])>c.y-hh;
+}
+function route(a,b){   // a, b: {x,y,dx,dy} — dx,dy = direção "para fora" do terminal
+  const S=20,sa=[a.x+a.dx*S,a.y+a.dy*S],sb=[b.x+b.dx*S,b.y+b.dy*S],
+        mx=(sa[0]+sb[0])/2,my=(sa[1]+sb[1])/2,
+        X=[Math.max(sa[0],sb[0])+40,Math.min(sa[0],sb[0])-40].map(v=>Math.max(LIM.x0+4,Math.min(LIM.x1-4,v))),   // contornos ficam dentro da área
+        Y=[Math.max(sa[1],sb[1])+40,Math.min(sa[1],sb[1])-40].map(v=>Math.max(LIM.y0+4,Math.min(LIM.y1-4,v))),
+        cand=[[[sb[0],sa[1]]],[[sa[0],sb[1]]],[[mx,sa[1]],[mx,sb[1]]],[[sa[0],my],[sb[0],my]],
+              ...X.map(x=>[[x,sa[1]],[x,sb[1]]]),...Y.map(y=>[[sa[0],y],[sb[0],y]])];
+  let best=null,bs=1e12;
+  cand.forEach(mid=>{
+    const raw=[sa,...mid,sb],pts=limpa([[a.x,a.y],...raw,[b.x,b.y]]);
+    let sc=0,v;
+    for(let i=1;i<raw.length;i++){v=dirSeg(raw[i-1],raw[i]);if(v[0]||v[1]){if(v[0]*a.dx+v[1]*a.dy<0)sc+=1000;break}}      // não volta para dentro do bloco
+    for(let i=raw.length-1;i>0;i--){v=dirSeg(raw[i-1],raw[i]);if(v[0]||v[1]){if(v[0]*b.dx+v[1]*b.dy>0)sc+=1000;break}}   // chega ao terminal de frente
+    pts.forEach(p=>{if(fora(p))sc+=5000});                              // nunca sai da área útil
+    for(let i=1;i<pts.length;i++){
+      sc+=Math.abs(pts[i][0]-pts[i-1][0])+Math.abs(pts[i][1]-pts[i-1][1]);
+      if(i>1)sc+=15;                                                    // cada curva custa um pouco
+      comps.forEach(c=>{if(batePlaca(pts[i-1],pts[i],c))sc+=400});      // evita atravessar blocos
+    }
+    if(sc<bs){bs=sc;best=pts}
+  });
+  return best;
+}
+const path=pts=>{lx.beginPath();pts.forEach((p,i)=>i?lx.lineTo(p[0],p[1]):lx.moveTo(p[0],p[1]))};
+function drawWire(w,dt){
+  w.pts=route(tpos(w.a),tpos(w.b));
+  const on=Math.abs(w.I)>1e-5;
+  if(sel&&sel.ref==w){lx.strokeStyle='rgba(185,138,62,.35)';lx.lineWidth=12;path(w.pts);lx.stroke()}
+  lx.lineJoin='miter';lx.strokeStyle=on?NAVY:SLATE;lx.lineWidth=3;path(w.pts);lx.stroke();
+  if(!on)return;
+  w.ph=((w.ph+Math.sign(w.I)*Math.min(150,15+Math.abs(w.I)*4000)*dt)%18+18)%18;
+  lx.fillStyle=GOLD;let acc=0,next=w.ph;
+  for(let i=1;i<w.pts.length;i++){
+    const a=w.pts[i-1],b=w.pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(!L)continue;
+    while(next<=acc+L){const t=(next-acc)/L;lx.beginPath();lx.arc(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,3.2,0,7);lx.fill();next+=18}
+    acc+=L;
+  }
+}
+function drawComp(c){
+  const sl=sel&&sel.ref==c;
+  lx.save();lx.translate(c.x,c.y);lx.rotate(c.rot*Math.PI/2);
+  lx.fillStyle='#fff';lx.strokeStyle=sl?GOLD:SLATE;lx.lineWidth=sl?3.5:2;
+  lx.beginPath();lx.rect(-48,-30,96,60);lx.fill();lx.stroke();
+  body(c,120);
+  lx.restore();
+  terms(c).forEach(t=>{
+    const used=wires.some(w=>(w.a[0]==c.id&&w.a[1]==t.k)||(w.b[0]==c.id&&w.b[1]==t.k)),hv=hover&&hover.c==c&&hover.t.k==t.k;
+    lx.beginPath();lx.arc(t.x,t.y,7,0,7);lx.fillStyle=used?NAVY:'#fff';lx.fill();
+    lx.lineWidth=2.5;lx.strokeStyle=hv?GOLD:NAVY;lx.stroke();
+  });
+  const v=c.t=='bat'?c.v+' V':c.t=='res'||c.t=='lamp'?c.v+' Ω':c.t=='sw'?(c.on?'Chave fechada':'Chave aberta'):c.t=='dio'?'Diodo':
+    c.t=='npn'?'NPN '+(!c.bon?'(corte)':c.sat?'(saturado)':'(ativo)'):'LED';
+  const lado=c.rot%2==1,a=Math.abs(c.I),l2=a>1e-5?(c.t=='npn'?'Ic '+fmtI(a)+' · Ib '+fmtI(c.Ib):fmtI(a)):'';
+  lx.font='bold 12px Arial';
+  const w=Math.max(lx.measureText(v).width,l2?lx.measureText(l2).width:0);
+  let esq=c.t=='npn'&&c.rot==3;                                  // girado: rótulo ao lado; senão, embaixo
+  if(lado){if(!esq&&c.x+40+w>LIM.x1-2)esq=true;else if(esq&&c.x-40-w<LIM.x0+2)esq=false}   // troca de lado se não couber
+  const baixo=c.t=='npn'&&c.rot==0?62:46;                      // distância do rótulo ao centro (NPN com a base para baixo precisa de mais espaço)
+  const tx=lado?c.x+(esq?-40:40):c.x,ty=lado?c.y-4:c.y+baixo;
+  lx.fillStyle=SLATE;lx.textAlign=lado?(esq?'right':'left'):'center';
+  lx.fillText(v,tx,ty);if(l2)lx.fillText(l2,tx,ty+14);
+}
+function drawLab(dt){
+  curDt=dt;sharp(cv,880,520);lx.clearRect(0,0,880,520);
+  lx.fillStyle='#e3e8ef';for(let x=20;x<880;x+=20)for(let y=20;y<520;y+=20)lx.fillRect(x-1,y-1,2,2);
+  lx.setLineDash([4,4]);lx.strokeStyle='#c9d0da';lx.lineWidth=1.5;                  // moldura: limite dos fios
+  lx.strokeRect(LIM.x0,LIM.y0,LIM.x1-LIM.x0,LIM.y1-LIM.y0);lx.setLineDash([]);
+  wires.forEach(w=>drawWire(w,dt));
+  if(drag&&drag.mode=='wire'){                              // fio sendo ligado
+    const t0=tpos(drag.from),th=hitTerm([drag.x,drag.y]);
+    lx.setLineDash([6,5]);lx.strokeStyle=GOLD;lx.lineWidth=3;
+    path(route(t0,th?th.t:{x:drag.x,y:drag.y,dx:0,dy:0}));lx.stroke();lx.setLineDash([]);
+  }
+  comps.forEach(drawComp);
+  $('#cap-lab').textContent=!comps.length?'Adicione componentes pela barra acima ou carregue um exemplo.':!wires.length?'Arraste de um terminal (círculo) até outro para ligar um fio.':msg;
+}
+
+/* ---------- LOOP ---------- */
+let last=performance.now();
+function frame(t){
+  const dt=Math.min(.05,(t-last)/1000);last=t;
+  if(active=='ohm')drawOhm(dt);else if(active=='rc')drawRC(dt);else drawLab(dt);
+  requestAnimationFrame(frame);
+}
+load(0);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
