@@ -573,7 +573,7 @@ function drawComp(c){
   let esq=c.t=='npn'&&c.rot==3;                                  // girado: rótulo ao lado; senão, embaixo
   if(lado){if(!esq&&c.x+40+w>LIM.x1-2)esq=true;else if(esq&&c.x-40-w<LIM.x0+2)esq=false}   // troca de lado se não couber
   const baixo=c.t=='npn'&&c.rot==0?63:47;                      // distância do rótulo ao centro (NPN com a base para baixo precisa de mais espaço)
-  const tx=lado?c.x+(esq?-38:38):c.x,ty=lado?c.y-12:c.y+baixo;
+  const tx=lado?c.x+(esq?-38:38):c.x,ty=lado?c.y-(c.t=='npn'?15:4):c.y+baixo;
   lx.fillStyle=SLATE;lx.textAlign=lado?(esq?'right':'left'):'center';
   lx.fillText(v,tx,ty);if(l2)lx.fillText(l2,tx,ty+14);
 }
