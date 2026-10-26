@@ -490,10 +490,14 @@ document.querySelectorAll('[data-ex]').forEach(b=>b.onclick=()=>load(+b.dataset.
 const LIM={x0:10,y0:10,x1:870,y1:510};
 const fora=p=>p[0]<LIM.x0||p[0]>LIM.x1||p[1]<LIM.y0||p[1]>LIM.y1;
 function clampComp(c){   // mantém o bloco, seus terminais e o início dos fios dentro da moldura
-  const odd=c.rot%2==1,hx=odd?(c.t=='npn'?60:30):80,hy=odd?80:(c.t=='npn'?60:30);
+  // folga de cada lado no referencial do bloco: o NPN só se estende além do corpo para BAIXO (terminal da base)
+  const T=30,B=c.t=='npn'?60:30,lado=[T,80,B,80];        // [cima, direita, baixo, esquerda] com rot=0
+  const k=(c.rot+0)%4,up=lado[(0-k+4)%4],right=lado[(1-k+4)%4],down=lado[(2-k+4)%4],left=lado[(3-k+4)%4];
   const g=v=>Math.round(v/20)*20,lo=(v)=>Math.ceil(v/20)*20,hi=(v)=>Math.floor(v/20)*20;
-  c.x=Math.max(lo(LIM.x0+hx+10),Math.min(hi(LIM.x1-hx-10),g(c.x)));
-  c.y=Math.max(lo(LIM.y0+hy+10),Math.min(hi(Math.min(LIM.y1-hy-10,436)),g(c.y)));   // 436: espaço para o rótulo embaixo
+  c.x=Math.max(lo(LIM.x0+left+10),Math.min(hi(LIM.x1-right-10),g(c.x)));
+  // rótulo embaixo (só com giro 0/2): ele fica a 46px do centro (62px no NPN com a base para baixo) e ocupa até 2 linhas
+  const rotulo=c.rot%2==0?LIM.y1-((c.t=='npn'&&c.rot==0)?62:46)-17-2:1e9;
+  c.y=Math.max(lo(LIM.y0+up+10),Math.min(hi(Math.min(LIM.y1-down-10,rotulo)),g(c.y)));
 }
 /* roteamento ortogonal: só linhas horizontais/verticais, com cantos de 90° */
 function limpa(pts){   // remove pontos repetidos e alinhados
@@ -568,8 +572,8 @@ function drawComp(c){
   const w=Math.max(lx.measureText(v).width,l2?lx.measureText(l2).width:0);
   let esq=c.t=='npn'&&c.rot==3;                                  // girado: rótulo ao lado; senão, embaixo
   if(lado){if(!esq&&c.x+40+w>LIM.x1-2)esq=true;else if(esq&&c.x-40-w<LIM.x0+2)esq=false}   // troca de lado se não couber
-  const baixo=c.t=='npn'&&c.rot==0?62:46;                      // distância do rótulo ao centro (NPN com a base para baixo precisa de mais espaço)
-  const tx=lado?c.x+(esq?-40:40):c.x,ty=lado?c.y-4:c.y+baixo;
+  const baixo=c.t=='npn'&&c.rot==0?63:47;                      // distância do rótulo ao centro (NPN com a base para baixo precisa de mais espaço)
+  const tx=lado?c.x+(esq?-38:38):c.x,ty=lado?c.y-12:c.y+baixo;
   lx.fillStyle=SLATE;lx.textAlign=lado?(esq?'right':'left'):'center';
   lx.fillText(v,tx,ty);if(l2)lx.fillText(l2,tx,ty+14);
 }
