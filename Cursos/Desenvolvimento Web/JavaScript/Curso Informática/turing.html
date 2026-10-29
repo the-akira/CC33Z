@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Máquina de Turing - Curso de Informática</title>
+<link rel="icon" type="image/x-icon" href="images/pc.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#F2F2F2;color:#333;overflow-x:hidden;line-height:1.5}
+.container{max-width:1200px;margin:0 auto;padding:5px 20px}
+header{text-align:center;padding:40px 20px;background:#5c6d82;border-bottom:5.5px solid #273E74;margin-bottom:30px;color:white}
+h1{font-size:2.5em;margin-bottom:10px}
+.subtitle{font-size:1.2em;opacity:.9}
+.section{background:white;border:2.3px solid #273E74;padding:30px;margin-bottom:30px}
+h2{font-size:1.8em;margin-bottom:20px;color:#273E74;border-bottom:2px solid #5c6d82;padding-bottom:10px}
+p{margin-bottom:10px}
+.info-box{background:#f2f2f2;padding:15px;border-left:4px solid #5c6d82;margin:15px 0 0}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:15px;margin-top:20px}
+.result-item{background:#F9F9F9;padding:15px;border:1px solid #273E74;text-align:center;min-width:0;overflow-wrap:anywhere}
+.result-item b{display:block;font-size:1.3em;color:#273E74;margin:6px 0}
+button{background:#5c6d82;border:2px solid #273E74;color:white;padding:10px 20px;font-family:Arial,sans-serif;cursor:pointer;transition:all .3s;margin:5px;font-weight:bold}
+button:hover{background:#273E74}
+.steps{counter-reset:s;list-style:none;margin-top:15px}
+.steps li{counter-increment:s;background:#f9f9f9;border:2px solid #273E74;padding:12px 15px 12px 55px;margin:10px 0;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);width:30px;height:30px;background:#5c6d82;color:white;font-weight:bold;display:flex;align-items:center;justify-content:center}
+.tm-bar{display:flex;flex-wrap:wrap;gap:15px;align-items:flex-end;background:#f2f2f2;border:1px solid #273E74;padding:15px;margin-top:15px}
+.tm-bar label{font-weight:bold;color:#273E74;font-size:.9em;display:block}
+input[type=text],select,textarea{padding:10px;background:white;border:2px solid #273E74;color:#333;font-size:1em;font-family:Arial,sans-serif}
+input[type=text]{width:180px;font-family:monospace}
+textarea{width:100%;min-height:290px;font-family:monospace;font-size:.95em;margin-top:10px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#5c6d82}
+.tape-wrap{padding:38px 6px 26px;margin-top:5px;overflow-x:auto;position:relative;scrollbar-width:none}
+.tape-wrap::-webkit-scrollbar{display:none}
+.tape{display:flex;width:max-content;margin:0 auto}
+.cell{width:var(--cw,48px);height:var(--ch,56px);border:2px solid #273E74;background:#f2f2f2;display:flex;align-items:center;justify-content:center;font:bold var(--cf,24px) monospace;position:relative;color:#273E74;flex:none}.cell+.cell{margin-left:-2px}
+.cell small{position:absolute;bottom:-18px;font:10px Arial;color:#888;font-weight:normal}
+.cell.head{background:#5c6d82;color:white;border-color:#273E74;box-shadow:0 0 0 3px #273E74}
+.cell.head::before{content:"▼";position:absolute;top:-26px;color:#273E74;font-size:.8em}
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px;margin-top:25px}
+.status{margin-top:15px;padding:12px 15px;border-left:4px solid #5c6d82;background:#f2f2f2}
+.status.ok{border-color:#0f6b24;background:#d4edda}
+.status.bad{border-color:#6b0f0f;background:#f8d7da}
+.err{color:#6b0f0f;font-weight:bold;margin-top:8px;white-space:pre-line}
+code{background:#e8e8ee;padding:1px 5px;font-family:monospace}
+.tbl-wrap{max-height:340px;overflow:auto;border:2px solid #273E74;position:relative;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-family:monospace;text-align:center}
+th{background:#5c6d82;color:white;position:sticky;top:0;padding:6px;z-index:1}
+td{padding:5px 8px;border-top:1px solid #ccd}
+tr.cur td{background:#eef0fa}
+tr.last td{background:#cfd6f5;font-weight:bold}
+tr.nxt td{background:#fff3c4;font-weight:bold;outline:2px solid #c9a227;outline-offset:-2px}
+tr.flash td{animation:fl .7s}
+@keyframes fl{0%{background:#273E74;color:#fff}100%{}}
+.sw{display:inline-block;width:12px;height:12px;border:1px solid #273E74;vertical-align:middle}
+.tm-bar>div,.two>div{min-width:0}
+.tm-bar select{max-width:100%}
+.dg-wrap{overflow-x:auto;border:2px solid #273E74;background:#fff;margin-top:8px}
+#dg{display:block;width:100%;min-width:880px;height:auto}
+.e{fill:none;stroke:#8a97ab;stroke-width:1.8}
+.e.nxt{stroke:#c9a227;stroke-width:3}
+.e.last{stroke:#273E74;stroke-width:3.5}
+.e.flash{animation:pulse .7s}
+@keyframes pulse{0%{stroke-width:10;opacity:.5}100%{}}
+.nd circle{fill:#fff;stroke:#273E74;stroke-width:2}
+.nd text{fill:#273E74;font-family:monospace;font-weight:bold;text-anchor:middle;dominant-baseline:central}
+.nd.cur circle{fill:#5c6d82;stroke-width:3.5}
+.nd.cur text{fill:#fff}
+.nd.cur.ok circle{fill:#d4edda}.nd.cur.bad circle{fill:#f8d7da}
+.nd.cur.ok text,.nd.cur.bad text{fill:#273E74}
+.lb{dominant-baseline:central;font-size:13px;font-family:monospace;fill:#4a5568;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+.lb.nxt{fill:#8a6d00;font-weight:bold}.lb.last{fill:#273E74;font-weight:bold}
+.dot{fill:#c9a227;stroke:#fff;stroke-width:2}
+.lint{margin-top:8px}
+.lint div{padding:6px 10px;margin-top:5px;font-size:.9em;border-left:4px solid}
+.lint .le{background:#f8d7da;border-color:#6b0f0f}
+.lint .lw{background:#fff3c4;border-color:#c9a227}
+.lint .li{background:#f2f2f2;border-color:#5c6d82}
+.lint .lo{background:#d4edda;border-color:#0f6b24}
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-top:15px}
+#indexBtn {margin-top: 15px;margin-bottom: 0px;background: white;color: #273E74;border: 3.3px solid #273E74;padding: 9px 12px;font-size: 1.025rem;}
+#indexBtn:hover {background-color: #273E74;color: white;border: 3.3px solid white;}
+input[type="range"] {flex: 1;min-width: 100%;height: 8px;background: #5c6d82;cursor: pointer;outline: none;-webkit-appearance: none;}
+input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 22px;height: 22px;background: #ffffff;
+  border: 2px solid #273E74;cursor: pointer;box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+input[type="range"]::-moz-range-thumb {width: 22px;height: 22px;background: #273E74;cursor: pointer;border-radius: 50%;
+  border: 3px solid white;box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+@media(max-width:800px){.section{padding:15px}.container{padding:5px 10px}.tm-bar{padding:10px}.tm-bar select{width:100%}.two{grid-template-columns:1fr}h1{font-size:1.9em}}
+</style>
+</head>
+<body>
+<header>
+    <h1>A Máquina de Turing</h1>
+    <p class="subtitle" style="margin-bottom: 0px;">O modelo mais simples capaz de calcular tudo o que um computador calcula</p>
+    <button class="btn" id="indexBtn" onclick="openIndex()">Página Inicial</button>
+</header>
+
+<div class="container">
+
+<div class="section">
+    <h2>01. O QUE É UMA MÁQUINA DE TURING?</h2>
+    <p>Em 1936, o matemático <strong>Alan Turing</strong> quis responder a uma pergunta: <em>o que significa "calcular"?</em> Para isso, imaginou uma máquina tão simples que qualquer pessoa entenderia, mas tão poderosa que consegue executar qualquer algoritmo.</p>
+    <div class="info-box">
+        Imagine uma pessoa com <b>lápis</b>, <b>borracha</b>, uma <b>fita de papel infinita</b> dividida em casinhas e um <b>livro de regras</b>. A cada passo, ela olha <b>uma única casinha</b>, consulta o livro, escreve (ou apaga) algo, anda uma casa para a esquerda ou direita e muda de "humor". É só isso, e é o suficiente para rodar qualquer programa.
+    </div>
+</div>
+
+<div class="section">
+    <h2>02. AS PEÇAS DA MÁQUINA</h2>
+    <div class="result-grid">
+        <div class="result-item"><b>Fita</b>Memória infinita para os dois lados. Cada casa guarda um símbolo (ou fica em branco, <code>_</code>).</div>
+        <div class="result-item"><b>Cabeçote</b>Enxerga apenas a casa atual. Pode ler, escrever e mover uma casa por vez.</div>
+        <div class="result-item"><b>Estado</b>A "memória curta" da máquina: em qual situação ela está agora (<code>q0</code>, <code>q1</code>…).</div>
+        <div class="result-item"><b>Tabela de regras</b>O programa. Para cada par (estado, símbolo lido) diz o que escrever, para onde ir e qual será o próximo estado.</div>
+    </div>
+    <div class="info-box">
+        Formalmente: <b>M = (Q, Γ, B, Σ, δ, q₀, F)</b>, onde Q são os estados, Γ o alfabeto da fita, B o símbolo em branco, Σ o alfabeto de entrada, <b>δ</b> a função de transição, q₀ o estado inicial e F os estados finais.
+    </div>
+</div>
+
+<div class="section">
+    <h2>03. COMO UM PASSO FUNCIONA</h2>
+    <ol class="steps">
+        <li><b>Ler</b> o símbolo sob o cabeçote.</li>
+        <li><b>Consultar</b> a regra do par (estado atual, símbolo lido).</li>
+        <li><b>Executar</b> a regra: escrever um símbolo, mover o cabeçote (<code>E</code> esquerda, <code>D</code> direita, <code>P</code> parado) e trocar de estado.</li>
+    </ol>
+    <div class="info-box">
+        Repete-se até chegar a um estado de parada (<code>pare</code>, <code>aceita</code> ou <code>rejeita</code>) ou até não existir regra para a situação atual. Também é possível que a máquina <b>nunca pare</b>: um laço infinito.
+    </div>
+</div>
+
+<div class="section">
+    <h2>04. SIMULADOR PROGRAMÁVEL</h2>
+    <p>Escolha um exemplo ou escreva seu próprio programa. Cada linha é uma regra no formato:</p>
+    <p style="text-align:center"><code>estado &nbsp; lê &nbsp; escreve &nbsp; direção &nbsp; próximo</code></p>
+    <div class="info-box">
+        <code>_</code> = casa em branco · <code>*</code> = qualquer símbolo (na escrita, mantém o que estava) · direção: <code>E</code>, <code>D</code> ou <code>P</code> · <code>;</code> inicia um comentário · estados de parada: <code>pare</code>, <code>aceita</code>, <code>rejeita</code>. A máquina é determinística: apenas uma regra por (estado, símbolo).
+    </div>
+
+    <div class="tm-bar">
+        <div><label>Exemplo</label><select id="ex" onchange="loadEx()"></select></div>
+        <div style="flex:2 1 240px"><label>Fita inicial (qualquer tamanho; <code>_</code> = branco)</label><input type="text" id="inp" value="1011" style="width:100%" oninput="loaded=false;lint()"></div>
+        <div><label>Estado inicial</label><input type="text" id="q0" value="q0" style="width:90px" oninput="loaded=false;buildDiagram();hl();lint()"></div>
+        <div><label>Janela da fita (células)</label><select id="vis" onchange="M&&render(false,true)"><option>21</option><option selected>31</option><option>51</option><option>101</option><option>201</option></select></div>
+    </div>
+    <div class="tm-bar" style="margin-top:10px;justify-content:center">
+        <div>
+            <button onclick="load()">Reiniciar</button>
+            <button onclick="backBtn()">Voltar</button>
+            <button onclick="stepBtn()">Passo</button>
+            <button id="runBtn" onclick="toggleRun()">Executar</button>
+        </div>
+        <div style="flex:1 1 200px"><label>Velocidade: <span id="spdTxt"></span></label><input type="range" id="spd" min="1" max="12" value="6" style="width:100%" oninput="spdUpd()"></div>
+    </div>
+
+    <div class="tape-wrap"><div class="tape" id="tape"></div></div>
+    <div style="text-align:center">
+        <button onclick="nav('L')" title="Ir até o fim da fita, à esquerda">«</button>
+        <button onclick="nav(-1)">‹ Esquerda</button>
+        <button onclick="nav(0)" title="Voltar a olhar o cabeçote">⌖ Cabeçote</button>
+        <button onclick="nav(1)">Direita ›</button>
+        <button onclick="nav('R')" title="Ir até o fim da fita, à direita">»</button>
+    </div>
+    <p style="font-size:.85em;opacity:.8;text-align:center;margin-top:8px">Navegue pela fita com os botões; a visão volta ao cabeçote a cada passo.</p>
+    <div class="hud">
+        <div class="result-item"><span class="label">Estado atual</span><b id="hSt">-</b></div>
+        <div class="result-item"><span class="label">Símbolo lido</span><b id="hSym">-</b></div>
+        <div class="result-item"><span class="label">Passos</span><b id="hN">0</b></div>
+        <div class="result-item"><span class="label">Posição do cabeçote</span><b id="hPos">0</b></div>
+    </div>
+    <div class="status" id="status">Carregue um programa e clique em Passo ou Executar.</div>
+
+    <label style="font-weight:bold;color:#273E74;display:block;margin-top:20px">Diagrama de estados</label>
+    <div class="dg-wrap"><svg id="dg" viewBox="-50 -40 1060 680" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <p style="font-size:.85em;margin-top:8px;opacity:.8">Cada círculo é um estado (círculo duplo = parada) e a seta de fora marca o estado inicial. O rótulo da seta é <code>lê→escreve,direção</code>. Amarelo: próxima transição; azul: última aplicada.</p>
+
+    <div class="two">
+        <div>
+            <label style="font-weight:bold;color:#273E74">Programa</label>
+            <textarea id="prog" spellcheck="false" oninput="progInput()"></textarea>
+            <div class="err" id="err"></div>
+            <label style="font-weight:bold;color:#273E74;display:block;margin-top:12px">Verificador do programa</label>
+            <div class="lint" id="lint"></div>
+        </div>
+        <div>
+            <label style="font-weight:bold;color:#273E74">Tabela de transições</label>
+            <div class="tbl-wrap" id="tblw"><table id="tbl"></table></div>
+            <p style="font-size:.85em;margin-top:8px;opacity:.8"><span class="sw" style="background:#fff3c4"></span> próxima regra · <span class="sw" style="background:#cfd6f5"></span> última aplicada · linhas claras = estado atual. Atalhos: ← voltar, → passo.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>05. POR QUE ISSO IMPORTA?</h2>
+    <div class="result-grid">
+        <div class="result-item"><b>Tese de Church-Turing</b>Tudo o que pode ser calculado por um algoritmo pode ser calculado por uma máquina de Turing.</div>
+        <div class="result-item"><b>Máquina Universal</b>Uma única máquina que lê, na própria fita, a descrição de outra e a simula. É a ideia do computador moderno: programa também é dado.</div>
+        <div class="result-item"><b>Problema da Parada</b>Turing provou que nenhum programa consegue decidir, para todos os casos, se outro programa vai parar ou rodar para sempre.</div>
+    </div>
+    <div class="info-box">
+        Seu computador tem memória finita, mas, tirando esse limite, ele faz exatamente o que uma máquina de Turing faz: lê, escreve, muda de estado e segue regras. Tente criar a sua: por exemplo, uma máquina que troque todos os <code>0</code> por <code>1</code>.
+    </div>
+    <div class="info-box">
+        <b>Detector de laços e o problema da parada.</b> O simulador avisa quando a máquina repete exatamente a mesma configuração (estado, fita e posição) ou corre para sempre sobre a fita em branco, pois nesses casos ela nunca vai parar. Mas nenhum detector consegue prever todos os casos, e é isso que Turing provou. Teste os exemplos "Laço" no simulador, inclusive o que não pode ser detectado.
+    </div>
+</div>
+
+</div>
+
+<script>
+/*E*/
+const HALT=['pare','aceita','rejeita'],LIM=100000;
+function parse(src){
+    const R={},err=[];
+    src.split('\n').forEach((l,i)=>{
+        l=l.split(';')[0].trim(); if(!l)return;
+        const p=l.split(/\s+/);
+        if(p.length!==5||!/^[EDP]$/i.test(p[3])){err.push('Linha '+(i+1)+': use  estado lê escreve direção(E/D/P) próximo');return}
+        const k=p[0]+' '+p[1];
+        if(R[k])err.push('Linha '+(i+1)+': já existe regra para ('+p[0]+', '+p[1]+')');
+        R[k]={w:p[2],d:p[3].toUpperCase(),n:p[4],t:l,k:k,i:Object.keys(R).length};
+    });
+    return {R,err};
+}
+function tick(M,R){
+    const s=M.T[M.pos]??'_';
+    const ru=R[M.st+' '+s]||R[M.st+' *'];
+    if(!ru)return {none:true,s};
+    const w=ru.w==='*'?s:ru.w;
+    if(M.H)M.H.push({p:M.pos,s:M.st,v:M.T[M.pos],r:ru});
+    if(w==='_')delete M.T[M.pos]; else M.T[M.pos]=w;
+    M.pos+={D:1,E:-1,P:0}[ru.d]; M.st=ru.n; M.steps++;
+    return {ru,s,w};
+}
+function back(M){
+    const h=M.H.pop(); if(!h)return false;
+    if(h.v===undefined)delete M.T[h.p]; else M.T[h.p]=h.v;
+    M.pos=h.p; M.st=h.s; M.steps--; return true;
+}
+/*X*/
+const EX={
+ inc:{n:'Incremento binário (+1)',f:'1011',p:`; Soma 1 a um número binário.
+; Fase 1: vai até o fim do número
+q0 0 0 D q0
+q0 1 1 D q0
+q0 _ _ E q1
+; Fase 2: volta propagando o "vai um"
+q1 1 0 E q1   ; 1+1 = 0, vai um
+q1 0 1 P pare ; 0+1 = 1, acabou
+q1 _ 1 P pare ; estourou: novo dígito`},
+ pal:{n:'Palíndromo binário',f:'10101',p:`; Aceita se a palavra de 0s e 1s é igual de trás para frente.
+; Apaga a 1ª letra, lembra qual era (q1=0, q2=1)
+; e confere se a última é igual.
+q0 0 _ D q1
+q0 1 _ D q2
+q0 _ _ P aceita
+q1 0 0 D q1
+q1 1 1 D q1
+q1 _ _ E q3
+q2 0 0 D q2
+q2 1 1 D q2
+q2 _ _ E q4
+q3 0 _ E q5
+q3 _ _ P aceita
+q3 1 1 P rejeita
+q4 1 _ E q5
+q4 _ _ P aceita
+q4 0 0 P rejeita
+; volta ao início
+q5 0 0 E q5
+q5 1 1 E q5
+q5 _ _ D q0`},
+ uni:{n:'Soma unária (3 + 2)',f:'111_11',p:`; Números em unário: 3 = 111. Entrada: 111_11
+; Troca o espaço por 1 e apaga o último 1.
+q0 1 1 D q0
+q0 _ 1 D q1
+q1 1 1 D q1
+q1 _ _ E q2
+q2 1 _ P pare`},
+ inv:{n:'Inverter bits (0↔1)',f:'1001110',p:`; Troca cada 0 por 1 e cada 1 por 0.
+q0 0 1 D q0
+q0 1 0 D q0
+q0 _ _ P pare`},
+ bb:{n:'Castor Ocupado (3 estados)',f:'',p:`; Fita vazia. Escreve o máximo de 1s possível e para.
+A _ 1 D B
+A 1 1 D pare
+B _ _ D C
+B 1 1 D B
+C _ 1 E C
+C 1 1 E A`},
+ lint:{n:'Verificador: programa com problemas',f:'101',p:`; Programa com erros de propósito para o Verificador.
+; Veja os avisos abaixo do editor.
+q0 0 0 D q0
+q0 1 1 D q2     ; q2 não tem nenhuma regra
+q0 _ _ E q1
+q1 0 1 P pare
+q1 2 2 P pare   ; o símbolo 2 nunca aparece
+q9 _ _ P pare   ; q9 nunca é alcançado`},
+ sp:{n:'Verificador: sem estado de parada',f:'10',p:`; Nenhuma regra leva a pare, aceita ou rejeita.
+; Inverte os bits indo e volta para sempre: depois de duas
+; viagens a fita volta ao que era, e o detector de laços percebe.
+q0 0 1 D q0
+q0 1 0 D q0
+q0 _ _ E q1
+q1 0 0 E q1
+q1 1 1 E q1
+q1 _ _ D q0`},
+ l1:{n:'Laço: vai e volta (detectado)',f:'1',p:`; A máquina vai e volta entre duas casas.
+; Depois de 2 passos a configuração se repete exatamente.
+q0 1 1 D q1
+q1 _ _ E q0`},
+ l2:{n:'Laço: corrida pela fita em branco (detectado)',f:'11',p:`; Anda para a direita sem parar. A posição muda a cada passo,
+; então nenhuma configuração se repete, mas o simulador percebe
+; que a cabeça só passa por brancos, repetindo o mesmo estado.
+q0 1 1 D q0
+q0 _ _ D q0`},
+ l3:{n:'Laço: escreve 1 para sempre (não detectável)',f:'',p:`; Escreve um 1 novo a cada passo: a fita cresce e nenhuma
+; configuração se repete. Nenhum detector simples percebe isso;
+; o simulador só desiste no limite de passos.
+q0 _ 1 D q0`},
+ vz:{n:'Em branco (seu programa)',f:'',p:`; Escreva suas regras aqui:
+; estado lê escreve direção próximo
+q0 _ _ P pare`}
+};
+const E=id=>document.getElementById(id);
+let M,R={},vc=0,rows=[],loaded=false,timer=null,done=false;
+const SPS=[1,2,3,5,8,12,25,60,150,500,3000,50000];
+const sel=E('ex');
+Object.keys(EX).forEach(k=>sel.add(new Option(EX[k].n,k)));
+function spdUpd(){const v=SPS[E('spd').value-1];E('spdTxt').textContent=v>=50000?'máxima':v+(v===1?' passo/s':' passos/s')}
+function loadEx(){const e=EX[sel.value];E('prog').value=e.p;E('inp').value=e.f;E('q0').value=sel.value==='bb'?'A':'q0';load()}
+function progInput(){
+    loaded=false;stop();
+    const r=parse(E('prog').value);E('err').textContent=r.err.join('\n');
+    if(!r.err.length){R=r.R;buildTable();hl()}else E('lint').innerHTML=''
+}
+function buildTable(){
+    const dn={D:'→ D',E:'← E',P:'• P'};
+    E('tbl').innerHTML='<tr><th>Estado</th><th>Lê</th><th>Escreve</th><th>Move</th><th>Próximo</th></tr>'+
+        Object.values(R).map(r=>{const q=r.k.split(' ');return `<tr><td>${q[0]}</td><td>${q[1]}</td><td>${r.w}</td><td>${dn[r.d]}</td><td>${r.n}</td></tr>`}).join('');
+    rows=[...E('tbl').rows].slice(1);
+    buildDiagram();
+    lint();
+}
+const NS='http://www.w3.org/2000/svg',NR=30;
+let DG={};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function buildDiagram(){
+    const sv=E('dg'),L=Object.values(R),ini=E('q0').value.trim(),names=[];
+    const add=n=>{if(n&&!names.includes(n))names.push(n)};
+    add(ini);L.forEach(r=>{add(r.k.split(' ')[0]);add(r.n)});
+    names.sort((a,b)=>HALT.includes(a)-HALT.includes(b));
+    const n=names.length,cx=480,cy=305,pos={},u={};
+    names.forEach((nm,i)=>{
+        if(n===1){pos[nm]=[cx,cy];u[nm]=[0,-1];return}
+        const a=n===2?Math.PI*(1+i):-Math.PI/2+2*Math.PI*i/n,rx=n===2?160:272,ry=172;
+        pos[nm]=[cx+rx*Math.cos(a),cy+ry*Math.sin(a)];
+        const dx=pos[nm][0]-cx,dy=pos[nm][1]-cy,d=Math.hypot(dx,dy)||1;u[nm]=[dx/d,dy/d];
+    });
+    const G={};
+    L.forEach(r=>{const a=r.k.split(' ')[0],k=a+'\n'+r.n;(G[k]=G[k]||{a,b:r.n,rs:[]}).rs.push(r)});
+    const gs=Object.values(G),re=[],ds=[],un=v=>{const l=Math.hypot(v[0],v[1])||1;return [v[0]/l,v[1]/l]};
+    let ph='',lh='';const placed=[];
+const info=gs.map(g=>{
+        const A=pos[g.a],B=pos[g.b],pts=[];let d,cf;
+        if(g.a===g.b){
+            const U=u[g.a],p=(t,k)=>{const c=Math.cos(t),s=Math.sin(t);return [A[0]+(U[0]*c-U[1]*s)*k,A[1]+(U[0]*s+U[1]*c)*k]};
+            const P0=p(-.5,NR),C0=p(-.55,NR+62),C1=p(.55,NR+62),P1=p(.5,NR);
+            d=`M${P0} C${C0} ${C1} ${P1}`;
+            for(let t=0;t<=1.001;t+=.05){const a=(1-t)**3,b=3*t*(1-t)**2,c=3*t*t*(1-t),e=t**3;pts.push([a*P0[0]+b*C0[0]+c*C1[0]+e*P1[0],a*P0[1]+b*C0[1]+c*C1[1]+e*P1[1]])}
+            cf=(w,h)=>{const k=66+Math.abs(U[0])*w/2+Math.abs(U[1])*h/2+9;return [[A[0]+U[0]*k,A[1]+U[1]*k]]};
+        }else{
+            const dx=B[0]-A[0],dy=B[1]-A[1],len=Math.hypot(dx,dy),nx=-dy/len,ny=dx/len;
+            const C=[(A[0]+B[0])/2+nx*60,(A[1]+B[1])/2+ny*60],ua=un([C[0]-A[0],C[1]-A[1]]),ub=un([C[0]-B[0],C[1]-B[1]]);
+            const P0=[A[0]+ua[0]*NR,A[1]+ua[1]*NR],P1=[B[0]+ub[0]*(NR+3),B[1]+ub[1]*(NR+3)];
+            d=`M${P0} Q${C} ${P1}`;
+            const pt=t=>{const a=(1-t)**2,b=2*t*(1-t),c=t*t;return [a*P0[0]+b*C[0]+c*P1[0],a*P0[1]+b*C[1]+c*P1[1]]};
+            const nrm=t=>{const tx=2*(1-t)*(C[0]-P0[0])+2*t*(P1[0]-C[0]),ty=2*(1-t)*(C[1]-P0[1])+2*t*(P1[1]-C[1]),l=Math.hypot(tx,ty)||1;return [-ty/l,tx/l]};
+            for(let t=0;t<=1.001;t+=.05)pts.push(pt(t));
+            cf=(w,h)=>{const cs=[];[.5,.38,.62,.28,.72].forEach(t=>[1,-1].forEach(sg=>{const q=pt(t),o=nrm(t),k=Math.abs(o[0])*w/2+Math.abs(o[1])*h/2+9;cs.push([q[0]+sg*o[0]*k,q[1]+sg*o[1]*k])}));return cs};
+        }
+        return {d,pts,cf};
+    });
+    gs.forEach((g,gi)=>{
+        const m=g.rs.length,h=m*16,I=info[gi];
+        const w=Math.max(...g.rs.map(r=>(r.k.split(' ')[1]+'→'+r.w+','+r.d).length))*7.8+6;
+        const score=(x,y)=>{
+            let c=0;const x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2;
+            names.forEach(nm=>{const q=pos[nm],px=Math.max(x0,Math.min(q[0],x1)),py=Math.max(y0,Math.min(q[1],y1));if(Math.hypot(q[0]-px,q[1]-py)<NR+6)c+=10});
+            placed.forEach(r=>{if(x0<r[2]+4&&x1>r[0]-4&&y0<r[3]+4&&y1>r[1]-4)c+=10});
+            info.forEach((o,j)=>{if(j!==gi)o.pts.forEach(q=>{if(q[0]>x0-3&&q[0]<x1+3&&q[1]>y0-3&&q[1]<y1+3)c+=1.5})});
+            return c;
+        };
+        const cs=I.cf(w,h);let Lp=cs[0],bs=1e9;
+        cs.forEach((c,i)=>{const sc=score(c[0],c[1])+i*.1;if(sc<bs){bs=sc;Lp=c}});
+        placed.push([Lp[0]-w/2,Lp[1]-h/2,Lp[0]+w/2,Lp[1]+h/2]);
+        ds[gi]=I.d;
+        ph+=`<path class="e" id="dge${gi}" d="${I.d}" marker-end="url(#m0)"/>`;
+        g.rs.forEach((r,j)=>{re[r.i]=gi;lh+=`<text class="lb" id="dgl${r.i}" x="${Lp[0].toFixed(1)}" y="${(Lp[1]+(j-(m-1)/2)*16).toFixed(1)}">${esc(r.k.split(' ')[1]+'→'+r.w+','+r.d)}</text>`});
+    });
+    const ip=pos[ini];
+    let nh=`<path class="e" d="M${ip[0]-NR-38},${ip[1]} L${ip[0]-NR-2},${ip[1]}" marker-end="url(#m0)"/>`;
+    names.forEach(nm=>{const h=HALT.includes(nm);nh+=`<g class="nd" transform="translate(${pos[nm][0].toFixed(1)},${pos[nm][1].toFixed(1)})"><circle r="${NR}"/>${h?`<circle r="${NR-5}"/>`:''}<text style="font-size:${nm.length>6?10.5:nm.length>4?12:15}px">${esc(nm)}</text></g>`});
+    const defs='<defs>'+['#8a97ab','#c9a227','#273E74'].map((c,k)=>`<marker id="m${k}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join('')+'</defs>';
+    sv.innerHTML=defs+ph+nh+lh;
+    DG={names,re,d:ds,n:[...sv.querySelectorAll('.nd')],e:gs.map((_,i)=>sv.querySelector('#dge'+i)),l:[]};
+    L.forEach(r=>DG.l[r.i]=sv.querySelector('#dgl'+r.i));
+}
+function dgHl(last,nx,f){
+    if(!DG.n)return;
+    const st=loaded&&M?M.st:null,sv=E('dg');
+    DG.n.forEach((g,i)=>{const nm=DG.names[i];let c='nd';if(nm===st){c+=' cur';if(nm==='aceita')c+=' ok';if(nm==='rejeita')c+=' bad'}g.setAttribute('class',c)});
+    DG.e.forEach(p=>{p.setAttribute('class','e');p.setAttribute('marker-end','url(#m0)')});
+    DG.l.forEach(t=>t.setAttribute('class','lb'));
+    const old=sv.querySelector('.dot');if(old)old.remove();
+    void sv.getBoundingClientRect();
+    const mark=(r,c,m)=>{if(!r)return;const p=DG.e[DG.re[r.i]];p.setAttribute('class','e '+c);p.setAttribute('marker-end','url(#'+m+')');DG.l[r.i].setAttribute('class','lb '+c)};
+    mark(last,'last','m2');mark(nx,'nxt','m1');
+    if(f&&last){
+        DG.e[DG.re[last.i]].classList.add('flash');
+        if(SPS[E('spd').value-1]<=12){
+            const c=document.createElementNS(NS,'circle'),a=document.createElementNS(NS,'animateMotion');
+            c.setAttribute('r',6);c.setAttribute('class','dot');
+            a.setAttribute('dur','.5s');a.setAttribute('fill','freeze');a.setAttribute('path',DG.d[DG.re[last.i]]);
+            c.appendChild(a);sv.appendChild(c);a.beginElement&&a.beginElement();
+        }
+    }
+}
+function hl(f){
+    rows.forEach(r=>r.className='');
+    void E('tbl').offsetWidth;
+    dgHl();
+    if(!loaded||!M)return;
+    Object.values(R).forEach(r=>{if(r.k.split(' ')[0]===M.st)rows[r.i].classList.add('cur')});
+    const h=M.H[M.H.length-1],last=h&&h.r;
+    if(last)rows[last.i].classList.add('last');
+    let nx=null;
+    if(!HALT.includes(M.st)){const s=M.T[M.pos]??'_';nx=R[M.st+' '+s]||R[M.st+' *'];if(nx)rows[nx.i].classList.add('nxt')}
+    if(f&&last)rows[last.i].classList.add('flash');
+    dgHl(last,nx,f);
+    const t=nx?rows[nx.i]:(last?rows[last.i]:null),w=E('tblw');
+    if(t)w.scrollTop=Math.max(0,t.offsetTop-w.clientHeight/2);
+}
+function status(t,c){const s=E('status');s.textContent=t;s.className='status '+c}
+function load(){
+    stop();
+    const r=parse(E('prog').value);
+    E('err').textContent=r.err.join('\n');
+    if(r.err.length)return false;
+    R=r.R;buildTable();
+    M={T:{},pos:0,st:E('q0').value.trim(),steps:0,H:[]};
+    [...E('inp').value.replace(/\s/g,'')].forEach((c,i)=>{if(c!=='_')M.T[i]=c});
+    loaded=true;done=false;ldReset();
+    status('Máquina pronta. Estado inicial: '+M.st+'.','');
+    render();return true;
+}
+function render(f,keep){
+    if(!keep)vc=M.pos;
+    const N=+E('vis').value,half=(N-1)/2,t=E('tape');
+    const wrap=t.parentElement;
+    let h='';
+    for(let i=vc-half;i<=vc+half;i++){
+        const c=M.T[i]??'_',hd=i===M.pos;
+        h+=`<div class="cell${hd?' head':''}">${c==='_'?'<span style="opacity:.3">_</span>':c}<small>${i}</small></div>`;
+    }
+    t.innerHTML=h;
+    const hd=t.children[half];
+    wrap.style.scrollBehavior=(f&&SPS[E('spd').value-1]<=12)?'smooth':'auto';
+    wrap.scrollLeft=hd.offsetLeft-wrap.clientWidth/2+hd.offsetWidth/2;
+    E('hSt').textContent=M.st;E('hSym').textContent=M.T[M.pos]??'_';
+    E('hN').textContent=M.steps;E('hPos').textContent=M.pos;
+    hl(f);
+}
+const DIR={D:'direita',E:'esquerda',P:'não se move'};
+const cpSnap=()=>({st:M.st,pos:M.pos,T:{...M.T}});
+const sameT=(a,b)=>{const k=Object.keys(a);return k.length===Object.keys(b).length&&k.every(x=>a[x]===b[x])};
+let LD=null;
+function ldReset(){LD={snap:cpSnap(),at:M.steps,w:1,run:null}}
+function ldCheck(old,r){
+    if(!LD)ldReset();
+    if(M.st===LD.snap.st&&M.pos===LD.snap.pos&&sameT(M.T,LD.snap.T))
+        return `Laço infinito detectado: após ${M.steps-LD.at} passos a máquina voltou exatamente à mesma configuração (estado "${M.st}", mesma fita, cabeçote na posição ${M.pos}). Como ela é determinística, vai repetir isso para sempre.`;
+    if(M.steps-LD.at>=LD.w){LD.snap=cpSnap();LD.at=M.steps;LD.w*=2}
+    const d=r.ru.d;
+    if(r.s==='_'&&r.w==='_'&&d!=='P'){
+        const prev=M.pos-(d==='D'?1:-1),ks=Object.keys(M.T).map(Number);
+        const out=d==='D'?(!ks.length||prev>Math.max(...ks)):(!ks.length||prev<Math.min(...ks));
+        if(out){
+            if(LD.run&&LD.run.d===d){
+                if(LD.run.s.has(old))return `Laço infinito detectado: a cabeça está andando para a ${d==='D'?'direita':'esquerda'} sobre a fita em branco e repetiu o estado "${old}". Nada mais será escrito e a máquina nunca vai parar.`;
+                LD.run.s.add(old);
+            }else LD.run={d,s:new Set([old])};
+            return null;
+        }
+    }
+    LD.run=null;return null;
+}
+function lint(){
+    const box=E('lint'),r=parse(E('prog').value);
+    if(r.err.length){box.innerHTML='';return}
+    const L=Object.values(r.R),ini=E('q0').value.trim(),out=[],isH=n=>HALT.includes(n);
+    if(!L.length){box.innerHTML='';return}
+    const src={},tgt=new Set(),wr=new Set(),rd={},real=new Set(['_',...E('inp').value.replace(/\s/g,'')]);
+    L.forEach(x=>{
+        const q=x.k.split(' ');(src[q[0]]=src[q[0]]||[]).push(x);tgt.add(x.n);
+        if(q[1]!=='*'&&q[1]!=='_')(rd[q[1]]=rd[q[1]]||new Set()).add(q[0]);
+        if(x.w!=='*'){wr.add(x.w);real.add(x.w)}
+    });
+    const seen=new Set([ini]),st=[ini];
+    while(st.length){(src[st.pop()]||[]).forEach(x=>{if(!seen.has(x.n)){seen.add(x.n);st.push(x.n)}})}
+    if(!isH(ini)&&!src[ini])out.push(['e',`O estado inicial "${ini}" não tem nenhuma regra: a máquina para no primeiro passo.`]);
+    [...tgt].filter(n=>!isH(n)&&!src[n]).forEach(n=>out.push(['e',`O estado "${n}" é destino de uma regra, mas não tem nenhuma regra própria: a máquina trava ao chegar nele.`]));
+    const hs=[...tgt].filter(isH);
+    if(!hs.length)out.push(['e','Nenhuma regra leva a "pare", "aceita" ou "rejeita": a máquina nunca vai parar de propósito.']);
+    else if(!hs.some(n=>seen.has(n)))out.push(['e',`Nenhum estado de parada é alcançável a partir de "${ini}".`]);
+    Object.keys(src).filter(n=>!isH(n)&&!seen.has(n)).forEach(n=>out.push(['w',`O estado "${n}" nunca é alcançado a partir de "${ini}": suas regras são inúteis.`]));
+    Object.keys(src).filter(isH).forEach(n=>out.push(['w',`"${n}" é estado de parada: as regras que saem dele nunca são executadas.`]));
+    Object.keys(rd).filter(b=>!real.has(b)).forEach(b=>out.push(['w',`O símbolo "${b}" é lido pelos estados ${[...rd[b]].join(', ')}, mas nunca aparece na fita inicial nem é escrito por nenhuma regra (erro de digitação?).`]));
+    Object.keys(src).filter(n=>!isH(n)&&seen.has(n)).forEach(n=>{
+        if(src[n].some(x=>x.k.endsWith(' *')))return;
+        const have=new Set(src[n].map(x=>x.k.split(' ')[1])),miss=[...real].filter(c=>!have.has(c));
+        if(miss.length)out.push(['i',`O estado "${n}" não tem regra para: ${miss.join(', ')}. Se ler algum deles, a máquina para sem regra.`]);
+    });
+    box.innerHTML=out.length?out.map(o=>`<div class="l${o[0]}">${esc(o[1])}</div>`).join(''):'<div class="lo">Nenhum problema encontrado.</div>';
+}
+function doStep(q){
+    if(!loaded&&!load())return false;
+    if(done)return false;
+    if(HALT.includes(M.st))return end();
+    const old=M.st,r=tick(M,R);
+    if(r.none){done=true;render();status('Parou: não há regra para o estado "'+old+'" lendo "'+r.s+'". Passos: '+M.steps+'.','bad');return false}
+    if(HALT.includes(M.st))return end();
+    const lp=ldCheck(old,r);
+    if(lp){done=true;render();status(lp,'bad');return false}
+    if(M.steps>=LIM){done=true;render();status('Interrompido após '+LIM+' passos sem parar e sem repetir nenhuma configuração detectável. Pode ser um laço infinito (a fita continua mudando) ou só uma máquina lenta: decidir isso em geral é o problema da parada.','bad');return false}
+    if(!q){
+        const wr=r.w===r.s?'mantém o símbolo':'escreve "'+r.w+'"';
+        status(`Passo ${M.steps}: em "${old}" leu "${r.s}" → ${wr}, ${r.ru.d==='P'?DIR.P:'move para a '+DIR[r.ru.d]} e vai para "${M.st}".`,'');
+        render(true);
+    }
+    return true;
+}
+function end(){
+    done=true;render(true);
+    const ks=Object.keys(M.T).map(Number).sort((a,b)=>a-b);
+    let out='';if(ks.length)for(let i=ks[0];i<=ks[ks.length-1];i++)out+=M.T[i]??'_';
+    status(`Parou no estado "${M.st}" após ${M.steps} passos. Fita final: ${out||'(vazia)'}  · símbolos não brancos: ${ks.length}.`,M.st==='rejeita'?'bad':'ok');
+    return false;
+}
+function nav(d){
+    if(!M)return;
+    const wrap=E('tape').parentElement,half=Math.floor(((wrap.clientWidth||700)/46-1)/2);
+    const ks=Object.keys(M.T).map(Number).concat(M.pos);
+    if(d==='L')vc=Math.min(...ks)-1+half; else if(d==='R')vc=Math.max(...ks)+1-half;
+    else if(d===0)vc=M.pos; else vc+=d;
+    render(false,true);
+}
+function stepBtn(){stop();doStep()}
+function backBtn(){
+    stop();if(!loaded&&!load())return;
+    if(!back(M)){status('Já está no início da execução.','');return}
+    done=false;ldReset();status(`Voltou ao passo ${M.steps}: estado "${M.st}".`,'');render();
+}
+function stop(){clearTimeout(timer);timer=null;E('runBtn').textContent='Executar'}
+function toggleRun(){
+    if(timer){stop();return}
+    if(!loaded&&!load())return;
+    if(done)load();
+    E('runBtn').textContent='Pausar';
+    const loop=()=>{
+        const sps=SPS[E('spd').value-1],fast=sps>40,n=fast?Math.round(sps*.03):1;
+        let go=true;
+        for(let i=0;i<n&&go;i++)go=doStep(i<n-1);
+        if(!go)stop();else timer=setTimeout(loop,fast?30:1000/sps);
+    };
+    timer=setTimeout(loop,0);
+}
+addEventListener('resize',()=>M&&render(false,true));
+addEventListener('keydown',e=>{
+    if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+    if(e.key==='ArrowRight')stepBtn();else if(e.key==='ArrowLeft')backBtn();
+});
+function openIndex(){window.location.href="/"}
+spdUpd();loadEx();
+</script>
+</body>
+</html>
