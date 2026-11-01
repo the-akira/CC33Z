@@ -39,8 +39,9 @@ code{background:var(--code);padding:1px 6px;border-radius:4px;font:.88em ui-mono
 .ln{flex:none;position:sticky;left:0;z-index:2;background:var(--ink);color:#6b6657;text-align:right;padding:12px;user-select:none;border-right:1px solid #34312a}
 .st{position:relative;flex:1 0 auto;min-height:calc(var(--n)*24px + 24px)}
 .hl{padding:12px 16px 12px 14px;color:#eee6cf;pointer-events:none}
+.filename {color:#c9c1a9;}
 textarea{position:absolute;inset:0;width:100%;height:100%;padding:12px 14px;border:0;overflow:hidden;background:transparent;color:transparent;caret-color:var(--y);resize:none;outline:0}
-.cnt{display:inline-block;font:normal 12px ui-monospace,Consolas,monospace;color:#6b6657;margin-right:4px}.edt{font:normal 12px system-ui;color:var(--y);margin-right:6px}.edt[hidden]{display:none}.cnt.max{color:var(--y)}.cnt.flash{animation:fl .4s}
+.cnt{display:inline-block;font:normal 12px ui-monospace,Consolas,monospace;color:#c9c1a9;margin-right:4px}.edt{font:normal 12px system-ui;color:var(--y);margin-right:6px}.edt[hidden]{display:none}.cnt.max{color:var(--y)}.cnt.flash{animation:fl .4s}
 @keyframes fl{50%{color:var(--r);transform:scale(1.2)}}
 .c{color:#8a8574;font-style:italic}.s{color:#9fd37a}.d{color:#f5a25d}.k{color:#ff7a6b}.f{color:#7fc3ff}
 .xTg{color:#ff7a6b}.xAt{color:#f5a25d}.xPu{color:#a49d88}.xSl{color:#7fc3ff}.xPs{color:#c9a6ff}.xPr{color:#e6c07b}
@@ -1556,7 +1557,7 @@ const fmt=v=>typeof v==='string'?v:typeof v==='undefined'?'undefined':typeof v==
 const EXTRA_LINHAS=10; // quantas linhas o usuário pode criar além das que o exemplo já tem
 function mk(s){
   const raw=s.textContent.replace(/^\n/,'').replace(/\s+$/,''),[pg,js]=raw.includes('\n@@@\n')?raw.split('\n@@@\n'):[null,raw],src=js+'\n',w=document.createElement('div');w.className='ed';
-  const html=/\.html$/.test(s.dataset.name);w.innerHTML=`<div class="bar"><span>${s.dataset.name}</span><em class="edt" hidden title="seu código fica salvo neste navegador">editado</em><em class="cnt" title="linhas usadas / limite do editor"></em><button class="cp">Copiar</button><button class="rs">Restaurar</button><button class="run">▶ Executar</button></div>${pg?'<pre class="page"></pre>':''}<div class="box"><div class="row"><pre class="ln"></pre><div class="st"><pre class="hl"></pre><textarea spellcheck="false" wrap="off"></textarea></div></div></div>${pg||html?'<iframe class="view" sandbox="allow-scripts allow-same-origin"></iframe>':''}<pre class="out"></pre>`;
+  const html=/\.html$/.test(s.dataset.name);w.innerHTML=`<div class="bar"><span class="filename">${s.dataset.name}</span><em class="edt" hidden title="seu código fica salvo neste navegador">editado</em><em class="cnt" title="linhas usadas / limite do editor"></em><button class="cp">Copiar</button><button class="rs">Restaurar</button><button class="run">▶ Executar</button></div>${pg?'<pre class="page"></pre>':''}<div class="box"><div class="row"><pre class="ln"></pre><div class="st"><pre class="hl"></pre><textarea spellcheck="false" wrap="off"></textarea></div></div></div>${pg||html?'<iframe class="view" sandbox="allow-scripts allow-same-origin"></iframe>':''}<pre class="out"></pre>`;
   const ta=w.querySelector('textarea'),h=w.querySelector('.hl'),l=w.querySelector('.ln'),o=w.querySelector('.out'),st=w.querySelector('.st'),cn=w.querySelector('.cnt');
   const MAX=src.split('\n').length+EXTRA_LINHAS,cnt=t=>t.split('\n').length;
   const KEY='gjs-code-'+s.dataset.name,sv=(()=>{try{return localStorage.getItem(KEY)}catch(e){return null}})(),start=sv!=null&&cnt(sv)<=MAX?sv:src,ed=w.querySelector('.edt');
