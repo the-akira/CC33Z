@@ -211,7 +211,14 @@ function drawOhm(dt){
   x.restore();
   x.fillStyle=NAVY;x.font='bold 16px Arial';x.textAlign='center';
   x.fillText('+',48,152);x.fillText('−',48,182);
-  x.fillText('Bateria '+oh.V+' V',132,195);x.fillText('Resistor '+oh.R+' Ω',320,40);
+  if (Math.abs(Math.trunc(oh.V)).toString().length > 1 && !Number.isInteger(oh.V)) {
+      x.fillText('Bateria '+oh.V+' V',152.5,173.5);
+  } else if (Math.abs(Math.trunc(oh.V)).toString().length > 1 || !Number.isInteger(oh.V)) {
+      x.fillText('Bateria '+oh.V+' V',147.5,173.5);
+  } else {
+      x.fillText('Bateria '+oh.V+' V',141,173.5);
+  }
+  x.fillText('Resistor '+oh.R+' Ω',320,40);
   x.fillStyle=SLATE;x.font='14px Arial';x.fillText('Sentido convencional da corrente →',320,300);
 }
 
@@ -247,7 +254,7 @@ function drawRC(dt){
   x.fillStyle=NAVY;x.font='bold 15px Arial';x.textAlign='center';
   x.font='bold 16px Arial';x.fillText('+',26,130);x.fillText('−',26,162);                  // polaridade da fonte: + na placa maior (em cima), − na menor
   x.font='bold 15px Arial';
-  x.fillText('Fonte 10 V',60,315);x.fillText('Capacitor',200,315);x.fillText(rc.vc.toFixed(1)+' V',200,172);
+  x.fillText('Fonte 10 V',60,305);x.fillText('Capacitor',200,305);x.fillText(rc.vc.toFixed(1)+' V',200,172);
   // rótulo do resistor (centro do zigue-zague: x=135)
   x.fillStyle=NAVY;x.fillText('R',135,40);
   // gráfico
