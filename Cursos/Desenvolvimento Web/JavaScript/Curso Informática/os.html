@@ -260,8 +260,8 @@ const KD=[['Monolítico',['Escalonador','Memória','Arquivos','Drivers','Rede'],
 ['Microkernel',['Escalonador básico','Memória básica','Comunicação (IPC)'],['Arquivos','Drivers','Rede'],'O kernel é mínimo. Sistema de arquivos, drivers e rede rodam como processos comuns, no modo usuário. Se um servidor falha, ele é reiniciado sem derrubar o sistema, mas as trocas de mensagens custam desempenho.','Minix, QNX, seL4, Fuchsia.'],
 ['Híbrido',['Escalonador','Memória','Arquivos','Drivers'],['Subsistemas','Serviços'],'Mistura as duas ideias: a maior parte roda no kernel por desempenho, mas parte dos serviços fica fora dele, de forma modular.','Windows NT, macOS e iOS (XNU).']];
 function setK(i){const k=KD[i];[0,1,2].forEach(j=>$('k'+j).classList.toggle('sel',j==i));let s='<rect x="5" y="5" width="890" height="140" fill="#e9ecf1"/><text x="20" y="28" fill="#273E74" font-weight="bold" font-size="15">Modo usuário</text>';
-const row=(a,y,f,tc)=>a.map((t,j)=>B(450-a.length*75+j*150+8,y,134,44,t,f,tc,0)).join('');
-s+=row(['Aplicativo','Aplicativo','Aplicativo'],38,'#5C6D82','#fff')+row(k[2],90,'#3f6fb0','#fff');
+const row=(a,y,f,tc)=>a.map((t,j)=>B(450-a.length*167/2+j*167+10,y,147,44,t,f,tc,0)).join('');
+s+=row(['Aplicativo','Aplicativo','Aplicativo'],34,'#5C6D82','#fff')+row(k[2],90,'#3f6fb0','#fff');
 s+=`<rect x="5" y="155" width="890" height="140" fill="#273E74"/><text x="20" y="178" fill="#fff" font-weight="bold" font-size="15">Modo kernel</text>`+row(k[1],210,'#fff','#273E74');$('kern').innerHTML=s;
 panel($('kDet'),[k[0],'Exemplos: '+k[4],k[3]])}
 setK(0);
