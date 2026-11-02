@@ -13,7 +13,7 @@ header>h1{font-size:2.5em;margin:0 0 10px 0}
 header>.subtitle{font-size:1.2em;opacity:.9}
 #homeBtn{margin-top:15px;background:#fff;color:#273E74;border:3.3px solid #273E74;padding:9px 12px;font-size:1.025rem;font-family:Arial,sans-serif;font-weight:bold}
 #homeBtn:hover{background:#273E74;color:#fff;border-color:#fff;cursor:pointer}
-.intro-text{max-width:900px;margin:10px auto 25px;padding:0 20px;color:#273E74;line-height:1.6;text-align:center}
+.intro-text{max-width:900px;margin:10px auto 25px;padding:0 20px;color:#273E74;line-height:1.5;text-align:center}
 section.block-title{max-width:950px;margin:0 auto 10px;padding:0 20px}
 section.block-title h2{color:#273E74;text-align:center;margin:0 0 15px}
 section.block-title p.sub{text-align:center;color:#616A75;font-size:1rem;margin:-5px 0 15px}
@@ -30,7 +30,7 @@ section.block-title p.sub{text-align:center;color:#616A75;font-size:1rem;margin:
 .details-body h3{color:#273E74;margin:0 0 10px}
 .details-body p{line-height:1.55;font-size:.95rem;margin:0 0 0px}
 .info-row{font-size:.9rem;margin:8px 0;line-height:1.4}.info-row strong{color:#273E74}
-.badge-light{background:#5C6D82;color:#fff;padding:6px 10px;font-size:.8rem;display:inline-block;margin-bottom:10px}
+.badge-light{background:#5C6D82;color:#fff;padding:6px 10px;font-size:.8rem;display:inline-block;margin-bottom:12px}
 .levels-wrap{max-width:950px;margin:10px auto 25px;padding:0 20px}
 .levels-svg-box{background:#f2f2f2;border:2px solid #273E74;padding:15px;overflow-x:auto}
 .levels-svg-box svg{display:block;margin:0 auto;min-width:860px;width:100%;height:auto;font-family:sans-serif}
@@ -40,7 +40,7 @@ section.block-title p.sub{text-align:center;color:#616A75;font-size:1rem;margin:
 .glossary-card{background:#f2f2f2;border:2px solid #273E74;width:280px;padding:18px}
 .glossary-card h3{color:#273E74;margin:0 0 12px;font-size:17px}
 .glossary-card p{font-size:.975rem;line-height:1.5;margin:0 0 8px}
-.glossary-card .ex{font-size:.85rem;color:#5C6D82}
+.glossary-card .ex{font-size:.92rem;color:#5C6D82}
 .table-wrap{width:calc(100% - 40px);max-width:960px;margin:0 auto 25px;padding:0;overflow-x:auto}
 table.tab{width:100%;border-collapse:collapse;background:#f2f2f2;border:2px solid #273E74;font-size:.92rem}
 table.tab th{background:#273E74;color:#fff;text-align:left;padding:10px 12px}
@@ -52,7 +52,7 @@ table.tab tr:nth-child(even) td{background:#e9ecf1}
 .bin-inner button.act,.tabs button{padding:8px 12px;border:2px solid #273E74;background:#5C6D82;color:#fff;cursor:pointer;font-weight:bold;font-size:.85rem;margin:4px}
 .bin-inner button.act:hover,.tabs button:hover,button.sel{background:#273E74!important}
 .tabs button:disabled{opacity:.4;cursor:default}.tabs button:disabled:hover{background:#5C6D82!important; cursor:not-allowed;}
-.msg{color:#273E74;line-height:1.6;margin:10px 0;min-height:3em; margin-bottom: 0px;}
+.msg{color:#273E74;line-height:1.4;margin:10px 0;min-height:3em; margin-bottom: 0px;}
 .bits{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0; margin-top:16px;}
 .bit{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.75rem;color:#5C6D82;font-weight:bold}
 .bit button{width:58px;height:50px;font-size:1.2rem;font-family:monospace;font-weight:bold;cursor:pointer;background:#fff;color:#273E74;border:2.5px solid #273E74}
@@ -70,6 +70,7 @@ input[type="range"]::-moz-range-thumb {width: 22px;height: 22px;background: #273
 #gq:focus {outline:none;}
 @media(max-width:480px){.bit button{width:38px}.fr{width:70px}}
 @media(max-width:485px){.btn-simulate{margin-top:10px !important;}}
+@media(max-width:474px){#q{margin-top:16px !important;}}
 </style>
 </head>
 <body>
@@ -119,7 +120,7 @@ input[type="range"]::-moz-range-thumb {width: 22px;height: 22px;background: #273
 <div style="color:#273E74;font-weight:bold">Memória RAM</div>
 <div class="frames" id="frames"></div>
 <div class="msg" id="mMsg">Acesse páginas e veja o que acontece quando a RAM enche.</div>
-<div style="color:#273E74;margin-bottom:5px;" id="mCnt"></div>
+<div style="color:#273E74;margin-bottom:5px;margin-top:5px;" id="mCnt"></div>
 <button class="act" onclick="runSeq()">Rodar sequência de exemplo</button><button class="act" onclick="resetM()">Zerar</button>
 </div></div>
 
