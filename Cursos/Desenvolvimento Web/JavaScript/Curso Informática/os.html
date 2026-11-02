@@ -206,7 +206,7 @@ function sc(ok){$('eS').style.opacity=ok?1:.7;$('eN').style.opacity=ok?.7:1;$('s
 
 // Estados
 const ST=[['Novo',20,60,'O processo acabou de ser criado e o SO prepara suas estruturas (PCB, memória).'],['Pronto',250,60,'Tem tudo de que precisa e espera numa fila a sua vez na CPU.'],['Executando',520,60,'Está usando a CPU neste instante. Em um núcleo, só um processo fica aqui por vez.'],['Finalizado',750,60,'Terminou. O SO libera memória e recursos que ele usava.'],['Bloqueado',385,200,'Está esperando algo lento, como disco, rede ou teclado. Não gasta CPU enquanto espera.']];
-const TR=[[0,1,'admitido','M150 88H238',198,76],[1,2,'despachado','M380 78H508',448,68],[2,1,'preempção','M520 100H392',450,120],[2,4,'pede E/S','M570 116Q570 215 528 225',605,185],[4,1,'E/S concluída','M410 200Q335 170 326 129',332,175],[2,3,'termina','M650 88H738',698,76]];
+const TR=[[0,1,'admitido','M150 88H237',198,76],[1,2,'despachado','M380 78H507',448,67],[2,1,'preempção','M520 100H393',450,120],[2,4,'pede E/S','M570 116Q570 215 528 225',603,185],[4,1,'E/S concluída','M385 228Q335 200 335 129',332,185],[2,3,'termina','M650 88H737',698,76]];
 let cs=0;
 function rSt(){let s=AR;
 ST.forEach((n,i)=>{s+=B(n[1],n[2],130,56,n[0],i==cs?'#273E74':'#fff',i==cs?'#fff':'#273E74',1)});
@@ -252,7 +252,7 @@ const BT=[['Energia','Liga a fonte','Ao apertar o botão, a fonte estabiliza a e
 ['Login','Autenticação','O SO apresenta a tela de login e valida o usuário, que cria a sessão com suas permissões.'],
 ['Área de|trabalho','Pronto para usar','O ambiente gráfico carrega, aplicativos de inicialização abrem e o computador está pronto.']];
 let bs=0;
-function rBoot(){let s=AR;BT.forEach((b,i)=>{const x=16+i*128;s+=`<g class="clk" onclick="bs=${i};rBoot()">`+B(x,28,100,64,b[0],i==bs?'#273E74':'#fff',i==bs?'#fff':'#273E74',1).replace(/font-size="14"/g,'font-size="14"')+'</g>';if(i)s+=`<path d="M${x-28} 60H${x-12}" stroke="#273E74" stroke-width="3" fill="none" marker-end="url(#ar)"/>`});$('boot').innerHTML=s;panel($('bootDet'),[BT[bs][0].replace('|',' '),(bs+1)+' de 7 · '+BT[bs][1],BT[bs][2]])}
+function rBoot(){let s=AR;BT.forEach((b,i)=>{const x=16+i*128;s+=`<g class="clk" onclick="bs=${i};rBoot()">`+B(x,28,100,64,b[0],i==bs?'#273E74':'#fff',i==bs?'#fff':'#273E74',1).replace(/font-size="14"/g,'font-size="14"')+'</g>';if(i)s+=`<path d="M${x-28} 60H${x-13}" stroke="#273E74" stroke-width="3" fill="none" marker-end="url(#ar)"/>`});$('boot').innerHTML=s;panel($('bootDet'),[BT[bs][0].replace('|',' '),(bs+1)+' de 7 · '+BT[bs][1],BT[bs][2]])}
 function bootNext(){bs=(bs+1)%7;rBoot()}rBoot();
 
 // Kernel
