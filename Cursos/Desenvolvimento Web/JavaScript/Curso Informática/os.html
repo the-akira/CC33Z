@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sistemas Operacionais - Curso de Informática</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/x-icon" href="images/pc.png">
+<style>
+body{margin:0;padding:0;font-family:Arial,sans-serif;background:#fff}
+header{text-align:center;padding:40px 20px;background:#5c6d82;border-bottom:5.5px solid #273E74;margin-bottom:30px;color:#fff}
+header>h1{font-size:2.5em;margin:0 0 10px 0}
+header>.subtitle{font-size:1.2em;opacity:.9}
+#homeBtn{margin-top:15px;background:#fff;color:#273E74;border:3.3px solid #273E74;padding:9px 12px;font-size:1.025rem;font-family:Arial,sans-serif;font-weight:bold}
+#homeBtn:hover{background:#273E74;color:#fff;border-color:#fff;cursor:pointer}
+.intro-text{max-width:900px;margin:10px auto 25px;padding:0 20px;color:#273E74;line-height:1.6;text-align:center}
+section.block-title{max-width:950px;margin:0 auto 10px;padding:0 20px}
+section.block-title h2{color:#273E74;text-align:center;margin:0 0 15px}
+section.block-title p.sub{text-align:center;color:#616A75;font-size:1rem;margin:-5px 0 15px}
+.separador{max-width:1100px;margin:0 auto 30px;border:none;border-top:2px solid #273E74}
+.panel{background:#f2f2f2;border:2px solid #273E74}
+.panel-header{background:#273E74;color:#fff;font-weight:bold;padding:10px 14px;font-size:1rem}
+.explorer-wrap{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin:0 20px 25px}
+.list-panel{width:340px;max-width:100%}.details-panel{width:500px;max-width:100%;background:white;}
+.list-scroll{padding:10px 8px}ul.list{list-style:none;margin:0;padding:0}
+.node{cursor:pointer;padding:8px 10px;margin:2px 0;border:2px solid transparent;font-size:.95rem;color:#273E74;user-select:none}
+.node:hover{background:#e3e6ec}.node.selected{background:#273E74;color:#fff}
+.details-body{padding:14px 16px;min-height:200px;background:#fff}
+.details-body .placeholder{color:#5C6D82;font-style:italic;font-size:.9rem}
+.details-body h3{color:#273E74;margin:0 0 10px}
+.details-body p{line-height:1.55;font-size:.95rem;margin:0 0 0px}
+.info-row{font-size:.9rem;margin:8px 0;line-height:1.4}.info-row strong{color:#273E74}
+.badge-light{background:#5C6D82;color:#fff;padding:6px 10px;font-size:.8rem;display:inline-block;margin-bottom:10px}
+.levels-wrap{max-width:950px;margin:10px auto 25px;padding:0 20px}
+.levels-svg-box{background:#f2f2f2;border:2px solid #273E74;padding:15px;overflow-x:auto}
+.levels-svg-box svg{display:block;margin:0 auto;min-width:860px;width:100%;height:auto;font-family:sans-serif}
+.below{border:2px solid #273E74;border-top:0}
+.clk{cursor:pointer}.clk:hover rect{stroke:#273E74;stroke-width:4}
+.glossary-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;margin:20px 20px 25px}
+.glossary-card{background:#f2f2f2;border:2px solid #273E74;width:280px;padding:18px}
+.glossary-card h3{color:#273E74;margin:0 0 12px;font-size:17px}
+.glossary-card p{font-size:.975rem;line-height:1.5;margin:0 0 8px}
+.glossary-card .ex{font-size:.85rem;color:#5C6D82}
+.table-wrap{width:calc(100% - 40px);max-width:960px;margin:0 auto 25px;padding:0;overflow-x:auto}
+table.tab{width:100%;border-collapse:collapse;background:#f2f2f2;border:2px solid #273E74;font-size:.92rem}
+table.tab th{background:#273E74;color:#fff;text-align:left;padding:10px 12px}
+table.tab td{padding:9px 12px;border-top:1px solid #b8c0cc;line-height:1.4}
+table.tab td:first-child{color:#273E74;font-weight:bold;white-space:nowrap}
+table.tab tr:nth-child(even) td{background:#e9ecf1}
+.bin-box{max-width:1000px;margin:0 auto 25px;padding:0 20px}
+.bin-inner{background:#f2f2f2;border:2px solid #273E74;padding:20px;text-align:center}
+.bin-inner button.act,.tabs button{padding:8px 12px;border:2px solid #273E74;background:#5C6D82;color:#fff;cursor:pointer;font-weight:bold;font-size:.85rem;margin:4px}
+.bin-inner button.act:hover,.tabs button:hover,button.sel{background:#273E74!important}
+.tabs button:disabled{opacity:.4;cursor:default}.tabs button:disabled:hover{background:#5C6D82!important; cursor:not-allowed;}
+.msg{color:#273E74;line-height:1.6;margin:10px 0;min-height:3em; margin-bottom: 0px;}
+.bits{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0; margin-top:16px;}
+.bit{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.75rem;color:#5C6D82;font-weight:bold}
+.bit button{width:58px;height:50px;font-size:1.2rem;font-family:monospace;font-weight:bold;cursor:pointer;background:#fff;color:#273E74;border:2.5px solid #273E74}
+.bit button.on{background:#273E74;color:#fff}
+.frames{display:flex;justify-content:center;gap:10px;margin:10px 0}
+.fr{width:90px;padding:10px 0;border:2.5px solid #273E74;background:#fff;color:#273E74;font-weight:bold}
+.fr small{display:block;font-weight:normal;color:#5C6D82}.fr.new{background:#273E74;color:#fff}.fr.new small{color:#dde}
+.nota{max-width:950px;margin:-15px auto 30px;padding:0 20px;font-size:.85rem;color:#5C6D82;text-align:center}
+input[type="range"] {flex: 1;min-width: 200px;height: 8px;background: #5c6d82;cursor: pointer;outline: none;-webkit-appearance: none;}
+input[type="range"]:disabled {opacity: 0.5;cursor:not-allowed;}
+input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 22px;height: 22px;background: #ffffff;
+  border: 2px solid #273E74;cursor: pointer;box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+input[type="range"]::-moz-range-thumb {width: 22px;height: 22px;background: #273E74;cursor: pointer;border-radius: 50%;
+  border: 3px solid white;box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+#gq:focus {outline:none;}
+@media(max-width:480px){.bit button{width:38px}.fr{width:70px}}
+@media(max-width:485px){.btn-simulate{margin-top:10px !important;}}
+</style>
+</head>
+<body>
+<header>
+<h1>Sistemas Operacionais</h1>
+<div class="subtitle">O programa que comanda todos os outros programas</div>
+<button id="homeBtn" onclick="location.href='/'">Página Inicial</button>
+</header>
+
+<h2 style="text-align:center;font-size:1.6rem;margin-bottom:15px;color:#273E74">O que é um Sistema Operacional?</h2>
+<p class="intro-text">O <strong>sistema operacional (SO)</strong> é o software que fica entre os programas e o hardware. Ele tem dois papéis: <strong>gerenciar recursos</strong> (CPU, memória, disco, rede) para que vários programas dividam a máquina sem brigar, e <strong>oferecer uma interface simples</strong> para que ninguém precise programar o disco ou a placa de vídeo na mão. Windows, Linux, macOS, Android e iOS são sistemas operacionais.</p>
+
+<section class="block-title"><h2>As Camadas do Computador</h2><p class="sub">Clique em uma camada para entender o seu papel</p></section>
+<div class="levels-wrap"><div class="levels-svg-box"><svg id="layers" viewBox="0 0 900 340"></svg></div>
+<div class="panel below"><div class="details-body" id="layDet" style="min-height:90px"><p class="placeholder">Clique em uma camada do diagrama.</p></div></div></div>
+
+<section class="block-title"><h2>O que o Sistema Operacional faz</h2><p class="sub">Seis grandes responsabilidades</p></section>
+<div class="explorer-wrap">
+<div class="panel list-panel"><div class="panel-header">Funções do SO</div><div class="list-scroll"><ul class="list" id="fList"></ul></div></div>
+<div class="panel details-panel"><div class="panel-header">Detalhes</div><div class="details-body" id="fDet"><p class="placeholder">Clique em uma função na lista.</p></div></div>
+</div>
+
+<section class="block-title"><h2>Modo Usuário, Modo Kernel e Chamadas de Sistema</h2><p class="sub">A CPU tem níveis de privilégio. Aplicativos nunca acessam o hardware diretamente</p></section>
+<div class="levels-wrap"><div class="levels-svg-box"><svg id="sysc" viewBox="0 0 900 230"></svg></div>
+<div class="panel below" style="text-align:center;padding:12px">
+<button class="act" style="margin-right: 6px; margin-top: 5px; padding:8px 12px;border:2px solid #273E74;background:#5C6D82;color:#fff;font-weight:bold;cursor:pointer" onclick="sc(1)">Simular: chamada permitida</button>
+<button class="act btn-simulate" style="margin-top: 5px;padding:8px 12px;border:2px solid #273E74;background:#5C6D82;color:#fff;font-weight:bold;cursor:pointer" onclick="sc(0)">Simular: chamada negada</button>
+<div class="msg" id="scMsg" style="padding:0 12px">Quando um programa quer abrir um arquivo, ele não toca no disco: executa uma instrução especial (<em>trap</em>) que transfere o controle ao kernel. O kernel confere as permissões, faz o trabalho e devolve o resultado.</div></div></div>
+
+<section class="block-title"><h2>Ciclo de Vida de um Processo</h2><p class="sub">Um <strong>processo</strong> é um programa em execução. Clique nas setas ativas para mudar o estado</p></section>
+<div class="levels-wrap"><div class="levels-svg-box"><svg id="states" viewBox="0 0 900 300"></svg></div>
+<div class="panel below"><div class="details-body" id="stDet" style="min-height:80px"></div></div></div>
+
+<section class="block-title"><h2>Escalonamento da CPU</h2><p class="sub">Com um único núcleo, só um processo roda por vez. Quem decide a ordem é o <strong>escalonador</strong></p></section>
+<div class="bin-box"><div class="bin-inner">
+<div class="tabs" style="margin-bottom: 20px;"><button onclick="setA('fcfs')" id="b_fcfs">FCFS (ordem de chegada)</button><button onclick="setA('sjf')" id="b_sjf">SJF (menor tarefa primeiro)</button><button onclick="setA('rr')" id="b_rr">Round Robin</button></div>
+<div style="color:#273E74;font-size:.9rem">Quantum (fatia de tempo): <input type="range" id="q" min="1" max="5" value="2" oninput="gantt()"> <strong id="qv">2</strong></div>
+<div style="overflow-x:auto;margin:12px 0"><div id="gantt"></div></div>
+<div id="gMet"></div><div class="msg" id="gTxt"></div>
+</div></div>
+
+<section class="block-title"><h2>Memória Virtual e Paginação</h2><p class="sub">A RAM é pequena, então o SO divide a memória em <strong>páginas</strong> e mantém na RAM só as que estão em uso. Aqui há 8 páginas e apenas 3 quadros</p></section>
+<div class="bin-box"><div class="bin-inner">
+<div class="tabs"><button onclick="setM('fifo')" id="m_fifo">Substituição FIFO</button><button onclick="setM('lru')" id="m_lru">Substituição LRU</button></div>
+<div style="color:#273E74;font-weight:bold;margin-top:5px;">Clique em uma página para acessá-la:</div>
+<div class="bits" id="pages"></div>
+<div style="color:#273E74;font-weight:bold">Memória RAM</div>
+<div class="frames" id="frames"></div>
+<div class="msg" id="mMsg">Acesse páginas e veja o que acontece quando a RAM enche.</div>
+<div style="color:#273E74;margin-bottom:5px;" id="mCnt"></div>
+<button class="act" onclick="runSeq()">Rodar sequência de exemplo</button><button class="act" onclick="resetM()">Zerar</button>
+</div></div>
+
+<section class="block-title"><h2>A Inicialização (Boot)</h2><p class="sub">Do botão de ligar até a área de trabalho. Clique nas etapas ou use o botão</p></section>
+<div class="levels-wrap"><div class="levels-svg-box"><svg id="boot" viewBox="0 0 900 110"></svg></div>
+<div class="panel below"><div class="details-body" id="bootDet" style="min-height:90px"></div>
+<div style="text-align:center;padding:0 0 14px;background:#fff"><button class="act" style="padding:8px 12px;border:2px solid #273E74;background:#5C6D82;color:#fff;font-weight:bold;cursor:pointer" onclick="bootNext()">Próxima etapa</button></div></div></div>
+
+<section class="block-title"><h2>Arquiteturas de Kernel</h2><p class="sub">Quanto código deve rodar com privilégio total? Cada projeto responde de um jeito</p></section>
+<div class="levels-wrap"><div class="tabs" style="text-align:center; margin-bottom: 10px;"><button onclick="setK(0)" id="k0">Monolítico</button><button onclick="setK(1)" id="k1">Microkernel</button><button onclick="setK(2)" id="k2">Híbrido</button></div>
+<div class="levels-svg-box"><svg id="kern" viewBox="0 0 900 300"></svg></div>
+<div class="panel below"><div class="details-body" id="kDet" style="min-height:90px"></div></div></div>
+
+<section class="block-title"><h2>Tipos de Sistemas Operacionais</h2><p class="sub">Cada ambiente exige prioridades diferentes</p></section>
+<div class="glossary-grid" id="tipos"></div>
+
+<section class="block-title"><h2>Os Sistemas Mais Conhecidos</h2></section>
+<div class="table-wrap"><table class="tab"><thead><tr><th>Sistema</th><th>Kernel</th><th>Licença</th><th>Onde é usado</th></tr></thead><tbody>
+<tr><td>Windows</td><td>NT (híbrido)</td><td>Proprietário (Microsoft)</td><td>PCs, notebooks, empresas e jogos</td></tr>
+<tr><td>Linux</td><td>Linux (monolítico modular)</td><td>Livre (GPL)</td><td>Servidores, nuvem, roteadores e supercomputadores</td></tr>
+<tr><td>macOS</td><td>XNU (híbrido)</td><td>Proprietário (Apple)</td><td>Computadores Mac</td></tr>
+<tr><td>Android</td><td>Linux modificado</td><td>Código aberto (AOSP)</td><td>Celulares, tablets, TVs e relógios</td></tr>
+<tr><td>iOS</td><td>XNU (híbrido)</td><td>Proprietário (Apple)</td><td>iPhone e iPad</td></tr>
+</tbody></table></div>
+
+<section class="block-title"><h2>Uma Breve História</h2></section>
+<div class="table-wrap"><table class="tab"><thead><tr><th>Época</th><th>Marco</th></tr></thead><tbody>
+<tr><td>Anos 1950</td><td>Processamento em lote: cartões perfurados executados em fila, sem interação</td></tr>
+<tr><td>Anos 1960</td><td>Tempo compartilhado (CTSS, Multics): vários usuários ao mesmo tempo no mesmo computador</td></tr>
+<tr><td>1969</td><td>Unix nasce nos Laboratórios Bell e inspira quase tudo o que veio depois</td></tr>
+<tr><td>1981 a 1985</td><td>MS-DOS, Macintosh (1984) e Windows 1.0 trazem o computador pessoal e a interface gráfica</td></tr>
+<tr><td>1991</td><td>Linus Torvalds publica o Linux</td></tr>
+<tr><td>1993 e 2001</td><td>Windows NT traz um kernel moderno; Mac OS X une interface Apple e base Unix</td></tr>
+<tr><td>2007 e 2008</td><td>iPhone e Android levam os sistemas operacionais ao bolso</td></tr>
+</tbody></table></div>
+
+<section class="block-title"><h2>Glossário</h2><p class="sub">Os principais termos de sistemas operacionais. Busque por palavra ou filtre por tema</p></section>
+<div class="bin-box"><div class="bin-inner" style="padding-bottom:12px">
+<input type="text" id="gq" placeholder="Buscar termo ou definição..." oninput="gp=1;rGl()" style="padding:9px 12px;font-size:1rem;border:2px solid #273E74;color:#273E74;width:320px;max-width:90%;font-family:Arial,sans-serif">
+<div class="tabs" id="gcats" style="margin-top:10px"></div>
+<div style="color:#5C6D82;font-size:.85rem; margin-top:3px;" id="gn"></div></div>
+<div class="glossary-grid" id="gl" style="margin:20px 0 0"></div>
+<div class="tabs" id="gpg" style="text-align:center;margin:15px 0 30px"></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const T=(x,y,s,c='#fff',f=14,b=0)=>{const l=s.split('|');return l.map((t,i)=>`<text x="${x}" y="${y+(i-(l.length-1)/2)*17+5}" text-anchor="middle" fill="${c}" font-size="${f}" font-weight="${b?'bold':'normal'}">${t}</text>`).join('')};
+const B=(x,y,w,h,s,fill,tc,st)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" ${st?`stroke="#273E74" stroke-width="2.5"`:''}/>`+T(x+w/2,y+h/2,s,tc,14,0);
+function panel(el,o){el.innerHTML=`<span class="badge-light">${o[1]}</span><h3>${o[0]}</h3><p>${o[2]}</p>`+(o[3]?`<div class="info-row"><strong>Analogia:</strong> ${o[3]}</div>`:'')+(o[4]?`<div class="info-row"><strong>Exemplos:</strong> ${o[4]}</div>`:'')}
+const AR='<defs><marker id="ar" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0L10,5L0,10z" fill="#273E74"/></marker></defs>';
+
+// Camadas
+const LAY=[['Usuário','Quem usa','Pessoa que dá ordens com cliques, toques e comandos. Não precisa saber nada sobre discos ou memória.'],
+['Aplicativos','Navegador, jogos, editor','Programas que resolvem problemas do usuário. Nunca falam direto com o hardware: pedem serviços ao SO por chamadas de sistema.'],
+['Interface (shell)','Janelas, ícones, terminal','A parte do SO que o usuário enxerga: o ambiente gráfico (GUI) ou a linha de comando (CLI), como o Prompt, PowerShell ou Bash.'],
+['Kernel (núcleo)','Processos, memória, arquivos','O coração do SO. Roda em modo privilegiado, decide quem usa a CPU, controla a memória e protege o sistema.'],
+['Drivers','Tradutores de dispositivos','Pequenos programas que ensinam o kernel a conversar com cada dispositivo: placa de vídeo, impressora, Wi-Fi, teclado.'],
+['Hardware','CPU, RAM, disco, rede','As peças físicas. Entendem apenas sinais elétricos e instruções de máquina.']];
+const LF=['#fff','#5C6D82','#5C6D82','#273E74','#5C6D82','#fff'];let L='';
+LAY.forEach((l,i)=>{const c=LF[i]=='#fff'?'#273E74':'#fff';L+=`<g class="clk" onclick="lay(${i})"><rect x="40" y="${8+i*54}" width="700" height="46" fill="${LF[i]}" stroke="#273E74" stroke-width="2.5"/>${T(250,31+i*54,l[0],c,17,1)}${T(560,31+i*54,l[1],c,15)}</g>`});
+L+='<path d="M748 116H760V271H748" stroke="#273E74" stroke-width="3" fill="none"/>'+`<text transform="translate(778 193) rotate(90)" text-anchor="middle" fill="#273E74" font-size="16" font-weight="bold">Sistema Operacional</text>`;
+$('layers').innerHTML=L;
+function lay(i){panel($('layDet'),[LAY[i][0],LAY[i][1],LAY[i][2]])}
+
+// Funções
+const FN=[['Gerência de processos','CPU','Cria, pausa e encerra processos e decide qual deles usa a CPU a cada instante (escalonamento). Também cuida da comunicação entre processos e evita <strong>deadlocks</strong>, quando dois processos esperam um pelo outro para sempre.','Um maestro que dá a vez a cada músico.','Gerenciador de Tarefas, <code>top</code>, <code>ps</code>.'],
+['Gerência de memória','RAM','Controla quais partes da RAM pertencem a cada processo, impede que um invada o outro e usa a <strong>memória virtual</strong>, movendo páginas entre RAM e disco quando a memória acaba.','Um hotel: cada hóspede tem um quarto isolado.','Paginação, arquivo de troca (<em>swap</em>, pagefile).'],
+['Sistema de arquivos','Disco','Organiza dados em arquivos e pastas, guarda nomes, tamanhos e permissões e sabe em quais blocos do disco cada arquivo está.','Uma biblioteca com catálogo.','NTFS (Windows), ext4 (Linux), APFS (Apple), FAT32 (pendrives).'],
+['Gerência de E/S','Dispositivos','Faz a ponte entre programas e dispositivos de entrada e saída usando drivers, filas e <em>buffers</em>. Os dispositivos avisam a CPU por <strong>interrupções</strong>.','Uma recepção que atende vários pedidos.','Teclado, impressora, placa de rede, USB.'],
+['Proteção e segurança','Segurança','Autentica usuários, controla permissões de acesso, isola processos e mantém registros de eventos. Sem isso, qualquer programa poderia ler os dados de outro.','Seguranças e crachás de um prédio.','Contas, UAC, <code>chmod</code>, firewall, criptografia de disco.'],
+['Interface com o usuário','Interação','Oferece janelas, menus e terminal, além das APIs que os programadores usam para pedir serviços ao SO.','O balcão de atendimento do computador.','GUI, shell, APIs (Win32, POSIX).']];
+FN.forEach((f,i)=>{const d=document.createElement('li');d.innerHTML=`<div class="node">${f[0]}</div>`;d.firstChild.onclick=()=>{document.querySelectorAll('#fList .node').forEach(n=>n.classList.remove('selected'));d.firstChild.classList.add('selected');panel($('fDet'),[f[0],f[1],f[2],f[3],f[4]])};$('fList').appendChild(d)});
+
+// Syscall
+$('sysc').innerHTML=AR+'<rect x="5" y="5" width="385" height="220" fill="#e9ecf1"/><rect x="390" y="5" width="505" height="220" fill="#d5dbe6"/>'+
+`<text x="20" y="28" fill="#273E74" font-weight="bold" font-size="15">Modo usuário (restrito)</text><text x="405" y="28" fill="#273E74" font-weight="bold" font-size="15">Modo kernel (privilégio total)</text>`+
+B(10,85,100,60,'Aplicativo|chama open()','#5C6D82','#fff')+B(150,85,100,60,'Biblioteca|(libc / API)','#5C6D82','#fff')+B(290,85,100,60,'Instrução|syscall (trap)','#273E74','#fff')+
+'<g stroke="#273E74" stroke-width="3" fill="none" marker-end="url(#ar)"><path d="M110 115H138"/><path d="M250 115H278"/><path d="M390 115H428"/></g>'+
+'<polygon points="520,70 600,115 520,160 440,115" fill="#fff" stroke="#273E74" stroke-width="2.5"/>'+T(520,115,'Permitido?','#273E74',14,1)+
+'<g id="eS"><path d="M520 70V62H678" stroke="#273E74" stroke-width="3" fill="none" marker-end="url(#ar)"/><text x="560" y="55" fill="#273E74" font-weight="bold" font-size="13">Sim</text>'+B(690,35,190,55,'Executa no hardware|e devolve o resultado','#273E74','#fff')+'</g>'+
+'<g id="eN"><path d="M520 160V178H678" stroke="#273E74" stroke-width="3" fill="none" marker-end="url(#ar)"/><text x="560" y="171" fill="#273E74" font-weight="bold" font-size="13">Não</text>'+B(690,150,190,55,'Retorna erro|(acesso negado)','#616a75','#fff')+'</g>';
+function sc(ok){$('eS').style.opacity=ok?1:.7;$('eN').style.opacity=ok?.7:1;$('scMsg').innerHTML=ok?'O programa tem permissão. O kernel executa a operação no hardware e devolve o resultado ao aplicativo, que volta ao modo usuário.':'O usuário não tem permissão sobre esse arquivo. O kernel recusa, devolve um erro (como "Acesso negado") e o disco nem é tocado.'}
+
+// Estados
+const ST=[['Novo',20,60,'O processo acabou de ser criado e o SO prepara suas estruturas (PCB, memória).'],['Pronto',250,60,'Tem tudo de que precisa e espera numa fila a sua vez na CPU.'],['Executando',520,60,'Está usando a CPU neste instante. Em um núcleo, só um processo fica aqui por vez.'],['Finalizado',750,60,'Terminou. O SO libera memória e recursos que ele usava.'],['Bloqueado',385,200,'Está esperando algo lento, como disco, rede ou teclado. Não gasta CPU enquanto espera.']];
+const TR=[[0,1,'admitido','M150 88H238',198,76],[1,2,'despachado','M380 78H508',448,68],[2,1,'preempção','M520 100H392',450,120],[2,4,'pede E/S','M570 116Q570 215 528 225',605,185],[4,1,'E/S concluída','M410 200Q335 170 326 129',332,175],[2,3,'termina','M650 88H738',698,76]];
+let cs=0;
+function rSt(){let s=AR;
+ST.forEach((n,i)=>{s+=B(n[1],n[2],130,56,n[0],i==cs?'#273E74':'#fff',i==cs?'#fff':'#273E74',1)});
+TR.forEach((t,i)=>{const on=t[0]==cs;s+=`<g ${on?`class="clk" onclick="go(${i})"`:''} opacity="${on?1:.7}"><path d="${t[3]}" stroke="#273E74" stroke-width="${on?4:2.5}" fill="none" marker-end="url(#ar)"/>${on?`<path d="${t[3]}" stroke="transparent" stroke-width="26" stroke-linecap="square" fill="none" pointer-events="stroke"/>`:''}<text x="${t[4]}" y="${t[5]}" text-anchor="${t[2]=='E/S concluída'?'end':'middle'}" fill="#273E74" font-size="14" font-weight="bold">${t[2]}</text></g>`});
+$('states').innerHTML=s;panel($('stDet'),['Estado: '+ST[cs][0],'Você está aqui',ST[cs][3]+(cs==3?' Clique em qualquer lugar do diagrama para reiniciar.':'')])}
+function go(i){cs=TR[i][1];rSt()}$('states').onclick=e=>{if(cs==3&&!e.target.closest('.clk')){cs=0;rSt()}};rSt();
+
+// Escalonamento
+const PR=[{id:0,a:0,b:6},{id:1,a:1,b:3},{id:2,a:2,b:8},{id:3,a:3,b:2}],CO=['#273E74','#5C6D82','#3f6fb0','#616a75'];let al='fcfs';
+function sim(a,q){const P=PR.map(p=>({...p,rem:p.b,end:0}));let t=0,tl=[],Q=[],cur=null,ql=0,done=0,ad=new Set();const ar=()=>P.forEach(p=>{if(p.a<=t&&!ad.has(p.id)){ad.add(p.id);Q.push(p)}});ar();
+while(done<P.length){if(!cur){if(!Q.length){tl.push(-1);t++;ar();continue}if(a=='sjf')Q.sort((x,y)=>x.b-y.b);cur=Q.shift();ql=q}tl.push(cur.id);cur.rem--;ql--;t++;ar();if(!cur.rem){cur.end=t;done++;cur=null}else if(a=='rr'&&!ql){Q.push(cur);cur=null}}return{tl,P}}
+const GT={fcfs:'<strong>FCFS</strong> é justo na ordem, mas um processo longo faz os curtos esperarem (efeito comboio).',sjf:'<strong>SJF</strong> minimiza a espera média, mas precisa saber a duração de antemão e pode deixar tarefas longas esperando para sempre (inanição).',rr:'<strong>Round Robin</strong> dá uma fatia de tempo a cada processo e devolve ao fim da fila. É o modelo dos sistemas interativos. Quantum muito pequeno gasta tempo trocando de contexto; muito grande vira FCFS.'};
+function setA(a){al=a;gantt()}
+function gantt(){const q=+$('q').value;$('qv').textContent=q;$('q').disabled=al!='rr';['fcfs','sjf','rr'].forEach(x=>$('b_'+x).classList.toggle('sel',x==al));
+const{tl,P}=sim(al,q),W=40,n=tl.length;let s=`<svg width="${n*W+40}" height="95" font-family="sans-serif">`;
+tl.forEach((id,i)=>{s+=`<rect x="${20+i*W}" y="10" width="${W}" height="50" fill="${id<0?'#ccd':CO[id]}" stroke="#fff" stroke-width="1.5"/>`+(id>=0?`<text x="${20+i*W+W/2}" y="40" text-anchor="middle" fill="#fff" font-weight="bold" font-size="14">P${id+1}</text>`:'')+`<text x="${20+i*W}" y="80" text-anchor="middle" fill="#5C6D82" font-size="12">${i}</text>`});
+s+=`<text x="${20+n*W}" y="80" text-anchor="middle" fill="#5C6D82" font-size="12">${n}</text></svg>`;$('gantt').innerHTML=s;
+let r='',w=0,tt=0;P.forEach(p=>{const ta=p.end-p.a,e=ta-p.b;w+=e;tt+=ta;r+=`<tr><td>P${p.id+1}</td><td>${p.a}</td><td>${p.b}</td><td>${p.end}</td><td>${e}</td><td>${ta}</td></tr>`});
+$('gMet').innerHTML=`<div class="table-wrap" style="width:auto;max-width:none;margin:0"><table class="tab"><thead><tr><th>Processo</th><th>Chegada</th><th>Duração</th><th>Término</th><th>Espera</th><th>Retorno</th></tr></thead><tbody>${r}</tbody></table></div><div style="color:#273E74;margin-top:10px">Espera média: <strong>${(w/4).toFixed(2)}</strong> · Retorno médio: <strong>${(tt/4).toFixed(2)}</strong></div>`;$('gTxt').innerHTML=GT[al]}
+gantt();
+
+// Memória virtual
+let fr,H,F,clk,ma='fifo',last,tm;
+function resetM(){clearInterval(tm);fr=[];H=F=clk=0;last=null;$('mMsg').textContent='Acesse páginas e veja o que acontece quando a RAM enche.';rMem()}
+function setM(m){ma=m;resetM()}
+function acc(p){clk++;let f=fr.find(x=>x.p==p),m;if(f){H++;f.l=clk;m=`Página ${p}: <strong>acerto</strong>. Já estava na RAM, acesso rápido.`}
+else{F++;if(fr.length<3){fr.push({p,t:clk,l:clk});m=`Página ${p}: <strong>falta de página</strong>. Veio do disco para um quadro livre.`}
+else{const v=fr.reduce((a,b)=>(ma=='fifo'?b.t<a.t:b.l<a.l)?b:a);m=`Página ${p}: <strong>falta de página</strong> com RAM cheia. Saiu a página ${v.p} (${ma=='fifo'?'a que entrou primeiro':'a usada há mais tempo'}) e entrou a ${p}.`;Object.assign(v,{p,t:clk,l:clk})}}
+last=p;$('mMsg').innerHTML=m;rMem()}
+function rMem(){['fifo','lru'].forEach(x=>$('m_'+x).classList.toggle('sel',x==ma));
+$('pages').innerHTML='';for(let p=0;p<8;p++){const i=fr.findIndex(x=>x.p==p),d=document.createElement('div');d.className='bit';d.innerHTML=`<button class="${i>=0?'on':''}">${p}</button><span>${i>=0?'quadro '+i:'disco'}</span>`;d.firstChild.onclick=()=>acc(p);$('pages').appendChild(d)}
+$('frames').innerHTML=[0,1,2].map(i=>`<div class="fr ${fr[i]&&fr[i].p==last?'new':''}"><small>quadro ${i}</small>${fr[i]?'página '+fr[i].p:'vazio'}</div>`).join('');
+const t=H+F;$('mCnt').innerHTML=`Acertos: <strong>${H}</strong> · Faltas: <strong>${F}</strong>${t?` · Taxa de acerto: <strong>${Math.round(H/t*100)}%</strong>`:''}`}
+function runSeq(){resetM();const s=[7,0,1,2,0,3,0,4,2,3,0,3];let i=0;tm=setInterval(()=>{if(i>=s.length)return clearInterval(tm);acc(s[i++])},800)}
+resetM();
+
+// Boot
+const BT=[['Energia','Liga a fonte','Ao apertar o botão, a fonte estabiliza a energia e a CPU começa a executar a partir de um endereço fixo, onde fica o firmware gravado na placa-mãe.'],
+['Firmware|UEFI / BIOS','Teste de hardware','O firmware roda o <strong>POST</strong> (teste de memória, vídeo e teclado), inicializa dispositivos básicos e procura um disco de inicialização. Se não encontrar nenhum, mostra "No bootable device".'],
+['Bootloader','Gerenciador de boot','Pequeno programa gravado no disco (GRUB, Windows Boot Manager). Permite escolher entre vários sistemas e carrega o kernel na memória.'],
+['Kernel','Núcleo assume','O kernel se descompacta, detecta o hardware, monta a memória virtual, inicia o escalonador e monta o sistema de arquivos raiz.'],
+['Serviços|e drivers','Primeiros processos','O primeiro processo (<code>init</code>/<code>systemd</code> no Linux) inicia serviços: rede, som, impressão, antivírus e agendadores.'],
+['Login','Autenticação','O SO apresenta a tela de login e valida o usuário, que cria a sessão com suas permissões.'],
+['Área de|trabalho','Pronto para usar','O ambiente gráfico carrega, aplicativos de inicialização abrem e o computador está pronto.']];
+let bs=0;
+function rBoot(){let s=AR;BT.forEach((b,i)=>{const x=16+i*128;s+=`<g class="clk" onclick="bs=${i};rBoot()">`+B(x,28,100,64,b[0],i==bs?'#273E74':'#fff',i==bs?'#fff':'#273E74',1).replace(/font-size="14"/g,'font-size="14"')+'</g>';if(i)s+=`<path d="M${x-28} 60H${x-12}" stroke="#273E74" stroke-width="3" fill="none" marker-end="url(#ar)"/>`});$('boot').innerHTML=s;panel($('bootDet'),[BT[bs][0].replace('|',' '),(bs+1)+' de 7 · '+BT[bs][1],BT[bs][2]])}
+function bootNext(){bs=(bs+1)%7;rBoot()}rBoot();
+
+// Kernel
+const KD=[['Monolítico',['Escalonador','Memória','Arquivos','Drivers','Rede'],[],'Todo o SO roda dentro do kernel, em modo privilegiado. É rápido, pois tudo se chama diretamente, mas um driver com defeito pode derrubar o sistema inteiro.','Linux, Unix tradicionais, MS-DOS.'],
+['Microkernel',['Escalonador básico','Memória básica','Comunicação (IPC)'],['Arquivos','Drivers','Rede'],'O kernel é mínimo. Sistema de arquivos, drivers e rede rodam como processos comuns, no modo usuário. Se um servidor falha, ele é reiniciado sem derrubar o sistema, mas as trocas de mensagens custam desempenho.','Minix, QNX, seL4, Fuchsia.'],
+['Híbrido',['Escalonador','Memória','Arquivos','Drivers'],['Subsistemas','Serviços'],'Mistura as duas ideias: a maior parte roda no kernel por desempenho, mas parte dos serviços fica fora dele, de forma modular.','Windows NT, macOS e iOS (XNU).']];
+function setK(i){const k=KD[i];[0,1,2].forEach(j=>$('k'+j).classList.toggle('sel',j==i));let s='<rect x="5" y="5" width="890" height="140" fill="#e9ecf1"/><text x="20" y="28" fill="#273E74" font-weight="bold" font-size="15">Modo usuário</text>';
+const row=(a,y,f,tc)=>a.map((t,j)=>B(450-a.length*75+j*150+8,y,134,44,t,f,tc,0)).join('');
+s+=row(['Aplicativo','Aplicativo','Aplicativo'],38,'#5C6D82','#fff')+row(k[2],90,'#3f6fb0','#fff');
+s+=`<rect x="5" y="155" width="890" height="140" fill="#273E74"/><text x="20" y="178" fill="#fff" font-weight="bold" font-size="15">Modo kernel</text>`+row(k[1],210,'#fff','#273E74');$('kern').innerHTML=s;
+panel($('kDet'),[k[0],'Exemplos: '+k[4],k[3]])}
+setK(0);
+
+// Tipos
+[['Desktop','Foco no usuário único: interface gráfica, multitarefa e compatibilidade com muitos programas e periféricos.','Windows, macOS, Ubuntu'],
+['Servidor','Atende muitos usuários e serviços 24 horas por dia. Prioriza estabilidade, segurança e desempenho de rede.','Linux Server, Windows Server'],
+['Móvel','Economia de bateria, telas sensíveis ao toque, sensores e controle rígido de permissões de aplicativos.','Android, iOS'],
+['Embarcado','Roda dentro de equipamentos como TVs, carros e eletrodomésticos. Pequeno, com pouca memória e função específica.','Linux embarcado, FreeRTOS'],
+['Tempo real (RTOS)','Garante que tarefas terminem dentro de um prazo exato. Atrasar pode ser desastroso em freios ABS ou marca-passos.','VxWorks, QNX, FreeRTOS'],
+['Multiusuário','Vários usuários conectados ao mesmo tempo, cada um com contas, permissões e recursos isolados.','Unix, Linux, Windows Server'],
+['Distribuído','Faz várias máquinas em rede parecerem um único sistema, dividindo o trabalho entre elas.','Clusters, Plan 9, Amoeba'],
+['Em lote (batch)','Executa tarefas em fila, sem interação com o usuário. Dominou os primeiros computadores e ainda existe em processamentos pesados.','OS/360, jobs de mainframe']].forEach(t=>$('tipos').innerHTML+=`<div class="glossary-card"><h3>${t[0]}</h3><p>${t[1]}</p><div class="ex"><strong>Exemplos:</strong> ${t[2]}</div></div>`);
+
+// Glossário
+const GL=[
+['Kernel','Geral','Núcleo do SO. Roda em modo privilegiado e controla CPU, memória, dispositivos e arquivos.'],
+['Shell','Geral','Interface pela qual o usuário dá comandos ao SO, em texto (Bash, PowerShell) ou gráfica (a área de trabalho).'],
+['Chamada de sistema (syscall)','Geral','Pedido que um programa faz ao kernel para usar um serviço protegido, como abrir um arquivo ou criar um processo.'],
+['Modo usuário e modo kernel','Geral','Dois níveis de privilégio da CPU. Aplicativos rodam em modo usuário, restrito. O kernel roda em modo kernel, com acesso total ao hardware.'],
+['Firmware','Geral','Software gravado no próprio hardware, como o UEFI da placa-mãe, que roda antes de o SO carregar.'],
+['Boot','Geral','Processo de ligar o computador e carregar o SO na memória.'],
+['Bootloader','Geral','Pequeno programa que carrega o kernel na memória durante o boot, como o GRUB.'],
+['API','Geral','Conjunto de funções que o SO oferece aos programadores para usar seus serviços, como Win32 e POSIX.'],
+['Virtualização','Geral','Técnica que faz um computador rodar vários sistemas isolados, como se fossem máquinas separadas.'],
+['Máquina virtual (VM)','Geral','Computador simulado por software, com seu próprio SO, rodando dentro de outro computador.'],
+['Contêiner','Geral','Ambiente isolado que compartilha o kernel do sistema hospedeiro. É mais leve que uma VM. Exemplo: Docker.'],
+['Processo','Processos','Programa em execução, com seu próprio espaço de memória e seu estado atual.'],
+['Thread','Processos','Linha de execução dentro de um processo. Threads do mesmo processo compartilham a memória.'],
+['PCB','Processos','Bloco de Controle de Processo: estrutura onde o SO guarda os dados de cada processo, como estado, registradores e arquivos abertos.'],
+['Escalonador','Processos','Parte do kernel que escolhe qual processo usa a CPU a cada momento.'],
+['Quantum','Processos','Fatia de tempo que um processo pode usar a CPU antes de ser interrompido, no Round Robin.'],
+['Troca de contexto','Processos','Salvar o estado do processo atual e carregar o do próximo. Tem custo, pois é tempo sem trabalho útil.'],
+['Preempção','Processos','Interromper um processo à força para dar a CPU a outro.'],
+['Multitarefa','Processos','Executar várias tarefas ao mesmo tempo: de verdade com vários núcleos, ou aparente, alternando rapidamente em um só.'],
+['Deadlock','Processos','Impasse em que cada processo espera um recurso que outro está segurando, e nenhum consegue avançar.'],
+['Inanição (starvation)','Processos','Situação em que um processo nunca consegue o recurso de que precisa porque outros sempre passam na frente.'],
+['Condição de corrida','Processos','Erro em que o resultado depende da ordem imprevisível com que processos ou threads acessam o mesmo dado.'],
+['Semáforo e mutex','Processos','Mecanismos de sincronização que permitem que apenas um processo por vez entre numa região crítica.'],
+['Serviço (daemon)','Processos','Processo que roda em segundo plano, sem interface, como o serviço de impressão ou de rede.'],
+['Memória virtual','Memória','Técnica que dá a cada processo a ilusão de ter memória própria e grande, usando o disco como extensão da RAM.'],
+['Página e quadro','Memória','Página é um bloco de tamanho fixo da memória virtual. Quadro é o bloco equivalente na RAM física.'],
+['Tabela de páginas','Memória','Estrutura que registra em qual quadro está cada página, ou se ela está no disco.'],
+['Falta de página (page fault)','Memória','Ocorre quando o programa acessa uma página que não está na RAM. O SO precisa buscá-la no disco.'],
+['Swap','Memória','Área do disco usada para guardar páginas retiradas da RAM. No Windows, é o arquivo de paginação (pagefile).'],
+['Thrashing','Memória','Situação em que o sistema gasta mais tempo trocando páginas entre RAM e disco do que executando programas, e fica lentíssimo.'],
+['Cache','Memória','Memória pequena e rápida que guarda cópia dos dados mais usados, evitando acessos a memórias mais lentas.'],
+['Segmentation fault','Memória','Erro que ocorre quando um programa tenta acessar memória que não lhe pertence. O SO encerra o programa.'],
+['Fragmentação','Memória','Desperdício de memória ou disco em pedaços pequenos e espalhados, que dificultam alocar blocos grandes.'],
+['Sistema de arquivos','Arquivos','Método de organizar e registrar arquivos no disco, como NTFS, ext4 e APFS.'],
+['Diretório','Arquivos','Pasta: lista que agrupa arquivos e outros diretórios.'],
+['Partição','Arquivos','Divisão do disco tratada como unidade independente, com seu próprio sistema de arquivos.'],
+['Montagem (mount)','Arquivos','Tornar um sistema de arquivos acessível em um ponto da árvore de diretórios, como ao conectar um pendrive.'],
+['Journaling','Arquivos','Registro prévio das operações pendentes, como um diário, que permite recuperar o disco após uma falta de energia sem corromper dados.'],
+['Permissões','Arquivos','Regras que definem quem pode ler, escrever ou executar cada arquivo.'],
+['Driver','Entrada/Saída','Programa que ensina o SO a controlar um dispositivo específico, como placa de vídeo ou impressora.'],
+['Interrupção','Entrada/Saída','Sinal que chama a atenção da CPU. Ela pausa o que fazia, trata o evento e depois volta ao trabalho.'],
+['Buffer','Entrada/Saída','Área de memória que guarda dados temporariamente durante a transferência entre componentes de velocidades diferentes.'],
+['DMA','Entrada/Saída','Acesso Direto à Memória: permite que um dispositivo transfira dados para a RAM sem ocupar a CPU.'],
+['Spooling','Entrada/Saída','Colocar tarefas em fila para um dispositivo lento, como a fila de impressão.'],
+['Polling','Entrada/Saída','A CPU consulta o dispositivo repetidamente para ver se há novidades. É a alternativa à interrupção.'],
+['Autenticação','Segurança','Verificação da identidade do usuário, por senha, biometria ou outro meio.'],
+['Root e Administrador','Segurança','Conta com privilégios totais sobre o sistema. Deve ser usada com cuidado.'],
+['Sandbox','Segurança','Ambiente restrito em que um programa roda isolado, sem acesso ao resto do sistema, como os aplicativos de celular.'],
+['Criptografia de disco','Segurança','Embaralhar os dados do disco para que só possam ser lidos com a chave correta, como BitLocker, FileVault e LUKS.']
+].sort((a,b)=>a[0].localeCompare(b[0],'pt'));
+const GC=['Todos','Geral','Processos','Memória','Arquivos','Entrada/Saída','Segurança'];let gc='Todos',gp=1;const PS=9;
+const NM=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+$('gcats').innerHTML=GC.map(c=>`<button data-c="${c}">${c}</button>`).join('');
+$('gcats').onclick=e=>{if(e.target.dataset.c){gc=e.target.dataset.c;gp=1;rGl()}};
+function rGl(){const q=NM($('gq').value.trim());[...$('gcats').children].forEach(b=>b.classList.toggle('sel',b.dataset.c==gc));
+const r=GL.filter(t=>(gc=='Todos'||t[1]==gc)&&(!q||NM(t[0]+' '+t[2]).includes(q)));
+const pg=Math.max(1,Math.ceil(r.length/PS));if(gp>pg)gp=pg;const sl=r.slice((gp-1)*PS,gp*PS);
+$('gn').textContent=r.length+(r.length==1?' termo':' termos')+(pg>1?' · página '+gp+' de '+pg:'');
+$('gl').innerHTML=r.length?sl.map(t=>`<div class="glossary-card"><span class="badge-light">${t[1]}</span><h3>${t[0]}</h3><p>${t[2]}</p></div>`).join(''):'<p class="nota" style="margin:10px">Nenhum termo encontrado. Tente outra palavra ou escolha "Todos".</p>';
+$('gpg').innerHTML=pg>1?`<button ${gp==1?'disabled':''} data-p="${gp-1}">Anterior</button>`+Array.from({length:pg},(_,i)=>`<button class="${i+1==gp?'sel':''}" data-p="${i+1}">${i+1}</button>`).join('')+`<button ${gp==pg?'disabled':''} data-p="${gp+1}">Próxima</button>`:''}
+$('gpg').onclick=e=>{const p=e.target.dataset.p;if(p&&!e.target.disabled){gp=+p;rGl();$('gq').scrollIntoView({behavior:'smooth',block:'center'})}};
+rGl();
+</script>
+</body>
+</html>
