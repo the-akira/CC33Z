@@ -63,6 +63,8 @@ table.tab tr:nth-child(even) td{background:#e9ecf1}
 .nota{max-width:950px;margin:-15px auto 30px;padding:0 20px;font-size:.85rem;color:#5C6D82;text-align:center}
 input[type="range"] {flex: 1;min-width: 200px;height: 8px;background: #5c6d82;cursor: pointer;outline: none;-webkit-appearance: none;}
 input[type="range"]:disabled {opacity: 0.5;cursor:not-allowed;}
+input[type="range"]:disabled::-webkit-slider-thumb {cursor: not-allowed;}
+input[type="range"]:disabled::-moz-range-thumb {cursor: not-allowed;}
 input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 22px;height: 22px;background: #ffffff;
   border: 2px solid #273E74;cursor: pointer;box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
 input[type="range"]::-moz-range-thumb {width: 22px;height: 22px;background: #273E74;cursor: pointer;border-radius: 50%;
