@@ -4649,7 +4649,6 @@
 
     function vennSetMode(n) {
       vennMode = n;
-      vennCanvas.height = n === 3 ? 640 : 480;
       document.getElementById('vennBtn2').classList.toggle('active', n === 2);
       document.getElementById('vennBtn3').classList.toggle('active', n === 3);
       document.getElementById('vennGroupC').style.display = n === 3 ? 'block' : 'none';
@@ -4670,7 +4669,15 @@
       const resultSet = op.calc(A, B, C, U);
       document.getElementById('vennResult').textContent = op.symbol + ' = ' + vennFormatSet(resultSet);
 
-      const w = vennCanvas.width, h = vennCanvas.height;
+      // Canvas nítido em telas de alta densidade (retina): o tamanho lógico
+      // continua 800×H, mas o buffer interno usa devicePixelRatio.
+      const w = 800, h = vennMode === 3 ? 640 : 480;
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      vennCanvas.width = Math.round(w * dpr);
+      vennCanvas.height = Math.round(h * dpr);
+      vennCanvas.style.width = w + 'px';
+      vennCanvas.style.height = 'auto';
+      vennCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
       vennCtx.clearRect(0, 0, w, h);
 
       // Retângulo do universo e círculos: dimensionados para que os círculos
@@ -4700,18 +4707,77 @@
       vennCtx.fillText('U (universo)', rectX + 12, rectY + 24);
       vennCtx.restore();
 
-      const step = 4;
-      vennCtx.fillStyle = 'rgba(39,62,116,0.4)';
-      for (let y = rectY; y < rectY + rectH; y += step) {
-        for (let x = rectX; x < rectX + rectW; x += step) {
-          const a = vennPointInCircle(x, y, circles.A.cx, circles.A.cy, circles.A.r);
-          const b = vennPointInCircle(x, y, circles.B.cx, circles.B.cy, circles.B.r);
-          const c = vennMode === 3 ? vennPointInCircle(x, y, circles.C.cx, circles.C.cy, circles.C.r) : false;
-          if (op.region(a, b, c)) {
-            vennCtx.fillRect(x, y, step, step);
-          }
+      // Preenchimento exato (vetorial, com anti-aliasing): para cada combinação
+      // possível de pertencimento (dentro/fora de A, B, C) em que a operação é
+      // verdadeira, recortamos a região correspondente com composição de canvas
+      // (interseção = destination-in, exclusão = destination-out) e juntamos tudo.
+      const names = vennMode === 3 ? ['A', 'B', 'C'] : ['A', 'B'];
+      const mk = () => {
+        const c = document.createElement('canvas');
+        c.width = vennCanvas.width; c.height = vennCanvas.height;
+        const x = c.getContext('2d');
+        x.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return c;
+      };
+      const maskCv = mk(), maskCtx = maskCv.getContext('2d');
+      const cellCv = mk(), cellCtx = cellCv.getContext('2d');
+      const pathCircle = (ctx, k) => {
+        const ci = circles[k];
+        ctx.beginPath();
+        ctx.arc(ci.cx, ci.cy, ci.r, 0, Math.PI * 2);
+      };
+
+      for (let m = 0; m < (1 << names.length); m++) {
+        const inside = names.map((_, i) => ((m >> i) & 1) === 1);
+        const a = inside[0], b = inside[1], c = names.length === 3 ? inside[2] : false;
+        if (!op.region(a, b, c)) continue;
+
+        cellCtx.save();
+        cellCtx.setTransform(1, 0, 0, 1, 0, 0);
+        cellCtx.clearRect(0, 0, cellCv.width, cellCv.height);
+        cellCtx.restore();
+        cellCtx.globalCompositeOperation = 'source-over';
+        cellCtx.fillStyle = '#000';
+
+        // base: primeiro círculo exigido, ou o universo inteiro se nenhum for exigido
+        const firstIn = inside.indexOf(true);
+        if (firstIn === -1) {
+          cellCtx.fillRect(rectX, rectY, rectW, rectH);
+        } else {
+          pathCircle(cellCtx, names[firstIn]);
+          cellCtx.fill();
         }
+        // demais círculos exigidos: interseção
+        cellCtx.globalCompositeOperation = 'destination-in';
+        inside.forEach((isIn, i) => {
+          if (isIn && i !== firstIn) { pathCircle(cellCtx, names[i]); cellCtx.fill(); }
+        });
+        // círculos proibidos: subtração
+        cellCtx.globalCompositeOperation = 'destination-out';
+        inside.forEach((isIn, i) => {
+          if (!isIn) { pathCircle(cellCtx, names[i]); cellCtx.fill(); }
+        });
+        cellCtx.globalCompositeOperation = 'source-over';
+
+        maskCtx.save();
+        maskCtx.setTransform(1, 0, 0, 1, 0, 0);
+        maskCtx.drawImage(cellCv, 0, 0);
+        maskCtx.restore();
       }
+
+      // tinge a máscara com a cor de destaque e aplica no canvas principal
+      maskCtx.save();
+      maskCtx.setTransform(1, 0, 0, 1, 0, 0);
+      maskCtx.globalCompositeOperation = 'source-in';
+      maskCtx.fillStyle = 'rgb(39,62,116)';
+      maskCtx.fillRect(0, 0, maskCv.width, maskCv.height);
+      maskCtx.restore();
+
+      vennCtx.save();
+      vennCtx.setTransform(1, 0, 0, 1, 0, 0);
+      vennCtx.globalAlpha = 0.4;
+      vennCtx.drawImage(maskCv, 0, 0);
+      vennCtx.restore();
 
       const drawCircleOutline = (circ, color, label, lx, ly) => {
         vennCtx.save();
