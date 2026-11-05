@@ -4702,9 +4702,9 @@
       vennCtx.strokeStyle = '#a9b3c2';
       vennCtx.lineWidth = 2;
       vennCtx.strokeRect(rectX, rectY, rectW, rectH);
-      vennCtx.fillStyle = '#5c6d82';
+      vennCtx.fillStyle = '#273E74';
       vennCtx.font = 'bold 16px sans-serif';
-      vennCtx.fillText('U (universo)', rectX + 12, rectY + 24);
+      vennCtx.fillText('U (Universo)', rectX + 12, rectY + 24);
       vennCtx.restore();
 
       // Preenchimento exato (vetorial, com anti-aliasing): para cada combinação
@@ -4793,11 +4793,11 @@
       };
 
       if (vennMode === 2) {
-        drawCircleOutline(circles.A, '#c0392b', 'A', circles.A.cx - 150, circles.A.cy - 130);
+        drawCircleOutline(circles.A, '#c0392b', 'A', circles.A.cx - 140, circles.A.cy - 130);
         drawCircleOutline(circles.B, '#1f8a70', 'B', circles.B.cx + 120, circles.B.cy - 130);
       } else {
         drawCircleOutline(circles.A, '#c0392b', 'A', circles.A.cx - 135, circles.A.cy - 115);
-        drawCircleOutline(circles.B, '#1f8a70', 'B', circles.B.cx + 100, circles.B.cy - 115);
+        drawCircleOutline(circles.B, '#1f8a70', 'B', circles.B.cx + 118, circles.B.cy - 115);
         drawCircleOutline(circles.C, '#e8b03a', 'C', circles.C.cx - 8, circles.C.cy + 168);
       }
     }
