@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQL Lab - Curso de Informática</title>
+<link rel="icon" type="image/x-icon" href="images/pc.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-asm.js"></script>
+<style>
+body{margin:0;padding:0;font-family:Arial,sans-serif;background:#fff;color:#222}
+*{box-sizing:border-box}
+header{text-align:center;padding:40px 20px;background:#5c6d82;border-bottom:5.5px solid #273E74;margin-bottom:30px;color:#fff}
+header>h1{font-size:2.5em;margin:0 0 10px 0}
+header>.subtitle{font-size:1.2em;opacity:.9}
+#homeBtn{margin-top:15px;background:#fff;color:#273E74;border:3.3px solid #273E74;padding:9px 12px;font-size:1.025rem;font-family:Arial,sans-serif;font-weight:bold}
+#homeBtn:hover{background:#273E74;color:#fff;border-color:#fff;cursor:pointer}
+.intro-text{max-width:900px;margin:10px auto 25px auto;padding:0 20px;color:#273E74;line-height:1.6;text-align:center}
+section.block-title{max-width:950px;margin:0 auto 10px auto;padding:0 20px}
+section.block-title h2{color:#273E74;text-align:center;margin:0 0 15px 0}
+section.block-title p.sub{text-align:center;color:#616A75;font-size:1rem;margin:-5px 0 15px 0}
+.separador{max-width:1100px;margin:0 auto 30px auto;border:none;border-top:2px solid #273E74}
+
+.wrap{max-width:1180px;margin:0 auto 25px auto;padding:0 20px;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:flex-start}
+.side{width:340px;max-width:100%;display:flex;flex-direction:column;gap:20px}
+.mainc{flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.panel{background:#f2f2f2;border:2px solid #273E74}
+.panel-header{background:#273E74;color:#fff;font-weight:bold;padding:10px 14px;font-size:1rem}
+.pbody{padding:10px 8px}
+
+button:focus-visible,textarea:focus-visible{outline:1px solid #5C6D82;}
+.act{padding:8px 12px;border:2px solid #273E74;background:#5C6D82;color:#fff;cursor:pointer;font-weight:bold;font-size:.85rem;font-family:Arial,sans-serif;margin:4px}
+.act:hover{background:#273E74}
+.act.run{background:#273E74;border-color:#273E74}
+.act.run:hover{background:#fff;color:#273E74}
+
+#les{display:flex;flex-direction:column;margin-top:6px}
+#les button{display:block;width:100%;text-align:left;font:.95rem Arial,sans-serif;color:#273E74;background:transparent;border:2px solid transparent;padding:8px 10px;margin:2px 0;cursor:pointer}
+#les button:hover{background:#e3e6ec}
+#les button.selected{background:#273E74;color:#fff}
+
+.tb{background:#fff;border:2px solid #273E74;padding:8px 10px;margin:0 0 8px 0;min-width:0}
+.tn{font:bold .95rem monospace;color:#273E74;background:none;border:0;padding:0;cursor:pointer;max-width:100%;text-align:left;overflow-wrap:anywhere}
+.tn:hover{text-decoration:underline}
+.ct{float:right;color:#5C6D82;font-size:.8rem}
+.tb ul{list-style:none;margin:8px 0 0;padding:0;font:.85rem monospace}
+.tb li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;padding:2px 0;border-top:1px solid #b8c0cc;min-width:0}
+.tb li em{color:#5C6D82;font-style:normal}
+.tb li>span,.tb li em{min-width:0;overflow-wrap:anywhere}
+.tb li b{font:bold .7rem Arial,sans-serif;background:#273E74;color:#fff;padding:1px 6px;white-space:nowrap;flex:0 0 auto}
+.tb li b:nth-of-type(2){background:#5C6D82}
+.empty{color:#5C6D82;font-style:italic;font-size:.9rem;margin:6px}
+
+.ed{position:relative;height:290px;background:#fff;border-bottom:2px solid #273E74}
+.ed pre,.ed textarea{position:absolute;inset:0;margin:0;padding:14px 16px;font:14px/1.6 Consolas,"Courier New",monospace;white-space:pre;tab-size:2;border:0;width:100%;height:100%}
+.ed pre{overflow:hidden;pointer-events:none;color:#1c2636}
+.ed textarea{background:transparent;color:transparent;caret-color:#273E74;resize:none;overflow:auto}
+.ed textarea::selection{background:rgba(39,62,116,.28);color:transparent}
+i{font-style:normal}.k{color:#273E74;font-weight:bold}.t{color:#5C6D82;font-weight:bold}.f{color:#1f6f8b}.s{color:#2e7d32}.n{color:#b34700}.c{color:#777;font-style:italic}
+.x{text-decoration:underline wavy #c62828;text-underline-offset:3px}
+.bar{display:flex;flex-wrap:wrap;align-items:center;padding:6px 8px}
+.cap{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cap .act{margin:0;padding:4px 8px;font-size:.75rem;white-space:nowrap}
+.nota{max-width:950px;margin:0 auto 18px auto;padding:0 20px;font-size:.85rem;color:#5C6D82;text-align:center}
+.gloss-search{text-align:center;margin:0 20px 10px}
+.gloss-search input{padding:9px 12px;font:1rem Arial,sans-serif;border:2px solid #273E74;color:#273E74;width:380px;max-width:100%;background:#fff}
+.gloss-search input:focus{outline:none;border-color:#5C6D82}
+.glossary-grid{max-width:1180px;margin:20px auto 20px auto;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:20px}
+.glossary-card{background:#f2f2f2;border:2px solid #273E74;padding:22px;display:flex;flex-direction:column;min-width:0}
+.glossary-card h3{color:#273E74;margin:0 0 12px 0;font-size:18px;overflow-wrap:anywhere}
+.glossary-card p{font-size:1rem;line-height:1.55;margin:0 0 12px 0;overflow-wrap:anywhere}
+.glossary-card code{font-family:monospace}
+.glossary-card pre{background:#fff;border:1.5px solid #273E74;margin:0 0 12px 0;padding:10px 12px;font:.85rem/1.55 monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:#1c2636}
+.glossary-card .act{margin:auto 0 0 0;align-self:flex-start}
+.pager{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin:0 20px 25px}
+.pager .act{margin:0;min-width:38px;text-align:center}
+.pager .act.on{background:#273E74;cursor:default}
+.pager .act:disabled{opacity:.45;cursor:default}
+.pager .act:disabled:hover{background:#5C6D82}
+.pinfo{flex-basis:100%;text-align:center;font-size:.85rem;color:#5C6D82;margin-top:4px}
+.dgbox{padding:14px;overflow-x:auto}
+.dgbox svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.dgbox.real svg{max-width:none}
+.dgtools{text-align:right;margin:-4px 0 8px}
+.dgtools .act{margin:0}
+.wide{max-width:1180px;margin:0 auto 25px auto;padding:0 20px}
+.dgbox .nota{padding:0;margin:12px 0 0;max-width:none}
+.dgbox .empty{margin:0}
+.tbl{cursor:pointer}
+svg.dim .tbl{opacity:.4}svg.dim .tbl.on{opacity:1}
+svg.dim .rel{opacity:.2}svg.dim .rel.hi{opacity:1}
+.rel.hi path{stroke:#273E74;stroke-width:3.5;marker-end:url(#arh)}
+#dbSel{width:100%;padding:9px 12px;font:1rem Arial,sans-serif;border:2px solid #273E74;color:#273E74;background:#fff}
+#dbSel:focus{outline:none;border-color:#5C6D82}
+.dbbtns{display:flex;flex-wrap:wrap}
+.dbbtns .act{margin:8px 6px 0 0;padding:6px 10px}
+.act:disabled{opacity:.45;cursor:default}
+.act:disabled:hover{background:#5C6D82}
+.mini{font-size:.8rem;color:#5C6D82;margin:10px 2px 0;line-height:1.4}
+table.dtab td.mk{width:1%;font:bold .7rem Arial,sans-serif;text-transform:uppercase;white-space:nowrap;color:#5C6D82}
+table.dtab tr.r-new td{background:#e1f3e4}
+table.dtab tr.r-new td.mk{color:#1b6b2b}
+table.dtab tr.r-upd td{background:#fff4d6}
+table.dtab tr.r-upd td.mk{color:#8a5a00}
+table.dtab tr.r-upd td.chg{background:#ffe08a}
+table.dtab tr.r-del td{background:#fbe3e1;color:#8a1f17}
+table.dtab tr.r-del td.mk{color:#b3261e}
+table.dtab .old{color:#777;text-decoration:line-through}
+.txb{display:inline-flex;align-items:center;gap:4px;background:#fff4d6;border:2px solid #8a5a00;color:#8a5a00;font-weight:bold;font-size:.8rem;padding:2px 4px 2px 10px;margin:4px}
+.txb[hidden]{display:none}
+.txb .act{margin:2px;padding:4px 8px;font-size:.75rem}
+.pb{display:inline-block;font:bold .72rem Arial,sans-serif;padding:2px 8px;border:1px solid}
+.pb-ok{background:#e1f3e4;color:#1b6b2b;border-color:#1b6b2b}
+.pb-warn{background:#fff4d6;color:#8a5a00;border-color:#8a5a00}
+.pb-info{background:#e9ecf1;color:#273E74;border-color:#273E74}
+table.plan td.pd{font-family:monospace;white-space:pre}
+.tip{font-size:.85rem;color:#5C6D82;margin:6px 0 0;line-height:1.45}
+.tb li.ix{background:#eef2fa}
+.tb li.ix b{background:#5C6D82;margin-left:auto}
+.jvbox{padding:16px}
+.jvctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.jvctl label{font-size:.8rem;color:#5C6D82;display:flex;flex-direction:column;gap:3px;min-width:0;max-width:100%}
+.jvctl select{padding:7px 10px;font:1rem Arial,sans-serif;border:2px solid #273E74;color:#273E74;background:#fff;max-width:100%}
+.jvctl select:focus{outline:none;border-color:#5C6D82}
+.jveq{font:bold 1.4rem Arial,sans-serif;color:#273E74;padding-bottom:4px}
+.jvtypes{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 10px}
+.jvtypes .act,.jvbtns .act{margin:0}
+.jvt.on{background:#273E74;cursor:default}
+.jvtop{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin:6px 0 12px}
+.jvinfo{flex:1 1 320px;min-width:0}
+#jvVenn{flex:0 1 222px;min-width:0;max-width:100%}
+#jvVenn svg{display:block;width:100%;max-width:222px;height:auto}
+.jvinfo p{margin:0;color:#273E74;line-height:1.5}
+.jvsql{background:#fff;border:1.5px solid #273E74;padding:10px 12px;font:.85rem/1.55 monospace;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere;color:#1c2636}
+.jvbtns{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.jvnar{min-height:3em;font-size:.95rem;color:#273E74;background:#fff;border-left:4px solid #273E74;padding:8px 12px;margin:0 0 12px;line-height:1.5}
+.jvsvg{overflow-x:auto;background:#fff;border:2px solid #273E74}
+.jvsvg svg{display:block;margin:0 auto;width:100%;min-width:640px;height:auto}
+.jvleg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.82rem;color:#273E74;margin:10px 0}
+.jvleg i{display:inline-block;width:14px;height:14px;border:1px solid #b8c0cc;vertical-align:-2px;margin-right:5px}
+.jr .rb{fill:#fff;stroke:#b8c0cc;stroke-width:1;transition:fill .35s,stroke .35s}
+.jr.st-match .rb{fill:#e1f3e4}
+.jr.st-null .rb{fill:#fff4d6}
+.jr.st-out .rb{fill:#e9ecf1}
+.jr.st-out text{fill:#9aa5b1}
+.jr.act .rb{stroke:#f0b441;stroke-width:3}
+.jr .gl{font:bold 14px Arial,sans-serif}
+.jr.st-match .gl{fill:#1b6b2b}
+.jr.st-null .gl{fill:#8a5a00}
+.jr.st-out .gl{fill:#9aa5b1}
+.ln{fill:none;stroke:#273E74;stroke-width:2.5;stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset .6s ease,opacity .2s}
+.ln.on{stroke-dashoffset:0;opacity:1}
+.stub{opacity:0;transition:opacity .4s}
+.stub.on{opacity:1}
+table.jvres th.la{background:#273E74}
+table.jvres th.ra{background:#5C6D82}
+table.jvres th{text-align:center}
+table.jvres td.fill{background:#fff4d6;color:#8a5a00;font-style:italic}
+table.jvres tr.nullrow td:not(.fill){background:#fffaf0}
+table.jvres tr.fresh td{animation:jvin .5s}
+@keyframes jvin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ln,.stub,.jr .rb{transition:none}table.jvres tr.fresh td{animation:none}}
+.hbox{padding:16px 16px}
+.hctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin-bottom:10px}
+.hctl label{font-size:.8rem;color:#5C6D82;display:flex;flex-direction:column;gap:3px;min-width:0;max-width:100%}
+.hctl label:first-child{flex:1 1 260px;max-width:420px}
+.hctl input[type=search],.hctl select{padding:8px 12px;font:1rem Arial,sans-serif;border:2px solid #273E74;color:#273E74;background:#fff}
+.hctl input[type=search]{width:100%;min-width:0}
+.hctl input:focus,.hctl select:focus{outline:none;border-color:#5C6D82}
+.hctl .hchk{flex-direction:row;align-items:center;gap:6px;font-size:.9rem;color:#273E74;padding-bottom:9px}
+.hctl .act{margin:0}
+.hinfo{font-size:.85rem;color:#5C6D82;margin:0 0 8px}
+.hitem{display:flex;gap:12px;align-items:flex-start;background:#fff;border:2px solid #273E74;padding:10px 12px;margin-bottom:8px}
+.hst{flex:0 0 28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:bold .95rem Arial,sans-serif;color:#fff;background:#1b6b2b}
+.hst.err{background:#b3261e}
+.hmain{flex:1;min-width:0}
+.hcode{display:block;max-height:calc(.85rem*1.5*4.9 + 12px);overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:.85rem/1.5 monospace;color:#1c2636;cursor:pointer;background:#f7f8fa;padding:6px 8px;scrollbar-width:thin;scrollbar-color:#9aa5b5 #e6e9ef}
+.hcode::-webkit-scrollbar{width:8px}
+.hcode::-webkit-scrollbar-track{background:#e6e9ef}
+.hcode::-webkit-scrollbar-thumb{background:#9aa5b5;border-radius:4px}
+.hcode.open{max-height:none;overflow-y:visible}
+.hcode.open{display:block;-webkit-line-clamp:unset}
+.hmeta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.78rem;color:#5C6D82;margin-top:10px}
+.hmeta .hdb{background:#e9ecf1;color:#273E74;font-weight:bold;padding:0 6px}
+.hmeta .herr{color:#b3261e;flex-basis:100%}
+.hbtn{display:flex;flex-direction:column;gap:4px;flex:0 0 auto}
+.hbtn .act{margin:0;padding:5px 9px;font-size:.75rem;white-space:nowrap}
+.pager .dots{color:#5C6D82;padding:0 2px}
+@media(max-width:600px){.hitem{flex-wrap:wrap}.hbtn{flex-direction:row;flex-wrap:wrap;width:100%}}
+.hint{color:#5C6D82;font-size:.8rem;margin:8px 0px 8px 5px;}
+
+#out{padding:16px 16px;background:#fff;max-height:560px;overflow:auto}
+.msg{margin-bottom:14px}
+.res{margin-bottom: 0px;}
+.cap{font:.8rem monospace;color:#5C6D82;margin-bottom:10px;overflow-wrap:anywhere}
+.sc{overflow-x:auto;max-width:100%}
+table{width:100%;border-collapse:collapse;background:#f2f2f2;border:2px solid #273E74;font-size:.92rem}
+th{background:#273E74;color:#fff;text-align:left;padding:9px 12px;white-space:nowrap}
+td{padding:8px 12px;border-top:1px solid #b8c0cc;white-space:nowrap}
+tr:nth-child(even) td{background:#e9ecf1}
+td.nm{text-align:left}td.nl{color:#5C6D82;font-style:italic}
+.msg{background:#f2f2f2;border:2px solid #273E74;padding:10px 14px}
+.msg .hd{font-weight:bold;color:#273E74}
+.msg code{display:block;margin-top:6px;font:.85rem monospace;color:#5C6D82;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.err{border-color:#b3261e;background:#fdf1f0}
+.msg.err .hd{color:#b3261e}
+
+footer.creditos{max-width:950px;margin:0 auto 40px auto;padding:0 20px;font-size:.78rem;color:#777;text-align:center;}
+@media only screen and (max-width:480px){.glossary-card{padding:16px}.glossary-card pre{font-size:.8rem;padding:8px 10px}.glossary-grid,.wrap,.wide{padding:0 12px}header>h1{font-size:2em}.ed{height:240px}.hint{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL Lab</h1>
+  <div class="subtitle">Pratique SQL criando tabelas, inserindo dados e fazendo consultas</div>
+  <button id="homeBtn">Página Inicial</button>
+</header>
+
+<section class="block-title">
+  <h2>Laboratório de SQL</h2>
+  <p class="sub">Escreva os comandos, execute e veja o resultado na hora</p>
+</section>
+<p class="intro-text">
+  <strong>SQL</strong> é a linguagem usada para conversar com bancos de dados. Aqui você tem um banco <strong>SQLite</strong>
+  que funciona dentro do próprio navegador: crie tabelas, insira dados e faça consultas sem instalar nada.
+  Use o <strong>roteiro de estudo</strong> para ver os comandos passo a passo.
+</p>
+<hr class="separador">
+
+<div class="wrap">
+  <div class="side">
+    <div class="panel">
+      <div class="panel-header">Bancos de dados</div>
+      <div class="pbody">
+        <select id="dbSel" aria-label="Banco de dados ativo"></select>
+        <div class="dbbtns">
+          <button class="act" id="bDbNew">Novo</button>
+          <button class="act" id="bDbRen">Renomear</button>
+          <button class="act" id="bDbDup">Duplicar</button>
+          <button class="act" id="bDbDel">Excluir</button>
+        </div>
+        <p class="mini">Cada banco tem as suas próprias tabelas. Os comandos valem para o banco selecionado.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Roteiro de estudo</div>
+      <div class="pbody">
+        <button class="act" id="bSample">Carregar banco de exemplo</button>
+        <div id="les"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header" id="shd">Tabelas do banco</div>
+      <div class="pbody" id="sch"></div>
+    </div>
+  </div>
+  <div class="mainc">
+    <div class="panel" id="edPanel">
+      <div class="panel-header">Editor SQL</div>
+      <div class="ed"><pre id="hl" aria-hidden="true"></pre><textarea id="ed" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Editor SQL"></textarea></div>
+      <div class="bar">
+        <button class="act run" id="bRun">Executar</button>
+        <button class="act" id="bClear">Limpar editor</button>
+        <button class="act" id="bImp">Importar .sqlite / .sql</button>
+        <button class="act" id="bDump">Baixar .sqlite</button>
+        <input type="file" id="fIn" accept=".sqlite,.sqlite3,.db,.sql" hidden>
+        <button class="act" id="bReset">Reiniciar banco</button>
+        <span class="txb" id="txb" hidden>● Transação aberta <button class="act" data-tx="COMMIT">COMMIT</button><button class="act" data-tx="ROLLBACK">ROLLBACK</button></span>
+        <span class="hint">Ctrl+Enter executa · selecione um trecho para rodar só ele</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Resultado</div>
+      <div id="out"></div>
+    </div>
+  </div>
+</div>
+<div class="wide">
+  <div class="panel">
+    <div class="panel-header">Histórico de comandos</div>
+    <div class="hbox" id="hist"></div>
+  </div>
+</div>
+<div class="wide">
+  <div class="panel">
+    <div class="panel-header" id="dhd">Diagrama das tabelas</div>
+    <div class="dgbox" id="dg"></div>
+  </div>
+</div>
+<div class="wide">
+  <div class="panel">
+    <div class="panel-header">JOIN visual</div>
+    <div class="jvbox" id="jv"></div>
+  </div>
+</div>
+
+<hr class="separador">
+<section class="block-title" id="glossario">
+  <h2>Glossário e Referência Rápida</h2>
+  <p class="sub">Comandos e conceitos do SQL com exemplos para enviar ao editor</p>
+</section>
+<p class="nota">Os exemplos de consulta usam o banco de exemplo (estudantes, cursos e matrículas). Clique em “Carregar banco de exemplo” para testá-los.</p>
+<div class="gloss-search"><input id="gq" type="search" placeholder="Buscar no glossário (ex.: JOIN, NULL, UNIQUE)" aria-label="Buscar no glossário"></div>
+<div class="glossary-grid" id="gloss"></div>
+<div class="pager" style="margin-top:0px;" id="pager"></div>
+<p class="nota" id="gnone" hidden>Nenhum item encontrado para essa busca.</p>
+
+<footer class="creditos">SQL Lab · banco SQLite (sql.js) executado no navegador. Seus bancos e o editor são salvos automaticamente neste navegador. <span id="sv"></span></footer>
+<script>
+const KW=new Set("ADD,ALL,ALTER,AND,AS,ASC,AUTOINCREMENT,BEGIN,BETWEEN,BY,CASE,CAST,CHECK,COMMIT,CONSTRAINT,CREATE,CROSS,DEFAULT,DELETE,DESC,DISTINCT,DROP,ELSE,END,EXCEPT,EXISTS,FOREIGN,FROM,FULL,GROUP,HAVING,IF,IN,INDEX,INNER,INSERT,INTERSECT,INTO,IS,JOIN,KEY,LEFT,LIKE,LIMIT,NATURAL,NOT,NULL,OFFSET,ON,OR,ORDER,OUTER,PRAGMA,PRIMARY,REFERENCES,RENAME,REPLACE,RIGHT,ROLLBACK,SELECT,SET,TABLE,THEN,TO,TRANSACTION,TRIGGER,UNION,UNIQUE,UPDATE,VALUES,VIEW,WHEN,WHERE,WITH".split(","));
+const TYPES=new Set("INTEGER,INT,TEXT,REAL,BLOB,NUMERIC,VARCHAR,CHAR,FLOAT,DOUBLE,BOOLEAN,DATE,DATETIME,DECIMAL".split(","));
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const $=id=>document.getElementById(id);
+const ed=$("ed"),hl=$("hl"),out=$("out"),sch=$("sch");
+let SQL=null,db=null,errTok=null,svT=null;
+
+/* ---------- Syntax highlight ---------- */
+const RE=/(--[^\n]*|\/\*[\s\S]*?(?:\*\/|$))|('(?:[^']|'')*'?|"(?:[^"]|"")*"?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)(?=\s*\()|([A-Za-z_]\w*)|([\s\S])/g;
+function paint(){
+  let used=false;
+  hl.innerHTML=ed.value.replace(RE,(m,c,s,n,f,w,o)=>{
+    const e=esc(m);
+    if(c)return`<i class="c">${e}</i>`;
+    if(s)return`<i class="s">${e}</i>`;
+    if(n)return`<i class="n">${e}</i>`;
+    if(f||w){
+      const u=m.toUpperCase();
+      let cls=KW.has(u)?"k":TYPES.has(u)?"t":f?"f":"";
+      if(errTok&&!used&&u===errTok.toUpperCase()){used=true;cls+=" x"}
+      return cls?`<i class="${cls}">${e}</i>`:e;
+    }
+    return e;
+  })+"\n";
+  hl.scrollTop=ed.scrollTop;hl.scrollLeft=ed.scrollLeft;
+  saveEd();
+}
+ed.addEventListener("input",()=>{errTok=null;paint()});
+ed.addEventListener("scroll",()=>{hl.scrollTop=ed.scrollTop;hl.scrollLeft=ed.scrollLeft});
+ed.addEventListener("keydown",e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();run()}
+  else if(e.key==="Tab"){e.preventDefault();document.execCommand("insertText",false,"  ")}
+});
+
+/* ---------- Divisão em comandos ---------- */
+function split(sql){
+  const out=[];let cur="",i=0,depth=0;
+  const flush=()=>{if(cur.replace(/--[^\n]*|\/\*[\s\S]*?\*\//g,"").trim())out.push(cur.trim());cur=""};
+  while(i<sql.length){
+    const ch=sql[i],two=sql.substr(i,2);
+    if(two==="--"){let j=sql.indexOf("\n",i);if(j<0)j=sql.length;cur+=sql.slice(i,j);i=j;continue}
+    if(two==="/*"){let j=sql.indexOf("*/",i+2);j=j<0?sql.length:j+2;cur+=sql.slice(i,j);i=j;continue}
+    if(ch==="'"||ch==='"'){let j=i+1;while(j<sql.length){if(sql[j]===ch){if(sql[j+1]===ch){j+=2;continue}break}j++}cur+=sql.slice(i,j+1);i=j+1;continue}
+    if(/[A-Za-z_]/.test(ch)){
+      let j=i;while(j<sql.length&&/\w/.test(sql[j]))j++;
+      const w=sql.slice(i,j).toUpperCase();
+      if(w==="CASE"||(w==="BEGIN"&&/^\s*create/i.test(cur)))depth++;
+      else if(w==="END")depth=Math.max(0,depth-1);
+      cur+=sql.slice(i,j);i=j;continue;
+    }
+    if(ch===";"&&depth===0){flush();i++;continue}
+    cur+=ch;i++;
+  }
+  flush();return out;
+}
+
+/* ---------- Salvar no navegador ---------- */
+function u2b(u){let t="";for(let i=0;i<u.length;i+=8192)t+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(t)}
+function b2u(b){const t=atob(b),u=new Uint8Array(t.length);for(let i=0;i<t.length;i++)u[i]=t.charCodeAt(i);return u}
+function stamp(t,warn){const e=$("sv");if(e){e.textContent=t;e.style.color=warn?"#b3261e":""}}
+function saveDb(){
+  if(!db||!curId)return;
+  if(inTx()){stamp("Transação aberta: as alterações só serão salvas no navegador depois do COMMIT.");return}
+  try{const u=db.export();db.run("PRAGMA foreign_keys=ON");localStorage.setItem(dbKey(curId),u2b(u));
+    stamp("“"+curName()+"” salvo às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+".")}
+  catch(e){stamp("Não foi possível salvar no navegador (armazenamento cheio ou bloqueado). Use “Baixar .sqlite”.",1)}
+}
+function saveEd(){clearTimeout(svT);svT=setTimeout(()=>{try{localStorage.setItem("sqllab:ed",ed.value)}catch(e){}},400)}
+function ldEd(){try{const t=JSON.parse(localStorage.getItem("sqllab:tabs")||"null");if(t&&t.tabs&&t.tabs[t.act]){localStorage.removeItem("sqllab:tabs");return String(t.tabs[t.act].text)}return localStorage.getItem("sqllab:ed")}catch(e){return null}}
+
+/* ---------- Banco e esquema ---------- */
+function newDb(){if(db)db.close();db=new SQL.Database();db.run("PRAGMA foreign_keys=ON");refresh();txSnap=null;updateTx();saveDb()}
+const tables=()=>{const r=db.exec("SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' ORDER BY name");return r.length?r[0].values.map(v=>v[0]):[]};
+const allCols=()=>tables().flatMap(t=>db.exec(`PRAGMA table_info("${t}")`)[0].values.map(c=>c[1]));
+function refresh(){
+  const ts=tables();
+  sch.innerHTML=ts.length?ts.map(t=>{
+    const cols=db.exec(`PRAGMA table_info("${t}")`)[0].values;
+    const n=db.exec(`SELECT COUNT(*) FROM "${t}"`)[0].values[0][0];
+    return`<div class="tb"><button class="tn" data-t="${esc(t)}" title="Ver todos os dados">${esc(t)}</button><span class="ct">${n} lin.</span><ul>${cols.map(c=>`<li><span>${esc(c[1])}</span><em>${esc(c[2]||"")}</em>${c[5]?"<b>PK</b>":""}${c[3]&&!c[5]?"<b>NN</b>":""}</li>`).join("")}${idxList(t).map(i=>`<li class="ix"><span>${esc(i.n)}</span><em>(${esc(i.cols)})</em><b>${i.u?"ÍNDICE ÚNICO":"ÍNDICE"}</b></li>`).join("")}</ul></div>`;
+  }).join(""):`<p class="empty">Nenhuma tabela ainda. Crie uma com CREATE TABLE.</p>`;
+  renderDiagram();
+  renderJoinViz();
+}
+sch.addEventListener("click",e=>{const t=e.target.closest(".tn");if(t){out.innerHTML="";exec(`SELECT * FROM "${t.dataset.t}"`)}});
+
+/* ---------- Saída ---------- */
+const add=h=>out.insertAdjacentHTML("beforeend",h);
+const msg=(k,hd,code)=>add(`<div class="msg ${k}"><div class="hd">${esc(hd)}</div>${code?`<code>${esc(code)}</code>`:""}</div>`);
+let lastRes={},rk=0;
+function tbl(r,cap,nocsv){
+  const rows=r.values.slice(0,500);let k=-1;
+  if(!nocsv){k=rk++;lastRes[k]=r;delete lastRes[k-20]}
+  add(`<div class="res"><div class="cap"><span>${esc(cap)}${r.values.length>500?" · mostrando 500 primeiras":""}</span>${nocsv?"":`<button class="act csv" data-k="${k}">Baixar CSV</button>`}</div><div class="sc"><table><thead><tr>${r.columns.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${rows.map(v=>`<tr>${v.map(x=>x===null?'<td class="nl">NULL</td>':`<td${typeof x==="number"?' class="nm"':""}>${esc(String(x))}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`);
+}
+
+/* CSV: separador ";" e vírgula decimal (padrão do Excel em português), com BOM para acentos */
+function csv(r){
+  if(!r)return;
+  const q=v=>{if(v===null)return"";const t=typeof v==="number"&&!Number.isInteger(v)?String(v).replace(".",","):String(v);return/[;"\n\r]/.test(t)?`"${t.replace(/"/g,'""')}"`:t};
+  const txt=[r.columns.map(q),...r.values.map(row=>row.map(q))].map(l=>l.join(";")).join("\r\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob(["\ufeff"+txt],{type:"text/csv;charset=utf-8"}));a.download="resultado.csv";a.click();
+}
+out.addEventListener("click",e=>{const b=e.target.closest(".csv");if(b)csv(lastRes[b.dataset.k])});
+
+/* ---------- Mensagens de erro em português ---------- */
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i,...Array(b.length).fill(0)]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+function closest(w,list){let best=null,bd=99;for(const x of list){const d=lev(w.toLowerCase(),x.toLowerCase());if(d<bd){bd=d;best=x}}return best&&bd<=(w.length>6?3:2)?best:null}
+function explain(m){
+  let x,sug;
+  if(x=m.match(/no such table: (.+)/)){errTok=x[1].split(".").pop();sug=closest(errTok,tables());const ts=tables();
+    return`A tabela “${errTok}” não existe.`+(sug?` Você quis dizer “${sug}”?`:ts.length?` Tabelas existentes: ${ts.join(", ")}.`:" Crie-a antes com CREATE TABLE.")}
+  if(x=m.match(/no such column: (.+)/)){errTok=x[1].split(".").pop();sug=closest(errTok,allCols());
+    return`A coluna “${errTok}” não existe nessa consulta.`+(sug?` Você quis dizer “${sug}”?`:" Confira o nome na lista de tabelas à esquerda.")}
+  if(x=m.match(/near "(.+?)": syntax error/)){errTok=x[1];sug=/^[A-Za-z_]+$/.test(errTok)?closest(errTok,[...KW]):null;
+    return`Erro de sintaxe perto de “${errTok}”.`+(sug?` Você quis dizer ${sug.toUpperCase()}?`:" Verifique vírgulas, parênteses e a ordem das cláusulas (SELECT, FROM, WHERE, GROUP BY, ORDER BY).")}
+  if(/cannot start a transaction within a transaction/.test(m))return"Já existe uma transação aberta. Finalize com COMMIT ou ROLLBACK antes de um novo BEGIN.";
+  if(/no transaction is active/.test(m))return"Não há transação aberta: use BEGIN antes de COMMIT ou ROLLBACK.";
+  if(/incomplete input/.test(m))return"O comando está incompleto. Verifique parênteses ou aspas sem fechar.";
+  if(x=m.match(/(?:UNIQUE|PRIMARY KEY) constraint failed: (.+)/))return`Valor repetido em ${x[1]}: essa coluna não aceita duplicados.`;
+  if(x=m.match(/NOT NULL constraint failed: (.+)/))return`A coluna ${x[1]} não aceita NULL. Informe um valor para ela.`;
+  if(x=m.match(/CHECK constraint failed: (.+)/))return`O valor informado quebra uma regra CHECK da tabela (${x[1]}). Confira os limites permitidos para a coluna.`;
+  if(/FOREIGN KEY constraint failed/.test(m))return"Chave estrangeira inválida: o valor não existe na tabela referenciada (ou ainda há linhas que dependem dele).";
+  if(x=m.match(/(?:table|index|view) (.+) already exists/))return`“${x[1]}” já existe. Use CREATE TABLE IF NOT EXISTS ou apague antes com DROP TABLE.`;
+  if(x=m.match(/table (.+) has (\d+) columns? but (\d+) values? were supplied/))return`A tabela ${x[1]} tem ${x[2]} colunas, mas você informou ${x[3]} valores. Liste as colunas: INSERT INTO ${x[1]} (col1, col2) VALUES (...).`;
+  if(x=m.match(/(\d+) values for (\d+) columns/))return`Foram informados ${x[1]} valores para ${x[2]} colunas.`;
+  if(/ambiguous column name/.test(m))return"Coluna ambígua: existe em mais de uma tabela. Use tabela.coluna.";
+  return null;
+}
+
+/* ---------- Destaque do que mudou (INSERT / UPDATE / DELETE) ---------- */
+function parseDml(s){
+  const t=s.replace(/--[^\n]*|\/\*[\s\S]*?\*\//g," ").trim();
+  const id='(?:\\w+\\.)?("[^"]+"|`[^`]+`|\\[[^\\]]+\\]|[\\w$]+)';
+  let m,verb;
+  if(m=t.match(new RegExp("^(?:INSERT(?:\\s+OR\\s+\\w+)?|REPLACE)\\s+INTO\\s+"+id,"i")))verb="INSERT";
+  else if(m=t.match(new RegExp("^UPDATE(?:\\s+OR\\s+\\w+)?\\s+"+id,"i")))verb="UPDATE";
+  else if(m=t.match(new RegExp("^DELETE\\s+FROM\\s+"+id,"i")))verb="DELETE";
+  else return null;
+  const table=m[1].replace(/^["`\[]|["`\]]$/g,"");
+  return{verb,table,key:table.toLowerCase()};
+}
+function snap(name){
+  try{
+    if(db.exec(`SELECT COUNT(*) FROM "${name}"`)[0].values[0][0]>5000)return null;
+    const info=db.exec(`PRAGMA table_info("${name}")`);if(!info.length)return null;
+    const cols=info[0].values.map(v=>v[1]);
+    const pk=info[0].values.filter(v=>v[5]>0).sort((x,y)=>x[5]-y[5]).map(v=>cols.indexOf(v[1]));
+    const keys=[],rows=[];
+    try{
+      const r=db.exec(`SELECT rowid AS __k, * FROM "${name}"`);
+      if(r.length)r[0].values.forEach(v=>{keys.push(String(v[0]));rows.push(v.slice(1))});
+    }catch(e){
+      if(!pk.length)return null;
+      const r=db.exec(`SELECT * FROM "${name}"`);
+      if(r.length)r[0].values.forEach(v=>{keys.push(JSON.stringify(pk.map(i=>v[i])));rows.push(v)});
+    }
+    return{cols,keys,rows};
+  }catch(e){return null}
+}
+function showDiff(c,a,label){
+  const b=c.before,bm=new Map(b.keys.map((k,i)=>[k,b.rows[i]])),am=new Set(a.keys);
+  let nn=0,nu=0;
+  const st=a.rows.map((row,i)=>{
+    const old=bm.get(a.keys[i]);
+    if(!old){nn++;return{t:"new"}}
+    const ch=row.map((v,j)=>String(v)!==String(old[j])||(v===null)!==(old[j]===null));
+    if(ch.some(Boolean)){nu++;return{t:"upd",ch,old}}
+    return{t:"same"};
+  });
+  const gone=b.keys.map((k,i)=>am.has(k)?null:b.rows[i]).filter(Boolean);
+  if(!nn&&!nu&&!gone.length)return;
+  const total=a.rows.length,onlyCh=total>100;
+  const cell=v=>v===null?'<span class="nl">NULL</span>':esc(String(v));
+  const tr=(row,cls,mk,ch,old)=>`<tr class="${cls}"><td class="mk">${mk}</td>${row.map((v,j)=>{
+    const cn=((typeof v==="number"?"nm ":"")+(ch&&ch[j]?"chg":"")).trim();
+    return`<td${cn?` class="${cn}"`:""}>${ch&&ch[j]?`<span class="old">${cell(old[j])}</span> → <b>${cell(v)}</b>`:cell(v)}</td>`;
+  }).join("")}</tr>`;
+  let rows="";
+  a.rows.forEach((row,i)=>{
+    const x=st[i];
+    if(x.t==="same"){if(!onlyCh)rows+=tr(row,"","")}
+    else if(x.t==="new")rows+=tr(row,"r-new","novo");
+    else rows+=tr(row,"r-upd","alterado",x.ch,x.old);
+  });
+  gone.forEach(row=>rows+=tr(row,"r-del","removido"));
+  const p=[];
+  if(nn)p.push(nn+(nn>1?" novas":" nova"));
+  if(nu)p.push(nu+(nu>1?" alteradas":" alterada"));
+  if(gone.length)p.push(gone.length+(gone.length>1?" removidas":" removida"));
+  add(`<div class="res"><div class="cap"><span>Tabela ${esc(c.table)} ${esc(label||"depois do comando")}: ${p.join(" · ")}${onlyCh?` · ${total} linhas no total, mostrando só as que mudaram`:""}</span></div><div class="sc"><table class="dtab"><thead><tr><th></th>${a.cols.map(x=>`<th>${esc(x)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div></div>`);
+}
+
+/* ---------- Transações ---------- */
+let txSnap=null;
+function inTx(){try{db.run("BEGIN");db.run("ROLLBACK");return false}catch(e){return true}}
+function updateTx(){const o=db?inTx():false;$("txb").hidden=!o;if(!o)txSnap=null;return o}
+function baseTables(){const r=db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name");return r.length?r[0].values.map(v=>v[0]):[]}
+function allSnaps(){const o={};baseTables().forEach(t=>{const x=snap(t);if(x)o[t]=x});return o}
+function flushCtx(ctx,label){Object.keys(ctx).forEach(k=>{const a=snap(ctx[k].table);if(a)showDiff(ctx[k],a,label);delete ctx[k]})}
+function showTxDiff(cur,verb){
+  if(!txSnap||!cur)return;
+  Object.keys(cur).forEach(k=>{if(txSnap[k])showDiff({table:k,before:txSnap[k]},cur[k],`dentro da transação (antes do ${verb})`)});
+}
+function txEnd(verb,cur){
+  const base=txSnap,rb=verb==="ROLLBACK";txSnap=null;
+  const L=[];
+  if(base&&cur)new Set([...Object.keys(base),...Object.keys(cur)]).forEach(k=>{
+    const a=base[k],b=cur[k];
+    if(!a&&b)L.push(`${k}: ${rb?"tabela criada na transação foi desfeita":"tabela criada"}`);
+    else if(a&&!b)L.push(`${k}: ${rb?"tabela removida na transação foi restaurada":"tabela removida"}`);
+    else if(a.rows.length!==b.rows.length)L.push(rb?`${k}: ${b.rows.length} → ${a.rows.length} linha(s) (voltou ao que era)`:`${k}: ${a.rows.length} → ${b.rows.length} linha(s)`);
+  });
+  msg("ok",rb?"ROLLBACK: alterações desfeitas":"COMMIT: alterações gravadas",
+    (rb?"Tudo o que foi feito desde o BEGIN foi descartado e o banco voltou ao estado anterior.":"Tudo o que foi feito desde o BEGIN agora é definitivo.")+(L.length?"\n"+L.join("\n"):""));
+}
+function txBlock(){
+  if(!inTx())return false;
+  out.innerHTML="";
+  msg("err","Finalize a transação primeiro","Há uma transação aberta (BEGIN). Execute COMMIT ou ROLLBACK antes de duplicar ou baixar o banco.");
+  return true;
+}
+function finishRun(){refresh();updateTx();saveDb()}
+function txDo(v){out.innerHTML="";const o=exec(v,{});finishRun();out.scrollTop=0;hRecord([[v,o,o?"":lastErr]])}
+
+/* ---------- Índices e plano de execução ---------- */
+function idxList(t){
+  try{
+    const r=db.exec(`PRAGMA index_list("${t}")`);if(!r.length)return[];
+    return r[0].values.filter(v=>v[3]==="c").map(v=>{const c=db.exec(`PRAGMA index_info("${v[1]}")`);return{n:v[1],u:v[2],cols:c.length?c[0].values.map(x=>x[2]).join(", "):""}});
+  }catch(e){return[]}
+}
+function planTag(d){
+  if(/AUTOMATIC (?:COVERING )?INDEX/.test(d))return["warn","índice temporário automático (um índice permanente ajudaria)"];
+  if(/USING (?:COVERING )?INDEX/.test(d))return/^SEARCH/.test(d)?["ok","busca direta com índice"]:["info","percorre o índice inteiro"];
+  if(/USING INTEGER PRIMARY KEY/.test(d))return["ok","busca direta pela chave primária"];
+  if(/^SCAN/.test(d))return["warn","varredura completa: lê todas as linhas"];
+  if(/^SEARCH/.test(d))return["ok","busca direta"];
+  if(/TEMP B-TREE/.test(d))return["warn","ordenação ou agrupamento extra"];
+  return null;
+}
+function showPlan(r,head,ms){
+  const by={};r.values.forEach(v=>by[v[0]]=v);
+  const depth=v=>{let n=0,p=v[1];while(p&&by[p]&&n<12){n++;p=by[p][1]}return n};
+  let scans=0,seeks=0;
+  const rows=r.values.map(v=>{
+    const d=String(v[3]),t=planTag(d),n=depth(v);
+    if(/^SCAN/.test(d)&&t&&t[0]==="warn")scans++;
+    if(t&&t[0]==="ok")seeks++;
+    return`<tr><td class="pd" style="padding-left:${12+n*20}px">${n?"└ ":""}${esc(d)}</td><td>${t?`<span class="pb pb-${t[0]}">${t[1]}</span>`:""}</td></tr>`;
+  }).join("");
+  const tip=scans
+    ?`Resumo: ${scans} varredura(s) completa(s) e ${seeks} busca(s) direta(s). Se a consulta filtra por uma coluna, um CREATE INDEX nela costuma trocar SCAN por SEARCH.`
+    :`Resumo: ${seeks} busca(s) direta(s) e nenhuma varredura completa.`;
+  add(`<div class="res"><div class="cap"><span>${esc(head)}  →  plano de execução · ${ms} ms</span></div><div class="sc"><table class="plan"><thead><tr><th>Plano: como o SQLite vai buscar os dados</th><th>Leitura</th></tr></thead><tbody>${rows}</tbody></table></div><p class="tip">${tip}</p></div>`);
+}
+
+/* ---------- Execução ---------- */
+function exec(s,ctx){
+  const clean=s.replace(/--[^\n]*|\/\*[\s\S]*?\*\//g,"").trim();
+  const verb=(clean.match(/^\w+/)||[""])[0].toUpperCase();
+  const full=verb==="COMMIT"||verb==="END"||(verb==="ROLLBACK"&&!/^ROLLBACK\b(?:\s+TRANSACTION)?\s+TO\b/i.test(clean));
+  let pre=null;
+  if(verb==="BEGIN"&&ctx)flushCtx(ctx);
+  if(full){
+    if(txSnap){pre=allSnaps();showTxDiff(pre,verb);if(ctx)Object.keys(ctx).forEach(k=>delete ctx[k])}
+    else if(ctx)flushCtx(ctx);
+  }
+  if(ctx){const d=parseDml(s);if(d&&!ctx[d.key]){const b=snap(d.table);if(b)ctx[d.key]={table:d.table,before:b}}}
+  const t0=performance.now();
+  try{
+    const r=db.exec(s),ms=(performance.now()-t0).toFixed(1);
+    const head=s.replace(/\s+/g," ").slice(0,70)+(s.length>70?"…":"");
+    if(r.length&&verb==="EXPLAIN"&&/^EXPLAIN\s+QUERY\s+PLAN/i.test(clean)){showPlan(r[0],head,ms);return true}
+    if(r.length){r.forEach(x=>tbl(x,`${head}  →  ${x.values.length} linha(s) · ${ms} ms`));return true}
+    const n=db.getRowsModified();
+    const dml=["INSERT","UPDATE","DELETE","REPLACE"].includes(verb)||(verb==="WITH"&&n>0&&/\b(?:INSERT|UPDATE|DELETE)\b/i.test(clean));
+    if(!dml&&["SELECT","WITH","PRAGMA"].includes(verb)){msg("ok","Consulta sem resultados (0 linhas)",head);return true}
+    if(dml)msg("ok",`${n} linha(s) afetada(s) · ${ms} ms`,head);
+    else if(verb==="BEGIN"){txSnap=allSnaps();msg("ok","Transação iniciada","Daqui em diante as alterações ainda não são definitivas.\nUse COMMIT para gravá-las ou ROLLBACK para desfazer tudo.")}
+    else if(full)txEnd(verb,pre);
+    else if(verb==="ROLLBACK")msg("ok","Desfeito até o ponto de salvamento","As alterações feitas depois do SAVEPOINT foram descartadas; a transação continua aberta.");
+    else if(verb==="SAVEPOINT")msg("ok","Ponto de salvamento criado","Dentro da transação, ROLLBACK TO <nome> volta até este ponto.");
+    else if(verb==="RELEASE")msg("ok","Ponto de salvamento liberado",head);
+    else if(verb==="CREATE"&&/^CREATE\s+(?:UNIQUE\s+)?INDEX/i.test(clean))msg("ok",`Índice criado · ${ms} ms`,"Use EXPLAIN QUERY PLAN para ver se a consulta passou a usar o índice.");
+    else msg("ok",`Comando ${verb} executado com sucesso · ${ms} ms`,head);
+    const ct=s.match(/^\s*CREATE\s+(?:TEMP\w*\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`\[]?(\w+)/i);
+    if(ct){const p=db.exec(`PRAGMA table_info("${ct[1]}")`);if(p.length)tbl({columns:["coluna","tipo","obrigatória","padrão","chave primária"],values:p[0].values.map(c=>[c[1],c[2]||"—",c[3]?"sim":"não",c[4],c[5]?"sim":"não"])},`Estrutura da tabela ${ct[1]}`,1)}
+    return true;
+  }catch(e){
+    lastErr=e.message;
+    const hint=explain(e.message);
+    msg("err",hint||"Erro ao executar o comando",`${e.message}\n\n${s}`);
+    return false;
+  }
+}
+function run(txt){
+  if(!db)return;
+  errTok=null;out.innerHTML="";
+  const sel=ed.selectionStart!==ed.selectionEnd;
+  const stmts=split(typeof txt==="string"?txt:(sel?ed.value.slice(ed.selectionStart,ed.selectionEnd):ed.value));
+  if(!stmts.length){msg("ok","Nada para executar","Escreva um comando SQL no editor.");return}
+  const ctx={},res=[];
+  for(const s of stmts){const o=exec(s,ctx);res.push([s,o,o?"":lastErr]);if(!o)break}
+  flushCtx(ctx);
+  finishRun();paint();out.scrollTop=0;
+  hRecord(res);
+}
+
+/* ---------- Roteiro de estudo ---------- */
+const LES=[
+["1. Criar uma tabela",`-- Requer o banco de exemplo (botão “Carregar banco de exemplo”).
+-- CREATE TABLE cria uma nova tabela. Aqui: as notas de cada avaliação,
+-- ligada às tabelas estudantes e cursos por chaves estrangeiras.
+-- (A tabela matriculas guarda apenas a nota final do curso.)
+CREATE TABLE notas (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  estudante_id INTEGER NOT NULL REFERENCES estudantes(id),
+  curso_id INTEGER NOT NULL REFERENCES cursos(id),
+  avaliacao TEXT NOT NULL,
+  valor REAL CHECK (valor >= 0 AND valor <= 10),
+  data TEXT
+);`],
+["2. Inserir dados",`-- Execute depois da lição 1. INSERT INTO adiciona linhas.
+-- estudante_id e curso_id precisam existir em estudantes e cursos.
+INSERT INTO notas (estudante_id, curso_id, avaliacao, valor, data) VALUES (1, 1, 'Prova 1', 8.5, '2026-03-10');
+INSERT INTO notas (estudante_id, curso_id, avaliacao, valor, data) VALUES (1, 1, 'Trabalho', 9.0, '2026-03-24');
+INSERT INTO notas (estudante_id, curso_id, avaliacao, valor, data) VALUES (2, 2, 'Prova 1', 6.0, '2026-03-12');
+INSERT INTO notas (estudante_id, curso_id, avaliacao, valor, data) VALUES (4, 2, 'Prova 1', 5.0, '2026-03-12');`],
+["3. Consultar com filtros",`-- WHERE filtra, ORDER BY ordena e JOIN traz o nome do estudante e do curso.
+SELECT a.nome AS estudante, c.nome AS curso, n.avaliacao, n.valor
+FROM notas n
+JOIN estudantes a ON a.id = n.estudante_id
+JOIN cursos c ON c.id = n.curso_id
+WHERE n.valor >= 6
+ORDER BY n.valor DESC, a.nome;`],
+["4. Atualizar e excluir",`-- Sempre use WHERE em UPDATE e DELETE, senão todas as linhas são afetadas!
+-- A prova do estudante 4 foi revisada; as notas do estudante 2 serão removidas.
+UPDATE notas SET valor = 7.0 WHERE estudante_id = 4 AND avaliacao = 'Prova 1';
+DELETE FROM notas WHERE estudante_id = 2;`],
+["5. Agrupar e agregar",`-- Requer o banco de exemplo. GROUP BY agrupa; COUNT, AVG, MAX... resumem cada grupo.
+SELECT c.nome AS curso, COUNT(*) AS estudantes, ROUND(AVG(m.nota), 2) AS media
+FROM matriculas m
+JOIN cursos c ON c.id = m.curso_id
+GROUP BY c.nome
+HAVING COUNT(*) >= 2
+ORDER BY media DESC;`],
+["6. Juntar tabelas (JOIN)",`-- Requer o banco de exemplo. LEFT JOIN mantém estudantes mesmo sem matrícula.
+SELECT a.nome AS estudante, a.cidade, c.nome AS curso, m.nota
+FROM estudantes a
+LEFT JOIN matriculas m ON m.estudante_id = a.id
+LEFT JOIN cursos c ON c.id = m.curso_id
+ORDER BY a.nome;`],
+["7. Transações (BEGIN, COMMIT, ROLLBACK)",`-- Requer o banco de exemplo. Uma transação agrupa comandos:
+-- ou todos valem (COMMIT) ou nenhum vale (ROLLBACK).
+
+-- Parte 1: um erro clássico (UPDATE sem WHERE), desfeito com ROLLBACK
+BEGIN;
+UPDATE matriculas SET nota = 0;
+DELETE FROM matriculas WHERE estudante_id = 4;
+SELECT * FROM matriculas;
+ROLLBACK;
+SELECT * FROM matriculas;
+
+-- Parte 2: com COMMIT, a mudança fica gravada
+BEGIN;
+UPDATE matriculas SET nota = nota + 0.5 WHERE estudante_id = 1;
+COMMIT;
+
+-- Dica: selecione só o trecho até o BEGIN e execute. A etiqueta
+-- “Transação aberta” aparece e você decide entre COMMIT e ROLLBACK.`],
+["8. Índices e EXPLAIN QUERY PLAN",`-- Índices aceleram buscas. Vamos medir numa tabela grande (50.000 linhas).
+
+-- 1) Tabela de teste, com linhas geradas automaticamente
+CREATE TABLE teste_indice (
+  id INTEGER PRIMARY KEY,
+  estudante_id INTEGER,
+  valor REAL
+);
+WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < 50000)
+INSERT INTO teste_indice (estudante_id, valor)
+SELECT x % 1000, (x % 11) * 1.0 FROM n;
+
+-- 2) SEM índice: o plano mostra SCAN (lê a tabela inteira). Compare o tempo.
+EXPLAIN QUERY PLAN SELECT * FROM teste_indice WHERE estudante_id = 123;
+SELECT COUNT(*) AS total, AVG(valor) AS media FROM teste_indice WHERE estudante_id = 123;
+
+-- 3) Crie o índice
+CREATE INDEX idx_teste_estudante ON teste_indice (estudante_id);
+
+-- 4) COM índice: o plano mostra SEARCH e o tempo cai bastante
+EXPLAIN QUERY PLAN SELECT * FROM teste_indice WHERE estudante_id = 123;
+SELECT COUNT(*) AS total, AVG(valor) AS media FROM teste_indice WHERE estudante_id = 123;
+
+-- Para limpar depois: DROP TABLE teste_indice;`,false]
+];
+$("les").innerHTML=LES.map((l,i)=>`<button data-i="${i}">${l[0]}</button>`).join("");
+$("les").addEventListener("click",e=>{const b=e.target.closest("button");if(b){$("les").querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b));ed.value=LES[b.dataset.i][1];errTok=null;paint();ed.setSelectionRange(0,0);ed.focus();ed.scrollTop=0;ed.scrollLeft=0;hl.scrollTop=0;hl.scrollLeft=0;if(LES[b.dataset.i][2]!==false)lessonNote()}});
+
+function lessonNote(){
+  if(!db)return;
+  const have=tables().map(t=>t.toLowerCase());
+  if(["estudantes","cursos","matriculas"].every(t=>have.includes(t)))return;
+  out.innerHTML="";
+  msg("ok","Esta lição usa o banco de exemplo","Clique em “Carregar banco de exemplo” (à esquerda) para criar as tabelas estudantes, cursos e matriculas e depois execute a lição.");
+}
+const SAMPLE=`CREATE TABLE cursos (id INTEGER PRIMARY KEY, nome TEXT NOT NULL, carga_horaria INTEGER);
+CREATE TABLE estudantes (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, cidade TEXT, nascimento TEXT);
+CREATE TABLE matriculas (estudante_id INTEGER REFERENCES estudantes(id), curso_id INTEGER REFERENCES cursos(id), nota REAL, PRIMARY KEY (estudante_id, curso_id));
+INSERT INTO cursos VALUES (1,'Informática Básica',40),(2,'Excel',30),(3,'Linguagem C',60);
+INSERT INTO estudantes (nome,cidade,nascimento) VALUES ('Ana Souza','Criciúma','2001-03-14'),('Bruno Lima','Içara','1998-11-02'),('Carla Dias','Criciúma','2003-07-21'),('Diego Rocha','Forquilhinha','1995-01-30'),('Elisa Prado','Içara','2000-09-09');
+INSERT INTO matriculas VALUES (1,1,9.0),(1,2,8.5),(2,2,6.0),(2,3,7.5),(3,1,9.5),(3,3,8.0),(4,2,5.5);`;
+$("bSample").onclick=()=>{
+  if(!db)return;
+  out.innerHTML="";
+  const NAME="Escola (exemplo)",need=["estudantes","cursos","matriculas"];
+  const load=()=>{try{db.run(SAMPLE);refresh();saveDb();return true}catch(e){msg("err","Não foi possível criar o banco de exemplo",e.message);return false}};
+  const ex=dbList.find(d=>d.name===NAME);
+  if(!ex){
+    if(createDb(NAME)&&load())msg("ok",`Banco “${NAME}” criado`,"Tabelas: cursos, estudantes e matriculas. Veja a estrutura e o diagrama.");
+    return;
+  }
+  if(ex.id!==curId)openDb(ex.id);
+  const have=tables().map(t=>t.toLowerCase());
+  if(need.every(t=>have.includes(t))){msg("ok",`Banco “${NAME}” aberto`,"Tabelas: cursos, estudantes e matriculas.");return}
+  if(have.length&&!confirm(`O banco “${NAME}” foi alterado e está sem alguma das tabelas originais. Recriar com os dados originais? O conteúdo atual dele será apagado.`)){
+    msg("ok",`Banco “${NAME}” aberto`,"Nenhuma alteração foi feita.");return;
+  }
+  newDb();
+  if(load())msg("ok",`Banco “${NAME}” recriado`,"Tabelas: cursos, estudantes e matriculas, com os dados originais.");
+};
+$("bImp").onclick=()=>$("fIn").click();
+$("fIn").onchange=async e=>{
+  const f=e.target.files[0];e.target.value="";
+  if(!f||!db)return;
+  out.innerHTML="";
+  if(/\.sql$/i.test(f.name)){
+    ed.value=await f.text();errTok=null;paint();
+    msg("ok","Script carregado no editor",`${f.name}: revise o conteúdo e clique em Executar.`);return;
+  }
+  try{
+    const bytes=new Uint8Array(await f.arrayBuffer());
+    const t=new SQL.Database(bytes);t.exec("SELECT name FROM sqlite_master");t.close();
+    if(!createDb(f.name.replace(/\.(sqlite3?|db)$/i,""),bytes))return;
+    msg("ok","Banco importado",`“${curName()}”: ${tables().length} tabela(s) encontrada(s). O banco anterior continua na lista.`);
+  }catch(err){
+    msg("err","Não foi possível importar o arquivo","Ele precisa ser um banco SQLite válido (.sqlite, .sqlite3 ou .db).\n\n"+err.message);
+  }
+};
+/* ---------- Vários bancos de dados ---------- */
+let dbList=[],curId=null;
+const DBK="sqllab:dbs";
+const dbKey=id=>"sqllab:db:"+id;
+const uid=()=>"d"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const curName=()=>{const d=dbList.find(x=>x.id===curId);return d?d.name:""};
+function persistIdx(){try{localStorage.setItem(DBK,JSON.stringify({cur:curId,list:dbList}))}catch(e){}}
+function dbBytes(id){try{const b=localStorage.getItem(dbKey(id));return b?b2u(b):null}catch(e){return null}}
+function uniqueName(n,except){
+  n=(n||"").trim().slice(0,40)||"Novo banco";let r=n,i=2;
+  while(dbList.some(d=>d.id!==except&&d.name.toLowerCase()===r.toLowerCase()))r=n+" "+i++;
+  return r;
+}
+function renderDbSel(){
+  $("dbSel").innerHTML=dbList.map(d=>`<option value="${d.id}"${d.id===curId?" selected":""}>${esc(d.name)}</option>`).join("");
+  $("shd").textContent="Tabelas do banco: "+curName();
+  $("dhd").textContent="Diagrama das tabelas: "+curName();
+  $("bDbDel").disabled=dbList.length<2;
+  renderHist();
+}
+function switchDb(id,bytes){
+  const lost=!!(db&&curId&&id!==curId&&inTx());
+  if(db&&curId&&id!==curId)saveDb();
+  if(db)db.close();
+  txSnap=null;
+  curId=id;let bad=false;
+  try{db=bytes?new SQL.Database(bytes):new SQL.Database();db.run("PRAGMA foreign_keys=ON");tables()}
+  catch(e){bad=true;db=new SQL.Database();db.run("PRAGMA foreign_keys=ON")}
+  persistIdx();renderDbSel();refresh();updateTx();
+  if(lost)msg("ok","Transação desfeita","A transação que estava aberta no banco anterior foi encerrada com ROLLBACK ao trocar de banco.");
+  if(bad)msg("err","Não foi possível ler este banco","Os dados salvos estavam corrompidos; o banco foi aberto vazio.");
+}
+const openDb=id=>switchDb(id,dbBytes(id));
+function createDb(name,bytes){
+  if(dbList.length>=12){msg("err","Limite de 12 bancos","Exclua algum banco para criar outro.");return false}
+  const id=uid();dbList.push({id,name:uniqueName(name)});
+  switchDb(id,bytes||null);saveDb();persistIdx();renderDbSel();
+  return true;
+}
+function delDb(id){
+  dbList=dbList.filter(d=>d.id!==id);
+  try{localStorage.removeItem(dbKey(id))}catch(e){}
+  if(db){db.close();db=null}
+  curId=null;openDb(dbList[0].id);
+}
+function initDbs(){
+  let idx=null;try{idx=JSON.parse(localStorage.getItem(DBK))}catch(e){}
+  if(idx&&Array.isArray(idx.list))dbList=idx.list.filter(d=>d&&d.id&&d.name);
+  let target=idx&&dbList.some(d=>d.id===idx.cur)?idx.cur:null;
+  if(!dbList.length){
+    const id=uid();dbList=[{id,name:"Meu banco"}];target=id;
+    try{const raw=localStorage.getItem("sqllab:db");if(raw){localStorage.setItem(dbKey(id),raw);localStorage.removeItem("sqllab:db")}}catch(e){}
+  }
+  target=target||dbList[0].id;
+  const had=!!dbBytes(target);
+  curId=null;db=null;openDb(target);
+  return had;
+}
+/* ---------- fim: vários bancos ---------- */
+
+/* ---------- Diagrama das tabelas (SVG dinâmico) ---------- */
+function schemaInfo(){
+  const o=db.exec("SELECT name,type FROM sqlite_master WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' ORDER BY name");
+  if(!o.length)return[];
+  return o[0].values.map(([name,type])=>{
+    const r=db.exec(`PRAGMA table_info("${name}")`);
+    const cols=(r[0]?r[0].values:[]).map(c=>({n:c[1],t:c[2]||"",pk:c[5]>0}));
+    let fks=[];
+    if(type==="table"){const f=db.exec(`PRAGMA foreign_key_list("${name}")`);if(f.length)fks=f[0].values.map(v=>({to:v[2],from:v[3],col:v[4]}))}
+    return{name,type,cols,fks};
+  });
+}
+let dgReal=false;
+function renderDiagram(){
+  const box=$("dg");if(!box||!db)return;
+  const T=schemaInfo();
+  if(!T.length){box.innerHTML='<p class="empty">Crie tabelas para ver o diagrama aqui.</p>';return}
+  const by={};T.forEach(t=>by[t.name.toLowerCase()]=t);
+  const RH=22,HH=32,RG=34,P=24,LN=10;
+  T.forEach(t=>{
+    const m=Math.max(...t.cols.map(c=>c.n.length+c.t.length+2),t.name.length*1.3);
+    t.w=Math.max(170,Math.ceil(m*7.4+84));t.h=HH+t.cols.length*RH+6;
+    t.fkc=new Set(t.fks.map(f=>f.from.toLowerCase()));
+    t.parents=[...new Set(t.fks.map(f=>f.to.toLowerCase()).filter(p=>by[p]&&p!==t.name.toLowerCase()))];
+  });
+  const linked=t=>t.fks.some(f=>by[f.to.toLowerCase()])||T.some(o=>o.fks.some(f=>f.to.toLowerCase()===t.name.toLowerCase()));
+  const main=T.filter(linked),iso=T.filter(t=>!linked(t));
+  /* colunas: tabelas pai à esquerda, filhas à direita */
+  main.forEach(t=>t.lv=0);
+  for(let i=0;i<main.length;i++){let ch=false;main.forEach(t=>t.parents.forEach(p=>{const v=by[p].lv+1;if(v>t.lv&&v<main.length){t.lv=v;ch=true}}));if(!ch)break}
+  const C=[];main.forEach(t=>(C[t.lv]=C[t.lv]||[]).push(t));
+  const cols=C.filter(Boolean);cols.forEach((L,i)=>L.forEach(t=>t.ci=i));
+  const n=cols.length;
+  /* ligações (uma por par de colunas) */
+  const E=[];
+  T.forEach(c=>c.fks.forEach(f=>{
+    const p=by[f.to.toLowerCase()];if(!p)return;
+    const ci=c.cols.findIndex(k=>k.n.toLowerCase()===f.from.toLowerCase());
+    const pi=f.col?p.cols.findIndex(k=>k.n.toLowerCase()===f.col.toLowerCase()):p.cols.findIndex(k=>k.pk);
+    E.push({c,p,f,ci,pi,long:Math.abs(c.ci-p.ci)>1});
+  }));
+  /* canais verticais: cada seta usa a sua própria "pista" entre as colunas */
+  const need=Array(n).fill(0);
+  E.forEach(e=>{
+    const a=e.c.ci,b=e.p.ci;
+    if(b<a){if(e.long){need[a-1]++;need[b]++}else need[b]++}
+    else if(b>a){if(e.long){need[a]++;need[b-1]++}else need[a]++}
+    else need[a]++;
+  });
+  const gw=need.map(k=>Math.max(100,80+13*k));
+  const colW=cols.map(L=>Math.max(...L.map(t=>t.w)));
+  const colX=[],gapX=[];let xx=P;
+  cols.forEach((L,i)=>{colX[i]=xx;gapX[i]=xx+colW[i];xx+=colW[i]+gw[i]});
+  let W=n?(need[n-1]?xx:gapX[n-1]+P):P;
+  /* pistas horizontais (topo e base) para ligações que pulam colunas */
+  let k0=0;E.forEach(e=>{if(e.long){e.top=k0%2===0;e.ln=Math.floor(k0/2);k0++}});
+  const nTop=Math.ceil(k0/2),nBot=Math.floor(k0/2),OY=P+(nTop?LN*nTop+8:0);
+  /* posição vertical das caixas */
+  let Hb=OY;
+  cols.forEach((L,i)=>{
+    if(i===0)L.sort((a,b)=>a.name.localeCompare(b.name));
+    else{
+      L.forEach(t=>{const ys=t.parents.filter(p=>by[p].y!==undefined).map(p=>by[p].y+by[p].h/2);t.tg=ys.length?ys.reduce((a,b)=>a+b)/ys.length:1e9});
+      L.sort((a,b)=>a.tg-b.tg||a.name.localeCompare(b.name));
+    }
+    let y=OY;
+    L.forEach(t=>{t.x=colX[i];t.y=Math.max(y,i&&t.tg<1e9?t.tg-t.h/2:OY);y=t.y+t.h+RG;Hb=Math.max(Hb,t.y+t.h)});
+  });
+  let H=n?Hb+(nBot?14+LN*nBot:0)+P:P;
+  if(iso.length){
+    const lim=Math.max(W,740);let ix=P,iy=n?H:P,rh=0;
+    iso.forEach(t=>{
+      if(ix>P&&ix+t.w+P>lim){ix=P;iy+=rh+RG;rh=0}
+      t.x=ix;t.y=iy;ix+=t.w+RG;rh=Math.max(rh,t.h);W=Math.max(W,t.x+t.w+P);
+    });
+    H=iy+rh+P;
+  }
+  /* caixas */
+  const tb=T.map(t=>{
+    const view=t.type==="view";
+    return`<g class="tbl" data-t="${esc(t.name)}"><rect x="${t.x}" y="${t.y}" width="${t.w}" height="${t.h}" fill="#fff"/><rect x="${t.x}" y="${t.y}" width="${t.w}" height="${HH}" fill="${view?"#5C6D82":"#273E74"}"/><text x="${t.x+12}" y="${t.y+21}" font-size="14" font-weight="bold" fill="#fff">${esc(t.name)}${view?" (view)":""}</text>`+
+      t.cols.map((c,i)=>{
+        const y=t.y+HH+i*RH,fk=t.fkc.has(c.n.toLowerCase()),bd=c.pk&&fk?"PK·FK":c.pk?"PK":fk?"FK":"";
+        return`${i%2?`<rect x="${t.x}" y="${y}" width="${t.w}" height="${RH}" fill="#f2f2f2"/>`:""}<text x="${t.x+12}" y="${y+15}" font-family="monospace" font-size="12.5" fill="#273E74"${c.pk?' font-weight="bold"':""}>${esc(c.n)}</text><text x="${t.x+t.w-52}" y="${y+15}" text-anchor="end" font-family="monospace" font-size="11.5" fill="#5C6D82">${esc(c.t.toLowerCase())}</text>${bd?`<text x="${t.x+t.w-10}" y="${y+15}" text-anchor="end" font-size="10.5" font-weight="bold" fill="${c.pk?"#273E74":"#5C6D82"}">${bd}</text>`:""}`;
+      }).join("")+
+      `<rect x="${t.x}" y="${t.y}" width="${t.w}" height="${t.h}" fill="none" stroke="#273E74" stroke-width="3"${view?' stroke-dasharray="7 4"':""}/><title>${esc(t.name)}: clique para ver os dados</title></g>`;
+  }).join("");
+  /* setas em ângulo reto com cantos arredondados */
+  const cnt={},seen={};
+  const key=(t,i,s)=>s+t.name+"#"+i;
+  E.forEach(e=>{const a=key(e.p,e.pi,"p"),b=key(e.c,e.ci,"c");cnt[a]=(cnt[a]||0)+1;cnt[b]=(cnt[b]||0)+1});
+  const spread=(t,i,s)=>{const k=key(t,i,s),j=seen[k]=(seen[k]||0);seen[k]++;return cnt[k]>1?(j-(cnt[k]-1)/2)*Math.min(10,16/(cnt[k]-1)):0};
+  const rowY=(t,i)=>i<0?t.y+HH/2:t.y+HH+i*RH+RH/2;
+  const used=Array(n).fill(0),slot=g=>gapX[g]+46+13*(used[g]++);
+  const round=(pts,r)=>{
+    const q=pts.filter((p,i)=>!i||Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1])>0.5);
+    let d=`M${q[0][0]},${q[0][1]}`;
+    for(let i=1;i<q.length-1;i++){
+      const a=q[i-1],b=q[i],c=q[i+1],l1=Math.hypot(b[0]-a[0],b[1]-a[1]),l2=Math.hypot(c[0]-b[0],c[1]-b[1]),k=Math.min(r,l1/2,l2/2);
+      d+=` L${b[0]+(a[0]-b[0])*k/l1},${b[1]+(a[1]-b[1])*k/l1} Q${b[0]},${b[1]} ${b[0]+(c[0]-b[0])*k/l2},${b[1]+(c[1]-b[1])*k/l2}`;
+    }
+    return d+` L${q[q.length-1][0]},${q[q.length-1][1]}`;
+  };
+  E.sort((a,b)=>a.c.ci-b.c.ci||a.c.y-b.c.y);
+  const shown={};
+  const arrows=E.map(e=>{
+    const{c,p,f}=e,a=c.ci,b=p.ci;
+    const y1=rowY(c,e.ci)+spread(c,e.ci,"c");let y2=rowY(p,e.pi)+spread(p,e.pi,"p");
+    const ly=e.long?(e.top?14+LN*e.ln:Hb+14+LN*e.ln):0;
+    let x1,x2,pts,s1,s2;
+    if(b<a){
+      x1=c.x;x2=p.x+p.w;s1=-1;s2=1;
+      if(e.long){const u=slot(a-1),v=slot(b);pts=[[x1,y1],[u,y1],[u,ly],[v,ly],[v,y2],[x2,y2]]}
+      else{const u=slot(b);pts=[[x1,y1],[u,y1],[u,y2],[x2,y2]]}
+    }else if(b>a){
+      x1=c.x+c.w;x2=p.x;s1=1;s2=-1;
+      if(e.long){const u=slot(a),v=slot(b-1);pts=[[x1,y1],[u,y1],[u,ly],[v,ly],[v,y2],[x2,y2]]}
+      else{const u=slot(a);pts=[[x1,y1],[u,y1],[u,y2],[x2,y2]]}
+    }else{
+      x1=c.x+c.w;x2=p.x+p.w;s1=1;s2=1;
+      if(Math.abs(y1-y2)<1)y2+=10;
+      const u=slot(a);pts=[[x1,y1],[u,y1],[u,y2],[x2,y2]];
+    }
+    const lb=(x,y,sg,tx)=>{const at=`x="${x+sg*(tx==="1"?17:11)}" y="${y-9}" text-anchor="${sg<0?"end":"start"}" font-size="12" font-weight="bold"`;return`<text ${at} fill="#f2f2f2" stroke="#f2f2f2" stroke-width="4" stroke-linejoin="round">${tx}</text><text ${at} fill="#273E74">${tx}</text>`};
+    return`<g class="rel" data-a="${esc(c.name)}" data-b="${esc(p.name)}"><path d="${round(pts,8)}" fill="none" stroke="#5C6D82" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#ar)"><title>${esc(c.name)}.${esc(f.from)} → ${esc(p.name)}.${esc(p.cols[e.pi]?p.cols[e.pi].n:(f.col||""))}</title></path>${lb(x1,y1,s1,"N")}${(shown[key(p,e.pi,"p")]=(shown[key(p,e.pi,"p")]||0)+1)>1?"":lb(x2,rowY(p,e.pi)-(cnt[key(p,e.pi,"p")]>1?6:0),s2,"1")}</g>`;
+  }).join("");
+  const rels=E.length;
+  const mk=(id,col)=>`<marker id="${id}" viewBox="0 0 10 10" refX="9.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${col}"/></marker>`;
+  box.classList.toggle("real",dgReal);
+  box.innerHTML=(W>760?`<div class="dgtools"><button class="act" id="dgFit">${dgReal?"Ajustar à largura":"Tamanho real"}</button></div>`:"")+`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif"><defs>${mk("ar","#5C6D82")}${mk("arh","#273E74")}</defs>${tb}${arrows}</svg>`+
+    `<p class="nota">PK = chave primária · FK = chave estrangeira · N → 1: muitos registros apontam para um. ${rels?"Passe o mouse sobre uma tabela para destacar as ligações; clique nela para ver os dados.":"Nenhuma ligação ainda: crie uma coluna com REFERENCES (chave estrangeira) para ver as setas."}</p>`;
+}
+$("dg").addEventListener("mouseover",e=>{
+  const svg=$("dg").querySelector("svg");if(!svg)return;
+  const t=e.target.closest(".tbl");
+  svg.classList.toggle("dim",!!t);
+  svg.querySelectorAll(".hi,.on").forEach(n=>n.classList.remove("hi","on"));
+  if(!t)return;
+  const n=t.dataset.t;t.classList.add("on");
+  svg.querySelectorAll(".rel").forEach(r=>{
+    if(r.dataset.a!==n&&r.dataset.b!==n)return;
+    r.classList.add("hi");
+    svg.querySelectorAll(".tbl").forEach(q=>{if(q.dataset.t===r.dataset.a||q.dataset.t===r.dataset.b)q.classList.add("on")});
+  });
+});
+$("dg").addEventListener("mouseleave",()=>{const svg=$("dg").querySelector("svg");if(svg){svg.classList.remove("dim");svg.querySelectorAll(".hi,.on").forEach(n=>n.classList.remove("hi","on"))}});
+$("dg").addEventListener("click",e=>{if(e.target.id==="dgFit"){dgReal=!dgReal;renderDiagram();return}const t=e.target.closest(".tbl");if(t){out.innerHTML="";exec(`SELECT * FROM "${t.dataset.t}"`)}});
+
+/* ---------- JOIN visual ---------- */
+const JV={L:null,R:null,lc:null,rc:null,type:"LEFT",step:0,steps:[],m:[],rm:new Set(),data:null,timer:null,hot:false};
+const JMAX=8;
+const jvTr=(t,n)=>t.length>n?t.slice(0,n-1)+"…":t;
+const jvQ=t=>/^\w+$/.test(t)?t:'"'+t+'"';
+const jvA=t=>esc(t).replace(/"/g,"&quot;");
+const jvCols=t=>{const r=db.exec(`PRAGMA table_info("${t}")`);return r.length?r[0].values.map(v=>v[1]):[]};
+const jvPk=t=>{const r=db.exec(`PRAGMA table_info("${t}")`);const p=r.length?r[0].values.filter(c=>c[5]>0).sort((a,b)=>a[5]-b[5]):[];return p.length?p[0][1]:jvCols(t)[0]};
+const jvFks=t=>{const f=db.exec(`PRAGMA foreign_key_list("${t}")`);return f.length?f[0].values.map(v=>({to:v[2],from:v[3],col:v[4]})):[]};
+function jvInfo(t){
+  const r=db.exec(`SELECT * FROM "${t}" LIMIT ${JMAX}`);
+  return{name:t,cols:jvCols(t),rows:r.length?r[0].values:[],n:db.exec(`SELECT COUNT(*) FROM "${t}"`)[0].values[0][0]};
+}
+function jvLink(L,R){
+  const f1=jvFks(R).find(x=>x.to.toLowerCase()===L.toLowerCase());
+  if(f1)return{lc:f1.col||jvPk(L),rc:f1.from};
+  const f2=jvFks(L).find(x=>x.to.toLowerCase()===R.toLowerCase());
+  if(f2)return{lc:f2.from,rc:f2.col||jvPk(R)};
+  const a=jvCols(L),b=jvCols(R),c=a.find(x=>b.some(y=>y.toLowerCase()===x.toLowerCase()));
+  return c?{lc:c,rc:b.find(y=>y.toLowerCase()===c.toLowerCase())}:{lc:a[0],rc:b[0]};
+}
+function jvDefaults(ts){
+  for(const t of ts){
+    const f=jvFks(t).find(x=>ts.some(y=>y.toLowerCase()===x.to.toLowerCase()));
+    if(f){const p=ts.find(y=>y.toLowerCase()===f.to.toLowerCase());return{L:p,R:t,lc:f.col||jvPk(p),rc:f.from}}
+  }
+  const a=ts[0],b=ts[1]||ts[0];
+  return Object.assign({L:a,R:b},jvLink(a,b));
+}
+function jvCompute(){
+  const{A,B}=JV.data,li=A.cols.indexOf(JV.lc),ri=B.cols.indexOf(JV.rc);
+  const eq=(a,b)=>a!==null&&b!==null&&(typeof a==="number"&&typeof b==="number"?a===b:String(a)===String(b));
+  JV.m=A.rows.map(l=>B.rows.map((r,j)=>eq(l[li],r[ri])?j:-1).filter(j=>j>=0));
+  JV.rm=new Set(JV.m.flat());
+  const T=JV.type,kl=T==="LEFT"||T==="FULL",kr=T==="RIGHT"||T==="FULL",S=[];
+  A.rows.forEach((l,i)=>S.push(JV.m[i].length?{k:"m",i,js:JV.m[i]}:{k:"l",i,keep:kl}));
+  B.rows.forEach((r,j)=>{if(!JV.rm.has(j))S.push({k:"r",j,keep:kr})});
+  JV.steps=S;
+}
+function jvRows(n){
+  const rows=[];
+  JV.steps.slice(0,n).forEach((s,idx)=>{
+    if(s.k==="m")s.js.forEach(j=>rows.push({i:s.i,j,idx}));
+    else if(s.k==="l"&&s.keep)rows.push({i:s.i,j:-1,idx});
+    else if(s.k==="r"&&s.keep)rows.push({i:-1,j:s.j,idx});
+  });
+  return rows;
+}
+function jvPick(info,key){
+  const k=info.cols.indexOf(key);let idx=info.cols.map((_,i)=>i).slice(0,4);
+  if(k>=0&&!idx.includes(k)){idx[idx.length-1]=k;idx.sort((a,b)=>a-b)}
+  return idx;
+}
+const JDESC={
+  INNER:"Só as linhas que têm correspondência nos dois lados.",
+  LEFT:"Todas as linhas da tabela da esquerda, com as correspondências da direita (NULL quando não há).",
+  RIGHT:"Todas as linhas da tabela da direita, com as correspondências da esquerda (NULL quando não há).",
+  FULL:"Todas as linhas dos dois lados: ligadas quando combinam e com NULL quando não."
+};
+function jvSql(){
+  const same=JV.L===JV.R,a=same?"a":jvQ(JV.L),b=same?"b":jvQ(JV.R);
+  return`SELECT *\nFROM ${jvQ(JV.L)}${same?" a":""}\n${JV.type==="FULL"?"FULL OUTER":JV.type} JOIN ${jvQ(JV.R)}${same?" b":""}\n  ON ${a}.${jvQ(JV.lc)} = ${b}.${jvQ(JV.rc)};`;
+}
+function jvVenn(){
+  const t=JV.type,c1='<circle cx="82" cy="62" r="46"/>',c2='<circle cx="140" cy="62" r="46"/>';
+  return`<svg viewBox="0 0 222 142" width="222" height="142" role="img" aria-label="Diagrama de Venn do ${t} JOIN"><defs><clipPath id="jvcp">${c2}</clipPath></defs>`+
+    `<g fill="#1b6b2b" fill-opacity=".4">${t==="LEFT"||t==="FULL"?c1:""}${t==="RIGHT"||t==="FULL"?c2:""}${t==="INNER"?`<g clip-path="url(#jvcp)">${c1}</g>`:""}</g>`+
+    `<g fill="none" stroke-width="2.5"><g stroke="#273E74">${c1}</g><g stroke="#5C6D82">${c2}</g></g>`+
+    `<text x="62" y="136" text-anchor="middle" font-size="11" font-weight="bold" fill="#273E74">${esc(jvTr(JV.L,13))}</text>`+
+    `<text x="160" y="136" text-anchor="middle" font-size="11" font-weight="bold" fill="#5C6D82">${esc(jvTr(JV.R,13))}</text></svg>`;
+}
+function jvBuild(){
+  const{A,B}=JV.data,RH=30,HH=48,P=18,GAP=210,CW=88;
+  const ia=jvPick(A,JV.lc),ib=jvPick(B,JV.rc);
+  const wa=Math.max(210,ia.length*CW+40),wb=Math.max(210,ib.length*CW+40);
+  const hA=HH+Math.max(A.rows.length,1)*RH,hB=HH+Math.max(B.rows.length,1)*RH;
+  const W=P+wa+GAP+wb+P,H=Math.max(hA,hB)+P*2+(A.n>A.rows.length||B.n>B.rows.length?20:0),xa=P,xb=P+wa+GAP,y0=P;
+  const box=(info,x,w,h,idx,key,side,col)=>{
+    const ki=info.cols.indexOf(key),off=side==="l"?12:34;
+    let o=`<rect x="${x}" y="${y0}" width="${w}" height="${h}" fill="#fff"/><rect x="${x}" y="${y0}" width="${w}" height="${HH}" fill="${col}"/>`+
+      `<text x="${x+12}" y="${y0+19}" font-size="14" font-weight="bold" fill="#fff">${esc(jvTr(info.name,26))}</text>`+
+      idx.map((c,n)=>`<text x="${x+off+n*CW}" y="${y0+38}" font-size="11" fill="#fff"${c===ki?' font-weight="bold" text-decoration="underline"':' fill-opacity=".85"'}>${esc(jvTr(info.cols[c],10))}</text>`).join("");
+    info.rows.forEach((row,i)=>{
+      const y=y0+HH+i*RH;
+      o+=`<g class="jr" data-side="${side}" data-i="${i}"><rect class="rb" x="${x}" y="${y}" width="${w}" height="${RH}"/>`+
+        idx.map((c,n)=>{const v=row[c];return`<text x="${x+off+n*CW}" y="${y+19}" font-size="12.5" font-family="monospace" fill="#273E74"${c===ki?' font-weight="bold"':""}>${v===null?"NULL":esc(jvTr(String(v),10))}</text>`}).join("")+
+        `<text class="gl" x="${side==="l"?x+w-12:x+12}" y="${y+20}" text-anchor="${side==="l"?"end":"start"}"></text></g>`;
+    });
+    if(!info.rows.length)o+=`<text x="${x+12}" y="${y0+HH+20}" font-size="12" fill="#5C6D82" font-style="italic">(tabela vazia)</text>`;
+    o+=`<rect x="${x}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="${col}" stroke-width="3"/>`;
+    if(info.n>info.rows.length)o+=`<text x="${x}" y="${y0+h+16}" font-size="11" fill="#5C6D82">mostrando ${info.rows.length} de ${info.n} linhas</text>`;
+    return o;
+  };
+  let o=box(A,xa,wa,hA,ia,JV.lc,"l","#273E74")+box(B,xb,wb,hB,ib,JV.rc,"r","#5C6D82");
+  const yc=(i)=>y0+HH+i*RH+RH/2;
+  JV.m.forEach((js,i)=>js.forEach(j=>{o+=`<path class="ln" data-i="${i}" data-j="${j}" pathLength="1" d="M${xa+wa},${yc(i)} C${xa+wa+80},${yc(i)} ${xb-80},${yc(j)} ${xb},${yc(j)}"/>`}));
+  A.rows.forEach((_,i)=>{if(!JV.m[i].length)o+=`<g class="stub" data-side="l" data-i="${i}"><line x1="${xa+wa}" y1="${yc(i)}" x2="${xa+wa+50}" y2="${yc(i)}" stroke="#8a5a00" stroke-width="2" stroke-dasharray="5 4"/><text x="${xa+wa+56}" y="${yc(i)+4}" font-size="11" font-weight="bold" fill="#8a5a00">NULL</text></g>`});
+  B.rows.forEach((_,j)=>{if(!JV.rm.has(j))o+=`<g class="stub" data-side="r" data-i="${j}"><line x1="${xb}" y1="${yc(j)}" x2="${xb-50}" y2="${yc(j)}" stroke="#8a5a00" stroke-width="2" stroke-dasharray="5 4"/><text x="${xb-56}" y="${yc(j)+4}" text-anchor="end" font-size="11" font-weight="bold" fill="#8a5a00">NULL</text></g>`});
+  return`<svg viewBox="0 0 ${W} ${H}" style="max-width:${W}px" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif" role="img" aria-label="Linhas de ${esc(JV.L)} e de ${esc(JV.R)} ligadas pelo JOIN">${o}</svg>`;
+}
+function jvTable(rows){
+  const{A,B}=JV.data,ia=jvPick(A,JV.lc),ib=jvPick(B,JV.rc);
+  const cell=(v,fill)=>fill?'<td class="fill">NULL</td>':v===null?'<td class="nl">NULL</td>':`<td${typeof v==="number"?' class="nm"':""}>${esc(String(v))}</td>`;
+  const body=rows.length?rows.map(r=>`<tr class="${(r.i<0||r.j<0?"nullrow ":"")+(JV.hot&&r.idx===JV.step-1?"fresh":"")}">${ia.map(c=>cell(r.i<0?null:A.rows[r.i][c],r.i<0)).join("")}${ib.map(c=>cell(r.j<0?null:B.rows[r.j][c],r.j<0)).join("")}</tr>`).join(""):`<tr><td colspan="${ia.length+ib.length}" class="nl">Nenhuma linha no resultado ainda.</td></tr>`;
+  return`<div class="sc"><table class="jvres"><thead><tr><th class="la" colspan="${ia.length}">${esc(JV.L)}</th><th class="ra" colspan="${ib.length}">${esc(JV.R)}</th></tr><tr>${ia.map(c=>`<th class="la">${esc(A.cols[c])}</th>`).join("")}${ib.map(c=>`<th class="ra">${esc(B.cols[c])}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function jvNarr(n){
+  const{A,B}=JV.data,S=JV.steps,T=JV.type,L=JV.L,R=JV.R,li=A.cols.indexOf(JV.lc),ri=B.cols.indexOf(JV.rc);
+  if(!S.length)return"As tabelas escolhidas estão vazias. Insira linhas para ver o JOIN em ação.";
+  const f=v=>v===null?"NULL":String(v);
+  if(n===0)return`${L} e ${R} se ligam quando ${L}.${JV.lc} = ${R}.${JV.rc}. Clique em “Animar” para ver o ${T} JOIN linha por linha.`;
+  if(n>=S.length&&!JV.hot){
+    const total=jvRows(n).length,comb=S.filter(s=>s.k==="m").reduce((a,s)=>a+s.js.length,0);
+    const oL=S.filter(s=>s.k==="l"&&s.keep).length,oR=S.filter(s=>s.k==="r"&&s.keep).length;
+    const xL=S.filter(s=>s.k==="l"&&!s.keep).length,xR=S.filter(s=>s.k==="r"&&!s.keep).length;
+    return`${T} JOIN: ${total} linha(s) no resultado (${comb} com correspondência${oL?`, ${oL} só de ${L} com NULL`:""}${oR?`, ${oR} só de ${R} com NULL`:""}).`+(xL?` ${xL} linha(s) de ${L} ficaram de fora.`:"")+(xR?` ${xR} linha(s) de ${R} ficaram de fora.`:"");
+  }
+  const s=S[n-1];let t;
+  if(s.k==="m")t=`Linha ${s.i+1} de ${L} (${JV.lc} = ${f(A.rows[s.i][li])}): ${s.js.length} correspondência(s) em ${R} → ${s.js.length} linha(s) no resultado.`;
+  else if(s.k==="l")t=`Linha ${s.i+1} de ${L} (${JV.lc} = ${f(A.rows[s.i][li])}) não tem correspondência em ${R}. `+(s.keep?`O ${T} JOIN mantém as linhas de ${L}: ela entra no resultado com NULL do lado de ${R}.`:`No ${T} JOIN, ela fica de fora do resultado.`);
+  else t=`Linha ${s.j+1} de ${R} (${JV.rc} = ${f(B.rows[s.j][ri])}) não tem correspondência em ${L}. `+(s.keep?`O ${T} JOIN mantém as linhas de ${R}: ela entra no resultado com NULL do lado de ${L}.`:`No ${T} JOIN, ela fica de fora do resultado.`);
+  return t+(n>=S.length?` Fim: ${jvRows(n).length} linha(s) no resultado.`:"");
+}
+function jvApply(){
+  const root=$("jvSvg");if(!root||!JV.data)return;
+  const{A,B}=JV.data,n=JV.step,S=JV.steps;
+  const sA=A.rows.map(()=>"idle"),sB=B.rows.map(()=>"idle"),lines=new Set(),stL=new Set(),stR=new Set();
+  S.slice(0,n).forEach(s=>{
+    if(s.k==="m"){sA[s.i]="match";s.js.forEach(j=>{sB[j]="match";lines.add(s.i+"-"+j)})}
+    else if(s.k==="l"){sA[s.i]=s.keep?"null":"out";if(s.keep)stL.add(s.i)}
+    else{sB[s.j]=s.keep?"null":"out";if(s.keep)stR.add(s.j)}
+  });
+  const cur=JV.hot&&n>0?S[n-1]:null,aA=new Set(),aB=new Set();
+  if(cur){if(cur.k==="m"){aA.add(cur.i);cur.js.forEach(j=>aB.add(j))}else if(cur.k==="l")aA.add(cur.i);else aB.add(cur.j)}
+  const gl={match:"✓",null:"∅",out:"✕",idle:""};
+  root.querySelectorAll(".jr").forEach(g=>{
+    const l=g.dataset.side==="l",i=+g.dataset.i,st=(l?sA:sB)[i];
+    g.setAttribute("class",`jr st-${st}${(l?aA:aB).has(i)?" act":""}`);
+    g.querySelector(".gl").textContent=gl[st];
+  });
+  root.querySelectorAll(".ln").forEach(p=>p.classList.toggle("on",lines.has(p.dataset.i+"-"+p.dataset.j)));
+  root.querySelectorAll(".stub").forEach(g=>g.classList.toggle("on",(g.dataset.side==="l"?stL:stR).has(+g.dataset.i)));
+  $("jvRes").innerHTML=jvTable(jvRows(n));
+  $("jvNar").textContent=jvNarr(n);
+  $("jvPlay").textContent=JV.timer?"Pausar":(n>=S.length&&n>0?"↻ Animar de novo":"▶ Animar");
+  $("jvPlay").disabled=!S.length;$("jvNext").disabled=!S.length||n>=S.length;
+}
+function jvStatic(){
+  $("jvVenn").innerHTML=jvVenn();
+  $("jvDesc").textContent=JDESC[JV.type];
+  $("jvSql").innerHTML=colorize(jvSql());
+  document.querySelectorAll("#jv .jvt").forEach(b=>{const on=b.dataset.jt===JV.type;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on)});
+}
+function stopJv(){if(JV.timer){clearTimeout(JV.timer);JV.timer=null}}
+function jvPlay(){
+  if(JV.timer){stopJv();jvApply();return}
+  if(typeof matchMedia==="function"&&matchMedia("(prefers-reduced-motion: reduce)").matches){JV.hot=false;JV.step=JV.steps.length;jvApply();return}
+  if(JV.step>=JV.steps.length)JV.step=0;
+  JV.hot=true;
+  const tick=()=>{
+    if(JV.step>=JV.steps.length){JV.timer=null;jvApply();return}
+    JV.step++;JV.timer=setTimeout(tick,1000);jvApply();
+  };
+  JV.timer=setTimeout(tick,JV.step===0?600:0);
+  jvApply();
+}
+function renderJoinViz(){
+  const box=$("jv");if(!box||!db)return;
+  stopJv();
+  const ts=tables();
+  if(!ts.length){box.innerHTML='<p class="empty">Crie ao menos uma tabela (ou carregue o banco de exemplo) para ver o JOIN visual.</p>';JV.data=null;return}
+  if(!ts.includes(JV.L)||!ts.includes(JV.R)||!jvCols(JV.L).includes(JV.lc)||!jvCols(JV.R).includes(JV.rc))Object.assign(JV,jvDefaults(ts));
+  JV.data={A:jvInfo(JV.L),B:jvInfo(JV.R)};
+  jvCompute();JV.step=JV.steps.length;JV.hot=false;
+  const opts=(cur,list)=>list.map(t=>`<option value="${jvA(t)}"${t===cur?" selected":""}>${esc(t)}</option>`).join("");
+  const nt=JV.type;
+  box.innerHTML=`<div class="jvctl"><label>Tabela da esquerda<select id="jvL">${opts(JV.L,ts)}</select></label><label>Coluna<select id="jvLc">${opts(JV.lc,jvCols(JV.L))}</select></label><span class="jveq">=</span><label>Tabela da direita<select id="jvR">${opts(JV.R,ts)}</select></label><label>Coluna<select id="jvRc">${opts(JV.rc,jvCols(JV.R))}</select></label></div>`+
+    `<div class="jvtypes" role="group" aria-label="Tipo de JOIN">${["INNER","LEFT","RIGHT","FULL"].map(t=>`<button class="act jvt" data-jt="${t}">${t} JOIN</button>`).join("")}</div>`+
+    `<div class="jvtop"><div id="jvVenn"></div><div class="jvinfo"><p id="jvDesc"></p><pre class="jvsql" id="jvSql"></pre><button class="act" id="jvSend" style="margin:0">Enviar SQL ao editor</button></div></div>`+
+    `<div class="jvbtns"><button class="act" id="jvPlay">▶ Animar</button><button class="act" id="jvNext">Próximo passo</button><button class="act" id="jvRestart">Reiniciar</button><button class="act" id="jvEnd">Ver resultado</button></div>`+
+    `<p class="jvnar" id="jvNar" aria-live="polite"></p><div class="jvsvg" id="jvSvg">${jvBuild()}</div>`+
+    `<div class="jvleg"><span><i style="background:#e1f3e4"></i>✓ linha com correspondência (entra no resultado)</span><span><i style="background:#fff4d6"></i>∅ entra com NULL (sem correspondência)</span><span><i style="background:#e9ecf1"></i>✕ fica de fora do resultado</span></div>`+
+    `<div id="jvRes"></div>`+
+    `<p class="tip">A visualização usa as primeiras ${JMAX} linhas de cada tabela. Para tabelas grandes, o resultado real pode ter mais linhas. Escolha as colunas da condição <code>ON</code> acima e compare os quatro tipos de JOIN.</p>`;
+  JV.type=nt;jvStatic();jvApply();
+}
+$("jv").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b||!JV.data)return;
+  if(b.dataset.jt){JV.type=b.dataset.jt;stopJv();jvCompute();JV.step=JV.steps.length;JV.hot=false;jvStatic();
+    const old=$("jvSvg");if(old)old.innerHTML=jvBuild();jvApply();return}
+  if(b.id==="jvPlay")jvPlay();
+  else if(b.id==="jvNext"){stopJv();JV.hot=true;if(JV.step<JV.steps.length)JV.step++;jvApply()}
+  else if(b.id==="jvRestart"){stopJv();JV.step=0;JV.hot=false;jvApply()}
+  else if(b.id==="jvEnd"){stopJv();JV.step=JV.steps.length;JV.hot=false;jvApply()}
+  else if(b.id==="jvSend")toEditor(jvSql());
+});
+$("jv").addEventListener("change",e=>{
+  const t=e.target;if(!JV.data||!t.id)return;
+  if(t.id==="jvL"||t.id==="jvR"){const L=t.id==="jvL"?t.value:JV.L,R=t.id==="jvR"?t.value:JV.R;Object.assign(JV,{L,R},jvLink(L,R));renderJoinViz()}
+  else if(t.id==="jvLc"||t.id==="jvRc"){JV[t.id==="jvLc"?"lc":"rc"]=t.value;renderJoinViz()}
+});
+
+/* ---------- Histórico de comandos ---------- */
+const HKEY="sqllab:hist",HMAX=300,HPG=8,HLEN=5000;
+let HIST=[],hp=0,lastErr="";
+try{const h=JSON.parse(localStorage.getItem(HKEY)||"[]");if(Array.isArray(h))HIST=h.filter(x=>x&&typeof x.t==="string"&&x.at&&x.id)}catch(e){}
+const hSave=()=>{try{localStorage.setItem(HKEY,JSON.stringify(HIST))}catch(e){}};
+function hStrip(s){let t=s.trim(),p;do{p=t;t=t.replace(/^(?:--[^\n]*(?:\n|$)|\/\*[\s\S]*?\*\/)\s*/,"")}while(t!==p);return t.trim()}
+function hRecord(res){
+  let ch=false;
+  res.forEach(([s,ok,err])=>{
+    const t=hStrip(s);if(!t||t.length>HLEN)return;
+    const k=curId+"|"+t.replace(/\s+/g," "),now=Date.now();
+    const e=HIST.find(x=>x.k===k);
+    if(e){HIST.splice(HIST.indexOf(e),1);Object.assign(e,{at:now,n:(e.n||1)+1,ok,err:ok?"":err,dbName:curName()});HIST.push(e)}
+    else HIST.push({id:uid(),k,t,at:now,dbId:curId,dbName:curName(),ok,err:ok?"":err,n:1});
+    ch=true;
+  });
+  if(!ch)return;
+  while(HIST.length>HMAX)HIST.shift();
+  hSave();hp=0;renderHist();
+}
+function hTime(ms){
+  const d=new Date(ms),n=new Date(),y=new Date(n),hm=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  y.setDate(n.getDate()-1);
+  if(d.toDateString()===n.toDateString())return"hoje "+hm;
+  if(d.toDateString()===y.toDateString())return"ontem "+hm;
+  return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+(d.getFullYear()!==n.getFullYear()?"/"+d.getFullYear():"")+" "+hm;
+}
+function hPagerHtml(cur,pages){
+  const list=[...new Set([0,pages-1,cur-1,cur,cur+1])].filter(k=>k>=0&&k<pages).sort((a,b)=>a-b);
+  let h=`<button class="act" data-p="${cur-1}"${cur?"":" disabled"}>‹ Anterior</button>`,prev=-1;
+  list.forEach(k=>{
+    if(prev>=0&&k-prev>1)h+='<span class="dots">…</span>';
+    h+=`<button class="act${k===cur?" on":""}" data-p="${k}" aria-label="Página ${k+1}"${k===cur?' aria-current="page"':""}>${k+1}</button>`;prev=k;
+  });
+  return h+`<button class="act" data-p="${cur+1}"${cur<pages-1?"":" disabled"}>Próxima ›</button>`;
+}
+function hFiltered(){
+  const q=($("hq").value||"").trim().toLowerCase().split(/\s+/).filter(Boolean),st=$("hs").value,only=$("hd").checked;
+  return HIST.filter(e=>{
+    if(st==="ok"&&!e.ok)return false;
+    if(st==="err"&&e.ok)return false;
+    if(only&&e.dbId!==curId)return false;
+    const hay=(e.t+" "+(e.err||"")).toLowerCase();
+    return q.every(w=>hay.includes(w));
+  }).reverse();
+}
+function copyText(t){
+  if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);
+  return new Promise((ok,fail)=>{
+    const a=document.createElement("textarea");
+    a.value=t;a.style.cssText="position:fixed;opacity:0";
+    document.body.appendChild(a);a.select();
+    try{document.execCommand("copy")?ok():fail()}catch(x){fail(x)}
+    a.remove();
+  });
+}
+function renderHist(){
+  if(!$("hList"))return;
+  const L=hFiltered(),total=HIST.length,pages=Math.max(1,Math.ceil(L.length/HPG));
+  hp=Math.min(hp,pages-1);
+  $("hInfo").textContent=!total?"":(L.length===total?`${total} comando(s) no histórico.`:`${L.length} de ${total} comando(s) (com filtro).`)+(pages>1?` Página ${hp+1} de ${pages}.`:"");
+  $("hClear").disabled=!total;
+  $("hList").innerHTML=!total?'<p class="empty">Nenhum comando executado ainda. Os comandos que você executar aparecerão aqui.</p>'
+    :!L.length?'<p class="empty">Nenhum comando encontrado para este filtro.</p>'
+    :L.slice(hp*HPG,hp*HPG+HPG).map(e=>{
+      const d=dbList.find(x=>x.id===e.dbId),nm=d?d.name:e.dbName+" (removido)";
+      return`<div class="hitem"><div class="hst${e.ok?"":" err"}" title="${e.ok?"Executado com sucesso":"Terminou com erro"}">${e.ok?"✓":"✕"}</div><div class="hmain"><code class="hcode" title="Clique para ver o comando inteiro">${colorize(e.t)}</code><div class="hmeta"><span title="${esc(new Date(e.at).toLocaleString("pt-BR"))}">${hTime(e.at)}</span><span class="hdb">${esc(nm)}</span>${e.n>1?`<span>${e.n}× executado</span>`:""}${e.ok?"":`<span class="herr">${esc((e.err||"").split("\n")[0])}</span>`}</div></div><div class="hbtn"><button class="act" data-ha="copy" data-id="${e.id}">Copiar</button><button class="act" data-ha="send" data-id="${e.id}">Enviar ao editor</button><button class="act" data-ha="run" data-id="${e.id}">Executar</button><button class="act" data-ha="del" data-id="${e.id}" aria-label="Remover do histórico" title="Remover do histórico">✕</button></div></div>`;
+    }).join("");
+  $("hPager").innerHTML=pages>1?hPagerHtml(hp,pages):"";
+}
+$("hist").innerHTML=`<div class="hctl"><label>Buscar<input type="search" id="hq" placeholder="Filtrar comandos (ex.: SELECT, estudantes, JOIN)" aria-label="Filtrar comandos"></label><label>Situação<select id="hs"><option value="all">Todos</option><option value="ok">Com sucesso</option><option value="err">Com erro</option></select></label><label class="hchk"><input type="checkbox" id="hd"> Só do banco atual</label><button class="act" id="hClear" data-ha="clear">Limpar histórico</button></div><p class="hinfo" id="hInfo"></p><div id="hList"></div><div class="pager" style="margin-bottom:0px;margin-top:12px;" id="hPager"></div>`;
+$("hist").addEventListener("input",e=>{if(e.target.id==="hq"){hp=0;renderHist()}});
+$("hist").addEventListener("change",e=>{if(e.target.id==="hs"||e.target.id==="hd"){hp=0;renderHist()}});
+$("hist").addEventListener("click",e=>{
+  const c=e.target.closest(".hcode");if(c){c.classList.toggle("open");return}
+  const p=e.target.closest("button[data-p]");if(p&&!p.disabled){hp=+p.dataset.p;renderHist();return}
+  const b=e.target.closest("button[data-ha]");if(!b)return;
+  if(b.dataset.ha==="clear"){if(HIST.length&&confirm("Apagar todo o histórico de comandos?")){HIST=[];hSave();hp=0;renderHist()}return}
+  const en=HIST.find(x=>x.id===b.dataset.id);if(!en)return;
+  if(b.dataset.ha==="copy"){
+    copyText(en.t).then(()=>{
+      const o=b.textContent;b.textContent="Copiado ✓";
+      setTimeout(()=>{b.textContent=o},1500);
+    }).catch(()=>alert("Não foi possível copiar."));
+    return;
+  }
+  if(b.dataset.ha==="send")toEditor(en.t);
+  else if(b.dataset.ha==="run"){run(en.t);out.scrollIntoView({behavior:"smooth",block:"center"})}
+  else if(b.dataset.ha==="del"){HIST=HIST.filter(x=>x!==en);hSave();renderHist()}
+});
+renderHist();
+
+/* ---------- Glossário e referência rápida ---------- */
+const GL=[
+[`SELECT`,`Consulta dados. Liste as colunas ou use <code>*</code> para todas. <code>AS</code> cria um apelido para a coluna.`,`SELECT nome, cidade AS local
+FROM estudantes;`],
+[`WHERE`,`Filtra as linhas. Operadores: <code>=</code>, <code>&lt;&gt;</code>, <code>&gt;</code>, <code>&lt;</code>, <code>BETWEEN</code>. Combine com <code>AND</code>, <code>OR</code> e <code>NOT</code>.`,`SELECT * FROM estudantes
+WHERE cidade = 'Içara'
+  AND nascimento < '2000-01-01';`],
+[`LIKE e IN`,`<code>LIKE</code> busca padrões: <code>%</code> é qualquer texto e <code>_</code> é um caractere. <code>IN</code> testa uma lista de valores.`,`SELECT nome FROM estudantes
+WHERE nome LIKE 'A%'
+   OR cidade IN ('Içara', 'Criciúma');`],
+[`ORDER BY e LIMIT`,`Ordena o resultado (<code>ASC</code> crescente, <code>DESC</code> decrescente). <code>LIMIT</code> restringe a quantidade de linhas.`,`SELECT nome, nascimento
+FROM estudantes
+ORDER BY nascimento DESC
+LIMIT 3;`],
+[`NULL`,`É a ausência de valor. Compare com <code>IS NULL</code> ou <code>IS NOT NULL</code>, nunca com <code>=</code>.`,`SELECT * FROM estudantes
+WHERE cidade IS NULL;`],
+[`INSERT`,`Adiciona linhas. Informe as colunas e os valores na mesma ordem. Texto e datas vão entre aspas simples.`,`INSERT INTO estudantes
+  (nome, cidade, nascimento)
+VALUES
+  ('Fábio Neves', 'Criciúma',
+   '1999-05-17');`],
+[`UPDATE`,`Altera linhas existentes. <strong>Sempre use WHERE</strong>, senão todas as linhas serão alteradas.`,`UPDATE estudantes
+SET cidade = 'Criciúma'
+WHERE nome = 'Diego Rocha';`],
+[`DELETE`,`Remove linhas. Sem <code>WHERE</code>, apaga todas as linhas da tabela (a estrutura continua).`,`DELETE FROM matriculas
+WHERE nota < 6;`],
+[`CREATE TABLE`,`Cria uma tabela definindo cada coluna, o seu tipo e as suas restrições.`,`CREATE TABLE livros (
+  id INTEGER PRIMARY KEY,
+  titulo TEXT NOT NULL,
+  autor TEXT,
+  ano INTEGER
+);`],
+[`ALTER e DROP`,`<code>ALTER TABLE</code> muda a estrutura (adicionar ou renomear coluna). <code>DROP TABLE</code> apaga a tabela e todos os seus dados.`,`ALTER TABLE estudantes
+ADD COLUMN email TEXT;
+
+DROP TABLE IF EXISTS livros;`],
+[`Tipos de dados`,`O SQLite usa poucos tipos: <code>INTEGER</code> (inteiros), <code>REAL</code> (decimais), <code>TEXT</code> (texto) e <code>BLOB</code> (binário). Datas ficam como texto <code>AAAA-MM-DD</code>.`,`SELECT typeof(42),
+       typeof(3.14),
+       typeof('oi'),
+       typeof(NULL);`],
+[`Restrições`,`Regras que protegem os dados: <code>PRIMARY KEY</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>DEFAULT</code>, <code>CHECK</code> e <code>FOREIGN KEY</code> (<code>REFERENCES</code>).`,`CREATE TABLE pedidos (
+  id INTEGER PRIMARY KEY
+    AUTOINCREMENT,
+  email TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'novo',
+  valor REAL CHECK (valor >= 0),
+  estudante_id INTEGER
+    REFERENCES estudantes(id)
+);`],
+[`GROUP BY e agregação`,`<code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code> e <code>MAX</code> resumem várias linhas. <code>GROUP BY</code> resume por grupo e <code>HAVING</code> filtra os grupos.`,`SELECT cidade, COUNT(*) AS total
+FROM estudantes
+GROUP BY cidade
+HAVING COUNT(*) >= 2;`],
+[`JOIN`,`Combina tabelas pela chave. <code>INNER JOIN</code> traz só as linhas com correspondência; <code>LEFT JOIN</code> mantém todas as da tabela da esquerda.`,`SELECT a.nome, c.nome AS curso
+FROM matriculas m
+INNER JOIN estudantes a
+  ON a.id = m.estudante_id
+INNER JOIN cursos c
+  ON c.id = m.curso_id;`],
+[`Subconsulta`,`Um <code>SELECT</code> dentro de outro. Serve para filtrar com base no resultado de outra consulta.`,`SELECT nome FROM estudantes
+WHERE id IN (
+  SELECT estudante_id
+  FROM matriculas
+  WHERE nota >= 9
+);`],
+[`Funções úteis`,`Texto: <code>UPPER</code>, <code>LENGTH</code> e <code>||</code> (juntar). Números: <code>ROUND</code>. Datas: <code>date('now')</code>. <code>COALESCE</code> troca NULL por um valor.`,`SELECT UPPER(nome) AS nome,
+       LENGTH(nome) AS letras,
+       COALESCE(cidade, '-') AS cidade,
+       date('now') AS hoje
+FROM estudantes;`],
+[`DISTINCT`,`Remove linhas repetidas do resultado.`,`SELECT DISTINCT cidade
+FROM estudantes;`],
+[`BETWEEN`,`Testa se um valor está dentro de um intervalo, incluindo os extremos.`,`SELECT a.nome, m.nota
+FROM matriculas m
+JOIN estudantes a
+  ON a.id = m.estudante_id
+WHERE m.nota BETWEEN 7 AND 9;`],
+[`LIMIT e OFFSET`,`<code>OFFSET</code> pula linhas. Junto com <code>LIMIT</code>, serve para paginar resultados.`,`SELECT nome FROM estudantes
+ORDER BY nome
+LIMIT 2 OFFSET 2;`],
+[`CASE WHEN`,`Cria valores condicionais dentro do <code>SELECT</code>, como um “se… senão”.`,`SELECT a.nome, m.nota,
+  CASE
+    WHEN m.nota >= 7 THEN 'Aprovado'
+    ELSE 'Recuperação'
+  END AS situacao
+FROM matriculas m
+JOIN estudantes a
+  ON a.id = m.estudante_id;`],
+[`HAVING`,`Filtra grupos depois do <code>GROUP BY</code>. O <code>WHERE</code> filtra linhas antes de agrupar.`,`SELECT curso_id,
+       AVG(nota) AS media
+FROM matriculas
+GROUP BY curso_id
+HAVING AVG(nota) >= 7;`],
+[`INNER JOIN`,`Traz só as linhas que têm correspondência nas duas tabelas. Alunos sem matrícula não aparecem.`,`SELECT a.nome, m.nota
+FROM estudantes a
+INNER JOIN matriculas m
+  ON m.estudante_id = a.id;`],
+[`LEFT JOIN`,`Mantém todas as linhas da tabela da esquerda. Sem correspondência, as colunas da direita ficam <code>NULL</code>. Com <code>IS NULL</code>, encontra quem não tem ligação.`,`SELECT a.nome, m.nota
+FROM estudantes a
+LEFT JOIN matriculas m
+  ON m.estudante_id = a.id;
+
+-- Alunos sem matrícula
+SELECT a.nome
+FROM estudantes a
+LEFT JOIN matriculas m
+  ON m.estudante_id = a.id
+WHERE m.estudante_id IS NULL;`],
+[`RIGHT JOIN`,`Mantém todas as linhas da tabela da direita. É um <code>LEFT JOIN</code> com as tabelas trocadas. Exige SQLite 3.39 ou mais novo.`,`SELECT a.nome, m.nota
+FROM matriculas m
+RIGHT JOIN estudantes a
+  ON a.id = m.estudante_id;`],
+[`FULL JOIN`,`Mantém as linhas dos dois lados, tenham correspondência ou não. Exige SQLite 3.39 ou mais novo.`,`SELECT a.nome, m.curso_id
+FROM estudantes a
+FULL OUTER JOIN matriculas m
+  ON m.estudante_id = a.id;`],
+[`CROSS JOIN`,`Combina cada linha de uma tabela com todas as linhas da outra (produto cartesiano).`,`SELECT a.nome, c.nome AS curso
+FROM estudantes a
+CROSS JOIN cursos c;`],
+[`Auto-junção`,`Junta uma tabela com ela mesma, usando apelidos diferentes. Aqui: pares de estudantes da mesma cidade.`,`SELECT a1.nome,
+       a2.nome AS colega,
+       a1.cidade
+FROM estudantes a1
+JOIN estudantes a2
+  ON a1.cidade = a2.cidade
+ AND a1.id < a2.id;`],
+[`UNION, INTERSECT, EXCEPT`,`<code>UNION</code> junta resultados sem repetir (<code>UNION ALL</code> mantém repetidos). <code>INTERSECT</code> traz o que está nos dois e <code>EXCEPT</code>, o que está só no primeiro.`,`SELECT cidade FROM estudantes
+WHERE nascimento < '2000-01-01'
+UNION
+SELECT cidade FROM estudantes
+WHERE nome LIKE 'E%';
+
+SELECT id FROM estudantes
+EXCEPT
+SELECT estudante_id FROM matriculas;`],
+[`EXISTS`,`Testa se a subconsulta devolve alguma linha. Muito usado em consultas que se relacionam com a tabela de fora.`,`SELECT a.nome FROM estudantes a
+WHERE EXISTS (
+  SELECT 1 FROM matriculas m
+  WHERE m.estudante_id = a.id
+    AND m.nota >= 9
+);`],
+[`WITH (CTE)`,`Dá um nome a uma consulta temporária, deixando consultas complexas mais legíveis.`,`WITH medias AS (
+  SELECT estudante_id,
+         AVG(nota) AS media
+  FROM matriculas
+  GROUP BY estudante_id
+)
+SELECT a.nome,
+       ROUND(m.media, 1) AS media
+FROM medias m
+JOIN estudantes a
+  ON a.id = m.estudante_id;`],
+[`INSERT de várias linhas`,`Um único <code>INSERT</code> pode adicionar várias linhas, separadas por vírgula.`,`INSERT INTO cursos
+  (nome, carga_horaria)
+VALUES
+  ('Word', 20),
+  ('PowerPoint', 20);`],
+[`INSERT ... SELECT`,`Copia o resultado de um <code>SELECT</code> para outra tabela.`,`CREATE TABLE estudantes_icara (
+  nome TEXT,
+  cidade TEXT
+);
+
+INSERT INTO estudantes_icara
+SELECT nome, cidade
+FROM estudantes
+WHERE cidade = 'Içara';
+
+SELECT * FROM estudantes_icara;`],
+[`Transações`,`Agrupam comandos que devem funcionar juntos: <code>COMMIT</code> confirma e <code>ROLLBACK</code> desfaz tudo desde o <code>BEGIN</code>. Enquanto a transação está aberta, o SQL Lab mostra a etiqueta “Transação aberta”.`,`BEGIN;
+DELETE FROM matriculas;
+SELECT COUNT(*) AS dentro
+FROM matriculas;
+ROLLBACK;
+SELECT COUNT(*) AS depois
+FROM matriculas;`],
+[`FOREIGN KEY e CASCADE`,`Liga uma coluna à chave de outra tabela. <code>ON DELETE CASCADE</code> apaga os registros filhos junto com o pai.`,`CREATE TABLE faltas (
+  id INTEGER PRIMARY KEY,
+  estudante_id INTEGER NOT NULL
+    REFERENCES estudantes(id)
+    ON DELETE CASCADE,
+  data TEXT
+);`],
+[`CREATE INDEX`,`Acelera buscas em uma coluna. Com <code>UNIQUE</code>, também impede valores repetidos.`,`CREATE INDEX idx_estudantes_cidade
+ON estudantes (cidade);`],
+[`BEGIN e COMMIT`,`<code>BEGIN</code> abre uma transação: as alterações seguintes ainda não são definitivas. <code>COMMIT</code> grava tudo de uma vez.`,`BEGIN;
+UPDATE matriculas
+SET nota = nota + 0.5
+WHERE estudante_id = 1;
+COMMIT;`],
+[`ROLLBACK`,`Desfaz tudo o que foi feito desde o <code>BEGIN</code>. Ótimo para voltar atrás depois de um erro, como um <code>UPDATE</code> sem <code>WHERE</code>.`,`BEGIN;
+UPDATE matriculas SET nota = 0;
+SELECT * FROM matriculas;
+ROLLBACK;
+SELECT * FROM matriculas;`],
+[`SAVEPOINT`,`Marca um ponto dentro da transação. <code>ROLLBACK TO</code> volta só até ele, sem cancelar o que veio antes.`,`BEGIN;
+INSERT INTO cursos
+  (nome, carga_horaria)
+VALUES ('Teste A', 10);
+SAVEPOINT ponto1;
+INSERT INTO cursos
+  (nome, carga_horaria)
+VALUES ('Teste B', 10);
+ROLLBACK TO ponto1;
+SELECT nome FROM cursos;
+-- Troque por COMMIT para gravar
+ROLLBACK;`],
+[`UNIQUE INDEX`,`Um índice <code>UNIQUE</code> impede valores repetidos na coluna e ainda acelera as buscas por ela.`,`CREATE UNIQUE INDEX idx_cursos_nome
+ON cursos (nome);
+
+-- Tire o "--" para testar:
+-- dá erro de valor repetido
+-- INSERT INTO cursos
+--   (nome, carga_horaria)
+-- VALUES ('Excel', 10);`],
+[`Índice composto`,`Um índice com várias colunas ajuda consultas que filtram por elas, na ordem declarada. A primeira coluna é a mais importante.`,`CREATE INDEX idx_mat_curso_nota
+ON matriculas (curso_id, nota);
+
+EXPLAIN QUERY PLAN
+SELECT * FROM matriculas
+WHERE curso_id = 2
+  AND nota >= 7;`],
+[`DROP INDEX`,`Remove um índice. Os dados da tabela não são afetados; só as buscas deixam de usar o índice.`,`DROP INDEX IF EXISTS idx_cidade;
+
+SELECT name, tbl_name
+FROM sqlite_master
+WHERE type = 'index';`],
+[`EXPLAIN com JOIN`,`Em um <code>JOIN</code>, o plano mostra uma linha para cada tabela: qual é lida por completo (<code>SCAN</code>) e qual é consultada por chave (<code>SEARCH</code>).`,`EXPLAIN QUERY PLAN
+SELECT a.nome, m.nota
+FROM estudantes a
+JOIN matriculas m
+  ON m.estudante_id = a.id
+WHERE a.cidade = 'Içara';`],
+[`Índice: antes e depois`,`Cria 50.000 linhas e roda a mesma consulta sem e com índice. Compare os tempos (ms) nas legendas. Depois, <code>DROP TABLE teste_indice</code> limpa o teste.`,`DROP TABLE IF EXISTS teste_indice;
+CREATE TABLE teste_indice (
+  id INTEGER PRIMARY KEY,
+  estudante_id INTEGER
+);
+WITH RECURSIVE n(x) AS (
+  SELECT 1 UNION ALL
+  SELECT x + 1 FROM n
+  WHERE x < 50000
+)
+INSERT INTO teste_indice (estudante_id)
+SELECT x % 1000 FROM n;
+
+SELECT COUNT(*) FROM teste_indice
+WHERE estudante_id = 123;
+
+CREATE INDEX idx_teste
+ON teste_indice (estudante_id);
+
+SELECT COUNT(*) FROM teste_indice
+WHERE estudante_id = 123;`],
+[`EXPLAIN QUERY PLAN`,`Mostra como o SQLite vai executar a consulta. <code>SCAN</code> lê a tabela inteira; <code>SEARCH</code> usa um índice ou a chave primária e é bem mais rápido.`,`EXPLAIN QUERY PLAN
+SELECT * FROM estudantes
+WHERE cidade = 'Içara';
+
+CREATE INDEX idx_cidade
+ON estudantes (cidade);
+
+EXPLAIN QUERY PLAN
+SELECT * FROM estudantes
+WHERE cidade = 'Içara';`],
+[`CREATE VIEW`,`Guarda uma consulta com um nome, que depois pode ser usada como se fosse uma tabela.`,`CREATE VIEW notas_estudantes AS
+SELECT a.nome,
+       c.nome AS curso,
+       m.nota
+FROM matriculas m
+JOIN estudantes a
+  ON a.id = m.estudante_id
+JOIN cursos c
+  ON c.id = m.curso_id;
+
+SELECT * FROM notas_estudantes;`],
+[`CREATE TRIGGER`,`Executa comandos automaticamente quando ocorre um <code>INSERT</code>, <code>UPDATE</code> ou <code>DELETE</code>. <code>NEW</code> representa a linha inserida.`,`CREATE TABLE historico (
+  msg TEXT,
+  quando TEXT
+);
+
+CREATE TRIGGER trg_novo_estudante
+AFTER INSERT ON estudantes
+BEGIN
+  INSERT INTO historico
+  VALUES ('Novo estudante: ' || NEW.nome,
+          datetime('now'));
+END;
+
+INSERT INTO estudantes (nome)
+VALUES ('Teste');
+
+SELECT * FROM historico;`],
+[`Estrutura do banco`,`<code>sqlite_master</code> lista tabelas, índices e views. <code>PRAGMA table_info</code> mostra as colunas de uma tabela.`,`SELECT type, name
+FROM sqlite_master;
+
+PRAGMA table_info(estudantes);`],
+[`Funções de texto`,`<code>SUBSTR</code> extrai um trecho, <code>REPLACE</code> troca texto, <code>TRIM</code> remove espaços e <code>INSTR</code> acha a posição de um texto.`,`SELECT SUBSTR(nome, 1, 3) AS inicio,
+       REPLACE(cidade, 'ú', 'u') AS cidade,
+       TRIM('  oi  ') AS aparado,
+       INSTR(nome, ' ') AS espaco
+FROM estudantes;`],
+[`Datas e horas`,`O SQLite guarda datas como texto. <code>date</code>, <code>datetime</code>, <code>julianday</code> e <code>strftime</code> calculam e formatam.`,`SELECT date('now') AS hoje,
+       strftime('%d/%m/%Y', nascimento)
+         AS nascimento,
+       CAST((julianday('now')
+         - julianday(nascimento))
+         / 365.25 AS INTEGER) AS idade
+FROM estudantes;`],
+[`Funções de janela`,`Calculam sobre um conjunto de linhas sem agrupá-las, como ranking ou total acumulado.`,`SELECT a.nome, m.nota,
+  RANK() OVER (
+    ORDER BY m.nota DESC
+  ) AS posicao
+FROM matriculas m
+JOIN estudantes a
+  ON a.id = m.estudante_id;`]
+];
+const ORD=["SELECT","DISTINCT","WHERE","BETWEEN","LIKE e IN","NULL","ORDER BY e LIMIT","LIMIT e OFFSET","CASE WHEN","GROUP BY e agregação","HAVING","JOIN","INNER JOIN","LEFT JOIN","RIGHT JOIN","FULL JOIN","CROSS JOIN","Auto-junção","Subconsulta","EXISTS","WITH (CTE)","UNION, INTERSECT, EXCEPT","INSERT","INSERT de várias linhas","INSERT ... SELECT","UPDATE","DELETE","Transações","BEGIN e COMMIT","ROLLBACK","SAVEPOINT","CREATE TABLE","Tipos de dados","Restrições","FOREIGN KEY e CASCADE","ALTER e DROP","CREATE INDEX","UNIQUE INDEX","Índice composto","DROP INDEX","EXPLAIN QUERY PLAN","EXPLAIN com JOIN","Índice: antes e depois","CREATE VIEW","CREATE TRIGGER","Estrutura do banco","Funções úteis","Funções de texto","Datas e horas","Funções de janela"];
+GL.sort((a,b)=>ORD.indexOf(a[0])-ORD.indexOf(b[0]));
+function colorize(src){
+  return src.replace(RE,(m,c,s,n,f,w)=>{
+    const e=esc(m);
+    if(c)return`<i class="c">${e}</i>`;
+    if(s)return`<i class="s">${e}</i>`;
+    if(n)return`<i class="n">${e}</i>`;
+    if(f||w){const u=m.toUpperCase(),k=KW.has(u)?"k":TYPES.has(u)?"t":f?"f":"";return k?`<i class="${k}">${e}</i>`:e}
+    return e;
+  });
+}
+const PG=6;let gp=0,gqv="";
+function renderGl(){
+  const q=gqv.trim().toLowerCase();
+  const items=GL.map((g,i)=>[g,i]).filter(([g])=>!q||(g[0]+" "+g[1].replace(/<[^>]+>/g,"")+" "+g[2]).toLowerCase().includes(q));
+  const pages=Math.max(1,Math.ceil(items.length/PG));gp=Math.min(gp,pages-1);
+  $("gloss").innerHTML=items.slice(gp*PG,gp*PG+PG).map(([g,i])=>`<div class="glossary-card"><h3>${g[0]}</h3><p>${g[1]}</p><pre>${colorize(g[2])}</pre><button class="act" data-g="${i}">Enviar ao editor</button></div>`).join("");
+  $("gnone").hidden=items.length>0;
+  $("pager").innerHTML=pages>1
+    ?`<button class="act" data-p="${gp-1}"${gp?"":" disabled"}>‹ Anterior</button>`+Array.from({length:pages},(_,k)=>`<button class="act${k===gp?" on":""}" data-p="${k}" aria-label="Página ${k+1}"${k===gp?' aria-current="page"':""}>${k+1}</button>`).join("")+`<button class="act" data-p="${gp+1}"${gp<pages-1?"":" disabled"}>Próxima ›</button><span class="pinfo">${items.length} itens · página ${gp+1} de ${pages}</span>`
+    :(items.length?`<span class="pinfo">${items.length} item(ns)</span>`:"");
+}
+function toEditor(t){
+  const v=ed.value.replace(/\s+$/,"");
+  ed.value=(v?v+"\n\n":"")+t;errTok=null;paint();
+  $("edPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  ed.focus({preventScroll:true});
+  ed.setSelectionRange(ed.value.length-t.length,ed.value.length);
+  ed.scrollTop=ed.scrollHeight;
+}
+$("gq").addEventListener("input",e=>{gqv=e.target.value;gp=0;renderGl()});
+$("pager").addEventListener("click",e=>{const b=e.target.closest("button[data-p]");if(b&&!b.disabled){gp=+b.dataset.p;renderGl();$("glossario").scrollIntoView({behavior:"smooth"})}});
+$("gloss").addEventListener("click",e=>{const b=e.target.closest("button[data-g]");if(b)toEditor(GL[b.dataset.g][2])});
+renderGl();
+$("dbSel").onchange=e=>{
+  const id=e.target.value;if(id===curId)return;
+  out.innerHTML="";openDb(id);
+  msg("ok",`Banco “${curName()}” aberto`,`${tables().length} tabela(s).`);
+};
+$("bDbNew").onclick=()=>{
+  const n=prompt("Nome do novo banco de dados:","Novo banco");if(n===null)return;
+  out.innerHTML="";
+  if(createDb(n))msg("ok",`Banco “${curName()}” criado`,"Está vazio: comece com um CREATE TABLE.");
+};
+$("bDbRen").onclick=()=>{
+  const d=dbList.find(x=>x.id===curId);if(!d)return;
+  const n=prompt("Novo nome do banco:",d.name);if(n===null||!n.trim())return;
+  d.name=uniqueName(n,d.id);persistIdx();renderDbSel();
+};
+$("bDbDup").onclick=()=>{
+  if(!db||txBlock())return;
+  const bytes=db.export();db.run("PRAGMA foreign_keys=ON");
+  out.innerHTML="";
+  if(createDb(curName()+" (cópia)",bytes))msg("ok",`Banco “${curName()}” criado`,"Cópia completa do banco anterior, com todas as tabelas e dados.");
+};
+$("bDbDel").onclick=()=>{
+  if(dbList.length<2)return;
+  if(!confirm(`Excluir o banco “${curName()}” e todas as suas tabelas? Isso não pode ser desfeito.`))return;
+  const nome=curName();delDb(curId);
+  out.innerHTML="";msg("ok",`Banco “${nome}” excluído`,`Agora você está em “${curName()}”.`);
+};
+$("txb").addEventListener("click",e=>{const b=e.target.closest("button[data-tx]");if(b)txDo(b.dataset.tx)});
+$("bRun").onclick=run;
+function openHome(){window.location.href="/"}
+$("homeBtn").onclick=openHome;
+$("bClear").onclick=()=>{ed.value="";errTok=null;paint();ed.focus()};
+$("bReset").onclick=()=>{if(db&&confirm("Apagar todas as tabelas e dados do banco “"+curName()+"”?")){newDb();out.innerHTML="";msg("ok","Banco reiniciado","Tudo limpo. Comece com um CREATE TABLE.")}};
+$("bDump").onclick=()=>{if(!db||txBlock())return;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([db.export()],{type:"application/x-sqlite3"}));a.download=(curName().replace(/[\\/:*?"<>|]+/g,"_")||"sql-lab")+".sqlite";a.click();db.run("PRAGMA foreign_keys=ON")};
+
+ed.value=`-- Bem-vindo ao SQL Lab! Escreva comandos SQL aqui e pressione Ctrl+Enter.
+-- Dica: o roteiro à esquerda mostra os comandos passo a passo.`;
+{const sv=ldEd();if(sv!==null)ed.value=sv}
+paint();
+if(typeof initSqlJs==="function"){
+  initSqlJs().then(S=>{
+    SQL=S;const had=initDbs();
+    if(had){stamp("Banco restaurado deste navegador.");msg("ok","Trabalho anterior restaurado",`Banco “${curName()}” e editor recuperados deste navegador.`)}
+    else msg("ok","Pronto para estudar","Motor: SQLite (sql.js). Execute o comando do editor para criar sua primeira tabela.");
+  })
+   .catch(e=>msg("err","Não foi possível iniciar o motor SQL",String(e)));
+}else msg("err","Não foi possível carregar o motor SQL (sql.js)","Verifique sua conexão com a internet e recarregue a página.");
+</script>
+</body>
+</html>
