@@ -908,7 +908,7 @@ function renderDiagram(){
   const cnt={},seen={};
   const key=(t,i,s)=>s+t.name+"#"+i;
   E.forEach(e=>{const a=key(e.p,e.pi,"p"),b=key(e.c,e.ci,"c");cnt[a]=(cnt[a]||0)+1;cnt[b]=(cnt[b]||0)+1});
-  const spread=(t,i,s)=>{const k=key(t,i,s),j=seen[k]=(seen[k]||0);seen[k]++;return cnt[k]>1?(j-(cnt[k]-1)/2)*Math.min(10,16/(cnt[k]-1)):0};
+  const spread=(t,i,s)=>{const k=key(t,i,s),j=seen[k]=(seen[k]||0);seen[k]++;return cnt[k]>1?(j-(cnt[k]-1)/2)*Math.min(14,36/(cnt[k]-1)):0};
   const rowY=(t,i)=>i<0?t.y+HH/2:t.y+HH+i*RH+RH/2;
   const used=Array(n).fill(0),slot=g=>gapX[g]+46+13*(used[g]++);
   const round=(pts,r)=>{
@@ -921,10 +921,11 @@ function renderDiagram(){
     return d+` L${q[q.length-1][0]},${q[q.length-1][1]}`;
   };
   E.sort((a,b)=>a.c.ci-b.c.ci||a.c.y-b.c.y);
-  const shown={};
+  const lbi=[];
+  const lb=(x,y,sg,tx,dn)=>{const at=`x="${x+sg*(tx==="1"?17:11)}" y="${dn?y+17:y-9}" text-anchor="${sg<0?"end":"start"}" font-size="12" font-weight="bold"`;return`<text ${at} fill="#f2f2f2" stroke="#f2f2f2" stroke-width="4" stroke-linejoin="round">${tx}</text><text ${at} fill="#273E74">${tx}</text>`};
   const arrows=E.map(e=>{
     const{c,p,f}=e,a=c.ci,b=p.ci;
-    const y1=rowY(c,e.ci)+spread(c,e.ci,"c");let y2=rowY(p,e.pi)+spread(p,e.pi,"p");
+    const so1=spread(c,e.ci,"c"),y1=rowY(c,e.ci)+so1;const so=spread(p,e.pi,"p");let y2=rowY(p,e.pi)+so;
     const ly=e.long?(e.top?14+LN*e.ln:Hb+14+LN*e.ln):0;
     let x1,x2,pts,s1,s2;
     if(b<a){
@@ -940,13 +941,18 @@ function renderDiagram(){
       if(Math.abs(y1-y2)<1)y2+=10;
       const u=slot(a);pts=[[x1,y1],[u,y1],[u,y2],[x2,y2]];
     }
-    const lb=(x,y,sg,tx)=>{const at=`x="${x+sg*(tx==="1"?17:11)}" y="${y-9}" text-anchor="${sg<0?"end":"start"}" font-size="12" font-weight="bold"`;return`<text ${at} fill="#f2f2f2" stroke="#f2f2f2" stroke-width="4" stroke-linejoin="round">${tx}</text><text ${at} fill="#273E74">${tx}</text>`};
-    return`<g class="rel" data-a="${esc(c.name)}" data-b="${esc(p.name)}"><path d="${round(pts,8)}" fill="none" stroke="#5C6D82" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#ar)"><title>${esc(c.name)}.${esc(f.from)} → ${esc(p.name)}.${esc(p.cols[e.pi]?p.cols[e.pi].n:(f.col||""))}</title></path>${lb(x1,y1,s1,"N")}${(shown[key(p,e.pi,"p")]=(shown[key(p,e.pi,"p")]||0)+1)>1?"":lb(x2,rowY(p,e.pi)-(cnt[key(p,e.pi,"p")]>1?6:0),s2,"1")}</g>`;
+    const at2=`data-a="${esc(c.name)}" data-b="${esc(p.name)}"`;
+    lbi.push({at:at2,x:x1,y:y1,sg:s1,tx:"N",gk:c.name+"|"+s1},{at:at2,x:x2,y:y2,sg:s2,tx:"1",gk:p.name+"|"+s2});
+    return`<g class="rel" ${at2}><path d="${round(pts,8)}" fill="none" stroke="#5C6D82" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#ar)"><title>${esc(c.name)}.${esc(f.from)} → ${esc(p.name)}.${esc(p.cols[e.pi]?p.cols[e.pi].n:(f.col||""))}</title></path></g>`;
   }).join("");
+  /* rótulos: em cada borda de tabela, os de cima ficam acima da linha e os de baixo, abaixo */
+  const grp={},lbls=[];
+  lbi.forEach(l=>(grp[l.gk]=grp[l.gk]||[]).push(l));
+  Object.values(grp).forEach(g=>{g.sort((a,b)=>a.y-b.y);g.forEach((l,i)=>lbls.push(`<g class="rel" ${l.at}>${lb(l.x,l.y,l.sg,l.tx,g.length===1||i>=Math.floor(g.length/2))}</g>`))});
   const rels=E.length;
   const mk=(id,col)=>`<marker id="${id}" viewBox="0 0 10 10" refX="9.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${col}"/></marker>`;
   box.classList.toggle("real",dgReal);
-  box.innerHTML=(W>760?`<div class="dgtools"><button class="act" id="dgFit">${dgReal?"Ajustar à largura":"Tamanho real"}</button></div>`:"")+`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif"><defs>${mk("ar","#5C6D82")}${mk("arh","#273E74")}</defs>${tb}${arrows}</svg>`+
+  box.innerHTML=(W>760?`<div class="dgtools"><button class="act" id="dgFit">${dgReal?"Ajustar à largura":"Tamanho real"}</button></div>`:"")+`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif"><defs>${mk("ar","#5C6D82")}${mk("arh","#273E74")}</defs>${tb}${arrows}${lbls.join("")}</svg>`+
     `<p class="nota">PK = chave primária · FK = chave estrangeira · N → 1: muitos registros apontam para um. ${rels?"Passe o mouse sobre uma tabela para destacar as ligações; clique nela para ver os dados.":"Nenhuma ligação ainda: crie uma coluna com REFERENCES (chave estrangeira) para ver as setas."}</p>`;
 }
 $("dg").addEventListener("mouseover",e=>{
