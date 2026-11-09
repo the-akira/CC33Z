@@ -941,6 +941,7 @@ function renderDiagram(){
       if(Math.abs(y1-y2)<1)y2+=10;
       const u=slot(a);pts=[[x1,y1],[u,y1],[u,y2],[x2,y2]];
     }
+    const GAP=5,GAP1=5,HD=8.4;x1+=s1*GAP1;pts[0][0]=x1; /* afasta a saída da linha da tabela filha */ x2+=s2*GAP;pts[pts.length-1][0]=x2+s2*HD; /* x2 = ponta da seta (GAP da tabela); a linha termina HD antes da ponta */
     const at2=`data-a="${esc(c.name)}" data-b="${esc(p.name)}"`;
     lbi.push({at:at2,x:x1,y:y1,sg:s1,tx:"N",gk:c.name+"|"+s1},{at:at2,x:x2,y:y2,sg:s2,tx:"1",gk:p.name+"|"+s2});
     return`<g class="rel" ${at2}><path d="${round(pts,8)}" fill="none" stroke="#5C6D82" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#ar)"><title>${esc(c.name)}.${esc(f.from)} → ${esc(p.name)}.${esc(p.cols[e.pi]?p.cols[e.pi].n:(f.col||""))}</title></path></g>`;
@@ -950,7 +951,7 @@ function renderDiagram(){
   lbi.forEach(l=>(grp[l.gk]=grp[l.gk]||[]).push(l));
   Object.values(grp).forEach(g=>{g.sort((a,b)=>a.y-b.y);g.forEach((l,i)=>lbls.push(`<g class="rel" ${l.at}>${lb(l.x,l.y,l.sg,l.tx,g.length===1||i>=Math.floor(g.length/2))}</g>`))});
   const rels=E.length;
-  const mk=(id,col)=>`<marker id="${id}" viewBox="0 0 10 10" refX="9.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${col}"/></marker>`;
+  const mk=(id,col)=>`<marker id="${id}" viewBox="0 0 10 10" refX="3" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${col}"/></marker>`;
   box.classList.toggle("real",dgReal);
   box.innerHTML=(W>760?`<div class="dgtools"><button class="act" id="dgFit">${dgReal?"Ajustar à largura":"Tamanho real"}</button></div>`:"")+`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif"><defs>${mk("ar","#5C6D82")}${mk("arh","#273E74")}</defs>${tb}${arrows}${lbls.join("")}</svg>`+
     `<p class="nota">PK = chave primária · FK = chave estrangeira · N → 1: muitos registros apontam para um. ${rels?"Passe o mouse sobre uma tabela para destacar as ligações; clique nela para ver os dados.":"Nenhuma ligação ainda: crie uma coluna com REFERENCES (chave estrangeira) para ver as setas."}</p>`;
@@ -1043,7 +1044,7 @@ function jvVenn(){
     `<text x="160" y="136" text-anchor="middle" font-size="11" font-weight="bold" fill="#5C6D82">${esc(jvTr(JV.R,13))}</text></svg>`;
 }
 function jvBuild(){
-  const{A,B}=JV.data,RH=30,HH=48,P=18,GAP=210,CW=88;
+  const{A,B}=JV.data,RH=30,HH=48,P=18,GAP=210,CW=88,SG=1.4; /* SG = distância das linhas até a borda das tabelas */
   const ia=jvPick(A,JV.lc),ib=jvPick(B,JV.rc);
   const wa=Math.max(210,ia.length*CW+40),wb=Math.max(210,ib.length*CW+40);
   const hA=HH+Math.max(A.rows.length,1)*RH,hB=HH+Math.max(B.rows.length,1)*RH;
@@ -1066,9 +1067,9 @@ function jvBuild(){
   };
   let o=box(A,xa,wa,hA,ia,JV.lc,"l","#273E74")+box(B,xb,wb,hB,ib,JV.rc,"r","#5C6D82");
   const yc=(i)=>y0+HH+i*RH+RH/2;
-  JV.m.forEach((js,i)=>js.forEach(j=>{o+=`<path class="ln" data-i="${i}" data-j="${j}" pathLength="1" d="M${xa+wa},${yc(i)} C${xa+wa+80},${yc(i)} ${xb-80},${yc(j)} ${xb},${yc(j)}"/>`}));
-  A.rows.forEach((_,i)=>{if(!JV.m[i].length)o+=`<g class="stub" data-side="l" data-i="${i}"><line x1="${xa+wa}" y1="${yc(i)}" x2="${xa+wa+50}" y2="${yc(i)}" stroke="#8a5a00" stroke-width="2" stroke-dasharray="5 4"/><text x="${xa+wa+56}" y="${yc(i)+4}" font-size="11" font-weight="bold" fill="#8a5a00">NULL</text></g>`});
-  B.rows.forEach((_,j)=>{if(!JV.rm.has(j))o+=`<g class="stub" data-side="r" data-i="${j}"><line x1="${xb}" y1="${yc(j)}" x2="${xb-50}" y2="${yc(j)}" stroke="#8a5a00" stroke-width="2" stroke-dasharray="5 4"/><text x="${xb-56}" y="${yc(j)+4}" text-anchor="end" font-size="11" font-weight="bold" fill="#8a5a00">NULL</text></g>`});
+  JV.m.forEach((js,i)=>js.forEach(j=>{o+=`<path class="ln" data-i="${i}" data-j="${j}" pathLength="1" d="M${xa+wa+SG},${yc(i)} C${xa+wa+SG+80},${yc(i)} ${xb-SG-80},${yc(j)} ${xb-SG},${yc(j)}"/>`}));
+  A.rows.forEach((_,i)=>{if(!JV.m[i].length)o+=`<g class="stub" data-side="l" data-i="${i}"><line x1="${xa+wa+SG}" y1="${yc(i)}" x2="${xa+wa+SG+50}" y2="${yc(i)}" stroke="#8a5a00" stroke-width="2" stroke-dasharray="5 4"/><text x="${xa+wa+SG+56}" y="${yc(i)+4}" font-size="11" font-weight="bold" fill="#8a5a00">NULL</text></g>`});
+  B.rows.forEach((_,j)=>{if(!JV.rm.has(j))o+=`<g class="stub" data-side="r" data-i="${j}"><line x1="${xb-SG}" y1="${yc(j)}" x2="${xb-SG-50}" y2="${yc(j)}" stroke="#8a5a00" stroke-width="2" stroke-dasharray="5 4"/><text x="${xb-SG-56}" y="${yc(j)+4}" text-anchor="end" font-size="11" font-weight="bold" fill="#8a5a00">NULL</text></g>`});
   return`<svg viewBox="0 0 ${W} ${H}" style="max-width:${W}px" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif" role="img" aria-label="Linhas de ${esc(JV.L)} e de ${esc(JV.R)} ligadas pelo JOIN">${o}</svg>`;
 }
 function jvTable(rows){
@@ -1131,7 +1132,7 @@ function jvPlay(){
   if(JV.step>=JV.steps.length)JV.step=0;
   JV.hot=true;
   const tick=()=>{
-    if(JV.step>=JV.steps.length){JV.timer=null;jvApply();return}
+    if(JV.step>=JV.steps.length){JV.timer=null;JV.hot=false;jvApply();return}
     JV.step++;JV.timer=setTimeout(tick,1000);jvApply();
   };
   JV.timer=setTimeout(tick,JV.step===0?600:0);
