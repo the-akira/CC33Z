@@ -153,7 +153,7 @@ table.plan td.pd{font-family:monospace;white-space:pre}
 .stub.on{opacity:1}
 table.jvres th.la{background:#273E74}
 table.jvres th.ra{background:#5C6D82}
-table.jvres th{text-align:center}
+table.jvres th{text-align:left}
 table.jvres td.fill{background:#fff4d6;color:#8a5a00;font-style:italic}
 table.jvres tr.nullrow td:not(.fill){background:#fffaf0}
 table.jvres tr.fresh td{animation:jvin .5s}
@@ -941,7 +941,7 @@ function renderDiagram(){
       if(Math.abs(y1-y2)<1)y2+=10;
       const u=slot(a);pts=[[x1,y1],[u,y1],[u,y2],[x2,y2]];
     }
-    const GAP=5,GAP1=5,HD=8.4;x1+=s1*GAP1;pts[0][0]=x1; /* afasta a saída da linha da tabela filha */ x2+=s2*GAP;pts[pts.length-1][0]=x2+s2*HD; /* x2 = ponta da seta (GAP da tabela); a linha termina HD antes da ponta */
+    const GAP=2,GAP1=1.4,HD=8.4;x1+=s1*GAP1;pts[0][0]=x1; /* afasta a saída da linha da tabela filha */ x2+=s2*GAP;pts[pts.length-1][0]=x2+s2*HD; /* x2 = ponta da seta (GAP da tabela); a linha termina HD antes da ponta */
     const at2=`data-a="${esc(c.name)}" data-b="${esc(p.name)}"`;
     lbi.push({at:at2,x:x1,y:y1,sg:s1,tx:"N",gk:c.name+"|"+s1},{at:at2,x:x2,y:y2,sg:s2,tx:"1",gk:p.name+"|"+s2});
     return`<g class="rel" ${at2}><path d="${round(pts,8)}" fill="none" stroke="#5C6D82" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#ar)"><title>${esc(c.name)}.${esc(f.from)} → ${esc(p.name)}.${esc(p.cols[e.pi]?p.cols[e.pi].n:(f.col||""))}</title></path></g>`;
