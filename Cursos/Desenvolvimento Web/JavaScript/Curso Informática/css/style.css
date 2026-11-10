@@ -91,9 +91,9 @@ a.button:hover {
 }
 
 .navbar {
-  position: sticky;
+/*  position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 100;*/
   background-color: #273E74;
   border-top: 4px solid white;
   border-bottom: 4px solid #5c6d82;
