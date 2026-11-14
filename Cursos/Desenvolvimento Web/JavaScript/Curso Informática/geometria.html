@@ -458,6 +458,9 @@
             <option value="14">Cubo de Metatron - Geometria Universal</option>
             <option value="15">Tetraktys - Sabedoria Pitagórica</option>
             <option value="16">Torus Elíptico</option>
+            <option value="17">E8 - Projeção de Coxeter</option>
+            <option value="18">Hipercubo - Tesserato em 4D</option>
+            <option value="19">Girih - Rosácea Islâmica de 10 Pontas</option>
           </select>
         </div>
 
@@ -900,6 +903,21 @@
         name: 'Torus Elíptico',
         desc: 'O Torus Elíptico representa uma projeção simplificada do campo toroidal, forma associada a fluxos contínuos de energia e equilíbrio dinâmico. Simboliza ciclos de renovação e o movimento perpétuo presente em estruturas naturais e campos energéticos.',
         draw: drawEllipticTorus
+      },
+      {
+        name: 'E8',
+        desc: 'O E8 é uma das estruturas mais simétricas da matemática: 240 vetores (raízes) em 8 dimensões, ligados por 6720 arestas. Aqui ele aparece na projeção de Coxeter, que revela uma simetria de 30 lados com 8 anéis de 30 pontos.',
+        draw: drawE8
+      },
+      {
+        name: 'Hipercubo',
+        desc: 'O Hipercubo (ou tesserato) é o cubo em quatro dimensões: 16 vértices, 32 arestas, 24 faces quadradas e 8 células cúbicas. Nesta projeção de Petrie, os 16 vértices formam dois octógonos concêntricos, revelando a simetria de 8 lados do objeto.',
+        draw: drawHypercube
+      },
+      {
+        name: 'Girih',
+        desc: 'O Girih é a técnica geométrica da arte islâmica medieval, construída com ladrilhos de lados iguais e ângulos múltiplos de 36°. Aqui, um decágono e dez pentágonos se encaixam sem folgas (144° + 108° + 108° = 360° em cada vértice). As linhas partem do ponto médio de cada aresta e atravessam os ladrilhos vizinhos sem quebrar, formando uma estrela de 10 pontas cercada por dez estrelas de 5 pontas.',
+        draw: drawGirih
       },
     ];
 
@@ -1463,6 +1481,206 @@
         ctx.ellipse(cx, cy, r, r * 0.3, angle, 0, 2 * Math.PI); 
         ctx.stroke(); 
       } 
+    }
+
+    function buildE8() {
+      // 240 raízes: 112 do tipo (±1, ±1, 0...) + 128 do tipo (±½ x8) com nº par de sinais negativos
+      const roots = [];
+      for (let i = 0; i < 8; i++)
+        for (let j = i + 1; j < 8; j++)
+          for (const a of [-1, 1])
+            for (const b of [-1, 1]) {
+              const r = new Array(8).fill(0);
+              r[i] = a; r[j] = b;
+              roots.push(r);
+            }
+      for (let m = 0; m < 256; m++) {
+        let neg = 0;
+        const r = [];
+        for (let i = 0; i < 8; i++) {
+          const n = (m >> i) & 1;
+          neg += n;
+          r.push(n ? -0.5 : 0.5);
+        }
+        if (neg % 2 === 0) roots.push(r);
+      }
+
+      const dot = (u, v) => u.reduce((s, x, i) => s + x * v[i], 0);
+
+      // raízes simples do E8 (convenção de Bourbaki)
+      const simple = [
+        [.5, -.5, -.5, -.5, -.5, -.5, -.5, .5],
+        [1, 1, 0, 0, 0, 0, 0, 0],
+        [-1, 1, 0, 0, 0, 0, 0, 0],
+        [0, -1, 1, 0, 0, 0, 0, 0],
+        [0, 0, -1, 1, 0, 0, 0, 0],
+        [0, 0, 0, -1, 1, 0, 0, 0],
+        [0, 0, 0, 0, -1, 1, 0, 0],
+        [0, 0, 0, 0, 0, -1, 1, 0]
+      ];
+
+      // elemento de Coxeter = produto das 8 reflexões simples
+      const coxeter = v => {
+        let w = v.slice();
+        for (let k = 7; k >= 0; k--) {
+          const d = dot(w, simple[k]);
+          w = w.map((x, i) => x - d * simple[k][i]);
+        }
+        return w;
+      };
+
+      // plano de Coxeter: parte real e imaginária do autovetor de autovalor e^(2πi/30)
+      let cur = [.3, 1.1, -.7, .9, .2, -1.3, .5, .8];
+      const re = new Array(8).fill(0), im = new Array(8).fill(0);
+      for (let k = 0; k < 30; k++) {
+        const ang = -2 * Math.PI * k / 30;
+        for (let i = 0; i < 8; i++) {
+          re[i] += Math.cos(ang) * cur[i];
+          im[i] += Math.sin(ang) * cur[i];
+        }
+        cur = coxeter(cur);
+      }
+      const nr = Math.sqrt(dot(re, re)), ni = Math.sqrt(dot(im, im));
+
+      const pts = roots.map(r => [dot(r, re) / nr, dot(r, im) / ni]);
+
+      // aresta = raízes com produto interno 1 (6720 no total)
+      const edges = [];
+      for (let i = 0; i < roots.length; i++)
+        for (let j = i + 1; j < roots.length; j++)
+          if (Math.abs(dot(roots[i], roots[j]) - 1) < 1e-9) edges.push([i, j]);
+
+      return { pts, edges };
+    }
+
+    function drawE8(ctx, cx, cy, radius) {
+      if (!drawE8.cache) drawE8.cache = buildE8();  // calcula só na 1ª vez
+      const { pts, edges } = drawE8.cache;
+      const s = (radius * 0.95) / 1.14;  // 1.14 = raio do anel mais externo
+
+      ctx.strokeStyle = sacredColorAlpha(0.12);
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      edges.forEach(([i, j]) => {
+        ctx.moveTo(cx + pts[i][0] * s, cy + pts[i][1] * s);
+        ctx.lineTo(cx + pts[j][0] * s, cy + pts[j][1] * s);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = sacredColor;
+      pts.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(cx + p[0] * s, cy + p[1] * s, 3.5, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    }
+
+    function drawHypercube(ctx, cx, cy, radius) {
+      // projeção de Petrie: cada eixo 4D vira uma direção a 45° do anterior
+      const dirs = [0, 1, 2, 3].map(k => [Math.cos(k * Math.PI / 4), Math.sin(k * Math.PI / 4)]);
+      const s = (radius * 0.95) / 2.613;  // 2.613 = raio do octógono externo
+      const P = [];
+
+      for (let i = 0; i < 16; i++) {
+        // vértice (±1, ±1, ±1, ±1) a partir dos bits de i
+        let x = 0, y = 0;
+        for (let b = 0; b < 4; b++) {
+          const sign = (i >> b) & 1 ? 1 : -1;
+          x += sign * dirs[b][0];
+          y += sign * dirs[b][1];
+        }
+        P.push({ x: cx + x * s, y: cy + y * s });
+      }
+
+      // aresta = dois vértices que diferem em exatamente 1 coordenada (32 no total)
+      ctx.strokeStyle = sacredColor;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i < 16; i++) {
+        for (const bit of [1, 2, 4, 8]) {
+          const j = i ^ bit;
+          if (j > i) {
+            ctx.moveTo(P[i].x, P[i].y);
+            ctx.lineTo(P[j].x, P[j].y);
+          }
+        }
+      }
+      ctx.stroke();
+    }
+
+    function drawGirih(ctx, cx, cy, radius) {
+      const ANGULO = 72 * Math.PI / 180;  // ângulo da linha com a aresta (teste 54° também)
+      const cos = Math.cos(ANGULO), sin = Math.sin(ANGULO);
+      const cruz = (a, b) => a.x * b.y - a.y * b.x;
+
+      // decágono de lado 1
+      const R = 1 / (2 * Math.sin(Math.PI / 10));
+      const dec = [];
+      for (let k = 0; k < 10; k++) {
+        dec.push({ x: R * Math.cos(2 * Math.PI * k / 10), y: R * Math.sin(2 * Math.PI * k / 10) });
+      }
+
+      // pentágono de lado 1 apoiado na aresta A-B do decágono
+      function pentagono(A, B) {
+        const pts = [B, A];
+        let ang = Math.atan2(A.y - B.y, A.x - B.x);
+        let cur = A;
+        for (let i = 0; i < 3; i++) {
+          ang += 72 * Math.PI / 180;
+          cur = { x: cur.x + Math.cos(ang), y: cur.y + Math.sin(ang) };
+          pts.push(cur);
+        }
+        return pts;
+      }
+
+      const tiles = [dec];
+      for (let k = 0; k < 10; k++) tiles.push(pentagono(dec[k], dec[(k + 1) % 10]));
+
+      const s = (radius * 0.95) / 3.078;  // 3.078 = distância do centro até a ponta mais externa
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(s, s);
+      ctx.lineJoin = 'round';
+
+      // contorno dos ladrilhos (discreto)
+      ctx.strokeStyle = sacredColorAlpha(0.2);
+      ctx.lineWidth = 1 / s;
+      tiles.forEach(t => {
+        ctx.beginPath();
+        t.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+        ctx.closePath();
+        ctx.stroke();
+      });
+
+      // trama: de cada ponto médio saem duas linhas, que encontram as do ponto médio vizinho
+      ctx.strokeStyle = sacredColor;
+      ctx.lineWidth = 3 / s;
+      tiles.forEach(poly => {
+        const n = poly.length;
+        const M = [], mais = [], menos = [];
+        for (let k = 0; k < n; k++) {
+          const a = poly[k], b = poly[(k + 1) % n];
+          const L = Math.hypot(b.x - a.x, b.y - a.y);
+          const d = { x: (b.x - a.x) / L, y: (b.y - a.y) / L };
+          M.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+          mais.push({ x: d.x * cos - d.y * sin, y: d.x * sin + d.y * cos });    // gira para dentro
+          menos.push({ x: -d.x * cos - d.y * sin, y: d.x * sin - d.y * cos });  // sentido oposto
+        }
+        ctx.beginPath();
+        for (let k = 0; k < n; k++) {
+          const j = (k + 1) % n;
+          const w = { x: M[j].x - M[k].x, y: M[j].y - M[k].y };
+          const t = cruz(w, menos[j]) / cruz(mais[k], menos[j]);  // onde as duas linhas se cruzam
+          const P = { x: M[k].x + t * mais[k].x, y: M[k].y + t * mais[k].y };
+          ctx.moveTo(M[k].x, M[k].y);
+          ctx.lineTo(P.x, P.y);
+          ctx.lineTo(M[j].x, M[j].y);
+        }
+        ctx.stroke();
+      });
+
+      ctx.restore();
     }
 
     function changeGeometry() {
