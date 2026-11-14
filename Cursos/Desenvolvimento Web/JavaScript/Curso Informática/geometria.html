@@ -460,7 +460,6 @@
             <option value="16">Torus Elíptico</option>
             <option value="17">E8 - Projeção de Coxeter</option>
             <option value="18">Hipercubo - Tesserato em 4D</option>
-            <option value="19">Girih - Rosácea Islâmica de 10 Pontas</option>
           </select>
         </div>
 
@@ -913,11 +912,6 @@
         name: 'Hipercubo',
         desc: 'O Hipercubo (ou tesserato) é o cubo em quatro dimensões: 16 vértices, 32 arestas, 24 faces quadradas e 8 células cúbicas. Nesta projeção de Petrie, os 16 vértices formam dois octógonos concêntricos, revelando a simetria de 8 lados do objeto.',
         draw: drawHypercube
-      },
-      {
-        name: 'Girih',
-        desc: 'O Girih é a técnica geométrica da arte islâmica medieval, construída com ladrilhos de lados iguais e ângulos múltiplos de 36°. Aqui, um decágono e dez pentágonos se encaixam sem folgas (144° + 108° + 108° = 360° em cada vértice). As linhas partem do ponto médio de cada aresta e atravessam os ladrilhos vizinhos sem quebrar, formando uma estrela de 10 pontas cercada por dez estrelas de 5 pontas.',
-        draw: drawGirih
       },
     ];
 
@@ -1606,81 +1600,6 @@
         }
       }
       ctx.stroke();
-    }
-
-    function drawGirih(ctx, cx, cy, radius) {
-      const ANGULO = 72 * Math.PI / 180;  // ângulo da linha com a aresta (teste 54° também)
-      const cos = Math.cos(ANGULO), sin = Math.sin(ANGULO);
-      const cruz = (a, b) => a.x * b.y - a.y * b.x;
-
-      // decágono de lado 1
-      const R = 1 / (2 * Math.sin(Math.PI / 10));
-      const dec = [];
-      for (let k = 0; k < 10; k++) {
-        dec.push({ x: R * Math.cos(2 * Math.PI * k / 10), y: R * Math.sin(2 * Math.PI * k / 10) });
-      }
-
-      // pentágono de lado 1 apoiado na aresta A-B do decágono
-      function pentagono(A, B) {
-        const pts = [B, A];
-        let ang = Math.atan2(A.y - B.y, A.x - B.x);
-        let cur = A;
-        for (let i = 0; i < 3; i++) {
-          ang += 72 * Math.PI / 180;
-          cur = { x: cur.x + Math.cos(ang), y: cur.y + Math.sin(ang) };
-          pts.push(cur);
-        }
-        return pts;
-      }
-
-      const tiles = [dec];
-      for (let k = 0; k < 10; k++) tiles.push(pentagono(dec[k], dec[(k + 1) % 10]));
-
-      const s = (radius * 0.95) / 3.078;  // 3.078 = distância do centro até a ponta mais externa
-
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.scale(s, s);
-      ctx.lineJoin = 'round';
-
-      // contorno dos ladrilhos (discreto)
-      ctx.strokeStyle = sacredColorAlpha(0.2);
-      ctx.lineWidth = 1 / s;
-      tiles.forEach(t => {
-        ctx.beginPath();
-        t.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
-        ctx.closePath();
-        ctx.stroke();
-      });
-
-      // trama: de cada ponto médio saem duas linhas, que encontram as do ponto médio vizinho
-      ctx.strokeStyle = sacredColor;
-      ctx.lineWidth = 3 / s;
-      tiles.forEach(poly => {
-        const n = poly.length;
-        const M = [], mais = [], menos = [];
-        for (let k = 0; k < n; k++) {
-          const a = poly[k], b = poly[(k + 1) % n];
-          const L = Math.hypot(b.x - a.x, b.y - a.y);
-          const d = { x: (b.x - a.x) / L, y: (b.y - a.y) / L };
-          M.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
-          mais.push({ x: d.x * cos - d.y * sin, y: d.x * sin + d.y * cos });    // gira para dentro
-          menos.push({ x: -d.x * cos - d.y * sin, y: d.x * sin - d.y * cos });  // sentido oposto
-        }
-        ctx.beginPath();
-        for (let k = 0; k < n; k++) {
-          const j = (k + 1) % n;
-          const w = { x: M[j].x - M[k].x, y: M[j].y - M[k].y };
-          const t = cruz(w, menos[j]) / cruz(mais[k], menos[j]);  // onde as duas linhas se cruzam
-          const P = { x: M[k].x + t * mais[k].x, y: M[k].y + t * mais[k].y };
-          ctx.moveTo(M[k].x, M[k].y);
-          ctx.lineTo(P.x, P.y);
-          ctx.lineTo(M[j].x, M[j].y);
-        }
-        ctx.stroke();
-      });
-
-      ctx.restore();
     }
 
     function changeGeometry() {
