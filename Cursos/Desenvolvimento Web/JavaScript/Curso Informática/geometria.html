@@ -2145,17 +2145,21 @@
 
     // ---------- Loop de animação ----------
     let lastTime3D = null;
+    let visible3D = true;
+    new IntersectionObserver(([e]) => { visible3D = e.isIntersecting; }).observe(canvas3D);
+
     function animate3D(timestamp) {
       if (lastTime3D === null) lastTime3D = timestamp;
       const dt = (timestamp - lastTime3D) / 1000;
       lastTime3D = timestamp;
 
-      if (autoRotate3D) {
-        angleY += dt * 0.5 * rotSpeedFactor;
-        angleX += dt * 0.15 * rotSpeedFactor;
+      if (visible3D) {
+        if (autoRotate3D) {
+          angleY += dt * 0.5 * rotSpeedFactor;
+          angleX += dt * 0.15 * rotSpeedFactor;
+        }
+        render3D();
       }
-
-      render3D();
       requestAnimationFrame(animate3D);
     }
     requestAnimationFrame(animate3D);
