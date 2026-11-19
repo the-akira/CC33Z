@@ -111,6 +111,40 @@
             padding-bottom: 10px;
         }
 
+
+        html { scroll-behavior: smooth; }
+        .section { scroll-margin-top: 15px; }
+
+        .indice-lista {
+            list-style: none;
+        }
+
+        .indice-lista a {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 8px 10px;
+            color: #273E74;
+            text-decoration: none;
+            border-left: 4px solid #5c6d82;
+            background: #f2f2f2;
+            font-size: 0.95em;
+        }
+
+        .indice-lista li { min-width: 0; margin-bottom: 5px; }
+        .indice-lista a { overflow-wrap: anywhere; }
+
+        .indice-lista a:hover {
+            background: #dce1eb;
+            border-left-color: #273E74;
+        }
+
+        .indice-num {
+            font-weight: bold;
+            min-width: 1.8em;
+            color: #5c6d82;
+        }
+
         .info-box {
             background: #f2f2f2;
             padding: 15px;
@@ -295,6 +329,8 @@
         }
 
         @media (max-width: 480px) {
+            .container { padding: 5px 10px; }
+            .section { padding: 15px; }
             .controls { flex-direction: column; }
             button:not(#removeSpecificWaveBtn, #indexBtn) { width: 100%; }
             .array-bar { min-width: 20px; font-size: 0.7em; }
@@ -311,8 +347,41 @@
     </header>
 
     <div class="container">
+        <!-- Índice -->
+        <nav class="section" id="indice" aria-label="Índice dos capítulos">
+            <h2>ÍNDICE</h2>
+            <ol class="indice-lista">
+                <li><a href="#cap-00"><span class="indice-num">00</span>O QUE SÃO ALGORITMOS? (Introdução)</a></li>
+                <li><a href="#cap-01"><span class="indice-num">01</span>BUBBLE SORT (Ordenação por Bolha)</a></li>
+                <li><a href="#cap-02"><span class="indice-num">02</span>BINARY SEARCH (Busca Binária)</a></li>
+                <li><a href="#cap-03"><span class="indice-num">03</span>DIJKSTRA (Menor Caminho)</a></li>
+                <li><a href="#cap-04"><span class="indice-num">04</span>N-QUEENS (Backtracking)</a></li>
+                <li><a href="#cap-05"><span class="indice-num">05</span>FRACTAIS (Padrões Recursivos)</a></li>
+                <li><a href="#cap-06"><span class="indice-num">06</span>MAZE GENERATION (Geração de Labirinto)</a></li>
+                <li><a href="#cap-07"><span class="indice-num">07</span>CONVEX HULL (Envoltório Convexo - Graham Scan)</a></li>
+                <li><a href="#cap-08"><span class="indice-num">08</span>FLOOD FILL (Preenchimento)</a></li>
+                <li><a href="#cap-09"><span class="indice-num">09</span>VORONOI DIAGRAM (Diagrama de Voronoi)</a></li>
+                <li><a href="#cap-10"><span class="indice-num">10</span>BFS TREE (Busca em Largura)</a></li>
+                <li><a href="#cap-11"><span class="indice-num">11</span>GAME OF LIFE (Jogo da Vida)</a></li>
+                <li><a href="#cap-12"><span class="indice-num">12</span>WAVE FUNCTION COLLAPSE (Colapso de Função de Onda)</a></li>
+                <li><a href="#cap-13"><span class="indice-num">13</span>FRACTAIS - MANDELBROT & JULIA SET</a></li>
+                <li><a href="#cap-14"><span class="indice-num">14</span>QUICK SORT (Ordenação Rápida)</a></li>
+                <li><a href="#cap-15"><span class="indice-num">15</span>REGRESSÃO LINEAR (Machine Learning)</a></li>
+                <li><a href="#cap-16"><span class="indice-num">16</span>L-SYSTEMS (Lindenmayer Systems)</a></li>
+                <li><a href="#cap-17"><span class="indice-num">17</span>DELAUNAY TRIANGULATION (Triangulação de Delaunay)</a></li>
+                <li><a href="#cap-18"><span class="indice-num">18</span>KNN - K-NEAREST NEIGHBORS (Machine Learning)</a></li>
+                <li><a href="#cap-19"><span class="indice-num">19</span>SUDOKU SOLVER (Backtracking)</a></li>
+                <li><a href="#cap-20"><span class="indice-num">20</span>SIEVE OF ERATOSTHENES (Crivo de Eratóstenes)</a></li>
+                <li><a href="#cap-21"><span class="indice-num">21</span>FIBONACCI (Sequência)</a></li>
+                <li><a href="#cap-22"><span class="indice-num">22</span>PERLIN NOISE (Ruído Coerente)</a></li>
+                <li><a href="#cap-23"><span class="indice-num">23</span>FOURIER TRANSFORM (Transformada de Fourier)</a></li>
+                <li><a href="#cap-24"><span class="indice-num">24</span>CIRCLE PACKING (Empacotamento de Círculos)</a></li>
+                <li><a href="#cap-25"><span class="indice-num">25</span>CHLADNI PATTERNS (Padrões de Chladni)</a></li>
+            </ol>
+        </nav>
+
         <!-- Introdução -->
-        <div class="section">
+        <div class="section" id="cap-00">
             <h2>00. O QUE SÃO ALGORITMOS? (Introdução)</h2>
 
             <p>
@@ -386,7 +455,7 @@
         </div>
 
         <!-- Bubble Sort -->
-        <div class="section">
+        <div class="section" id="cap-01">
             <h2>01. BUBBLE SORT (Ordenação por Bolha)</h2>
             <p>O Bubble Sort compara elementos adjacentes e os troca se estiverem na ordem errada. O processo se repete até que não haja mais trocas necessárias.</p>
             
@@ -441,7 +510,7 @@
         </div>
 
         <!-- Binary Search -->
-        <div class="section">
+        <div class="section" id="cap-02">
             <h2>02. BINARY SEARCH (Busca Binária)</h2>
             <p>A busca binária divide repetidamente o array ao meio, eliminando metade dos elementos a cada iteração. Funciona apenas em arrays ordenados.</p>
             
@@ -484,7 +553,7 @@
         </div>
 
         <!-- Dijkstra -->
-        <div class="section">
+        <div class="section" id="cap-03">
             <h2>03. DIJKSTRA (Menor Caminho)</h2>
             <p>O algoritmo de Dijkstra encontra o caminho mais curto entre dois pontos em um grafo ponderado. Clique para adicionar/remover paredes.</p>
             
@@ -546,7 +615,7 @@
         </div>
 
         <!-- N-Queens Backtracking -->
-        <div class="section">
+        <div class="section" id="cap-04">
             <h2>04. N-QUEENS (Backtracking)</h2>
             <p>O problema das N-Rainhas usa backtracking para posicionar N rainhas em um tabuleiro NxN sem que se ataquem.</p>
             
@@ -588,7 +657,7 @@
         </div>
 
         <!-- Fractals -->
-        <div class="section">
+        <div class="section" id="cap-05">
             <h2>05. FRACTAIS (Padrões Recursivos)</h2>
             <p>Fractais são padrões geométricos que se repetem em diferentes escalas. Cada iteração adiciona mais detalhes ao desenho através de recursão.</p>
             
@@ -649,7 +718,7 @@
         </div>
 
         <!-- Maze Generation -->
-        <div class="section">
+        <div class="section" id="cap-06">
             <h2>06. MAZE GENERATION (Geração de Labirinto)</h2>
             <p>O algoritmo de Recursive Backtracking cria labirintos perfeitos "escavando" caminhos através de uma grade. Cada labirinto tem um caminho único entre quaisquer dois pontos.</p>
             
@@ -723,7 +792,7 @@
         </div>
 
         <!-- Convex Hull -->
-        <div class="section">
+        <div class="section" id="cap-07">
             <h2>07. CONVEX HULL (Envoltório Convexo - Graham Scan)</h2>
             <p>O algoritmo de Graham Scan encontra o menor polígono convexo que envolve todos os pontos de um conjunto. É como colocar um elástico em volta de pregos espalhados.</p>
             
@@ -799,7 +868,7 @@
         </div>
 
         <!-- Flood Fill -->
-        <div class="section">
+        <div class="section" id="cap-08">
             <h2>08. FLOOD FILL (Preenchimento)</h2>
             <p>O algoritmo Flood Fill preenche uma área conectada com uma nova cor, como a ferramenta "balde de tinta" em programas de desenho. Clique em qualquer célula para iniciar o preenchimento!</p>
             
@@ -883,7 +952,7 @@
         </div>
 
         <!-- Voronoi Diagram -->
-        <div class="section">
+        <div class="section" id="cap-09">
             <h2>09. VORONOI DIAGRAM (Diagrama de Voronoi)</h2>
             <p>O Diagrama de Voronoi divide o espaço em regiões, onde cada região contém todos os pontos mais próximos de um ponto-semente específico. Cada pixel é colorido de acordo com qual semente está mais próxima.</p>
             
@@ -947,7 +1016,7 @@
         </div>
 
         <!-- BFS Tree -->
-        <div class="section">
+        <div class="section" id="cap-10">
             <h2>10. BFS TREE (Busca em Largura)</h2>
             <p>A Busca em Largura (BFS) explora um grafo/árvore nível por nível, visitando todos os vizinhos antes de avançar para o próximo nível. É como uma "onda" se expandindo a partir da raiz.</p>
             
@@ -1024,7 +1093,7 @@
         </div>
 
         <!-- Game of Life -->
-        <div class="section">
+        <div class="section" id="cap-11">
             <h2>11. GAME OF LIFE (Jogo da Vida)</h2>
             <p>O Game of Life de John Conway é um autômato celular onde padrões complexos emergem de regras simples. Cada célula vive, morre ou nasce baseado em seus vizinhos.</p>
             
@@ -1106,7 +1175,7 @@
         </div>
 
         <!-- Wave Function Collapse -->
-        <div class="section">
+        <div class="section" id="cap-12">
             <h2>12. WAVE FUNCTION COLLAPSE (Colapso de Função de Onda)</h2>
             <p>O Wave Function Collapse é um algoritmo de geração procedural que cria padrões coerentes escolhendo possibilidades locais e propagando restrições. Cada célula "colapsa" de todas as possibilidades para uma única escolha.</p>
             
@@ -1188,7 +1257,7 @@
         </div>
 
         <!-- Mandelbrot & Julia Set -->
-        <div class="section">
+        <div class="section" id="cap-13">
             <h2>13. FRACTAIS - MANDELBROT & JULIA SET</h2>
             <p>Os conjuntos de Mandelbrot e Julia são fractais complexos gerados por iterações de funções matemáticas no plano complexo. Cada pixel representa um número complexo e é colorido baseado em quantas iterações leva para "escapar".</p>
             
@@ -1316,7 +1385,7 @@
         </div>
 
         <!-- Quick Sort -->
-        <div class="section">
+        <div class="section" id="cap-14">
             <h2>14. QUICK SORT (Ordenação Rápida)</h2>
             <p>O Quick Sort escolhe um pivô e particiona o array, colocando elementos menores à esquerda e maiores à direita, recursivamente.</p>
             
@@ -1378,7 +1447,7 @@
         </div>
 
         <!-- Linear Regression -->
-        <div class="section">
+        <div class="section" id="cap-15">
             <h2>15. REGRESSÃO LINEAR (Machine Learning)</h2>
             <p>A Regressão Linear é um algoritmo fundamental de Machine Learning que encontra a melhor linha reta para prever valores baseado em dados. Usa o método de Gradiente Descendente para minimizar o erro.</p>
             
@@ -1473,7 +1542,7 @@
         </div>
 
         <!-- L-Systems -->
-        <div class="section">
+        <div class="section" id="cap-16">
             <h2>16. L-SYSTEMS (Lindenmayer Systems)</h2>
             <p>L-Systems são sistemas de reescrita que geram padrões fractais complexos através de regras simples. Criados para modelar o crescimento de plantas, criam estruturas orgânicas realistas.</p>
             
@@ -1589,7 +1658,7 @@
         </div>
 
         <!-- Delaunay Triangulation -->
-        <div class="section">
+        <div class="section" id="cap-17">
             <h2>17. DELAUNAY TRIANGULATION (Triangulação de Delaunay)</h2>
             <p>A Triangulação de Delaunay conecta pontos criando triângulos de forma ótima, maximizando o ângulo mínimo. É o dual geométrico do Diagrama de Voronoi e forma a base de muitas aplicações em computação gráfica.</p>
             
@@ -1690,7 +1759,7 @@
         </div>
 
         <!-- KNN (K-Nearest Neighbors) -->
-        <div class="section">
+        <div class="section" id="cap-18">
             <h2>18. KNN - K-NEAREST NEIGHBORS (Machine Learning)</h2>
             <p>O algoritmo KNN classifica pontos baseado nos K vizinhos mais próximos. É um algoritmo de aprendizado supervisionado simples mas poderoso usado em classificação e regressão. Clique no canvas para adicionar pontos!</p>
             
@@ -1802,7 +1871,7 @@
         </div>
 
         <!-- Sudoku Solver -->
-        <div class="section">
+        <div class="section" id="cap-19">
             <h2>19. SUDOKU SOLVER (Backtracking)</h2>
             <p>O Sudoku Solver usa backtracking para resolver quebra-cabeças de Sudoku. O algoritmo tenta números de 1-9 em cada célula vazia, verificando se é válido, e volta atrás quando encontra um beco sem saída.</p>
             
@@ -1910,7 +1979,7 @@
         </div>
 
         <!-- Sieve of Eratosthenes -->
-        <div class="section">
+        <div class="section" id="cap-20">
             <h2>20. SIEVE OF ERATOSTHENES (Crivo de Eratóstenes)</h2>
             <p>O Crivo de Eratóstenes é um algoritmo antigo e eficiente para encontrar todos os números primos até um determinado limite. Ele funciona eliminando múltiplos de cada primo encontrado.</p>
             
@@ -2028,7 +2097,7 @@
         </div>
 
         <!-- Fibonacci -->
-        <div class="section">
+        <div class="section" id="cap-21">
             <h2>21. FIBONACCI (Sequência)</h2>
             <p>A sequência de Fibonacci é uma série onde cada número é a soma dos dois anteriores (0, 1, 1, 2, 3, 5, 8, 13...). A razão entre números consecutivos se aproxima da razão áurea (≈1.618), criando padrões encontrados na natureza.</p>
             
@@ -2085,7 +2154,7 @@
         </div>
 
         <!-- Perlin Noise -->
-        <div class="section">
+        <div class="section" id="cap-22">
             <h2>22. PERLIN NOISE (Ruído Coerente)</h2>
             <p>Perlin Noise é um algoritmo de geração de ruído gradiente criado por Ken Perlin em 1983. Diferente do ruído aleatório, o Perlin Noise produz valores suaves e naturais, muito usado em texturas procedurais, terrenos e efeitos visuais.</p>
             
@@ -2164,7 +2233,7 @@
         </div>
 
         <!-- Fourier Transform -->
-        <div class="section">
+        <div class="section" id="cap-23">
             <h2>23. FOURIER TRANSFORM (Transformada de Fourier)</h2>
             <p>A Transformada de Fourier decompõe um sinal complexo em suas componentes de frequência. É como "ouvir" quais notas musicais compõem um som - transforma dados do domínio do tempo para o domínio da frequência.</p>
             
@@ -2261,7 +2330,7 @@
         </div>
 
         <!-- Circle Packing -->
-        <div class="section">
+        <div class="section" id="cap-24">
             <h2>24. CIRCLE PACKING (Empacotamento de Círculos)</h2>
             <p>Circle Packing é um algoritmo que organiza círculos no espaço de forma que eles cresçam o máximo possível sem se sobrepor. O resultado é visualmente orgânico e matematicamente elegante, criando padrões que lembram bolhas, células ou espuma.</p>
             
@@ -2356,7 +2425,7 @@
         </div>
 
         <!-- Chladni Patterns -->
-        <div class="section">
+        <div class="section" id="cap-25">
             <h2>25. CHLADNI PATTERNS (Padrões de Chladni)</h2>
             <p>Os Padrões de Chladni são formações geométricas criadas por vibrações em placas. Quando uma placa vibra em diferentes frequências, partículas se acumulam nos nodos (pontos de vibração zero), formando padrões fascinantes.</p>
             
