@@ -190,8 +190,12 @@ controls.enableDamping = true;
 camera.fov = 60;
 camera.updateProjectionMatrix();
 
-scene.add(new THREE.GridHelper(10, 10));
-scene.add(new THREE.AxesHelper(2));
+const grade = new THREE.GridHelper(10, 10);
+const eixos = new THREE.AxesHelper(2);
+grade.material.depthWrite = false;   // a grade não escreve profundidade e é desenhada primeiro...
+grade.renderOrder = -1;
+eixos.renderOrder = 1;               // ...os eixos vêm depois e ficam por cima, sem piscar
+scene.add(grade, eixos);
 
 const caixa = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
@@ -344,8 +348,12 @@ const cor = (txt, c) => '<span style="color:' + c + '">' + txt + '</span>';
 
 // ---------- cena base ----------
 scene.background = new THREE.Color(0x0b1020);
-scene.add(new THREE.GridHelper(10, 10, 0x475569, 0x1e293b));
-scene.add(new THREE.AxesHelper(3.5));          // X vermelho, Y verde, Z azul
+const gradeBase = new THREE.GridHelper(10, 10, 0x475569, 0x1e293b);
+const eixosBase = new THREE.AxesHelper(3.5);   // X vermelho, Y verde, Z azul
+gradeBase.material.depthWrite = false;         // a grade não escreve profundidade e é desenhada primeiro...
+gradeBase.renderOrder = -1;
+eixosBase.renderOrder = 1;                     // ...os eixos vêm depois e ficam por cima, sem piscar
+scene.add(gradeBase, eixosBase);
 camera.position.set(4.8, 4, 6.4);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -377,11 +385,17 @@ function rotulo(cssCor) {                       // texto flutuante (sprite)
   return sp;
 }
 
-function seta(c) {                              // seta = vetor desenhado (haste + ponta)
+function seta(c, esp, frente) {                 // seta = vetor desenhado (haste + ponta); esp = espessura relativa
   const g = new THREE.Group();
+  const k = esp || 1;                           // setas sobrepostas precisam de espessuras diferentes
   const mat = new THREE.MeshBasicMaterial({ color: c });
-  g.haste = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1, 8).translate(0, 0.5, 0), mat);
-  g.ponta = new THREE.Mesh(new THREE.ConeGeometry(0.1, 1, 14).translate(0, 0.5, 0), mat);
+  if (frente) {                                 // desempate: onde duas superfícies coincidem (a tampa na origem), esta vence
+    mat.polygonOffset = true;
+    mat.polygonOffsetFactor = -2;
+    mat.polygonOffsetUnits = -2;
+  }
+  g.haste = new THREE.Mesh(new THREE.CylinderGeometry(0.03 * k, 0.03 * k, 1, 8).translate(0, 0.5, 0), mat);
+  g.ponta = new THREE.Mesh(new THREE.ConeGeometry(0.1 * k, 1, 14).translate(0, 0.5, 0), mat);
   g.add(g.haste); g.add(g.ponta);
   G.add(g);
   return g;
@@ -515,7 +529,7 @@ novoGrupo();
   G.add(new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16),
     new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 })));   // esfera de raio 1
   const A = alca(COR.a, 2, 1, 0.3, limite), B = alca(COR.b, 0.4, 1.4, 2, limite);
-  const sA = seta(COR.a), sB = seta(COR.b), sS = seta(COR.r), sD = seta(COR.g), sN = seta(COR.o);
+  const sA = seta(COR.a), sB = seta(COR.b), sS = seta(COR.r), sD = seta(COR.g), sN = seta(COR.o, 1.9, true);   // Â mais grossa: envolve A em vez de brigar com ela
   const para = linha(3, COR.w, 0.35);
   const lA = rotulo(COR.a), lB = rotulo(COR.b), lS = rotulo(COR.r), lD = rotulo(COR.g), lN = rotulo(COR.o);
   lA.set('A'); lB.set('B'); lS.set('A + B'); lD.set('A − B'); lN.set('Â');
