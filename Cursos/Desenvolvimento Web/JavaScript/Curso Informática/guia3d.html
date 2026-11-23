@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Three.js na Prática</title>
+<link rel="icon" type="image/x-icon" href="images/pc.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
 :root{--bg:#07051a;--pan:#0f0b2e;--fg:#e9e7ff;--mut:#a5a0d6;--cy:#22d3ee;--vi:#8b5cf6;--mg:#ff4fd8;--ln:#2a2358;--code:#1a1442;color-scheme:dark}
@@ -12,11 +13,11 @@ body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.7 "Space Grotesk"
 body::after{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 75% -10%,#3b1d8a99,transparent 55%),radial-gradient(circle at 0 100%,#0e7490448,transparent 45%)}
 aside{position:fixed;inset:0 auto 0 0;width:325px;background:#0b0826e6;backdrop-filter:blur(8px);border-right:1px solid var(--ln);padding:20px 14px;overflow:auto;z-index:5;transition:transform .25s;perspective:700px}
 .brand{display:flex;align-items:center;font:700 22px "Space Grotesk",sans-serif}.brand span{color:var(--cy)}
-.cube{width:26px;height:26px;position:relative;transform-style:preserve-3d;animation:sp 7s linear infinite;margin:6px 18px 6px 8px}
+.cube{width:26px;height:26px;position:relative;transform-style:preserve-3d;animation:sp 7s linear infinite;margin:6px 20px 6px 8px}
 .cube i{position:absolute;inset:0;border:2px solid var(--cy);background:#22d3ee22;box-shadow:0 0 8px var(--cy)}
 .cube i:nth-child(1){transform:translateZ(13px)}.cube i:nth-child(2){transform:rotateY(90deg) translateZ(13px)}.cube i:nth-child(3){transform:rotateY(180deg) translateZ(13px)}.cube i:nth-child(4){transform:rotateY(-90deg) translateZ(13px)}.cube i:nth-child(5){transform:rotateX(90deg) translateZ(13px)}.cube i:nth-child(6){transform:rotateX(-90deg) translateZ(13px)}
 @keyframes sp{from{transform:rotateX(-25deg) rotateY(0)}to{transform:rotateX(-25deg) rotateY(360deg)}}
-aside small{color:var(--mut);display:block;margin:10px 0 10px;font-size:13px}
+aside small{color:var(--mut);display:block;margin:12px 0 10px;font-size:13px}
 .grp{font:700 11px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--cy);margin:16px 0 6px 6px}
 nav a{display:flex;gap:10px;padding:9px 12px;margin:3px 0;border-radius:8px;color:var(--mut);text-decoration:none;font-size:15px;cursor:pointer;border:1px solid transparent;}
 nav a i{font:normal 12px "JetBrains Mono",monospace;color:var(--cy);padding-top:3px}
@@ -26,7 +27,7 @@ nav a.ok::after{content:"✓";margin-left:auto;color:var(--cy)}
 .meter{height:6px;background:var(--code);border-radius:3px;margin-top:16px}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--mg));border-radius:3px;transition:width .3s}
 #menu{display:none;position:fixed;top:10px;left:10px;z-index:6;background:var(--vi);color:#fff;border:0;border-radius:8px;padding:8px 12px;font:14px system-ui}
 main{margin-left:278px;padding:44px 32px 80px 90px;max-width:1200px}
-.num{display:inline-block;font:700 96px/1 "Space Grotesk",sans-serif;color:transparent;background:linear-gradient(180deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;filter:drop-shadow(4px 4px 0 #3b1d8a) drop-shadow(8px 8px 0 #1a1442);transform:perspective(500px) rotateY(-18deg);animation:fl 5s ease-in-out infinite alternate}
+.num{display:inline-block;margin-bottom:10px;font:700 96px/1 "Space Grotesk",sans-serif;color:transparent;background:linear-gradient(180deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;filter:drop-shadow(4px 4px 0 #3b1d8a) drop-shadow(6px 6px 0 #1a1442);animation:fl 5s ease-in-out infinite alternate}
 @keyframes fl{to{transform:perspective(500px) rotateY(14deg)}}
 h1{font:700 38px/1.15 "Space Grotesk",sans-serif;margin:0 0 8px;text-shadow:0 0 24px #8b5cf6aa}
 .lead{font-size:20px;color:var(--mut);margin-top:0}
@@ -44,14 +45,16 @@ iframe{flex:1;width:100%;min-height:440px;border:0;background:#0b1020;display:bl
 .pane.max iframe,.pane:fullscreen iframe{min-height:0}
 .pane:fullscreen{background:var(--pan)}
 body.maxlock{overflow:hidden}
+#indexBtn{display:block;width:100%;margin-top:15px;padding:9px 12px;border:1px solid var(--ln);border-radius:8px;background:var(--code);color:var(--fg);font:600 14px system-ui,sans-serif;cursor:pointer;}
+#indexBtn:hover{border-color:var(--cy);color:var(--cy);}
 .pg{display:flex;justify-content:space-between;margin-top:30px}
-.pg button{border:1px solid var(--cy);color:var(--cy);background:transparent;padding:10px 18px;border-radius:8px;font:600 16px system-ui;cursor:pointer}.pg button:hover:not(:disabled){background:var(--cy);color:#07051a}.pg button:disabled{opacity:.3;cursor:default}
+.pg button{border:1px solid var(--cy);color:var(--cy);background:transparent;padding:10px 18px;border-radius:8px;font:600 16px system-ui;cursor:pointer}.pg button:hover:not(:disabled){background:var(--cy);color:#07051a}.pg button:disabled{opacity:.3;cursor:not-allowed;}
 @media(max-width:1200px){aside{transform:translateX(-100%)}aside.open{transform:none}#menu{display:block}main{margin:0;padding:56px 16px 60px}.lab{grid-template-columns:1fr}.num{font-size:64px}}
 </style>
 </head>
 <body>
 <button id="menu">☰ Capítulos</button>
-<aside id="side"><div class="brand"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div>Three<span>.js</span></div><small>Guia interativo · edite e veja o resultado</small><nav id="nav"></nav><div class="meter"><i id="bar"></i></div></aside>
+<aside id="side"><div class="brand"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div>Three<span>.js</span></div><small>Guia interativo · edite e veja o resultado</small><nav id="nav"></nav><div class="meter"><i id="bar"></i></div><button id="indexBtn" onclick="window.location.href='/'">← Página Inicial</button></aside>
 <main id="main"></main>
 <script>
 // ===== Capítulos =====
