@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlas das Tecnologias Críticas</title>
+<link rel="icon" type="image/x-icon" href="images/pc.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;600&display=swap">
+<style>
+:root{--bg:#0B1420;--ink:#E7EEF6;--mut:#9FB0C4;--card:#142236;--line:#26384F;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Instrument Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Instrument Sans",system-ui,sans-serif;margin:0;line-height:1.08}
+main{max-width:1180px;margin:0 auto;padding:28px 20px 56px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--c,#6366f1);outline-offset:2px}
+h1{font-size:clamp(2.4rem,7vw,4.8rem);font-weight:800;letter-spacing:-.03em;margin-top:8px}
+.lead{max-width:65ch;color:var(--mut);font-size:1.08rem;margin:18px 0 22px}
+.tools{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;margin-bottom:30px}
+input[type=search]{flex:1 1 280px;max-width:440px;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.key{display:flex;gap:18px;color:var(--mut);font-size:.92rem;flex-wrap:wrap}
+.key span{display:inline-flex;align-items:center;gap:7px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--ink)}
+.tri{width:0;height:0;border:6px solid transparent;border-bottom:11px solid var(--ink);border-top:0}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{text-align:left;border:1px solid var(--line);border-radius:22px;padding:18px;background:color-mix(in srgb,var(--c) 13%,var(--card));display:flex;flex-direction:column;gap:12px;transition:transform .2s,border-color .2s}
+.tile:hover{transform:translateY(-4px);border-color:var(--c)}
+.tile .art{color:var(--c);background:color-mix(in srgb,var(--c) 10%,var(--card));border-radius:14px;padding:6px}
+svg{display:block;width:100%;height:auto}
+.tile h2{font-size:1.28rem;font-weight:800}
+.tile p{margin:0;color:var(--mut);font-size:.93rem}
+.cnt{margin-top:auto;font-weight:600;font-size:.9rem;color:var(--c)}
+.res{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.res button{text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:12px 14px}
+.res small{display:block;color:var(--mut)}
+.rg{grid-column:1/-1;color:var(--mut);font-size:.9em;padding:6px 2px 0;border-bottom:1px solid var(--line)}
+.rg b{color:var(--c);font-size:1.05em}
+.none{color:var(--mut);padding:24px 0}
+dialog{width:min(980px,94vw);max-height:90vh;border:1px solid var(--line);border-radius:24px;background:var(--card);color:var(--ink);padding:0;overflow:auto}
+dialog::backdrop{background:rgba(5,10,20,.6)}
+.dh{display:flex;justify-content:space-between;gap:16px;padding:22px 24px 8px}
+.dh h2{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800}
+.dh p{margin:6px 0 0;color:var(--mut)}
+.x{border:1px solid var(--line);background:none;border-radius:50%;width:40px;height:40px;flex:none;font-size:1.2rem}
+.db{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:22px;padding:14px 24px 26px}
+.chips{display:flex;flex-direction:column;gap:6px}
+.chips button{text-align:left;background:none;border:1px solid var(--line);border-radius:10px;padding:9px 12px;display:flex;gap:9px;align-items:center;line-height:1.3}
+.chips button[aria-pressed=true]{background:color-mix(in srgb,var(--c) 18%,var(--card));border-color:var(--c);font-weight:600}
+.chips .tri{border-bottom-color:var(--c);flex:none}.chips .dot{background:var(--c);flex:none}
+.pane{background:color-mix(in srgb,var(--c) 9%,var(--card));border-radius:18px;padding:22px;align-self:start}
+.pane .art{color:var(--c);max-width:360px;margin-bottom:16px}
+.pane h3{font-size:1.6rem;font-weight:800}
+.badge{display:inline-block;margin:10px 0 12px;border:1px solid var(--c);border-radius:99px;padding:3px 12px;font-size:.88rem;font-weight:600}
+.pane p{margin:0;max-width:60ch;font-size:1.05rem}
+footer{margin-top:40px;color:var(--mut);font-size:.88rem;max-width:80ch}
+input[type="search"]::-webkit-search-cancel-button {cursor: pointer;}
+@media (max-width:900px){.gal{grid-template-columns:repeat(2,1fr)}.tile:last-child{grid-column:span 2}}
+@media (max-width:660px){.gal{grid-template-columns:1fr}.tile:last-child{grid-column:span 1}.db{grid-template-columns:1fr}.chips{flex-direction:row;flex-wrap:wrap}}
+@media (prefers-reduced-motion:reduce){.tile{transition:none}.tile:hover{transform:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Atlas das Tecnologias Críticas</h1>
+<p class="lead">Nove grandes áreas e as 74 tecnologias críticas acompanhadas pelo ASPI Critical Technology Tracker. Escolha uma área para ver cada tecnologia em detalhe, ou busque pelo nome.</p>
+<div class="tools">
+<input type="search" id="q" placeholder="Buscar tecnologia ou grupo, por exemplo: baterias" aria-label="Buscar tecnologia">
+</div>
+<div id="out"></div>
+<footer>Fonte: lista de tecnologias do ASPI Critical Technology Tracker, atualizada em 27 de novembro de 2025. As descrições são resumos simplificados, em português, das definições da fonte.</footer>
+</main>
+<dialog id="dlg" aria-labelledby="dt"></dialog>
+<script>
+const RAW=[
+["ict","Informação & Comunicações Avançadas","Redes, nuvem, realidade estendida e cibersegurança","#0891b2",`Comunicação óptica avançada|Transmite dados com luz, por fibras ou pelo ar, usando lasers e óptica adaptativa. Aplicações: enlaces com satélites, Li-Fi e redes de banda larga de alta capacidade.
+Comunicação por radiofrequência avançada|Usa ondas de rádio com novas modulações e antenas inteligentes (beamforming). Aplicações: redes celulares, Wi-Fi, satélites, veículos conectados e comunicações seguras.
+Comunicação sem fio submarina|Envia dados debaixo d’água por som, luz ou rádio, apesar da pressão e da baixa visibilidade. Aplicações: exploração, monitoramento ambiental e energia offshore.
+Computação em nuvem e de borda|Divide o processamento entre data centers (nuvem) e dispositivos locais (borda), que respondem sem atraso. Aplicações: fábricas e veículos autônomos.
+Gêmeos digitais|Cópias virtuais de objetos ou sistemas, atualizadas em tempo real por sensores. Aplicações: manutenção preditiva, redes elétricas e planejamento de tratamentos de saúde.
+Registros distribuídos|Sistemas que guardam transações em vários locais, sem autoridade central, como o blockchain. Aplicações: moedas digitais, rastreio de cadeias de suprimento e registros de terras.
+Realidade estendida|Reúne realidade virtual, aumentada e mista. Aplicações: treinamento de equipes de emergência, operação remota de drones e design.
+Computação de alto desempenho|Supercomputadores e similares, que resolvem cálculos grandes demais para máquinas comuns. Aplicações: modelagem do clima, química computacional e treino de grandes modelos de linguagem.
+Redes em malha e independentes de infraestrutura|Dispositivos que se comunicam sem depender da Internet, cada um repassando os dados dos outros. Aplicações: Internet das coisas e ambientes que precisam funcionar offline.
+Tecnologias de cibersegurança protetiva|Sistemas, algoritmos e hardware que protegem a infraestrutura digital e a informação. Aplicações: autenticação, proteção de dados e de sistemas de IA, segurança da cadeia de suprimentos.`],
+["materials","Materiais Avançados & Manufatura","Compósitos, nanomateriais, semicondutores e fabricação","#d97706",`Manufatura aditiva|Fabrica objetos depositando material camada por camada a partir de um modelo 3D, em plástico, metal ou cerâmica. Aplicações: protótipos, peças sob medida e produção em pequena escala.
+Materiais compósitos avançados|Combinam materiais distintos para ficar mais fortes e rígidos, como fibra de carbono em plástico. Aplicações: proteção de veículos, construção e pás de turbinas eólicas.
+Explosivos e materiais energéticos avançados|Substâncias que armazenam muita energia química e a liberam rapidamente. Aplicações: mineração, demolição controlada e defesa.
+Ímãs e supercondutores avançados|Ímãs potentes que dependem menos de minerais críticos e materiais sem resistência elétrica. Aplicações: ressonância magnética, transmissão sem perdas e computação quântica.
+Proteção avançada|Roupas e equipamentos que protegem pessoas e plataformas contra danos físicos, químicos ou biológicos. Exemplos: capacetes, tecidos antichama, respiradores e coletes.
+Revestimentos|Camadas aplicadas a superfícies para dar proteção ou funções extras: anti-incrustação em navios, superidrofóbicos em painéis solares, anticorrosão e térmicos.
+Síntese química em fluxo contínuo|Produz químicos finos e medicamentos de forma contínua, em vez de lotes. O resultado é uma produção mais rápida, uniforme e com menos resíduos.
+Extração e processamento de minerais críticos|Processos para extrair e refinar minerais críticos com segurança. Aplicações: mineração e produção de químicos para baterias, eletrônicos e manufatura avançada.
+Usinagem de alta especificação|Corta e modela matéria-prima em peças complexas e muito precisas: fresas CNC, eletroerosão, laser e jato d’água. Aplicações: peças aeroespaciais e máquinas avançadas.
+Materiais e manufatura em nanoescala|Materiais com estruturas menores que 100 nanômetros e as técnicas para produzi-los. Aplicações: tintas, fármacos, tratamento de água, semicondutores e captura de carbono.
+Metamateriais inovadores|Materiais sintéticos com propriedades que não existem na natureza, como curvar a luz ou ondas de rádio. Aplicações: antenas avançadas, captura de energia e camuflagem adaptativa.
+Materiais inteligentes|Mudam de propriedades diante de calor, tensão ou dano, como ligas com memória de forma e materiais que se autorreparam. Aplicações: roupas, construção e eletrônicos.
+Semicondutores de banda larga e ultralarga|Funcionam em temperaturas, tensões e potências maiores que o silício, com chaveamento rápido. Aplicações: inversores para redes elétricas, transistores e lasers de alta frequência.`],
+["ai","Inteligência Artificial","Algoritmos, chips, dados e linguagem","#e5484d",`Análise avançada de dados|Processa grandes volumes de dados para gerar informações úteis, muitas vezes com pouca intervenção humana. Aplicações: diagnóstico médico, monitoramento do clima e planejamento de infraestrutura.
+Projeto e fabricação de circuitos integrados avançados|Projeta e produz chips sofisticados, como sistemas em chip (SoCs), FPGAs e memórias empilhadas. Aplicações: computação de alto desempenho e defesa.
+IA adversarial|Reúne os ataques a sistemas de IA (como envenenamento de dados) e as defesas que os tornam robustos, como treinamento resistente e monitoramento.
+Algoritmos de IA e aceleradores de hardware|Métodos de aprendizado e chips especializados (GPUs, TPUs, chips neuromórficos) que treinam e executam IA em grande escala.
+Visão computacional|IA que interpreta imagens e vídeos. É a mais madura das IAs sensoriais. Aplicações: direção autônoma e diagnóstico médico.
+IA generativa|Cria texto, imagens, áudio, vídeo ou código novos ao aprender padrões em grandes volumes de dados. Aplicações: educação personalizada e aceleração de descobertas científicas.
+Aprendizado de máquina|Algoritmos que aprendem e melhoram com dados ou experiência. Aplicações: reconhecimento facial, recomendação de conteúdo, buscadores e deepfakes.
+Processamento de linguagem natural|Permite que computadores reconheçam, interpretem e gerem linguagem escrita ou falada. Aplicações: tradução, assistentes virtuais, chatbots e resumo de documentos.`],
+["biotech","Biotecnologia, Genética & Vacinas","Células, genes, cérebro e medicina","#db2777",`Manufatura biológica|Usa células e sistemas vivos para produzir químicos e materiais. Exemplos: fermentação, anticorpos e enzimas que reciclam plástico.
+Interfaces cérebro-computador|Criam um canal direto entre o cérebro e dispositivos externos, traduzindo sinais neurais. Aplicações: controlar próteses e restaurar a comunicação.
+Engenharia genética|Ferramentas como CRISPR e clonagem molecular modificam genes. Aplicações: lavouras mais produtivas, tratamento de doenças genéticas e terapias celulares.
+Sequenciamento e análise genômica|Lê e analisa sequências genéticas de pessoas, plantas e vírus. Aplicações: achar genes ligados a doenças, detectar patógenos novos e prever a resposta a remédios.
+Neuropróteses|Dispositivos ligados ao sistema nervoso que restauram funções motoras, sensoriais ou cognitivas. Exemplos: implantes cocleares e próteses que devolvem o toque.
+Novos antibióticos e antivirais|Descoberta e projeto de medicamentos contra infecções bacterianas e virais, inclusive cepas resistentes como a MRSA.
+Medicina nuclear e radioterapia|Usa substâncias radioativas e radiação ionizante para diagnosticar e tratar doenças, sobretudo o câncer.
+Biologia sintética|Projeta sistemas biológicos com funções que não existem na natureza. Aplicações: micro-organismos que limpam poluentes e carne e laticínios sem animais.
+Vacinas e contramedidas médicas|Desenvolvimento rápido de vacinas, remédios e diagnósticos contra doenças emergentes ou agentes químicos, biológicos, radiológicos e nucleares.`],
+["defense","Defesa, Espaço, Robótica & Transporte","Aeronaves, drones, robôs e satélites","#8b5cf6",`Motores aeronáuticos avançados|Aumentam velocidade, alcance e eficiência de aeronaves, incluindo estatorreatores e scramjets, que voam além de Mach 5.
+Robótica avançada|Robôs que fazem tarefas complexas, colaboram com pessoas ou se automontam. Aplicações: indústria, segurança pública, saúde e casa.
+Operação de sistemas autônomos|Máquinas que cumprem tarefas com pouca ajuda humana. Aplicações: transporte de pessoas e cargas, veículos submarinos e robôs industriais.
+Drones, enxames e robôs colaborativos|Veículos aéreos, terrestres, de superfície ou submarinos sem tripulação, que operam sozinhos ou em enxames. Aplicações: agricultura, logística e monitoramento ambiental.
+Detecção e rastreamento hipersônico|Sensores em terra, mar, ar e espaço, com algoritmos, que acompanham objetos acima de Mach 5. São difíceis de prever porque manobram em voo.
+Pequenos satélites|Satélites com menos de 500 kg, do tamanho de um eletrodoméstico. Aplicações: constelações de observação da Terra e redes de comunicação.
+Sistemas de lançamento espacial|Levam satélites e espaçonaves da superfície até a órbita com segurança, confiabilidade e baixo custo.`],
+["energy","Energia & Meio Ambiente","Baterias, solar, nuclear, hidrogênio e clima","#10a27a",`Biocombustíveis|Combustíveis feitos de fontes biológicas, como biogás, biodiesel e bioetanol de milho ou cana. Aplicações: energia, aquecimento e transporte.
+Tecnologias de energia dirigida|Enviam energia pelo espaço até um alvo, com lasers ou micro-ondas. Aplicações: transmissão de energia sem fio para drones e veículos, e sistemas de defesa.
+Baterias elétricas|Guardam energia eletroquímica e podem ser recarregadas, de íons de lítio a baterias de fluxo. Aplicações: veículos elétricos, eletrônicos, equipamentos médicos e armazenamento em rede.
+Geoengenharia|Intervenções deliberadas no clima: refletir parte da radiação solar ou remover CO₂ da atmosfera, com biochar e intemperismo acelerado.
+Tecnologias de integração à rede elétrica|Hardware e software que distribuem eletricidade com eficiência: eletrônica de potência, microrredes e gestão de energia. Estabilizam fontes renováveis intermitentes.
+Hidrogênio e amônia para energia|Produção, armazenamento e uso de H₂ e NH₃ como portadores de energia de baixo carbono. Aplicações: aviação, transporte marítimo e pesado, aquecimento.
+Energia nuclear|Gera eletricidade a partir da divisão de núcleos atômicos. Aplicações: grandes usinas, submarinos, missões espaciais e produção de isótopos médicos.
+Gestão e reciclagem de resíduos nucleares|Descarte seguro ou reaproveitamento de resíduos radioativos, como transformar resíduo líquido em rocha sintética ou reprocessar combustível usado.
+Energia fotovoltaica|Dispositivos que geram eletricidade a partir da luz do sol com camadas semicondutoras. Aplicações: usinas, telhados, espaçonaves e eletrônicos pessoais.
+Supercapacitores|Armazenam energia em pouco espaço. Guardam menos que baterias, mas carregam e descarregam muito mais rápido e aguentam mais ciclos. Aplicações: frenagem regenerativa.`],
+["quantum","Tecnologias Quânticas","Computação, comunicação, criptografia e sensores","#6366f1",`Criptografia pós-quântica|Métodos matemáticos que protegem dados contra ataques de computadores quânticos e clássicos. Aplicação principal: proteger a infraestrutura digital contra ameaças futuras.
+Comunicação quântica|Transmite informação quântica, como chaves criptográficas, a distância. Aplicações: ligar computadores quânticos e compartilhar chaves sem possibilidade de cópia ou interceptação.
+Computação quântica|Usa propriedades da mecânica quântica para resolver certos problemas muito mais rápido que máquinas clássicas. Aplicações: simular química e biologia, e quebrar a criptografia atual.
+Sensores quânticos|Medem com precisão e sensibilidade extremas usando efeitos quânticos. Aplicações: imagem, navegação passiva, sensoriamento remoto e radar quântico.`],
+["sensing","Sensoriamento, Tempo & Navegação","Relógios, radares, satélites e sensores","#2563eb",`Relógios atômicos|Medem o tempo pela frequência da radiação de átomos específicos: são os cronômetros mais precisos. Aplicações: navegação, transações financeiras e redes de telecomunicação.
+Sensores de força gravitacional|Medem pequenas variações do campo gravitacional da Terra. Aplicações: navegação passiva e detecção de jazidas, túneis e estruturas subterrâneas.
+Sistemas de navegação inercial|Calculam a posição a partir de um ponto inicial, sem sinais externos. Substituem ou reforçam o GPS em túneis, no mar e em cidades densas, e resistem a interferências.
+Sensores de campo magnético|Detectam a intensidade e a direção de campos magnéticos. Aplicações: navegação passiva, imagem médica, metalurgia e pesquisa científica.
+Sensores de imagem multiespectrais e hiperespectrais|Captam várias faixas do espectro eletromagnético. Os hiperespectrais registram centenas de faixas contínuas e permitem analisar a composição dos materiais. Aplicações: saúde, agricultura, mineração e florestas.
+Sensores fotônicos|Usam luz para detectar mudanças em materiais ou no ambiente. Aplicações: fotografia, detecção de gases a laser e sensores flexíveis implantados no corpo.
+Agricultura de precisão|Usa sensores e computação para decidir com base em dados sobre lavouras e rebanhos, melhorando a produção e o uso de recursos.
+Radar|Detecta objetos analisando sinais de rádio ou micro-ondas, de forma ativa (emite sinais) ou passiva (usa sinais do ambiente). Aplicações: previsão do tempo, veículos autônomos e controle de tráfego.
+Posicionamento e navegação por satélite|Redes de satélites que enviam hora e localização precisas, como GPS, Galileo, BeiDou e GLONASS. Sistemas avançados resistem melhor a interferência e à falsificação de sinal.
+Sonar e sensores acústicos|Detectam objetos e movimentos por ondas sonoras emitidas ou refletidas por submarinos, navios, animais marinhos ou relevo submarino. Aplicações: monitorar ecossistemas e defesa.`],
+["naval","Submarinos & Guerra Eletrônica","Propulsão, veículos submarinos e espectro eletromagnético","#4d7c0f",`Propulsão independente de ar|Move submarinos sem usar o oxigênio da atmosfera, para ficarem submersos por mais tempo e silenciosos. Exemplos: células de hidrogênio e motores Stirling.
+Veículos subaquáticos autônomos|Plataformas submarinas que cumprem missões longas sem operador, seguindo rotas planejadas ou se adaptando. Aplicações: vigilância, reconhecimento e guerra antissubmarino.
+Guerra eletrônica|Uso do espectro eletromagnético para negar, degradar, enganar ou proteger sistemas eletrônicos e comunicações. Inclui ataque eletrônico, proteção eletrônica e apoio eletrônico (coleta e análise de sinais).`]
+];
+const D=RAW.map(([id,t,s,c,l])=>({id,t,s,c,items:l.split("\n").map(r=>{const[n,d,w]=r.split("|");return{n,d,w:!!w}})}));
+const S=s=>`<svg viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${s}</svg>`;
+const ART={
+ai(){let s="";const L=[[40,3],[100,4],[160,3]],P=L.map(([x,n])=>Array.from({length:n},(_,i)=>[x,60+(i-(n-1)/2)*30]));
+for(let a=0;a<2;a++)P[a].forEach(p=>P[a+1].forEach(q=>s+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" opacity=".35"/>`));
+P.flat().forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="var(--card)"/>`);return S(s)},
+materials(){let s="";for(let r=0;r<4;r++)for(let c=0;c<6;c++){const x=17.5+c*30+(r%2)*15,y=22+r*25;s+=`<path d="M${x} ${y-17}l14.7 8.5v17L${x} ${y+17}l-14.7-8.5v-17z" opacity="${(r+c)%3?.4:1}"/>`}return S(s)},
+energy(){let s='<circle cx="62" cy="58" r="20"/>';for(let i=0;i<8;i++){const a=i*Math.PI/4;s+=`<line x1="${62+Math.cos(a)*29}" y1="${58+Math.sin(a)*29}" x2="${62+Math.cos(a)*39}" y2="${58+Math.sin(a)*39}"/>`}return S(s+'<path d="M148 14l-30 52h22l-8 40 36-56h-24z" fill="currentColor" fill-opacity=".2"/>')},
+defense(){return S('<path d="M22.56 93.95Q100-19.95 177.44 93.95" stroke-dasharray="2.95 6.89"/><circle cx="17" cy="103" r="5"/><circle cx="183" cy="103" r="5"/><path d="M100 8l-9 17h18z" fill="currentColor"/><path d="M60 106h80M72 106l6-10h44l6 10" opacity=".5"/>')},
+ict(){let s='<circle cx="100" cy="100" r="5" fill="currentColor"/>';[34,60,86].forEach((r,i)=>s+=`<path d="M${100-r*.8} ${100-r*.6}A${r} ${r} 0 0 1 ${100+r*.8} ${100-r*.6}" opacity="${1-i*.25}"/>`);return S('<g transform="translate(0 -4)">'+s+'<path d="M100 100v14M86 114h28"/></g>')},
+biotech(){let s="",a="M",b="M";for(let x=20;x<=180;x+=4){const y=60+28*Math.sin(x/14);a+=`${x} ${y} `;b+=`${x} ${120-y} `;a+=x==20?"L":"";}
+for(let x=24;x<=180;x+=14)s+=`<line x1="${x}" y1="${60+27*Math.sin(x/14)}" x2="${x}" y2="${60-28*Math.sin(x/14)}" opacity=".45"/>`;return S(`<path d="${a.replace("M","M").replace(/ L/,"L")}"/><path d="${b}"/>`+s)},
+sensing(){return S('<g transform="translate(0 4)"><circle cx="100" cy="56" r="3" fill="currentColor"/><circle cx="100" cy="56" r="16"/><circle cx="100" cy="56" r="34" opacity=".6"/><circle cx="100" cy="56" r="52" opacity=".35"/><path d="M100 56L140 23A52 52 0 0 1 150 43z" fill="currentColor" fill-opacity=".18"/><path d="M100 56L140 23"/><circle cx="126" cy="34" r="4" fill="currentColor"/></g>')},
+naval(){return S('<path d="M20 70Q20 52 50 52H150Q180 52 180 70Q180 88 150 88H50Q20 88 20 70z"/><path d="M84 52V38H116V52M104 38V26h10"/><circle cx="60" cy="70" r="4"/><circle cx="84" cy="70" r="4"/><path d="M10 106q10-8 20 0t20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0" opacity=".45"/>')},
+quantum(){return S('<ellipse cx="100" cy="60" rx="56" ry="17"/><ellipse cx="100" cy="60" rx="56" ry="17" transform="rotate(60 100 60)"/><ellipse cx="100" cy="60" rx="56" ry="17" transform="rotate(120 100 60)"/><circle cx="100" cy="60" r="7" fill="currentColor"/><circle cx="150" cy="52" r="3.5" fill="currentColor"/><circle cx="72" cy="12" r="3.5" fill="currentColor"/><circle cx="72" cy="108" r="3.5" fill="currentColor"/>')}
+};
+const mk=()=>"";
+const $=id=>document.getElementById(id),out=$("out"),dlg=$("dlg");
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+function render(){
+const q=norm($("q").value.trim());
+if(!q){out.innerHTML='<div class="gal">'+D.map((d,i)=>`<button class="tile" type="button" data-i="${i}" style="--c:${d.c}"><div class="art">${ART[d.id]()}</div><h2>${d.t}</h2><p>${d.s}</p><span class="cnt">${d.items.length} tecnologias</span></button>`).join("")+"</div>";return}
+const r=[];
+const card=(i,j,t,d)=>`<button type="button" data-i="${i}" data-j="${j}" style="--c:${d.c}">${mk(t.w)} <b>${t.n}</b><small>${d.t}</small></button>`;
+D.forEach((d,i)=>{
+if(norm(d.t).includes(q)){
+r.push(`<div class="rg" style="--c:${d.c}"><b>${d.t}</b> · ${d.items.length} tecnologias</div>`);
+d.items.forEach((t,j)=>r.push(card(i,j,t,d)))
+}else{
+d.items.forEach((t,j)=>{if(norm(t.n+" "+t.d).includes(q))r.push(card(i,j,t,d))})
+}
+});
+out.innerHTML=r.length?'<div class="res">'+r.join("")+"</div>":'<p class="none">Nenhuma tecnologia encontrada. Tente outro termo ou limpe a busca.</p>'}
+function open(i,j=0){
+const d=D[i],t=d.items[j];
+dlg.style.setProperty("--c",d.c);
+dlg.innerHTML=`<div class="dh"><div><h2 id="dt">${d.t}</h2><p>${d.s}</p></div><button class="x" type="button" aria-label="Fechar" data-close>×</button></div>
+<div class="db"><div class="chips">${d.items.map((x,k)=>`<button type="button" aria-pressed="${k==j}" data-j="${k}">${mk(x.w)}<span>${x.n}</span></button>`).join("")}</div>
+<div class="pane"><div class="art">${ART[d.id]()}</div><h3>${t.n}</h3><span class="badge">Tecnologia ${j+1} de ${d.items.length}</span><p>${t.d}</p></div></div>`;
+dlg.dataset.i=i;if(!dlg.open)dlg.showModal()}
+out.addEventListener("click",e=>{const b=e.target.closest("button[data-i]");if(b)open(+b.dataset.i,+(b.dataset.j||0))});
+dlg.addEventListener("click",e=>{if(e.target===dlg||e.target.closest("[data-close]"))return dlg.close();const b=e.target.closest(".chips button");if(b){open(+dlg.dataset.i,+b.dataset.j);dlg.querySelector(`.chips button[data-j="${b.dataset.j}"]`).focus()}});
+$("q").addEventListener("input",render);
+render();
+</script>
+</body>
+</html>
