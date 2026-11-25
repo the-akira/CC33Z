@@ -61,6 +61,116 @@ body.maxlock{overflow:hidden}
 // ===== Capítulos =====
 // full:true => o snippet monta renderer/scene/camera do zero. Senão, o "preâmbulo" cria os três para você.
 const CAPS=[
+{t:"Introdução",
+ lead:"Antes do primeiro cubo, vale entender o que é, de verdade, um mundo 3D dentro do computador — e onde o Three.js entra nessa história.",
+ txt:`<p>A tela do computador ou do celular é <b>plana</b>: uma grade de pixels. Mesmo assim, jogos e animações mostram profundidade, volume e sombras. O truque é que o programa guarda o mundo como <b>números</b> — posições <code>(x, y, z)</code> — e, cerca de 60 vezes por segundo, calcula como esse mundo seria visto por uma câmera e pinta o resultado, pixel a pixel. Isso é a <b>computação gráfica 3D</b>.</p>
+ <p><b>Os blocos de construção.</b> Um <b>vértice</b> é um ponto no espaço. Três vértices formam um <b>triângulo</b>, a peça básica de quase tudo em 3D (um triângulo é sempre plano, o que o torna simples e rápido de desenhar). Um conjunto de triângulos é uma <b>malha</b> (<i>mesh</i>), que pode ser desde um cubo até um personagem com milhares de triângulos. Para ter aparência, a malha recebe um <b>material</b> (cor, brilho, textura) e, para ter volume, precisa de <b>luz</b>.</p>
+ <p><b>Onde estamos no espaço.</b> O Three.js usa três eixos: <code>x</code> aponta para a direita, <code>y</code> para cima e <code>z</code> vem na sua direção (para fora da tela). Para lembrar: as cores dos eixos seguem <b>RGB = XYZ</b> (vermelho, verde, azul). Você os verá na cena abaixo.</p>
+ <p><b>Do mundo 3D ao pixel.</b> A cada quadro, acontece mais ou menos isto: (1) os vértices são movidos, girados e escalados até o seu lugar no mundo; (2) a câmera <b>projeta</b> o mundo 3D numa imagem 2D — com perspectiva, o que está longe parece menor; (3) cada triângulo é <b>rasterizado</b>, isto é, vira um conjunto de pixels; (4) a cor de cada pixel é calculada a partir do material e das luzes. Quem faz esse trabalho pesado, em paralelo para milhões de pixels, é a <b>GPU</b> (a placa de vídeo).</p>
+ <p><b>E o Three.js?</b> O navegador fala com a GPU por uma API chamada <b>WebGL</b>. Ela é poderosa, mas de baixo nível: para desenhar um único triângulo colorido você escreve dezenas de linhas, incluindo pequenos programas para a GPU (os <i>shaders</i>) e contas com matrizes. O <b>Three.js</b> é uma biblioteca JavaScript de código aberto, criada por Ricardo Cabello (mrdoob) em 2010, que esconde esse trabalho atrás de objetos prontos: <code>Scene</code>, <code>PerspectiveCamera</code>, <code>Mesh</code>, <code>Light</code>… Você descreve <i>o que</i> quer ver; ele cuida de <i>como</i> desenhar. Roda em qualquer navegador, sem instalar nada, no computador e no celular — por isso serve tanto para sites e visualizações quanto para jogos. Este guia usa a versão r128, carregada com uma simples tag <code>&lt;script&gt;</code>; em versões mais novas a importação muda (módulos <code>import</code>), mas os conceitos são os mesmos.</p>
+ <p><b>A cena abaixo</b> mostra essas ideias num cubo. Os botões 1 a 4 revelam as camadas, uma de cada vez: só os vértices, os triângulos que os ligam, as faces preenchidas e, por fim, o material reagindo à luz. O círculo amarelo acompanha o vértice 0 e mostra a projeção em ação: as coordenadas 3D dele viram um <b>pixel</b> da tela (<code>vetor.project(camera)</code>). Aqui a preparação (renderer, cena e câmera) já vem pronta; no próximo capítulo você a monta do zero.</p>
+ <div class="note tip"><b>Experimente:</b> arraste sobre a cena para girar. Troque <code>BoxGeometry(2, 2, 2)</code> por <code>SphereGeometry(1.3, 8, 6)</code> e veja os triângulos; depois aumente para <code>(1.3, 32, 16)</code> e note que a superfície só parece lisa porque ganhou muito mais triângulos.</div>
+ <div class="note"><b>Por que 24 vértices num cubo?</b> Um cubo tem 8 cantos, mas o Three.js guarda 24 vértices: cada face leva os seus, porque cada uma precisa da própria orientação (normal) para a luz e das próprias coordenadas de textura. Já os 12 triângulos são simples: 6 faces × 2.</div>`,
+ code:`// Um objeto 3D é só uma lista de pontos (vértices) ligados em triângulos.
+const geo = new THREE.BoxGeometry(2, 2, 2);
+const pos = geo.attributes.position;                                  // posição (x, y, z) de cada vértice
+const nVertices = pos.count;
+const nTriangulos = (geo.index ? geo.index.count : pos.count) / 3;    // 3 vértices = 1 triângulo
+
+// A MESMA geometria mostrada de dois jeitos: como pontos e como malha
+const pontos = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x22d3ee, size: 0.16 }));
+const malha = new THREE.Mesh(geo, new THREE.MeshBasicMaterial());
+const objeto = new THREE.Group();
+objeto.add(malha, pontos);
+objeto.position.y = 1;              // o cubo tem altura 2: assim ele se apoia no chão (y = 0)
+scene.add(objeto);
+
+// Referências: um chão de grade e, sobre ele, os eixos X (vermelho), Y (verde) e Z (azul)
+const chao = new THREE.GridHelper(10, 10, 0x6b7280, 0x2a3350);
+const eixos = new THREE.AxesHelper(3);
+chao.material.depthWrite = false;   // a grade é desenhada primeiro...
+chao.renderOrder = -1;
+eixos.renderOrder = 1;              // ...e os eixos ficam por cima, sem piscar
+scene.add(chao, eixos);
+
+// Luz (só os materiais "Standard" reagem a ela)
+scene.add(new THREE.HemisphereLight(0xffffff, 0x334155, 0.9));
+const sol = new THREE.DirectionalLight(0xffffff, 1.2);
+sol.position.set(3, 5, 4);
+scene.add(sol);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0, 1, 0);       // a câmera olha para o centro do cubo
+
+// As quatro etapas que vamos revelar
+const etapas = [
+  { nome: 'Vértices', pontos: true, material: null,
+    texto: 'Pontos no espaço. Cada um é uma posição (x, y, z).' },
+  { nome: 'Triângulos', pontos: true,
+    material: new THREE.MeshBasicMaterial({ color: 0xff4fd8, wireframe: true }),
+    texto: 'Ligando os pontos de três em três, formamos triângulos.' },
+  { nome: 'Faces', pontos: false,
+    material: new THREE.MeshBasicMaterial({ color: 0x8b5cf6 }),
+    texto: 'Triângulos preenchidos. Sem luz, tudo fica chapado.' },
+  { nome: 'Luz', pontos: false,
+    material: new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.35 }),
+    texto: 'Material + luz: as faces ganham volume.' },
+];
+
+// --- Painel em HTML por cima da cena ---
+function el(css, pai) {
+  const d = document.createElement('div');
+  d.style.cssText = css;
+  (pai || document.body).appendChild(d);
+  return d;
+}
+const painel = el('position:fixed;left:10px;top:10px;max-width:280px;padding:10px 12px;border-radius:10px;background:#0b0826d9;color:#e9e7ff;font:12.5px/1.45 system-ui,sans-serif');
+const info = el('margin-bottom:8px', painel);
+const botoes = el('display:flex;flex-wrap:wrap;gap:6px', painel);
+const dados = el('margin-top:8px;font:11.5px/1.4 ui-monospace,Consolas,monospace;color:#a5a0d6', painel);
+const linha1 = el('', dados);
+const linha2 = el('', dados);
+const alvo = el('position:fixed;width:18px;height:18px;margin:-9px 0 0 -9px;border:2px solid #facc15;border-radius:50%;pointer-events:none');
+
+const p0 = new THREE.Vector3().fromBufferAttribute(pos, 0);   // vértice 0, em coordenadas do objeto
+linha1.textContent = nVertices + ' vértices · ' + nTriangulos + ' triângulos';
+
+etapas.forEach((e, i) => {
+  const b = document.createElement('button');
+  b.textContent = (i + 1) + '. ' + e.nome;
+  b.style.cssText = 'border:1px solid #2a2358;border-radius:6px;padding:4px 8px;color:#e9e7ff;font:600 12px system-ui;cursor:pointer';
+  b.onclick = () => mostrar(i);
+  botoes.appendChild(b);
+});
+
+function mostrar(i) {
+  const e = etapas[i];
+  pontos.visible = e.pontos;
+  alvo.style.display = e.pontos ? 'block' : 'none';
+  malha.visible = !!e.material;
+  if (e.material) malha.material = e.material;
+  info.innerHTML = '<b>' + e.nome + '</b><br>' + e.texto;
+  [...botoes.children].forEach((b, j) => (b.style.background = j === i ? '#8b5cf6' : '#1a1442'));
+}
+mostrar(0);
+
+// --- Laço de animação ---
+const tela = new THREE.Vector3();
+renderer.setAnimationLoop((t) => {
+  objeto.rotation.y = t / 4000;
+  controls.update();
+  renderer.render(scene, camera);
+
+  // Projeção: do mundo 3D para um pixel da tela
+  tela.copy(p0).applyMatrix4(objeto.matrixWorld).project(camera);   // x e y ficam entre -1 e 1
+  const px = (tela.x * 0.5 + 0.5) * innerWidth;
+  const py = (0.5 - tela.y * 0.5) * innerHeight;
+  alvo.style.left = px + 'px';
+  alvo.style.top = py + 'px';
+  linha2.textContent = 'vértice 0: (' + p0.x.toFixed(1) + ', ' + p0.y.toFixed(1) + ', ' + p0.z.toFixed(1) +
+    ') → pixel (' + Math.round(px) + ', ' + Math.round(py) + ')';
+});`},
 {t:"Primeiros passos",full:true,
  lead:"Todo programa Three.js tem três ingredientes: uma <b>cena</b>, uma <b>câmera</b> e um <b>renderer</b>.",
  txt:`<p>A <code>Scene</code> guarda os objetos. A <code>Camera</code> define de onde olhamos. O <code>WebGLRenderer</code> desenha a cena vista pela câmera num <code>&lt;canvas&gt;</code>.</p>
@@ -89,7 +199,7 @@ renderer.setAnimationLoop(() => {
 });`},
 {t:"Geometrias e materiais",
  lead:"A forma e a aparência de cada objeto são independentes — combine à vontade.",
- txt:`<p>A partir daqui o guia cria <code>renderer</code>, <code>scene</code> e <code>camera</code> automaticamente (o que você fez no capítulo 1). Foque no que é novo.</p>
+ txt:`<p>A partir daqui o guia cria <code>renderer</code>, <code>scene</code> e <code>camera</code> automaticamente (o que você fez no capítulo 2). Foque no que é novo.</p>
  <p><code>MeshStandardMaterial</code> reage à luz (PBR): <code>roughness</code> controla o brilho e <code>metalness</code> o aspecto metálico. Sem luz na cena, ele fica preto.</p>
  <div class="note tip"><b>Experimente:</b> altere <code>roughness</code> para 0.05 e <code>metalness</code> para 0.9. Troque a lista de geometrias por <code>IcosahedronGeometry(0.6)</code>.</div>`,
  code:`const geos = [
@@ -3856,7 +3966,7 @@ renderer.setAnimationLoop(() => {
  txt:`<p>A sinuca junta o que vimos no Pong e no Breakout e acrescenta o que faltava: <b>muitas bolas se movendo ao mesmo tempo</b>, todas colidindo entre si. O jogo acontece no plano <code>XZ</code>: cada bola é uma posição (<code>x</code>, <code>z</code>) mais uma velocidade (<code>vx</code>, <code>vz</code>), e o eixo <code>y</code> só serve para a bola ficar apoiada no feltro (<code>y = R</code>, o raio).</p>
   <p><b>Colisão elástica entre esferas.</b> Quando duas bolas se tocam, o vetor que importa é a <b>normal</b> <code>n</code>: o vetor de tamanho 1 que vai do centro de uma ao centro da outra. A velocidade de cada bola se divide em duas partes: a componente <i>ao longo</i> de <code>n</code>, que as bolas trocam, e a <i>perpendicular</i> a <code>n</code>, que não muda (não há atrito entre elas). Com massas iguais e choque perfeito, as bolas simplesmente <b>trocam</b> as componentes normais. No código, <code>rel = (va − vb)·n</code> é a velocidade de aproximação e o impulso é <code>j = (1 + e)·rel / 2</code>; depois <code>va −= j·n</code> e <code>vb += j·n</code>. O coeficiente <code>e</code> (restituição, 0,96) tira um pouco de energia a cada choque; com <code>e = 1</code> o choque seria perfeitamente elástico. Se <code>rel ≤ 0</code>, as bolas já estão se afastando e nada acontece. Antes disso, cada bola recua metade da <b>penetração</b>, para nunca ficarem coladas uma dentro da outra.</p>
   <p>Uma consequência bonita: quando a branca bate de raspão numa bola parada, a bola alvo sai pela <b>linha dos centros</b> e a branca segue numa direção quase <b>perpendicular</b> a ela, a famosa <i>regra dos 90°</i>. A linha de mira mostra isso: a <b>amarela</b> é o caminho da bola alvo e a <b>azul</b> é o da branca depois do choque, com comprimentos proporcionais às componentes <code>d·n</code> e <code>d − (d·n)n</code>.</p>
-  <p>Para achar onde a branca encosta primeiro usamos <b>raio contra círculo</b>. Duas bolas se tocam quando a distância entre os centros é <code>2R</code>; ao trocar o ponto do raio <code>o + t·d</code> nessa condição, sai uma <b>equação do 2º grau</b> em <code>t</code>, e a menor raiz positiva é o primeiro toque (função <code>mira</code>). O círculo branco é a "bola fantasma": onde a branca estará no instante do contato. O mouse aponta usando o <code>Raycaster</code> contra o plano horizontal da mesa, como no capítulo 7.</p>
+  <p>Para achar onde a branca encosta primeiro usamos <b>raio contra círculo</b>. Duas bolas se tocam quando a distância entre os centros é <code>2R</code>; ao trocar o ponto do raio <code>o + t·d</code> nessa condição, sai uma <b>equação do 2º grau</b> em <code>t</code>, e a menor raiz positiva é o primeiro toque (função <code>mira</code>). O círculo branco é a "bola fantasma": onde a branca estará no instante do contato. O mouse aponta usando o <code>Raycaster</code> contra o plano horizontal da mesa, como no capítulo 8.</p>
   <p><b>Atrito.</b> Em cada subpasso a velocidade perde duas coisas: um <b>arrasto proporcional</b> (<code>v·e<sup>−k·dt</sup></code>) e uma <b>desaceleração constante</b> (<code>ATR·dt</code>, o atrito de rolamento). A parte constante é a que faz a bola parar de vez; abaixo de um limite zeramos a velocidade, senão ela andaria para sempre, cada vez mais devagar. <b>Bordas e caçapas:</b> a borda reflete só a componente perpendicular a ela e perde energia (<code>0,8</code>). Cada caçapa é um círculo (centro + raio): se o centro da bola entra nele, a bola cai. Se for a branca, é falta, e ela volta à mesa quando tudo parar.</p>
   <p>Dois acabamentos: a física roda em <b>6 subpassos</b> por quadro (bolas rápidas não atravessam outras) e a bola <b>rola de verdade</b>: o eixo de rotação é perpendicular à velocidade, <code>(−vz, 0, vx)</code>, e o ângulo é a distância percorrida dividida pelo raio (<code>v·dt / R</code>), então o número impresso na bola gira de acordo com o movimento.</p>
   <div class="note"><b>Controles:</b> clique no preview. <b>Mouse</b> (ou <b>←/→</b>, com <b>Shift</b> para ajuste fino) mira. <b>Segure o clique ou Espaço</b> para carregar a força e <b>solte</b> para tacar. <b>G</b> liga/desliga a linha de mira e <b>R</b> reinicia. As regras são simplificadas: limpe a mesa no menor número de tacadas.</div>
@@ -6208,7 +6318,7 @@ renderer.setAnimationLoop((ms) => {
  lead:"Inimigos que seguem uma rota, torres que escolhem alvos e um ouro que nunca sobra.",
  txt:`<p>Em um <b>tower defense</b> você não controla um herói: você controla <b>onde</b> colocar as defesas. Os inimigos andam por uma rota fixa e, se chegarem ao fim, custam uma vida. Aqui o jogo acontece numa grade de <b>12×8 células</b> no plano <code>XZ</code>; as células marrons são a rota (não aceitam torres) e as verdes são terreno livre. Há três sistemas funcionando juntos: <b>caminho</b>, <b>mira</b> e <b>economia</b>.</p>
 <p><b>IA de caminho.</b> A rota é uma lista de <b>pontos</b> (<code>WP</code>, em coluna e linha) e cada inimigo guarda <code>alvo</code>, o índice do próximo ponto. A cada quadro, <code>mover</code> calcula o vetor até esse ponto e anda <code>vel × dt</code> nessa direção; ao chegar, passa para o ponto seguinte, <b>aproveitando o passo que sobrou</b> (por isso o <code>while</code>, senão o inimigo "perderia" movimento nas curvas e ficaria mais lento). <code>Math.atan2(dx, dz)</code> vira o inimigo para onde ele anda. Os pontos de <code>WP</code> também servem para marcar as células da rota em <code>caminho</code>. Cada inimigo soma em <code>dist</code> o quanto já andou: é o seu <b>progresso</b>, usado pelas torres.</p>
-<p><b>IA da torre.</b> A cada quadro a torre procura, entre os inimigos dentro do <b>alcance</b>, o que tem <b>maior progresso</b> (o mais perto de escapar, a escolha mais comum nos jogos do gênero). Ela gira o cano para o alvo e, quando a <b>recarga</b> (<code>cd</code>) zera, dispara um <b>projétil teleguiado</b>: uma bolinha que a cada quadro se aproxima da posição atual do alvo. Se o alvo morrer no caminho, o projétil some. Para escolher a célula com o mouse usamos o <code>Raycaster</code> do capítulo 7, mas em vez de testar objetos, o raio cruza o <b>plano do chão</b> (<code>intersectPlane</code>) e a posição vira coluna e linha com <code>Math.floor</code>.</p>
+<p><b>IA da torre.</b> A cada quadro a torre procura, entre os inimigos dentro do <b>alcance</b>, o que tem <b>maior progresso</b> (o mais perto de escapar, a escolha mais comum nos jogos do gênero). Ela gira o cano para o alvo e, quando a <b>recarga</b> (<code>cd</code>) zera, dispara um <b>projétil teleguiado</b>: uma bolinha que a cada quadro se aproxima da posição atual do alvo. Se o alvo morrer no caminho, o projétil some. Para escolher a célula com o mouse usamos o <code>Raycaster</code> do capítulo 8, mas em vez de testar objetos, o raio cruza o <b>plano do chão</b> (<code>intersectPlane</code>) e a posição vira coluna e linha com <code>Math.floor</code>.</p>
 <p><b>Economia.</b> Você começa com <b>120 de ouro</b>. Construir custa 40; melhorar custa 60 e depois 90, e cada nível dá mais dano, alcance e cadência (tabela <code>NIVEIS</code>). O ouro volta de duas formas: uma <b>recompensa</b> por inimigo morto (maior nos rápidos) e um <b>bônus</b> ao fim de cada onda. O jogo está em equilíbrio quando o jogador sempre tem uma escolha difícil: <i>mais uma torre ou melhorar a que já existe?</i> Todos os números (vida dos inimigos, velocidade, preços, recompensa) estão em constantes e fórmulas simples, então você pode <b>ajustar a dificuldade</b> mexendo só nelas. A partir da onda 3 surgem inimigos <b>rápidos</b> (amarelos, com menos vida), que obrigam a ter dano alto e bem distribuído.</p>
 <div class="note"><b>Controles:</b> <b>clique no preview</b> para dar foco. <b>Clique</b> numa célula verde para construir (40) e numa torre para melhorá-la (60, depois 90); o marcador fica <b>verde</b> ou <b>amarelo</b> se você pode pagar e <b>vermelho</b> se não, e o círculo mostra o alcance. <b>Espaço</b> chama a próxima onda e <b>R</b> reinicia. Sobreviva a <b>8 ondas</b> com 10 vidas.</div>
 <div class="note tip"><b>Desafios:</b> (1) vender uma torre devolvendo 70% do que foi gasto (clique com o botão direito, evento <code>contextmenu</code>); (2) uma torre de <b>gelo</b> que reduz <code>vel</code> do inimigo por 2 s em vez de causar dano; (3) um <b>chefe</b> a cada 4 ondas, com muita vida e recompensa alta; (4) dano em <b>área</b>: ao acertar, todos os inimigos a menos de 1 unidade levam parte do dano; (5) uma tecla para <b>acelerar o jogo</b> multiplicando <code>dt</code> por 2; (6) trocar a lista <code>WP</code> por um mapa de texto e achar a rota com <b>busca em largura</b> (BFS), o primeiro passo para deixar o jogador construir um labirinto.</div>`,
@@ -6485,7 +6595,7 @@ renderer.setAnimationLoop(() => {
 {t:"Battle Tanks",
  lead:"Uma arena plana, blocos que racham a tiros, inimigos que contornam paredes com A* e um minimapa desenhado por uma segunda câmera.",
  txt:`<p>Em <b>Battle Tanks</b> três ideias dos capítulos anteriores se juntam num jogo só: uma <b>grade</b> com blocos que podem ser destruídos, inimigos que acham o caminho com <b>A*</b> e um <b>minimapa</b> desenhado por uma segunda câmera. A arena é plana: tudo acontece no plano <code>XZ</code>, sem altura nem relevo. Ela nasce de um <b>mapa de texto</b> (<code>MAPA</code>), em que cada caractere é uma célula de 1×1: <code>#</code> é aço (indestrutível), <code>B</code> é um bloco destrutível, <code>P</code> é você e <code>E</code> é um inimigo. Para trocar a fase, é só editar o texto. O jogo guarda a arena em <code>grade[linha][coluna]</code> (0 livre, 1 bloco, 2 aço) e, para cada bloco, a malha e a vida em <code>blocos</code>. As funções <code>centro</code>, <code>colDe</code> e <code>linDe</code> convertem entre célula e posição no mundo, como no tower defense.</p>
-<p><b>O tanque.</b> Cada tanque é um <code>Group</code> com duas partes que giram <b>separadas</b>: o <code>corpo</code> (casco e esteiras) aponta para onde o tanque anda (<code>rumo</code>) e a <code>torre</code> aponta para onde ele mira (<code>mira</code>). Você anda com <b>WASD</b> em relação à tela e mira com o <b>mouse</b>: o raio do mouse cruza um plano na altura da torre (<code>intersectPlane</code>, como no capítulo 7) e <code>Math.atan2</code> dá o ângulo. A <b>colisão</b> é de círculo contra célula: para cada célula sólida por perto, <code>bate</code> acha o ponto dela mais próximo do centro do tanque e compara a distância com o raio. O movimento é feito <b>um eixo por vez</b>, e por isso o tanque escorrega nas paredes em vez de grudar nelas.</p>
+<p><b>O tanque.</b> Cada tanque é um <code>Group</code> com duas partes que giram <b>separadas</b>: o <code>corpo</code> (casco e esteiras) aponta para onde o tanque anda (<code>rumo</code>) e a <code>torre</code> aponta para onde ele mira (<code>mira</code>). Você anda com <b>WASD</b> em relação à tela e mira com o <b>mouse</b>: o raio do mouse cruza um plano na altura da torre (<code>intersectPlane</code>, como no capítulo 8) e <code>Math.atan2</code> dá o ângulo. A <b>colisão</b> é de círculo contra célula: para cada célula sólida por perto, <code>bate</code> acha o ponto dela mais próximo do centro do tanque e compara a distância com o raio. O movimento é feito <b>um eixo por vez</b>, e por isso o tanque escorrega nas paredes em vez de grudar nelas.</p>
 <p><b>Tiros e blocos destrutíveis.</b> Cada tiro é uma bolinha em linha reta. A cada quadro ele anda em <b>dois meio-passos</b> (assim, mesmo rápido, não atravessa um bloco) e olha a célula onde está: se for aço, o tiro some; se for bloco, <code>vida--</code> e o material troca para uma cor mais escura (<code>matBloco[vida]</code>); ao chegar a zero, o bloco some. Como o mundo é só uma tabela de números, <b>destruir é escrever 0</b> em <code>grade[l][c]</code>: a colisão e o A* enxergam a nova passagem no quadro seguinte, e <code>gradeMudou</code> avisa os inimigos para refazerem suas rotas. As explosões são cubinhos com <b>gravidade</b>, que fazem arcos e encolhem. Um tiro não acerta o tanque do próprio time.</p>
 <p><b>A*.</b> A busca em largura (BFS) explora a grade igualmente em todas as direções. O <b>A*</b> a direciona: ele sempre expande o nó aberto de menor <code>f = custo até aqui + estimativa até o destino</code>. A estimativa (<code>heur</code>) é a distância com diagonais, que nunca passa do custo real, e por isso o primeiro caminho que chega ao destino é o mais curto. Os nós visitados vão para <code>fechado</code>, e o mapa <code>pai</code> guarda de onde se veio, para <b>reconstruir</b> a rota de trás para frente. A busca anda em <b>8 direções</b>, mas uma diagonal é proibida se um dos dois vizinhos laterais for sólido: sem essa regra o tanque "cortaria" a quina de um bloco. As células onde há outro inimigo custam +3, então os inimigos tendem a se espalhar em vez de formar fila. Numa grade pequena como esta, procurar o menor <code>f</code> na lista inteira é suficiente; mapas grandes pedem um <b>heap binário</b>.</p>
 <p><b>A IA do inimigo.</b> Cada inimigo escolhe, a cada quadro, entre três comportamentos. <b>Patrulhar</b>: sorteia uma célula livre por perto, acha a rota com o A* e a segue; ao chegar, espera um instante e sorteia outra. <b>Perseguir</b>: quando a distância até você fica abaixo de <code>RAIO_PERSEGUIR</code>, a rota passa a ir até a sua célula, recalculada a cada <code>REFAZER_ROTA</code> segundos e sempre que um bloco cai. Para o inimigo não "piscar" entre perseguir e patrulhar na borda do raio, ele só desiste quando você passa de 1,25 vezes o raio (<b>histerese</b>). <b>Atirar</b>: <code>linhaLivre</code> caminha pela grade em passos de 0,25 e diz se há algum bloco entre os dois; com a linha livre, a torre gira até você e o tiro sai, com um pequeno erro de pontaria. Dentro de <code>DIST_PARAR</code> o inimigo para de andar e só atira. Aperte <b>P</b> para ver as rotas do A*: <b>vermelha</b> quando está perseguindo e <b>azul</b> quando está patrulhando.</p>
@@ -9452,7 +9562,7 @@ renderer.setAnimationLoop(() => {
 {t:"Esqueleto e skinning",
  lead:"Um boneco de blocos cuja pele dobra nos cotovelos e nos joelhos: ossos, pesos e uma caminhada animada à mão, antes de usar modelos prontos.",
  txt:`<p>Até aqui, para mexer num personagem, movíamos <b>peças separadas</b> (o braço é uma caixa, a mão é outra), como no capítulo <i>Grupos e hierarquia</i>. Para um robô isso basta, mas um braço de verdade <b>dobra</b> no cotovelo sem se partir em dois pedaços. A técnica que faz isso se chama <b>skinning</b> (de <i>skin</i>, pele): a malha é uma <b>pele</b> contínua, e por baixo dela há um <b>esqueleto</b>, uma hierarquia de ossos. Cada vértice da pele <b>obedece</b> a até quatro ossos, cada um com um <b>peso</b>. É a técnica dos personagens do capítulo seguinte (os modelos <code>.glb</code>): lá o esqueleto vem pronto do Blender; aqui vamos montar um à mão para entender o que existe por dentro.</p>
-<p><b>Os ossos.</b> Um <code>THREE.Bone</code> é um <code>Object3D</code> comum (o <code>Group</code> do capítulo 8 com outro nome): a <code>position</code> é relativa ao pai, e girar um osso leva junto todos os seus filhos. Giramos o <code>ombro</code> e o <code>cotovelo</code>, o antebraço e a mão vão atrás. A raiz é o <code>quadril</code>, e dele saem o <code>tronco</code> (com a <code>cabeça</code> e os dois <code>ombro</code> → <code>cotovelo</code>) e as duas <code>coxa</code> → <code>joelho</code> → <code>tornozelo</code>. Cada osso ganha um <code>name</code>, porque as animações de um modelo carregado procuram os ossos pelo nome. A <b>ordem de criação</b> também importa: a posição do osso na lista <code>ossos</code> é o seu <b>índice</b>, usado nos pesos.</p>
+<p><b>Os ossos.</b> Um <code>THREE.Bone</code> é um <code>Object3D</code> comum (o <code>Group</code> do capítulo 9 com outro nome): a <code>position</code> é relativa ao pai, e girar um osso leva junto todos os seus filhos. Giramos o <code>ombro</code> e o <code>cotovelo</code>, o antebraço e a mão vão atrás. A raiz é o <code>quadril</code>, e dele saem o <code>tronco</code> (com a <code>cabeça</code> e os dois <code>ombro</code> → <code>cotovelo</code>) e as duas <code>coxa</code> → <code>joelho</code> → <code>tornozelo</code>. Cada osso ganha um <code>name</code>, porque as animações de um modelo carregado procuram os ossos pelo nome. A <b>ordem de criação</b> também importa: a posição do osso na lista <code>ossos</code> é o seu <b>índice</b>, usado nos pesos.</p>
 <p><b>A pele: <code>SkinnedMesh</code>.</b> É uma <code>Mesh</code> cuja geometria tem dois atributos a mais, com <b>4 números por vértice</b>: <code>skinIndex</code> (quais ossos puxam o vértice) e <code>skinWeight</code> (quanto cada um puxa; os quatro somam 1). Um vértice no meio do cotovelo tem, por exemplo, índices <code>[ombro, cotovelo]</code> e pesos <code>[0.5, 0.5]</code>: ele acompanha metade de cada osso, e essa média é o que torna a dobra suave. Depois criamos <code>new THREE.Skeleton(ossos)</code>, penduramos a raiz na malha com <code>malha.add(quadril)</code> e chamamos <code>malha.bind(esqueleto)</code>. O <code>bind</code> <b>grava a pose de agora como pose de repouso</b> (a <i>bind pose</i>): guarda a matriz inversa de cada osso (<code>boneInverses</code>), e o shader calcula cada vértice como a soma de <code>peso × matrizDoOsso × inversaDeRepouso × posição</code>. No repouso essa conta dá a identidade e a pele não se mexe; só o que se afasta do repouso desloca os vértices. Por isso a geometria precisa ser construída <b>já na pose de repouso</b>, com os ossos nos lugares certos.</p>
 <p><b>Os pesos.</b> Aqui a geometria nasce juntando caixas (<code>bloco</code>), com os pesos dados pela altura. Peças rígidas (cabeça, mão, pé) usam <code>fixo(osso)</code>: peso 1 num osso só. Braços, pernas e cintura usam <code>junta(cima, baixo, yJunta, faixa)</code>: acima da junta o vértice obedece ao osso de cima, abaixo obedece ao de baixo, e na <b>faixa</b> do meio a mistura segue um <code>smoothstep</code>. Por isso essas caixas têm <b>divisões</b> (<code>BoxGeometry(w, h, d, 1, 10, 1)</code>): sem vértices na região da dobra, não há o que misturar. Aperte <b>T</b> para ver os fios e <b>P</b> para ver o <b>mapa de pesos</b> de cada osso (azul = 0, vermelho = 1). No Blender isso se chama <i>weight painting</i>: você pinta os pesos com um pincel em vez de calculá-los, e é isso que um <code>.glb</code> traz nos dois atributos acima.</p>
 <p><b>Animar à mão.</b> Para animar basta girar os ossos (<code>osso.rotation</code>); a pele vem junto, sem que a gente toque nos vértices. A cada quadro o código preenche <code>alvos</code> (a rotação que queremos em cada osso) e cada osso se aproxima do alvo com <code>1 - Math.exp(-12 * dt)</code>, a mesma suavização da câmera do capítulo <i>Mundo infinito por chunks</i>: a troca entre <i>parado</i>, <i>andar</i> e <i>acenar</i> vira uma transição, não um estalo. O boneco olha para <code>+Z</code>, então uma rotação <b>positiva em X</b> leva para <b>trás</b> um membro que pende para baixo, e uma rotação em Z abre o braço para o lado. A caminhada é só uma lista de regras: as <b>pernas</b> balançam em oposição (<code>±sin</code>); o <b>joelho</b> só dobra quando a perna passa para a frente (<code>max(0, ∓cos)</code>), erguendo o pé; o <b>tornozelo</b> desfaz a rotação da perna (<code>-(coxa + joelho)</code>) para o pé ficar plano; os <b>braços</b> vão contra as pernas; o <b>tronco</b> gira ao contrário dos quadris; e o <b>quadril</b> desce quando as pernas se abrem (um <code>cos</code>), o que mantém os pés no chão. O chão corre sob o boneco, como numa esteira, na velocidade do passo. Os pés ainda escorregam um pouco, porque a perna não sabe onde está o chão: o remédio é a <b>cinemática inversa</b> (IK), em que você diz onde o pé deve ficar e o código calcula os ângulos (veja os desafios).</p>
@@ -13979,7 +14089,7 @@ function build(code,full,titulo){
 const $=s=>document.querySelector(s);
 let cur=0,timer=null,done=new Set();
 try{done=new Set(JSON.parse(localStorage.getItem('g3d-done')||'[]'))}catch(e){}
-const GRUPOS={0:'Fundamentos',4:'Cena e interação',10:'Jogos',34:'Avançado',62:'Projeto final'};
+const GRUPOS={0:'Fundamentos',5:'Cena e interação',11:'Jogos',35:'Avançado',63:'Projeto final'};
 const nav=$('#nav');
 CAPS.forEach((c,i)=>{if(GRUPOS[i]){const h=document.createElement('div');h.className='grp';h.textContent=GRUPOS[i];nav.appendChild(h)}const a=document.createElement('a');a.innerHTML='<i>'+String(i+1).padStart(2,'0')+'</i>'+c.t;a.onclick=()=>go(i);nav.appendChild(a)});
 // ===== Maximizar a visão 3D =====
