@@ -88,6 +88,12 @@ scene.add(objeto);
 // Referências: um chão de grade e, sobre ele, os eixos X (vermelho), Y (verde) e Z (azul)
 const chao = new THREE.GridHelper(10, 10, 0x6b7280, 0x2a3350);
 const eixos = new THREE.AxesHelper(3);
+const cores = eixos.geometry.attributes.color;   // o AxesHelper vem com degradê; aqui cada eixo fica de uma cor só
+[[1, 0, 0], [0, 1, 0], [0.2, 0.45, 1]].forEach((c, i) => {   // X vermelho, Y verde, Z azul
+  cores.setXYZ(i * 2, ...c);        // início do eixo
+  cores.setXYZ(i * 2 + 1, ...c);    // fim do eixo
+});
+cores.needsUpdate = true;
 chao.material.depthWrite = false;   // a grade é desenhada primeiro...
 chao.renderOrder = -1;
 eixos.renderOrder = 1;              // ...e os eixos ficam por cima, sem piscar
@@ -125,9 +131,9 @@ function el(css, pai) {
   (pai || document.body).appendChild(d);
   return d;
 }
-const painel = el('position:fixed;left:10px;top:10px;max-width:280px;padding:10px 12px;border-radius:10px;background:#0b0826d9;color:#e9e7ff;font:12.5px/1.45 system-ui,sans-serif');
+const painel = el('position:fixed;left:10px;top:10px;width:min(430px,calc(100% - 20px));box-sizing:border-box;padding:12px 14px;border-radius:10px;background:#0b0826d9;color:#e9e7ff;font:12.5px/1.45 system-ui,sans-serif');
 const info = el('margin-bottom:8px', painel);
-const botoes = el('display:flex;flex-wrap:wrap;gap:6px', painel);
+const botoes = el('display:flex;flex-wrap:wrap;gap:8px', painel);
 const dados = el('margin-top:8px;font:11.5px/1.4 ui-monospace,Consolas,monospace;color:#a5a0d6', painel);
 const linha1 = el('', dados);
 const linha2 = el('', dados);
@@ -139,7 +145,7 @@ linha1.textContent = nVertices + ' vértices · ' + nTriangulos + ' triângulos'
 etapas.forEach((e, i) => {
   const b = document.createElement('button');
   b.textContent = (i + 1) + '. ' + e.nome;
-  b.style.cssText = 'border:1px solid #2a2358;border-radius:6px;padding:4px 8px;color:#e9e7ff;font:600 12px system-ui;cursor:pointer';
+  b.style.cssText = 'flex:1 1 auto;white-space:nowrap;border:1px solid #2a2358;border-radius:6px;padding:6px 8px;color:#e9e7ff;font:600 12px system-ui;cursor:pointer';
   b.onclick = () => mostrar(i);
   botoes.appendChild(b);
 });
