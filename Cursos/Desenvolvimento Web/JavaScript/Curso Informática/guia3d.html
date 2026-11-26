@@ -83,7 +83,7 @@ const pontos = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x22d3ee,
 const malha = new THREE.Mesh(geo, new THREE.MeshBasicMaterial());
 const objeto = new THREE.Group();
 objeto.add(malha, pontos);
-objeto.position.y = 1.01;              // o cubo tem altura 2: a base fica em y = 0.01, logo acima do chão
+objeto.position.y = 1.01;    // o cubo tem altura 2: a base fica em y = 0.01, logo acima do chão
 scene.add(objeto);
 
 // Referências: um chão de grade e, sobre ele, os eixos X (vermelho), Y (verde) e Z (azul)
