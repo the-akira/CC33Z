@@ -7469,7 +7469,8 @@ botoesP.piano.className = 'on';
 let btnPedal = btn($r1, 'pedal', () => setPedal(!pedal));
 let btnDemo = btn($r1, '▶ Ode à Alegria', () => { if (demo.ativo) pararDemo(); else iniciarDemo(); });
 const btn3D = btn($r1, 'áudio 3D', () => { ligar3D(!audio3D); btn3D.className = audio3D ? 'on' : ''; });
-btn3D.className = 'on';
+ligar3D(false);          // começa com o áudio 3D desligado
+btn3D.className = '';    // botão apagado, para combinar com o estado
 slider($r2, 'volume', 0, 1, 0.01, 1, (v) => { listener.setMasterVolume(v); });
 slider($r2, 'reverb', 0, 1, 0.01, 0.3, (v) => { saidaRev.gain.value = v; });
 SFX.forEach((s) => btn($r2, s[0], () => { if (ctx.state !== 'running') ctx.resume(); s[1](ctx.currentTime + 0.01); }));
