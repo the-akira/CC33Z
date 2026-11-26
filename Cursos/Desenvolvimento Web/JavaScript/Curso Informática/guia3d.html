@@ -82,21 +82,29 @@ const pontos = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x22d3ee,
 const malha = new THREE.Mesh(geo, new THREE.MeshBasicMaterial());
 const objeto = new THREE.Group();
 objeto.add(malha, pontos);
-objeto.position.y = 1;              // o cubo tem altura 2: assim ele se apoia no chão (y = 0)
+objeto.position.y = 1.01;              // o cubo tem altura 2: assim ele se apoia no chão (y = 0)
 scene.add(objeto);
 
 // Referências: um chão de grade e, sobre ele, os eixos X (vermelho), Y (verde) e Z (azul)
 const chao = new THREE.GridHelper(10, 10, 0x6b7280, 0x2a3350);
-const eixos = new THREE.AxesHelper(3);
-const cores = eixos.geometry.attributes.color;   // o AxesHelper vem com degradê; aqui cada eixo fica de uma cor só
-[[1, 0, 0], [0, 1, 0], [0.2, 0.45, 1]].forEach((c, i) => {   // X vermelho, Y verde, Z azul
-  cores.setXYZ(i * 2, ...c);        // início do eixo
-  cores.setXYZ(i * 2 + 1, ...c);    // fim do eixo
+const ESPESSURA = 0.03;      // raio do cilindro: aumente para engrossar
+const COMPRIMENTO = 3;
+const eixos = new THREE.Group();
+
+[[1, 0, 0], [0, 1, 0], [0, 0, 1]].forEach((d, i) => {
+  const cor = [[1, 0, 0], [0, 1, 0], [0.2, 0.45, 1]][i];   // X vermelho, Y verde, Z azul
+  const g = new THREE.CylinderGeometry(ESPESSURA, ESPESSURA, COMPRIMENTO, 12);
+  g.translate(0, COMPRIMENTO / 2, 0);                      // o cilindro passa a começar na origem
+  const eixo = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: new THREE.Color(...cor) }));
+  eixo.quaternion.setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),                            // o cilindro nasce apontando para Y
+    new THREE.Vector3(...d)                                // e é girado para a direção do eixo
+  );
+  eixos.add(eixo);
 });
-cores.needsUpdate = true;
 chao.material.depthWrite = false;   // a grade é desenhada primeiro...
 chao.renderOrder = -1;
-eixos.renderOrder = 1;              // ...e os eixos ficam por cima, sem piscar
+eixos.children.forEach((e) => (e.renderOrder = 1));        // ...e os eixos ficam por cima, sem piscar
 scene.add(chao, eixos);
 
 // Luz (só os materiais "Standard" reagem a ela)
